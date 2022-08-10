@@ -1,0 +1,41 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Assets/Sprites/Platforms/purple.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Entities/Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Assets/Sprites/Platforms/blue_gears.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Sprites/Platforms/yellow_gears.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Entities/Camera.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Assets/Entities/Platforms/SimplePlatform.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Assets/Sprites/Platforms/pink.png" type="Texture" id=8]
+
+[node name="Level1" type="Node2D"]
+
+[node name="Player" parent="." instance=ExtResource( 2 )]
+position = Vector2( 669, 147 )
+
+[node name="Camera2D" parent="Player" instance=ExtResource( 6 )]
+limit_top = -1000
+
+[node name="PinkPlatform" parent="." instance=ExtResource( 7 )]
+position = Vector2( 361.47, 107 )
+scale = Vector2( 3.182, 1 )
+texture = ExtResource( 8 )
+group = "pink"
+
+[node name="PurplePlatform" parent="." instance=ExtResource( 7 )]
+position = Vector2( 1024, 378 )
+scale = Vector2( 3.218, 1.278 )
+texture = ExtResource( 1 )
+group = "purple"
+
+[node name="BlueGearedPlatform" parent="." instance=ExtResource( 7 )]
+position = Vector2( 630, 300 )
+scale = Vector2( 3.24, 1.57 )
+texture = ExtResource( 3 )
+group = "blue"
+
+[node name="SimplePlatform" parent="." instance=ExtResource( 7 )]
+position = Vector2( 1232, 208 )
+scale = Vector2( 2.546, 1.11 )
+texture = ExtResource( 4 )
+group = "yellow"
