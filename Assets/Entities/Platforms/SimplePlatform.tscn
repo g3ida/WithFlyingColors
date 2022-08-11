@@ -17,6 +17,8 @@ extents = Vector2( 39.75, 39.875 )
 extents = Vector2( 40, 40 )
 
 [node name="SimplePlatform" type="StaticBody2D"]
+collision_layer = 4
+collision_mask = 2
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_group_": true
@@ -46,8 +48,8 @@ __meta__ = {
 
 [node name="Area2D" type="Area2D" parent="."]
 visible = false
-collision_layer = 32769
-collision_mask = 32768
+collision_layer = 4
+collision_mask = 16
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="Area2D"]
 visible = false

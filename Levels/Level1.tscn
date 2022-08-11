@@ -16,6 +16,7 @@ level_path = "res://Levels/Level1.tscn"
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( 669, 147 )
+collision_mask = 13
 
 [node name="Camera2D" parent="Player" instance=ExtResource( 6 )]
 limit_top = -1000
@@ -48,6 +49,6 @@ scale = Vector2( 2.546, 1.11 )
 texture = ExtResource( 4 )
 group = "yellow"
 
-[node name="Area2D" parent="." instance=ExtResource( 9 )]
+[node name="Fallzone" parent="." instance=ExtResource( 9 )]
 position = Vector2( 738, 898 )
 scale = Vector2( 99.382, 4.788 )
