@@ -1,8 +1,11 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Assets/Animations/player_frames.tres" type="SpriteFrames" id=1]
 [ext_resource path="res://Assets/Scripts/Player/Player.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Entities/BoxFace.tscn" type="PackedScene" id=3]
+
+[sub_resource type="OccluderPolygon2D" id=2]
+polygon = PoolVector2Array( -47, -47, 47, -47, 47, 47, -47, 47 )
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 47.5, 47.5 )
@@ -19,6 +22,9 @@ __meta__ = {
 "_edit_lock_": true
 }
 
+[node name="LightOccluder2D" type="LightOccluder2D" parent="AnimatedSprite"]
+occluder = SubResource( 2 )
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
 __meta__ = {
@@ -26,15 +32,15 @@ __meta__ = {
 }
 
 [node name="BottomFace" parent="." groups=["blue"] instance=ExtResource( 3 )]
-position = Vector2( 0, 43 )
+position = Vector2( 0, 45.5 )
 
 [node name="TopFace" parent="." groups=["purple"] instance=ExtResource( 3 )]
-position = Vector2( 0, -43 )
+position = Vector2( 0, -45.5 )
 
 [node name="LeftFace" parent="." groups=["yellow"] instance=ExtResource( 3 )]
-position = Vector2( -43, 0 )
+position = Vector2( -45.5, 0 )
 rotation = 1.5708
 
 [node name="RightFace" parent="." groups=["pink"] instance=ExtResource( 3 )]
-position = Vector2( 43, 0 )
+position = Vector2( 45.5, 0 )
 rotation = -1.5708

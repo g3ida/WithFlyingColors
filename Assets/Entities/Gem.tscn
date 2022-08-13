@@ -1,10 +1,11 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Assets/Animations/gem_yellow_frames.tres" type="SpriteFrames" id=1]
 [ext_resource path="res://Assets/Scripts/Gem.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Sprites/Lightmaps/shine_light.png" type="Texture" id=3]
 
 [sub_resource type="CircleShape2D" id=1]
-radius = 25.0
+radius = 24.0208
 
 [node name="Gem" type="Area2D"]
 collision_layer = 32
@@ -14,16 +15,23 @@ __meta__ = {
 "_edit_group_": true
 }
 
-[node name="Sprite" type="Sprite" parent="."]
-visible = false
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -2 )
 shape = SubResource( 1 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+z_index = 100
 frames = ExtResource( 1 )
 frame = 6
 playing = true
+
+[node name="Light2D" type="Light2D" parent="."]
+texture = ExtResource( 3 )
+texture_scale = 1.25
+range_z_max = 90
+range_layer_min = -100
+range_layer_max = 10
+shadow_enabled = true
+shadow_item_cull_mask = 31
 
 [connection signal="body_entered" from="." to="." method="_on_Gem_body_entered"]
