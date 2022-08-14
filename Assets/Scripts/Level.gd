@@ -13,6 +13,10 @@ func _enter_tree():
 
 func _exit_tree():
 	disconnect_signals()
-	
+
 func _on_game_over():
-	get_tree().change_scene(self.level_path)
+	go_to_checkpoint()
+
+func go_to_checkpoint() -> void:
+	Global.player.reset()
+	#get_tree().change_scene(self.level_path)

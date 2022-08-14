@@ -23,6 +23,9 @@ var current_animation: TransoformAnimation
 var sprite_size: int
 var was_on_floor: bool = true
 
+var reset_position: Vector2
+var reset_angle: float = 0
+
 func _ready():
 	playerRotationAction = PlayerRotationAction.new(self)
 	sprite_size = $AnimatedSprite.frames.get_frame("idle", 0).get_width()
@@ -38,6 +41,7 @@ func _ready():
 		
 	current_animation = idle_animation
 	was_on_floor = is_on_floor()
+	self.reset_position = self.global_position
 
 func _physics_process(delta):
 	if Input.is_action_pressed("move_right"):
@@ -65,15 +69,23 @@ func _physics_process(delta):
 	if (not was_on_floor) and on_floor:
 		on_land()
 	was_on_floor = on_floor
-		
+
+func reset():
+	$AnimatedSprite.play("idle")
+	$AnimatedSprite.playing = false
+	self.global_position = reset_position
+	self.rotate(self.reset_angle - self.rotation)
 
 func connect_signals():
 	Event.connect("player_diying", self, "_on_player_diying")
-
+	Event.connect("checkpoint", self, "_on_checkpoint_hit")
+	
 func disconnect_signals():
 	Event.disconnect("player_diying", self, "_on_player_diying")
-	
+	Event.disconnect("checkpoint", self, "_on_checkpoint_hit")
+		
 func _enter_tree():
+	Global.player = self
 	connect_signals()
 
 func _exit_tree():
@@ -90,3 +102,15 @@ func on_land():
 	current_animation = scale_animation
 	if not current_animation.isRunning():
 		current_animation.start()
+
+func _on_checkpoint_hit(checkpoint_object: Node2D):
+	self.reset_position = checkpoint_object.global_position
+	
+	if checkpoint_object.color_group in $BottomFace.get_groups():
+		self.reset_angle = 0
+	elif checkpoint_object.color_group in $LeftFace.get_groups():
+		self.reset_angle = -PI / 2
+	elif checkpoint_object.color_group in $RightFace.get_groups():
+		self.reset_angle = PI / 2
+	elif checkpoint_object.color_group in $TopFace.get_groups():
+		self.reset_angle = PI

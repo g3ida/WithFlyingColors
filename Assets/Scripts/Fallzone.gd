@@ -5,4 +5,4 @@ func _ready():
 	pass # Replace with function body.
 
 func _on_FallzoneArea_area_entered(area):
-	Event.emit_signal("player_died")
+	Event.emit_signal("player_diying")

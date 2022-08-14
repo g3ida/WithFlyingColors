@@ -28,6 +28,7 @@ config/icon="res://icon.png"
 
 Global="*res://Assets/Scripts/Global.gd"
 Event="*res://Assets/Scripts/Event.gd"
+Checkpoints="*res://Assets/Scripts/Autoload/Checkpoints.gd"
 
 [display]
 
