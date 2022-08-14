@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Assets/Animations/gem_yellow_frames.tres" type="SpriteFrames" id=1]
 [ext_resource path="res://Assets/Scripts/Gem.gd" type="Script" id=2]
@@ -6,6 +6,38 @@
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 24.0208
+
+[sub_resource type="Animation" id=4]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "gem_collected_animation"
+length = 0.09
+step = 0.01
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0.02, 0.06, 0.09 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 0, 40 ), Vector2( 0, 90 ) ]
+}
 
 [node name="Gem" type="Area2D"]
 collision_layer = 32
@@ -22,8 +54,12 @@ shape = SubResource( 1 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 z_index = 100
 frames = ExtResource( 1 )
-frame = 6
+frame = 1
 playing = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="AnimatedSprite"]
+anims/RESET = SubResource( 4 )
+anims/gem_collected_animation = SubResource( 3 )
 
 [node name="Light2D" type="Light2D" parent="."]
 texture = ExtResource( 3 )
@@ -35,3 +71,4 @@ shadow_enabled = true
 shadow_item_cull_mask = 31
 
 [connection signal="body_entered" from="." to="." method="_on_Gem_body_entered"]
+[connection signal="animation_finished" from="AnimatedSprite/AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

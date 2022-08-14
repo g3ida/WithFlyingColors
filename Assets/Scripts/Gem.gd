@@ -31,9 +31,17 @@ func _ready():
 	$AnimatedSprite.frames = sprite_frames
 
 func _physics_process(delta):
+	$Light2D.position = $AnimatedSprite.position
 	ocillator.update(delta)
 	$Light2D.energy = 1 + SHINE_VARIANCE * sin(2 * PI * ocillator.timer / ANIMATION_DURATION)
 	$Light2D.rotate(ROTATION_SPEED)
 
 func _on_Gem_body_entered(body):
-	self.queue_free()
+	#check for maybe ?
+	$AnimatedSprite/AnimationPlayer.play("gem_collected_animation")
+	$CollisionShape2D.queue_free()
+
+func _on_AnimationPlayer_animation_finished(anim_name):
+	if anim_name == "gem_collected_animation":
+		Event.emit_signal("gem_collected", group_name, $AnimatedSprite.get_global_transform_with_canvas().origin, $AnimatedSprite.frames)
+		self.queue_free()
