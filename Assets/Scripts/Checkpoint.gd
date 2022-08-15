@@ -11,4 +11,4 @@ func _on_Checkpoint_body_shape_entered(body_rid, body, body_shape_index, local_s
 	if (not is_checked):
 		is_checked = true
 		$CheckHole/CheckDot/AnimationPlayer.play("Checkpoint")
-		Event.emit_signal("checkpoint", self)
+		Event.emit_signal("checkpoint_reached", self)

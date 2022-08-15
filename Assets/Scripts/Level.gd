@@ -15,8 +15,4 @@ func _exit_tree():
 	disconnect_signals()
 
 func _on_game_over():
-	go_to_checkpoint()
-
-func go_to_checkpoint() -> void:
-	Global.player.reset()
-	#get_tree().change_scene(self.level_path)
+	Event.emit_signal("checkpoint_loaded")

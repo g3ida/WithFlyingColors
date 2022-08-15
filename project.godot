@@ -9,13 +9,61 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Reference",
+"class": "BaseState",
+"language": "GDScript",
+"path": "res://Assets/Scripts/StateMachine/BaseState.gd"
+}, {
+"base": "Reference",
+"class": "BaseStatesStore",
+"language": "GDScript",
+"path": "res://Assets/Scripts/StateMachine/BaseStatesStore.gd"
+}, {
+"base": "BaseState",
+"class": "GemBaseState",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Gems/States/GemBaseState.gd"
+}, {
+"base": "GemBaseState",
+"class": "GemCollectedState",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Gems/States/GemCollectedState.gd"
+}, {
+"base": "GemBaseState",
+"class": "GemCollectingState",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Gems/States/GemCollectingState.gd"
+}, {
+"base": "GemBaseState",
+"class": "GemNotCollectedState",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Gems/States/GemNotCollectedState.gd"
+}, {
+"base": "BaseStatesStore",
+"class": "GemStatesStore",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Gems/States/GemStatesStore.gd"
+}, {
 "base": "",
 "class": "GitAPI",
 "language": "NativeScript",
 "path": "res://addons/godot-git-plugin/git_api.gdns"
+}, {
+"base": "Reference",
+"class": "NodeOcillator",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Utils/NodeOcillator.gd"
 } ]
 _global_script_class_icons={
-"GitAPI": ""
+"BaseState": "",
+"BaseStatesStore": "",
+"GemBaseState": "",
+"GemCollectedState": "",
+"GemCollectingState": "",
+"GemNotCollectedState": "",
+"GemStatesStore": "",
+"GitAPI": "",
+"NodeOcillator": ""
 }
 
 [application]
@@ -26,8 +74,8 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Global="*res://Assets/Scripts/Global.gd"
-Event="*res://Assets/Scripts/Event.gd"
+Global="*res://Assets/Scripts/Autoload/Global.gd"
+Event="*res://Assets/Scripts/Autoload/Event.gd"
 Checkpoints="*res://Assets/Scripts/Autoload/Checkpoints.gd"
 
 [display]

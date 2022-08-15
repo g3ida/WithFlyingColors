@@ -1,3 +1,5 @@
+class_name NodeOcillator
+
 var timer = 0
 var inital_position: Vector2
 var node: Node2D

@@ -1,0 +1,5 @@
+enum {
+	NOT_COLLECTED,
+	COLLECTING,
+	COLLECTED
+}

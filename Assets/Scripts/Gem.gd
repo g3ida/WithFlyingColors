@@ -3,14 +3,9 @@ extends Area2D
 export var group_name: String
 export var sprite_frames: SpriteFrames
 
-const AMPLITUDE: float = 4.0
-const ANIMATION_DURATION: float = 4.0
-const SHINE_VARIANCE = 0.08
-const ROTATION_SPEED = 0.002
-
-const NodeOcillator = preload("res://Assets/Scripts/Utils/NodeOcillator.gd")
-
-var ocillator: NodeOcillator
+var states_store
+var current_state: GemBaseState
+var should_reset_state: bool = true
 
 func set_light_color():
 	if group_name == 'blue':
@@ -26,22 +21,56 @@ func set_light_color():
 		
 func _ready():
 	self.add_to_group(group_name)
-	ocillator = NodeOcillator.new(self, AMPLITUDE, ANIMATION_DURATION)
 	set_light_color()
 	$AnimatedSprite.frames = sprite_frames
+	
+	states_store = GemStatesStore.new(
+		self,
+		$Light2D,
+		$AnimatedSprite,
+		$AnimatedSprite/AnimationPlayer,
+		$CollisionShape2D)
+		
+	current_state = states_store.not_collected
+	current_state.enter()
+
+func switch_state(new_state):
+	if (new_state != null):
+		current_state.exit()
+		current_state = new_state
+		current_state.enter()
 
 func _physics_process(delta):
-	$Light2D.position = $AnimatedSprite.position
-	ocillator.update(delta)
-	$Light2D.energy = 1 + SHINE_VARIANCE * sin(2 * PI * ocillator.timer / ANIMATION_DURATION)
-	$Light2D.rotate(ROTATION_SPEED)
+	var state = current_state.physics_update(delta)
+	switch_state(state)
 
-func _on_Gem_body_entered(body):
-	#check for maybe ?
-	$AnimatedSprite/AnimationPlayer.play("gem_collected_animation")
-	$CollisionShape2D.queue_free()
-
+func _on_Gem_area_entered(area: Area2D):
+		var state = current_state.on_collision_with_body(area)
+		switch_state(state)
+		
 func _on_AnimationPlayer_animation_finished(anim_name):
-	if anim_name == "gem_collected_animation":
-		Event.emit_signal("gem_collected", group_name, $AnimatedSprite.get_global_transform_with_canvas().origin, $AnimatedSprite.frames)
-		self.queue_free()
+	var state = current_state.on_animation_finished(anim_name)
+	switch_state(state)
+
+func connect_signals():
+	Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
+	Event.connect("checkpoint_loaded", self, "reset")
+		
+func disconnect_signals():
+	Event.disconnect("checkpoint_reached", self, "_on_checkpoint_hit")
+	Event.disconnect("checkpoint_loaded", self, "reset")
+				
+func _enter_tree():
+	connect_signals()
+	
+func _exit_tree():
+	disconnect_signals()
+
+func _on_checkpoint_hit(_checkpoint):
+	if (current_state == states_store.collected) or (current_state == states_store.collecting):
+		should_reset_state = false
+
+
+func reset():
+	if should_reset_state:
+		switch_state(states_store.not_collected)

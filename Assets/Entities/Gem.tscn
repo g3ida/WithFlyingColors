@@ -54,7 +54,7 @@ shape = SubResource( 1 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 z_index = 100
 frames = ExtResource( 1 )
-frame = 3
+frame = 8
 playing = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="AnimatedSprite"]
@@ -70,5 +70,5 @@ range_layer_max = 10
 shadow_enabled = true
 shadow_item_cull_mask = 31
 
-[connection signal="body_entered" from="." to="." method="_on_Gem_body_entered"]
+[connection signal="area_entered" from="." to="." method="_on_Gem_area_entered"]
 [connection signal="animation_finished" from="AnimatedSprite/AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

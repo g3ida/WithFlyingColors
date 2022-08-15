@@ -21,8 +21,8 @@ func disconnect_signals():
 	if not Engine.editor_hint:
 		Event.disconnect("gem_collected", self, "_on_gem_collected")
 	
-func _on_gem_collected(color, position, frames):
-	if self.color == color:
+func _on_gem_collected(col, position, frames):
+	if self.color == col:
 		$TextureRect.texture = texture_collected
 		self.animation = AnimatedSprite.new()
 		animation.set_sprite_frames(frames)

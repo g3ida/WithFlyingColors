@@ -1,6 +1,6 @@
 extends KinematicBody2D
 
-const PlayerRotationAction = preload("res://Assets/Scripts/PlayerRotationAction.gd")
+const PlayerRotationAction = preload("res://Assets/Scripts/Player/PlayerRotationAction.gd")
 const TransoformAnimation = preload("res://Assets/Scripts/Utils/TransformAnimation.gd")
 const ElasticIn = preload("res://Assets/Scripts/Utils/Interpolation/ElasticIn.gd")
 const ElasticOut = preload("res://Assets/Scripts/Utils/Interpolation/ElasticOut.gd")
@@ -78,12 +78,14 @@ func reset():
 
 func connect_signals():
 	Event.connect("player_diying", self, "_on_player_diying")
-	Event.connect("checkpoint", self, "_on_checkpoint_hit")
+	Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
+	Event.connect("checkpoint_loaded", self, "reset")
 	
 func disconnect_signals():
 	Event.disconnect("player_diying", self, "_on_player_diying")
-	Event.disconnect("checkpoint", self, "_on_checkpoint_hit")
-		
+	Event.disconnect("checkpoint_reached", self, "_on_checkpoint_hit")
+	Event.disconnect("checkpoint_loaded", self, "reset")
+			
 func _enter_tree():
 	Global.player = self
 	connect_signals()
