@@ -1,7 +1,7 @@
 class_name GemStatesStore
 extends BaseStatesStore
 
-const StatesEnum = preload("res://Assets/Scripts/Gems/States/StatesEnum.gd")
+const StatesEnum = preload("res://Assets/Scripts/Gems/States/GemStatesEnum.gd")
 
 var not_collected: GemBaseState
 var collecting: GemBaseState

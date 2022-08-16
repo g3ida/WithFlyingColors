@@ -1,14 +1,10 @@
+class_name Player
 extends KinematicBody2D
 
 const PlayerRotationAction = preload("res://Assets/Scripts/Player/PlayerRotationAction.gd")
 const TransoformAnimation = preload("res://Assets/Scripts/Utils/TransformAnimation.gd")
 const ElasticIn = preload("res://Assets/Scripts/Utils/Interpolation/ElasticIn.gd")
 const ElasticOut = preload("res://Assets/Scripts/Utils/Interpolation/ElasticOut.gd")
-
-const SPEED = 250
-const GRAVITY = 980
-const JUMP_FORCE = 1000
-const FALL_FACTOR = 2
 
 const SQUEEZE_ANIM_DURATION = 0.17
 const SCALE_ANIM_DURATION = 0.17
@@ -26,6 +22,10 @@ var was_on_floor: bool = true
 var reset_position: Vector2
 var reset_angle: float = 0
 
+var states_store: PlayerStatesStore
+var player_state
+var player_rotation_state
+
 func _ready():
 	playerRotationAction = PlayerRotationAction.new(self)
 	sprite_size = $AnimatedSprite.frames.get_frame("idle", 0).get_width()
@@ -42,39 +42,32 @@ func _ready():
 	current_animation = idle_animation
 	was_on_floor = is_on_floor()
 	self.reset_position = self.global_position
+	
+	states_store = PlayerStatesStore.new(self)
+	player_state = states_store.standing_state
+	player_state.enter()
+	player_rotation_state = states_store.idle_state
+	player_rotation_state.enter()
 
 func _physics_process(delta):
-	if Input.is_action_pressed("move_right"):
-		velocity.x = SPEED
-	elif Input.is_action_pressed("move_left"):
-		velocity.x = -SPEED
-	
-	velocity.y += GRAVITY * delta * FALL_FACTOR
+	var next_state = player_rotation_state.physics_update(delta)
+	switch_rotation_state(next_state)
 
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y -= JUMP_FORCE
-		
-	if Input.is_action_just_pressed("rotate_left"):
-		playerRotationAction.execute(-1)
-	if Input.is_action_just_pressed("rotate_right"):
-		playerRotationAction.execute(1)	
-		
-	playerRotationAction.step(delta)
-	current_animation.step(self, $AnimatedSprite, delta)
-	
-	velocity = move_and_slide(velocity, Vector2.UP)
-	velocity.x = lerp(velocity.x, 0, 0.25)
-	
-	var on_floor = is_on_floor()
-	if (not was_on_floor) and on_floor:
+	var next_player_state = player_state.physics_update(delta)
+	switch_state(next_player_state)
+
+	if is_just_hit_the_floor():
 		on_land()
-	was_on_floor = on_floor
+	was_on_floor = is_on_floor()
 
 func reset():
 	$AnimatedSprite.play("idle")
 	$AnimatedSprite.playing = false
 	self.global_position = reset_position
+	switch_rotation_state(states_store.get_state(PlayerStatesEnum.IDLE))
+	switch_state((states_store.get_state(PlayerStatesEnum.FALLING)))
 	self.rotate(self.reset_angle - self.rotation)
+	
 
 func connect_signals():
 	Event.connect("player_diying", self, "_on_player_diying")
@@ -87,23 +80,14 @@ func disconnect_signals():
 	Event.disconnect("checkpoint_loaded", self, "reset")
 			
 func _enter_tree():
-	Global.player = self
 	connect_signals()
 
 func _exit_tree():
 	disconnect_signals()
 	
 func _on_player_diying(area, position):
-	$AnimatedSprite.play("die")
-	$AnimatedSprite.connect("animation_finished", self, "_on_player_died", [], CONNECT_ONESHOT)
-
-func _on_player_died():
-	Event.emit_signal("player_died")
-	
-func on_land():
-	current_animation = scale_animation
-	if not current_animation.isRunning():
-		current_animation.start()
+	var next_state = player_state._on_player_diying(area, position)
+	switch_state(next_state)
 
 func _on_checkpoint_hit(checkpoint_object: Node2D):
 	self.reset_position = checkpoint_object.global_position
@@ -116,3 +100,22 @@ func _on_checkpoint_hit(checkpoint_object: Node2D):
 		self.reset_angle = PI / 2
 	elif checkpoint_object.color_group in $TopFace.get_groups():
 		self.reset_angle = PI
+
+func is_just_hit_the_floor():
+	return (not was_on_floor) and is_on_floor()
+
+func on_land():
+	var next_player_state = player_state.on_land()
+	switch_state(next_player_state)
+
+func switch_state(new_state):
+	if (new_state != null):
+		player_state.exit()
+		player_state = new_state
+		player_state.enter()
+
+func switch_rotation_state(new_state):
+	if (new_state != null):
+		player_rotation_state.exit()
+		player_rotation_state = new_state
+		player_rotation_state.enter()

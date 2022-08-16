@@ -1,3 +1,4 @@
+class_name PlayerRotationAction
 const CountdownTimer = preload("res://Assets/Scripts/Utils/CountdownTimer.gd")
 
 const ROTATION_DURATION = 0.12
