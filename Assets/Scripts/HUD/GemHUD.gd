@@ -32,8 +32,8 @@ func _on_gem_collected(col, position, frames):
 		collected_animation = SlideAnimation.new(
 			"gem_slide",
 			animation,
-			Vector2(32, 32),
-			1000)
+			Vector2(24, 24),
+			1)
 		Event.connect("slide_animation_ended", self, "_on_slide_anim_ended", [], CONNECT_ONESHOT)
 
 func _on_slide_anim_ended(anim_name):
