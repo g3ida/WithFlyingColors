@@ -1,10 +1,12 @@
 extends Control
 
-const DURATION = 0.35
+const DURATION = 0.3
 const DISTANCE = 800.0
-const DELAY = 0.3
+const DELAY = 0.25
 
 var animators = []
+var leave_screen_state = false
+var next_screen = ""
 
 func init_label_animator(el, delay: float) -> Animator:
 	var start = el.rect_position.x - DISTANCE
@@ -27,15 +29,23 @@ func _ready():
 	animators.append(init_label_animator($COLORS, 4*DELAY))
 	animators.append(init_box_animator($MenuBox, 3*DELAY))
 
-func _on_quit():
-	for animator in animators:
-		animator.reset()
-		animator.reverse()
-
 func _physics_process(delta):
 	for animator in animators:
 		animator.update(delta)
 
+	if leave_screen_state and animators_done():
+		get_tree().change_scene(next_screen)
+
+func reverse_animators():
+	for animator in animators:
+		animator.reset()
+		animator.reverse()
+
+func animators_done() -> bool:
+	for animator in animators:
+		if animator.is_running():
+			return false
+	return true
 
 func connect_signals():
 	Event.connect("Play_button_pressed", self, "_on_Play_button_pressed")
@@ -55,14 +65,22 @@ func _enter_tree():
 func _exit_tree():
 	disconnect_signals()
 
+
 func _on_Play_button_pressed():
-	get_tree().change_scene("res://Levels/Level1.tscn")
+	transition_to_screen("res://Levels/Level1.tscn")
 
 func _on_Quit_button_pressed():
-	get_tree().quit()
+	if not leave_screen_state:
+		get_tree().quit()
 
 func _on_Settings_button_pressed():
-	get_tree().change_scene("res://Assets/Entities/SettingsMenu/SettingsMenu.tscn")
+	transition_to_screen("res://Assets/Entities/SettingsMenu/SettingsMenu.tscn")
 	
 func _on_Stats_button_pressed():
-	get_tree().change_scene("res://Assets/Entities/StatsMenu/StatsMenu.tscn")
+	transition_to_screen("res://Assets/Entities/StatsMenu/StatsMenu.tscn")
+
+func transition_to_screen(screen: String):
+	if not leave_screen_state:
+		reverse_animators()
+		next_screen = screen
+		leave_screen_state = true
