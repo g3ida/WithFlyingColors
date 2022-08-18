@@ -11,6 +11,13 @@ onready var settings_button = $MenuBox/Sprite/SettingsButton
 onready var stats_button = $MenuBox/Sprite/StatsButton
 onready var quit_button = $MenuBox/Sprite/QuitButton
 
+func _enter_tree():
+	if Global.PreviousMenu == Global.STATS_MENU:
+		$MenuBox.rotate(-PI)
+		active_index = 2
+	elif Global.PreviousMenu == Global.SETTINGS_MENU:
+		$MenuBox.rotate(-PI / 2)
+		active_index = 1
 
 func _ready():
 	box_rotation = PlayerRotationAction.new($MenuBox)
