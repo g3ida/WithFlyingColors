@@ -118,5 +118,9 @@ custom_styles/focus = SubResource( 7 )
 icon = ExtResource( 3 )
 flat = true
 
+[connection signal="pressed" from="MenuBox/Sprite/PlayButton" to="." method="_on_PlayButton_pressed"]
+[connection signal="pressed" from="MenuBox/Sprite/QuitButton" to="." method="_on_QuitButton_pressed"]
+[connection signal="pressed" from="MenuBox/Sprite/SettingsButton" to="." method="_on_SettingsButton_pressed"]
+[connection signal="pressed" from="MenuBox/Sprite/StatsButton" to="." method="_on_StatsButton_pressed"]
 [connection signal="pressed" from="RightButton" to="." method="_on_RightButton_pressed"]
 [connection signal="pressed" from="LeftButton" to="." method="_on_LeftButton_pressed"]

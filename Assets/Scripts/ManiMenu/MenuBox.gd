@@ -43,3 +43,19 @@ func _on_LeftButton_pressed():
 	active_index = (active_index + 1) % buttons.size()
 	buttons[active_index].disabled = false
 	box_rotation.execute(-1)
+
+
+func _on_PlayButton_pressed():
+	Event.emit_signal("Play_button_pressed")
+
+
+func _on_QuitButton_pressed():
+	Event.emit_signal("Quit_button_pressed")
+
+
+func _on_SettingsButton_pressed():
+	Event.emit_signal("Settings_button_pressed")
+
+
+func _on_StatsButton_pressed():
+	Event.emit_signal("Stats_button_pressed")

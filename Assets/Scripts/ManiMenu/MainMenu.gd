@@ -36,3 +36,33 @@ func _physics_process(delta):
 	for animator in animators:
 		animator.update(delta)
 
+
+func connect_signals():
+	Event.connect("Play_button_pressed", self, "_on_Play_button_pressed")
+	Event.connect("Quit_button_pressed", self, "_on_Quit_button_pressed")
+	Event.connect("Settings_button_pressed", self, "_on_Settings_button_pressed")
+	Event.connect("Stats_button_pressed", self, "_on_Stats_button_pressed")
+
+func disconnect_signals():
+	Event.disconnect("Play_button_pressed", self, "_on_Play_button_pressed")
+	Event.disconnect("Quit_button_pressed", self, "_on_Quit_button_pressed")
+	Event.disconnect("Settings_button_pressed", self, "_on_Settings_button_pressed")
+	Event.disconnect("Stats_button_pressed", self, "_on_Stats_button_pressed")
+					
+func _enter_tree():
+	connect_signals()
+		
+func _exit_tree():
+	disconnect_signals()
+
+func _on_Play_button_pressed():
+	get_tree().change_scene("res://Levels/Level1.tscn")
+
+func _on_Quit_button_pressed():
+	get_tree().quit()
+
+func _on_Settings_button_pressed():
+	get_tree().change_scene("res://Assets/Entities/SettingsMenu/SettingsMenu.tscn")
+	
+func _on_Stats_button_pressed():
+	get_tree().change_scene("res://Assets/Entities/StatsMenu/StatsMenu.tscn")
