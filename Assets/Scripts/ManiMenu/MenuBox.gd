@@ -3,15 +3,22 @@ extends Control
 var PlayerRotationAction = preload("res://Assets/Scripts/Player/PlayerRotationAction.gd")
 var box_rotation: PlayerRotationAction
 var buttons = []
+var buttons_mappings = []
 var active_index = 0
+
+onready var play_button = $MenuBox/Sprite/PlayButton
+onready var settings_button = $MenuBox/Sprite/SettingsButton
+onready var stats_button = $MenuBox/Sprite/StatsButton
+onready var quit_button = $MenuBox/Sprite/QuitButton
+
 
 func _ready():
 	box_rotation = PlayerRotationAction.new($MenuBox)
 	buttons = [
-		$MenuBox/Sprite/PlayButton,
-		$MenuBox/Sprite/SettingsButton,
-		$MenuBox/Sprite/StatsButton,
-		$MenuBox/Sprite/QuitButton
+		play_button,
+		settings_button,
+		stats_button,
+		quit_button
 		]
 		
 	for b in buttons:
@@ -28,8 +35,7 @@ func _physics_process(delta):
 	elif Input.is_action_just_pressed("rotate_right") or Input.is_action_just_pressed("ui_right"):
 		_on_RightButton_pressed()
 	elif Input.is_action_just_pressed("ui_accept"):
-		pass #move 2 screen
-
+		click_on_active_button()
 
 func _on_RightButton_pressed():
 	buttons[active_index].disabled = true
@@ -37,25 +43,30 @@ func _on_RightButton_pressed():
 	buttons[active_index].disabled = false
 	box_rotation.execute(1)
 
-
 func _on_LeftButton_pressed():
 	buttons[active_index].disabled = true
 	active_index = (active_index + 1) % buttons.size()
 	buttons[active_index].disabled = false
 	box_rotation.execute(-1)
 
-
 func _on_PlayButton_pressed():
 	Event.emit_signal("Play_button_pressed")
-
 
 func _on_QuitButton_pressed():
 	Event.emit_signal("Quit_button_pressed")
 
-
 func _on_SettingsButton_pressed():
 	Event.emit_signal("Settings_button_pressed")
 
-
 func _on_StatsButton_pressed():
 	Event.emit_signal("Stats_button_pressed")
+
+func click_on_active_button():
+	if buttons[active_index] == play_button:
+		_on_PlayButton_pressed()
+	elif buttons[active_index] == quit_button:
+		_on_QuitButton_pressed()
+	elif buttons[active_index] == settings_button:
+		_on_SettingsButton_pressed()
+	elif buttons[active_index] == stats_button:
+		_on_StatsButton_pressed()
