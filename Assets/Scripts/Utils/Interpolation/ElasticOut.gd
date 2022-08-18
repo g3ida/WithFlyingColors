@@ -1,4 +1,4 @@
-extends "Interpolation.gd"
+extends "ElasticInterpolation.gd"
 
 func _init(value: float, power: float, bounces: int, scale: float).(value, power, bounces, scale):
 	pass

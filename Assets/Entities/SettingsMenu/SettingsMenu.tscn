@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/Entities/MainMenu/TitleLabel.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Sprites/MainMenu/background.png" type="Texture" id=3]
+
+[node name="Settings" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( -1987, -585 )
+
+[node name="Background" type="TextureRect" parent="."]
+margin_left = -270.0
+margin_right = 2370.0
+margin_bottom = 1080.0
+texture = ExtResource( 3 )
+
+[node name="GAME" parent="." instance=ExtResource( 1 )]
+text = "WITH"
+content = "GAME"
+underline_color = Color( 0.0627451, 0.92549, 1, 1 )
+underline_shadow_color = Color( 0, 0.776471, 0.843137, 1 )
+
+[node name="SETTINGS" parent="." instance=ExtResource( 1 )]
+margin_top = 250.0
+margin_right = 935.0
+margin_bottom = 274.0
+text = "FLYING"
+content = "SETTINGS"
+underline_color = Color( 0.843137, 1, 0.219608, 1 )
+underline_shadow_color = Color( 0.717647, 0.898039, 0, 1 )

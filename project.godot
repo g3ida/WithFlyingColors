@@ -10,6 +10,11 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Reference",
+"class": "Animator",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Utils/Animator.gd"
+}, {
+"base": "Reference",
 "class": "BaseState",
 "language": "GDScript",
 "path": "res://Assets/Scripts/StateMachine/BaseState.gd"
@@ -113,8 +118,14 @@ _global_script_classes=[ {
 "class": "PlayerStatesStore",
 "language": "GDScript",
 "path": "res://Assets/Scripts/Player/States/PlayerStatesStore.gd"
+}, {
+"base": "",
+"class": "PowInterpolation",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Utils/Interpolation/Pow.gd"
 } ]
 _global_script_class_icons={
+"Animator": "",
 "BaseState": "",
 "BaseStatesStore": "",
 "GemBaseState": "",
@@ -135,13 +146,14 @@ _global_script_class_icons={
 "PlayerRotationAction": "",
 "PlayerStandingState": "",
 "PlayerStatesEnum": "",
-"PlayerStatesStore": ""
+"PlayerStatesStore": "",
+"PowInterpolation": ""
 }
 
 [application]
 
 config/name="WithFlyingColors"
-run/main_scene="res://Levels/Level1.tscn"
+run/main_scene="res://Levels/MainMenu.tscn"
 config/icon="res://icon.png"
 
 [autoload]
@@ -152,7 +164,11 @@ Checkpoints="*res://Assets/Scripts/Autoload/Checkpoints.gd"
 
 [display]
 
-window/stretch/aspect=0
+window/size/width=1920
+window/size/height=1080
+window/size/fullscreen=true
+window/stretch/mode="viewport"
+window/stretch/aspect="keep_height"
 
 [gdnative]
 
