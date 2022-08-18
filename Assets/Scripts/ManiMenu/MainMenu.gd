@@ -1,19 +1,4 @@
-extends Control
-
-const DURATION = 0.3
-const DISTANCE = 800.0
-const DELAY = 0.25
-
-var animators = []
-var leave_screen_state = false
-var next_screen = ""
-
-func init_label_animator(el, delay: float) -> Animator:
-	var start = el.rect_position.x - DISTANCE
-	var end = el.rect_position.x
-	var interpolation = PowInterpolation.new(2)
-	var duration = DURATION
-	return Animator.new(start, end, funcref(el, "update_label_position_x"), duration, delay, interpolation)
+extends GameMenu
 
 func init_box_animator(el, delay: float) -> Animator:
 	var start = el.rect_position.y + DISTANCE
@@ -22,30 +7,29 @@ func init_box_animator(el, delay: float) -> Animator:
 	var duration = DURATION
 	return Animator.new(start, end, funcref(el, "update_position_y"), duration, delay, interpolation)
 
+func ready():
+	pass
 
-func _ready():
+func process(_delta):
+	pass
+
+func on_enter():
 	animators.append(init_label_animator($WITH, 2*DELAY))
 	animators.append(init_label_animator($FLYING, 3*DELAY))
 	animators.append(init_label_animator($COLORS, 4*DELAY))
 	animators.append(init_box_animator($MenuBox, 3*DELAY))
 
-func _physics_process(delta):
 	for animator in animators:
-		animator.update(delta)
+		animator.update(0)
 
-	if leave_screen_state and animators_done():
-		get_tree().change_scene(next_screen)
+func on_exit():
+	reverse_animators()
 
-func reverse_animators():
-	for animator in animators:
-		animator.reset()
-		animator.reverse()
-
-func animators_done() -> bool:
-	for animator in animators:
-		if animator.is_running():
-			return false
-	return true
+func is_exit_ceremony_done() -> bool:
+	return animators_done()
+	
+func is_enter_ceremony_done() -> bool:
+	return animators_done()
 
 func connect_signals():
 	Event.connect("Play_button_pressed", self, "_on_Play_button_pressed")
@@ -59,28 +43,21 @@ func disconnect_signals():
 	Event.disconnect("Settings_button_pressed", self, "_on_Settings_button_pressed")
 	Event.disconnect("Stats_button_pressed", self, "_on_Stats_button_pressed")
 					
-func _enter_tree():
+func enter_tree():
 	connect_signals()
 		
-func _exit_tree():
+func exit_tree():
 	disconnect_signals()
 
-
 func _on_Play_button_pressed():
-	transition_to_screen("res://Levels/Level1.tscn")
+	navigate_to_screen("res://Levels/Level1.tscn")
 
 func _on_Quit_button_pressed():
-	if not leave_screen_state:
+	if (screen_state == RUNNING):
 		get_tree().quit()
 
 func _on_Settings_button_pressed():
-	transition_to_screen("res://Assets/Entities/SettingsMenu/SettingsMenu.tscn")
+	navigate_to_screen("res://Assets/Screens/SettingsMenu.tscn")
 	
 func _on_Stats_button_pressed():
-	transition_to_screen("res://Assets/Entities/StatsMenu/StatsMenu.tscn")
-
-func transition_to_screen(screen: String):
-	if not leave_screen_state:
-		reverse_animators()
-		next_screen = screen
-		leave_screen_state = true
+	navigate_to_screen("res://Assets/Screens/StatsMenu.tscn")
