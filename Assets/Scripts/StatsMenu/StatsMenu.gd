@@ -6,8 +6,8 @@ func process(_delta):
 
 func on_enter():
 	Event.connect("Go_to_main_menu_pressed", self, "_on_go_to_main_menu_pressed")
-	animators.append(init_label_animator($GAME, 2*DELAY))
-	animators.append(init_label_animator($STATS, 3*DELAY))
+	animators.append(init_label_animator($GAME, DELAY))
+	animators.append(init_label_animator($STATS, 2*DELAY))
 	for animator in animators:
 		animator.update(0)
 

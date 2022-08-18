@@ -14,10 +14,10 @@ func process(_delta):
 	pass
 
 func on_enter():
-	animators.append(init_label_animator($WITH, 2*DELAY))
-	animators.append(init_label_animator($FLYING, 3*DELAY))
-	animators.append(init_label_animator($COLORS, 4*DELAY))
-	animators.append(init_box_animator($MenuBox, 3*DELAY))
+	animators.append(init_label_animator($WITH, DELAY))
+	animators.append(init_label_animator($FLYING, 2*DELAY))
+	animators.append(init_label_animator($COLORS, 3*DELAY))
+	animators.append(init_box_animator($MenuBox, 2*DELAY))
 
 	for animator in animators:
 		animator.update(0)
