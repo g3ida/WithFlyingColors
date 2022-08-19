@@ -1,10 +1,11 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://Assets/Sprites/MainMenu/menu_cube.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Fonts/MenuBoxFont.tres" type="DynamicFont" id=2]
 [ext_resource path="res://Assets/Sprites/MainMenu/arrow_left.png" type="Texture" id=3]
 [ext_resource path="res://Assets/Sprites/MainMenu/arrow_right.png" type="Texture" id=4]
 [ext_resource path="res://Assets/Scripts/ManiMenu/MenuBox.gd" type="Script" id=5]
+[ext_resource path="res://Assets/Entities/MainMenu/MenuButtonPressedStyle.tres" type="StyleBox" id=6]
 
 [sub_resource type="StyleBoxEmpty" id=3]
 
@@ -105,6 +106,7 @@ margin_left = 516.0
 margin_top = -221.0
 margin_right = 662.0
 margin_bottom = -3.0
+custom_styles/pressed = ExtResource( 6 )
 custom_styles/focus = SubResource( 2 )
 icon = ExtResource( 4 )
 flat = true
@@ -114,6 +116,7 @@ margin_left = -670.0
 margin_top = -221.0
 margin_right = -524.0
 margin_bottom = -3.0
+custom_styles/pressed = ExtResource( 6 )
 custom_styles/focus = SubResource( 7 )
 icon = ExtResource( 3 )
 flat = true

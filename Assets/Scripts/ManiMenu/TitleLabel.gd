@@ -5,7 +5,7 @@ export var content = ""
 export var underline_color: Color
 export var underline_shadow_color: Color
 
-func update_label_position_x(value):
+func update_position_x(value):
 	self.rect_position.x = value
 
 func _ready():

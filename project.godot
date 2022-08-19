@@ -166,7 +166,6 @@ config/icon="res://icon.png"
 
 Global="*res://Assets/Scripts/Autoload/Global.gd"
 Event="*res://Assets/Scripts/Autoload/Event.gd"
-Checkpoints="*res://Assets/Scripts/Autoload/Checkpoints.gd"
 
 [display]
 

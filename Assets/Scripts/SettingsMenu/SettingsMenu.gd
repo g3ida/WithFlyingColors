@@ -6,8 +6,9 @@ func process(_delta):
 
 func on_enter():
 	Event.connect("Go_to_main_menu_pressed", self, "_on_go_to_main_menu_pressed")
-	animators.append(init_label_animator($GAME, DELAY))
-	animators.append(init_label_animator($SETTINGS, 2*DELAY))
+	animators.append(init_control_element_animator($GAME, DELAY))
+	animators.append(init_control_element_animator($SETTINGS, 2*DELAY))
+	animators.append(init_control_element_animator($BackButton, DELAY))
 	for animator in animators:
 		animator.update(0)
 
@@ -23,3 +24,6 @@ func is_enter_ceremony_done() -> bool:
 
 func _on_go_to_main_menu_pressed():
 	navigate_to_screen("res://Assets/Screens/MainMenu.tscn")
+
+func _on_BackButton_pressed():
+	_on_go_to_main_menu_pressed()
