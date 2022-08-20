@@ -2,8 +2,7 @@ extends GameMenu
 
 func process(_delta):
 	if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("ui_home"):
-		if screen_state == RUNNING:
-			Event.emit_signal("Go_to_main_menu_pressed")	
+		_on_BackButton_pressed()
 
 func on_enter():
 	Event.connect("Go_to_main_menu_pressed", self, "_on_go_to_main_menu_pressed")
@@ -26,6 +25,12 @@ func is_enter_ceremony_done() -> bool:
 func _on_go_to_main_menu_pressed():
 	navigate_to_screen("res://Assets/Screens/MainMenu.tscn")
 
+func is_valid_state() -> bool:
+	return Settings.are_action_keys_valid()
+
 func _on_BackButton_pressed():
 	if screen_state == RUNNING:
-		Event.emit_signal("Go_to_main_menu_pressed")	
+		if is_valid_state():
+			Event.emit_signal("Go_to_main_menu_pressed")
+		else:
+			pass #fixme: add popup or something

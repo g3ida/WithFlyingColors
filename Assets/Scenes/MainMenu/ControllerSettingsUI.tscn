@@ -85,6 +85,11 @@ margin_right = 264.0
 margin_bottom = 189.0
 key = "rotate_right"
 
+[connection signal="on_action_bound_signal" from="." to="GridContainer/JumpKey" method="_on_Control_on_action_bound_signal"]
+[connection signal="on_action_bound_signal" from="." to="GridContainer/LeftKey" method="_on_Control_on_action_bound_signal"]
+[connection signal="on_action_bound_signal" from="." to="GridContainer/RightKey" method="_on_Control_on_action_bound_signal"]
+[connection signal="on_action_bound_signal" from="." to="GridContainer/RotLeftKey" method="_on_Control_on_action_bound_signal"]
+[connection signal="on_action_bound_signal" from="." to="GridContainer/RotRightKey" method="_on_Control_on_action_bound_signal"]
 [connection signal="keyboard_action_bound" from="GridContainer/JumpKey" to="." method="_on_keyboard_input_action_bound"]
 [connection signal="keyboard_action_bound" from="GridContainer/LeftKey" to="." method="_on_keyboard_input_action_bound"]
 [connection signal="keyboard_action_bound" from="GridContainer/RightKey" to="." method="_on_keyboard_input_action_bound"]
