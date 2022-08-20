@@ -24,10 +24,10 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/StateMachine/BaseStatesStore.gd"
 }, {
-"base": "Control",
+"base": "Reference",
 "class": "GameMenu",
 "language": "GDScript",
-"path": "res://Assets/Scripts/GameMenu.gd"
+"path": "res://Assets/Scripts/Menus/GameMenu.gd"
 }, {
 "base": "BaseState",
 "class": "GemBaseState",

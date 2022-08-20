@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Assets/Scripts/SettingsMenu/SettingsMenu.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/SettingsMenu.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Sprites/MainMenu/background.png" type="Texture" id=3]
 [ext_resource path="res://Assets/Sprites/MainMenu/back.png" type="Texture" id=4]
 [ext_resource path="res://Assets/Scripts/ManiMenu/BackButton.gd" type="Script" id=5]

@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Assets/Scenes/UI/UISelect.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Assets/Scripts/SettingsMenu/ResolutionSelectDriver.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/ResolutionSelectDriver.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Styles/Themes/MenuTheme.tres" type="Theme" id=3]
-[ext_resource path="res://Assets/Scripts/SettingsMenu/GameSettingsUI.gd" type="Script" id=4]
+[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/GameSettingsUI.gd" type="Script" id=4]
 
 [node name="Control" type="Control"]
 margin_right = 40.0
