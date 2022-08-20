@@ -27,5 +27,6 @@ func _on_menu_change_to_main():
   _on_menu_change(MAIN_MENU)
 
 func _on_menu_change(next_menu):
-  PreviousMenu = currentMenu
-  currentMenu = next_menu
+  if (currentMenu != next_menu):
+    PreviousMenu = currentMenu
+    currentMenu = next_menu
