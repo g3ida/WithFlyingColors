@@ -9,7 +9,7 @@
 [ext_resource path="res://Assets/Sprites/HUD/purple_gem_hud.png" type="Texture" id=7]
 [ext_resource path="res://Assets/Sprites/HUD/yellow_gem_hud_collected.png" type="Texture" id=8]
 [ext_resource path="res://Assets/Sprites/HUD/yellow_gem_hud.png" type="Texture" id=9]
-[ext_resource path="res://Assets/Scenes/HUD/StyleBorderHUD.tres" type="StyleBox" id=10]
+[ext_resource path="res://Assets/StyleBorderHUD.tres" type="StyleBox" id=10]
 
 [node name="GemContainerHUD" type="Panel"]
 light_mask = 0
