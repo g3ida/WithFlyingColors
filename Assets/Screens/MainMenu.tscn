@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Assets/Sprites/MainMenu/background.png" type="Texture" id=1]
-[ext_resource path="res://Assets/Entities/MainMenu/MenuBox.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Assets/Entities/MainMenu/TitleLabel.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Assets/Scenes/MainMenu/MenuBox.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/Scripts/ManiMenu/MainMenu.gd" type="Script" id=4]
 
 [node name="MainMenu" type="Control"]

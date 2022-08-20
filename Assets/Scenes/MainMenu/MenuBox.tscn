@@ -5,7 +5,7 @@
 [ext_resource path="res://Assets/Sprites/MainMenu/arrow_left.png" type="Texture" id=3]
 [ext_resource path="res://Assets/Sprites/MainMenu/arrow_right.png" type="Texture" id=4]
 [ext_resource path="res://Assets/Scripts/ManiMenu/MenuBox.gd" type="Script" id=5]
-[ext_resource path="res://Assets/Entities/MainMenu/MenuButtonPressedStyle.tres" type="StyleBox" id=6]
+[ext_resource path="res://Assets/Scenes/MainMenu/MenuButtonPressedStyle.tres" type="StyleBox" id=6]
 
 [sub_resource type="StyleBoxEmpty" id=3]
 

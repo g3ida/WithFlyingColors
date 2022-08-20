@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://Assets/Entities/HUD/GemHUD.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Scenes/HUD/GemHUD.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/Sprites/HUD/pink_gem_hud.png" type="Texture" id=2]
 [ext_resource path="res://Assets/Sprites/HUD/blue_gem_hud.png" type="Texture" id=3]
 [ext_resource path="res://Assets/Sprites/HUD/blue_gem_hud_collected.png" type="Texture" id=4]
@@ -9,7 +9,7 @@
 [ext_resource path="res://Assets/Sprites/HUD/purple_gem_hud.png" type="Texture" id=7]
 [ext_resource path="res://Assets/Sprites/HUD/yellow_gem_hud_collected.png" type="Texture" id=8]
 [ext_resource path="res://Assets/Sprites/HUD/yellow_gem_hud.png" type="Texture" id=9]
-[ext_resource path="res://Assets/Entities/HUD/StyleBorderHUD.tres" type="StyleBox" id=10]
+[ext_resource path="res://Assets/Scenes/HUD/StyleBorderHUD.tres" type="StyleBox" id=10]
 
 [node name="GemContainerHUD" type="Panel"]
 light_mask = 0
