@@ -4,6 +4,11 @@ onready var vsync: bool = OS.vsync_enabled setget setVsync, getVsync
 onready var fullscreen: bool = OS.window_fullscreen setget setFullscreen, getFullscreen
 onready var window_size: Vector2 = OS.window_size setget setWindowSize, getWindowSize
 
+const config_file_path = "settings.ini"
+
+func _ready():
+  load_game_settings()
+
 func setVsync(value: bool):
   vsync = value
   OS.vsync_enabled = vsync
@@ -57,7 +62,7 @@ func get_game_actions() -> Array:
   var actions = InputMap.get_actions()
   var game_actions = []
   for action in actions:
-    if not action.match("ui_.*"):
+    if action.find("ui_") == -1:
       game_actions.append(action)
   return game_actions
 
@@ -68,3 +73,44 @@ func are_action_keys_valid() -> bool:
     if get_first_key_keyboard_event_from_action_list(action_list) == null:
       return false
   return true
+
+func save_game_settings():
+  #save game actions:
+  var config_file = ConfigFile.new()
+
+  var game_actions = get_game_actions()
+  for key in game_actions:
+    var action_list = InputMap.get_action_list(key)
+    var key_value = get_first_key_keyboard_event_from_action_list(action_list)
+    if key_value != null:
+      config_file.set_value("keyboard", key, key_value.scancode)
+    else:
+      config_file.set_value("keyboard", key, "")
+
+  config_file.set_value("display", "fullscreen", fullscreen)
+  config_file.set_value("display", "vsync", vsync)
+  config_file.set_value("display", "resolution", String(window_size.x) + "x" + String(window_size.y))
+  config_file.save(config_file_path)
+
+func load_game_settings():
+  var config_file = ConfigFile.new()
+  if config_file.load(config_file_path) == OK:
+    for key in config_file.get_section_keys("keyboard"):
+      var key_value = config_file.get_value("keyboard", key)
+      if str(key_value) != "":
+        bind_action_to_keyboard_key(key, key_value)
+
+    for key in config_file.get_section_keys("display"):
+      var key_value = config_file.get_value("display", key)
+      if key == "fullscreen":
+        var parsed_boolean = bool(key_value)
+        if parsed_boolean != null: 
+          self.fullscreen = parsed_boolean
+      elif key == "vsync":
+        var parsed_boolean = bool(key_value)
+        if parsed_boolean != null: 
+          self.vsync = vsync
+      elif key == "resolution":
+        var values = key_value.split("x")
+        if values.size() == 2:
+          self.window_size = Vector2(float(values[0]), float(values[1]))

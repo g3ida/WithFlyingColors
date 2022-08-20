@@ -23,6 +23,7 @@ func is_enter_ceremony_done() -> bool:
   return animators_done()
 
 func _on_go_to_main_menu_pressed():
+  Settings.save_game_settings()
   navigate_to_screen("res://Assets/Screens/MainMenu.tscn")
 
 func is_valid_state() -> bool:
