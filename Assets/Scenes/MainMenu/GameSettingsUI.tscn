@@ -24,11 +24,10 @@ custom_constants/hseparation = 50
 columns = 2
 
 [node name="ResolutionLabel" type="Label" parent="GridContainer"]
-margin_right = 294.0
+margin_right = 484.0
 margin_bottom = 60.0
 size_flags_horizontal = 3
-text = "Resolution"
-align = 2
+text = "SCREEN Resolution"
 
 [node name="AutoResolutionLabel" type="Label" parent="GridContainer"]
 visible = false
@@ -38,36 +37,34 @@ margin_bottom = 60.0
 text = "auto"
 
 [node name="ResolutionUISelect" parent="GridContainer" instance=ExtResource( 1 )]
-margin_left = 344.0
-margin_right = 392.0
+margin_left = 534.0
+margin_right = 582.0
 margin_bottom = 60.0
 SelectDriverScript = ExtResource( 2 )
 
 [node name="FullscreenLabel" type="Label" parent="GridContainer"]
 margin_top = 75.0
-margin_right = 294.0
+margin_right = 484.0
 margin_bottom = 135.0
 text = "Fullscreen"
-align = 2
 
 [node name="FullscreenCheckbox" type="CheckBox" parent="GridContainer"]
-margin_left = 344.0
+margin_left = 534.0
 margin_top = 75.0
-margin_right = 392.0
+margin_right = 582.0
 margin_bottom = 135.0
 custom_constants/check_vadjust = -6
 
 [node name="VsyncLabel" type="Label" parent="GridContainer"]
 margin_top = 150.0
-margin_right = 294.0
+margin_right = 484.0
 margin_bottom = 210.0
 text = "VSYNC"
-align = 2
 
 [node name="VsyncCheckbox" type="CheckBox" parent="GridContainer"]
-margin_left = 344.0
+margin_left = 534.0
 margin_top = 150.0
-margin_right = 392.0
+margin_right = 582.0
 margin_bottom = 210.0
 custom_constants/check_vadjust = -6
 

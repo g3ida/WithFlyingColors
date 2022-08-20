@@ -1,0 +1,92 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/KeyBindingController.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Scenes/UI/bindableButton.tscn" type="PackedScene" id=2]
+
+[node name="Control" type="Control"]
+margin_top = 180.0
+margin_right = 117.0
+margin_bottom = 180.0
+script = ExtResource( 1 )
+
+[node name="GridContainer" type="GridContainer" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+custom_constants/vseparation = 15
+custom_constants/hseparation = 50
+columns = 2
+
+[node name="ControllerTypeLabel" type="Label" parent="GridContainer"]
+margin_right = 117.0
+margin_bottom = 14.0
+text = "CONTROLLER TYPE"
+
+[node name="ControllerType" type="Label" parent="GridContainer"]
+margin_left = 167.0
+margin_right = 264.0
+margin_bottom = 14.0
+text = "KEYBOARD"
+
+[node name="JumpLabel" type="Label" parent="GridContainer"]
+margin_top = 32.0
+margin_right = 117.0
+margin_bottom = 46.0
+text = "JUMP"
+
+[node name="JumpKey" parent="GridContainer" instance=ExtResource( 2 )]
+margin_right = 264.0
+key = "jump"
+
+[node name="LeftLabel" type="Label" parent="GridContainer"]
+margin_top = 67.0
+margin_right = 117.0
+margin_bottom = 81.0
+text = "MOVE LEFT"
+
+[node name="LeftKey" parent="GridContainer" instance=ExtResource( 2 )]
+margin_top = 64.0
+margin_right = 264.0
+margin_bottom = 84.0
+key = "move_left"
+
+[node name="RightLabel" type="Label" parent="GridContainer"]
+margin_top = 102.0
+margin_right = 117.0
+margin_bottom = 116.0
+text = "MOVE RIGHT"
+
+[node name="RightKey" parent="GridContainer" instance=ExtResource( 2 )]
+margin_top = 99.0
+margin_right = 264.0
+margin_bottom = 119.0
+key = "move_right"
+
+[node name="RotLeftLabel" type="Label" parent="GridContainer"]
+margin_top = 137.0
+margin_right = 117.0
+margin_bottom = 151.0
+text = "ROTATE LEFT"
+
+[node name="RotLeftKey" parent="GridContainer" instance=ExtResource( 2 )]
+margin_top = 134.0
+margin_right = 264.0
+margin_bottom = 154.0
+key = "rotate_left"
+
+[node name="RotRightLabel" type="Label" parent="GridContainer"]
+margin_top = 172.0
+margin_right = 117.0
+margin_bottom = 186.0
+text = "ROTATE RIGHT"
+
+[node name="RotRightKey" parent="GridContainer" instance=ExtResource( 2 )]
+margin_top = 169.0
+margin_right = 264.0
+margin_bottom = 189.0
+key = "rotate_right"
+
+[connection signal="keyboard_action_bound" from="GridContainer/JumpKey" to="." method="_on_keyboard_input_action_bound"]
+[connection signal="keyboard_action_bound" from="GridContainer/LeftKey" to="." method="_on_keyboard_input_action_bound"]
+[connection signal="keyboard_action_bound" from="GridContainer/RightKey" to="." method="_on_keyboard_input_action_bound"]
+[connection signal="keyboard_action_bound" from="GridContainer/RotLeftKey" to="." method="_on_keyboard_input_action_bound"]
+[connection signal="keyboard_action_bound" from="GridContainer/RotRightKey" to="." method="_on_keyboard_input_action_bound"]

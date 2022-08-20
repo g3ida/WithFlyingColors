@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/KeyBindingButton.gd" type="Script" id=1]
+
+[node name="Key" type="Button"]
+pause_mode = 2
+margin_left = 167.0
+margin_top = 29.0
+margin_right = 236.0
+margin_bottom = 49.0
+text = "UNASSIGNED"
+align = 0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[connection signal="pressed" from="." to="." method="_on_key_pressed"]
