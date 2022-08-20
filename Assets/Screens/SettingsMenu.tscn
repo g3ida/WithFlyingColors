@@ -69,8 +69,10 @@ margin_right = -20.0
 margin_bottom = -10.0
 
 [node name="SettingsUI" parent="TabContainer/Display" instance=ExtResource( 7 )]
-margin_right = 0.0
-margin_bottom = 0.0
+margin_left = 85.0
+margin_top = 62.0
+margin_right = 85.0
+margin_bottom = 62.0
 
 [node name="Controller" type="Tabs" parent="TabContainer"]
 visible = false
