@@ -1,14 +1,13 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Assets/Entities/UI/UISelect.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Scripts/SettingsMenu/ResolutionSelectDriver.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Entities/MainMenu/MenuTheme.tres" type="Theme" id=3]
 [ext_resource path="res://Assets/Scripts/SettingsMenu/GameSettingsUI.gd" type="Script" id=4]
 
 [node name="Control" type="Control"]
-margin_left = 1093.0
-margin_top = 52.0
-margin_right = 1133.0
-margin_bottom = 92.0
+margin_right = 40.0
+margin_bottom = 40.0
 theme = ExtResource( 3 )
 script = ExtResource( 4 )
 __meta__ = {
@@ -16,8 +15,8 @@ __meta__ = {
 }
 
 [node name="GridContainer" type="GridContainer" parent="."]
-margin_right = 600.0
-margin_bottom = 600.0
+margin_right = 392.0
+margin_bottom = 210.0
 custom_constants/vseparation = 15
 custom_constants/hseparation = 50
 columns = 2
@@ -29,10 +28,18 @@ size_flags_horizontal = 3
 text = "Resolution"
 align = 2
 
-[node name="UISelect" parent="GridContainer" instance=ExtResource( 1 )]
-margin_left = 344.0
-margin_right = 628.0
+[node name="AutoResolutionLabel" type="Label" parent="GridContainer"]
+visible = false
+margin_left = 327.0
+margin_right = 621.0
 margin_bottom = 60.0
+text = "auto"
+
+[node name="ResolutionUISelect" parent="GridContainer" instance=ExtResource( 1 )]
+margin_left = 344.0
+margin_right = 392.0
+margin_bottom = 60.0
+SelectDriverScript = ExtResource( 2 )
 
 [node name="FullscreenLabel" type="Label" parent="GridContainer"]
 margin_top = 75.0
@@ -44,7 +51,7 @@ align = 2
 [node name="FullscreenCheckbox" type="CheckBox" parent="GridContainer"]
 margin_left = 344.0
 margin_top = 75.0
-margin_right = 628.0
+margin_right = 392.0
 margin_bottom = 135.0
 custom_constants/check_vadjust = -6
 
@@ -58,9 +65,10 @@ align = 2
 [node name="VsyncCheckbox" type="CheckBox" parent="GridContainer"]
 margin_left = 344.0
 margin_top = 150.0
-margin_right = 628.0
+margin_right = 392.0
 margin_bottom = 210.0
 custom_constants/check_vadjust = -6
 
+[connection signal="Value_changed" from="GridContainer/ResolutionUISelect" to="." method="_on_UISelect_Value_changed"]
 [connection signal="toggled" from="GridContainer/FullscreenCheckbox" to="." method="_on_FullscreenCheckbox_toggled"]
 [connection signal="toggled" from="GridContainer/VsyncCheckbox" to="." method="_on_VsyncCheckbox_toggled"]
