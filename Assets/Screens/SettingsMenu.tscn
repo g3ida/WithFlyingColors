@@ -70,10 +70,10 @@ margin_right = -20.0
 margin_bottom = -10.0
 
 [node name="SettingsUI" parent="TabContainer/Display" instance=ExtResource( 7 )]
-margin_left = 85.0
-margin_top = 62.0
-margin_right = 85.0
-margin_bottom = 62.0
+margin_left = 20.0
+margin_top = 50.0
+margin_right = 20.0
+margin_bottom = 50.0
 
 [node name="Controller" type="Tabs" parent="TabContainer"]
 visible = false
@@ -85,9 +85,9 @@ margin_right = -20.0
 margin_bottom = -10.0
 
 [node name="ControllerSettings" parent="TabContainer/Controller" instance=ExtResource( 9 )]
-margin_left = 85.0
-margin_top = 62.0
-margin_right = 799.0
-margin_bottom = 497.0
+margin_left = 20.0
+margin_top = 50.0
+margin_right = 734.0
+margin_bottom = 485.0
 
 [connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/KeyBindingButton.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Styles/bindableButtonHover.tres" type="StyleBox" id=2]
 
 [node name="Key" type="Button"]
 pause_mode = 2
@@ -9,8 +10,10 @@ margin_top = 29.0
 margin_right = 236.0
 margin_bottom = 49.0
 custom_colors/font_color_pressed = Color( 1, 1, 0, 1 )
+custom_styles/hover = ExtResource( 2 )
+custom_styles/pressed = ExtResource( 2 )
 toggle_mode = true
-text = "UNASSIGNED"
+text = "(EMPTY)"
 align = 0
 script = ExtResource( 1 )
 __meta__ = {

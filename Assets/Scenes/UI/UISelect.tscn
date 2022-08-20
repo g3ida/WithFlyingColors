@@ -10,7 +10,7 @@ size_flags_horizontal = 3
 script = ExtResource( 3 )
 
 [node name="UISelect" type="HBoxContainer" parent="."]
-margin_right = 350.0
+margin_right = 300.0
 margin_bottom = 42.0
 size_flags_horizontal = 3
 custom_constants/separation = 10
@@ -23,15 +23,15 @@ icon = ExtResource( 1 )
 [node name="Label" type="Label" parent="UISelect"]
 margin_left = 45.0
 margin_top = 14.0
-margin_right = 305.0
+margin_right = 255.0
 margin_bottom = 28.0
 size_flags_horizontal = 3
 text = "1920x1080"
 align = 1
 
 [node name="Right" type="Button" parent="UISelect"]
-margin_left = 315.0
-margin_right = 350.0
+margin_left = 265.0
+margin_right = 300.0
 margin_bottom = 42.0
 icon = ExtResource( 2 )
 

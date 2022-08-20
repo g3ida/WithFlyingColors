@@ -23,7 +23,7 @@ text = "CONTROLLER TYPE"
 
 [node name="ControllerType" type="Label" parent="GridContainer"]
 margin_left = 167.0
-margin_right = 264.0
+margin_right = 236.0
 margin_bottom = 14.0
 text = "KEYBOARD"
 
@@ -34,7 +34,6 @@ margin_bottom = 46.0
 text = "JUMP"
 
 [node name="JumpKey" parent="GridContainer" instance=ExtResource( 2 )]
-margin_right = 264.0
 key = "jump"
 
 [node name="LeftLabel" type="Label" parent="GridContainer"]
@@ -45,7 +44,6 @@ text = "MOVE LEFT"
 
 [node name="LeftKey" parent="GridContainer" instance=ExtResource( 2 )]
 margin_top = 64.0
-margin_right = 264.0
 margin_bottom = 84.0
 key = "move_left"
 
@@ -57,7 +55,6 @@ text = "MOVE RIGHT"
 
 [node name="RightKey" parent="GridContainer" instance=ExtResource( 2 )]
 margin_top = 99.0
-margin_right = 264.0
 margin_bottom = 119.0
 key = "move_right"
 
@@ -69,7 +66,6 @@ text = "ROTATE LEFT"
 
 [node name="RotLeftKey" parent="GridContainer" instance=ExtResource( 2 )]
 margin_top = 134.0
-margin_right = 264.0
 margin_bottom = 154.0
 key = "rotate_left"
 
@@ -81,7 +77,6 @@ text = "ROTATE RIGHT"
 
 [node name="RotRightKey" parent="GridContainer" instance=ExtResource( 2 )]
 margin_top = 169.0
-margin_right = 264.0
 margin_bottom = 189.0
 key = "rotate_right"
 
