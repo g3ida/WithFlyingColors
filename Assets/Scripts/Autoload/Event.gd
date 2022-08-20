@@ -14,3 +14,8 @@ signal Stats_button_pressed()
 signal Settings_button_pressed()
 signal Quit_button_pressed()
 signal Go_to_main_menu_pressed()
+
+#Settings signals
+signal Fullscreen_toggled(value)
+signal Vsync_toggled(value)
+signal Screen_size_changed(value)

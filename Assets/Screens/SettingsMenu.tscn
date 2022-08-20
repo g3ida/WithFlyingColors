@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/Entities/MainMenu/TitleLabel.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/Scripts/SettingsMenu/SettingsMenu.gd" type="Script" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://Assets/Sprites/MainMenu/back.png" type="Texture" id=4]
 [ext_resource path="res://Assets/Scripts/ManiMenu/BackButton.gd" type="Script" id=5]
 [ext_resource path="res://Assets/Entities/MainMenu/MenuButtonPressedStyle.tres" type="StyleBox" id=6]
+[ext_resource path="res://Assets/Scripts/SettingsMenu/GameSettingsUI.tscn" type="PackedScene" id=7]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -46,5 +47,11 @@ custom_styles/focus = SubResource( 1 )
 icon = ExtResource( 4 )
 flat = true
 script = ExtResource( 5 )
+
+[node name="SettingsUI" parent="." instance=ExtResource( 7 )]
+margin_left = 1100.0
+margin_top = 200.0
+margin_right = 1140.0
+margin_bottom = 240.0
 
 [connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]

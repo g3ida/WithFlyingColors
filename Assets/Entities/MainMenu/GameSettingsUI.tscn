@@ -1,0 +1,66 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Assets/Entities/UI/UISelect.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Entities/MainMenu/MenuTheme.tres" type="Theme" id=3]
+[ext_resource path="res://Assets/Scripts/SettingsMenu/GameSettingsUI.gd" type="Script" id=4]
+
+[node name="Control" type="Control"]
+margin_left = 1093.0
+margin_top = 52.0
+margin_right = 1133.0
+margin_bottom = 92.0
+theme = ExtResource( 3 )
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="GridContainer" type="GridContainer" parent="."]
+margin_right = 600.0
+margin_bottom = 600.0
+custom_constants/vseparation = 15
+custom_constants/hseparation = 50
+columns = 2
+
+[node name="ResolutionLabel" type="Label" parent="GridContainer"]
+margin_right = 294.0
+margin_bottom = 60.0
+size_flags_horizontal = 3
+text = "Resolution"
+align = 2
+
+[node name="UISelect" parent="GridContainer" instance=ExtResource( 1 )]
+margin_left = 344.0
+margin_right = 628.0
+margin_bottom = 60.0
+
+[node name="FullscreenLabel" type="Label" parent="GridContainer"]
+margin_top = 75.0
+margin_right = 294.0
+margin_bottom = 135.0
+text = "Fullscreen"
+align = 2
+
+[node name="FullscreenCheckbox" type="CheckBox" parent="GridContainer"]
+margin_left = 344.0
+margin_top = 75.0
+margin_right = 628.0
+margin_bottom = 135.0
+custom_constants/check_vadjust = -6
+
+[node name="VsyncLabel" type="Label" parent="GridContainer"]
+margin_top = 150.0
+margin_right = 294.0
+margin_bottom = 210.0
+text = "VSYNC"
+align = 2
+
+[node name="VsyncCheckbox" type="CheckBox" parent="GridContainer"]
+margin_left = 344.0
+margin_top = 150.0
+margin_right = 628.0
+margin_bottom = 210.0
+custom_constants/check_vadjust = -6
+
+[connection signal="toggled" from="GridContainer/FullscreenCheckbox" to="." method="_on_FullscreenCheckbox_toggled"]
+[connection signal="toggled" from="GridContainer/VsyncCheckbox" to="." method="_on_VsyncCheckbox_toggled"]

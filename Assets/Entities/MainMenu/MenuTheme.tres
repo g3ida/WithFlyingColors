@@ -1,0 +1,28 @@
+[gd_resource type="Theme" load_steps=9 format=2]
+
+[ext_resource path="res://Assets/Fonts/HeavyEquipment.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://Assets/Sprites/UI/checkbox_checked.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Sprites/UI/checkbox_unchecked.png" type="Texture" id=3]
+
+[sub_resource type="StyleBoxEmpty" id=2]
+
+[sub_resource type="StyleBoxEmpty" id=5]
+
+[sub_resource type="StyleBoxEmpty" id=3]
+
+[sub_resource type="StyleBoxTexture" id=4]
+
+[sub_resource type="DynamicFont" id=1]
+size = 60
+font_data = ExtResource( 1 )
+
+[resource]
+default_font = SubResource( 1 )
+Button/colors/font_color = Color( 0.176471, 0.176471, 0.176471, 1 )
+Button/styles/focus = SubResource( 2 )
+Button/styles/hover = SubResource( 5 )
+Button/styles/normal = SubResource( 3 )
+Button/styles/pressed = SubResource( 4 )
+CheckBox/icons/checked = ExtResource( 2 )
+CheckBox/icons/unchecked = ExtResource( 3 )
+Label/colors/font_color = Color( 0.176471, 0.176471, 0.176471, 1 )
