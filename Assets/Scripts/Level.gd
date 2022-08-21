@@ -3,16 +3,16 @@ extends Node2D
 export var level_path: String
 
 func connect_signals():
-	Event.connect("player_died", self, "_on_game_over")
+  Event.connect("player_died", self, "_on_game_over")
 
 func disconnect_signals():
-	Event.disconnect("player_died", self, "_on_game_over")
-	
+  Event.disconnect("player_died", self, "_on_game_over")
+  
 func _enter_tree():
-	connect_signals()
+  connect_signals()
 
 func _exit_tree():
-	disconnect_signals()
+  disconnect_signals()
 
 func _on_game_over():
-	Event.emit_signal("checkpoint_loaded")
+  Event.emit_signal("checkpoint_loaded")

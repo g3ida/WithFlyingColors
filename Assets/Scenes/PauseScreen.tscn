@@ -1,0 +1,44 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Assets/Scenes/ScreenShaders.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Scripts/UI/PauseMenu.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Styles/Themes/MenuTheme.tres" type="Theme" id=3]
+[ext_resource path="res://Assets/Scripts/Menus/PauseMenu/PauseScreenMenu.gd" type="Script" id=4]
+[ext_resource path="res://Assets/Scenes/UI/PauseMenuButtons.tscn" type="PackedScene" id=5]
+
+[node name="PauseScreen" type="CanvasLayer"]
+pause_mode = 2
+layer = 100
+script = ExtResource( 4 )
+
+[node name="PauseMenu" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 3 )
+script = ExtResource( 2 )
+
+[node name="CenterContainer" type="CenterContainer" parent="PauseMenu"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PauseMenu/CenterContainer"]
+margin_left = 960.0
+margin_top = 540.0
+margin_right = 960.0
+margin_bottom = 540.0
+custom_constants/separation = 20
+
+[node name="ResumeButton" parent="PauseMenu/CenterContainer/VBoxContainer" instance=ExtResource( 5 )]
+visible = false
+margin_bottom = 60.0
+text = "Resume Game"
+
+[node name="BackButton" parent="PauseMenu/CenterContainer/VBoxContainer" instance=ExtResource( 5 )]
+visible = false
+margin_bottom = 60.0
+text = "Back to main menu"
+
+[node name="ScreenShaders" parent="." instance=ExtResource( 1 )]
+
+[connection signal="pressed" from="PauseMenu/CenterContainer/VBoxContainer/ResumeButton" to="." method="_on_ResumeButton2_pressed"]
+[connection signal="pressed" from="PauseMenu/CenterContainer/VBoxContainer/BackButton" to="." method="_on_BackButton_pressed"]
