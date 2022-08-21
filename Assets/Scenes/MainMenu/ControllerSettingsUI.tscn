@@ -1,7 +1,38 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/KeyBindingController.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Scenes/UI/bindableButton.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Assets/Shaders/bindableButton.gdshader" type="Shader" id=3]
+
+[sub_resource type="ShaderMaterial" id=1]
+resource_local_to_scene = true
+shader = ExtResource( 3 )
+shader_param/hit_opacity = 0.0
+shader_param/is_animating = false
+
+[sub_resource type="ShaderMaterial" id=2]
+resource_local_to_scene = true
+shader = ExtResource( 3 )
+shader_param/hit_opacity = 0.0
+shader_param/is_animating = false
+
+[sub_resource type="ShaderMaterial" id=3]
+resource_local_to_scene = true
+shader = ExtResource( 3 )
+shader_param/hit_opacity = 0.0
+shader_param/is_animating = false
+
+[sub_resource type="ShaderMaterial" id=4]
+resource_local_to_scene = true
+shader = ExtResource( 3 )
+shader_param/hit_opacity = 0.0
+shader_param/is_animating = false
+
+[sub_resource type="ShaderMaterial" id=5]
+resource_local_to_scene = true
+shader = ExtResource( 3 )
+shader_param/hit_opacity = 0.0
+shader_param/is_animating = false
 
 [node name="Control" type="Control"]
 margin_top = 180.0
@@ -34,6 +65,7 @@ margin_bottom = 46.0
 text = "JUMP"
 
 [node name="JumpKey" parent="GridContainer" instance=ExtResource( 2 )]
+material = SubResource( 1 )
 key = "jump"
 
 [node name="LeftLabel" type="Label" parent="GridContainer"]
@@ -43,6 +75,7 @@ margin_bottom = 81.0
 text = "MOVE LEFT"
 
 [node name="LeftKey" parent="GridContainer" instance=ExtResource( 2 )]
+material = SubResource( 2 )
 margin_top = 64.0
 margin_bottom = 84.0
 key = "move_left"
@@ -54,6 +87,7 @@ margin_bottom = 116.0
 text = "MOVE RIGHT"
 
 [node name="RightKey" parent="GridContainer" instance=ExtResource( 2 )]
+material = SubResource( 3 )
 margin_top = 99.0
 margin_bottom = 119.0
 key = "move_right"
@@ -65,6 +99,7 @@ margin_bottom = 151.0
 text = "ROTATE LEFT"
 
 [node name="RotLeftKey" parent="GridContainer" instance=ExtResource( 2 )]
+material = SubResource( 4 )
 margin_top = 134.0
 margin_bottom = 154.0
 key = "rotate_left"
@@ -76,6 +111,7 @@ margin_bottom = 186.0
 text = "ROTATE RIGHT"
 
 [node name="RotRightKey" parent="GridContainer" instance=ExtResource( 2 )]
+material = SubResource( 5 )
 margin_top = 169.0
 margin_bottom = 189.0
 key = "rotate_right"

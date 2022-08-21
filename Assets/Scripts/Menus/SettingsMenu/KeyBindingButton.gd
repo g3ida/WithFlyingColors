@@ -17,6 +17,7 @@ func _ready():
     value = input_key_event.scancode
     text = OS.get_scancode_string(value)
     focus_mode = Control.FOCUS_NONE
+  $AnimationPlayer.play("RESET")
 
 func undo():
   if value != null:
@@ -46,11 +47,13 @@ func _input(event):
     is_listining = false
     get_tree().paused = false
     get_tree().set_input_as_handled()
+    $AnimationPlayer.play("RESET")
 
 func _on_key_pressed():
   if pressed:
     pressed = true
     is_listining = true
+    $AnimationPlayer.play("Blink")
     get_tree().paused = true
 
 func is_valid() -> bool:
