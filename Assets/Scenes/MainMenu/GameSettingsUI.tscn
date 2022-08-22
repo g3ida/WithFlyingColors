@@ -1,9 +1,15 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Assets/Scenes/UI/UISelect.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/ResolutionSelectDriver.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Styles/Themes/MenuTheme.tres" type="Theme" id=3]
 [ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/GameSettingsUI.gd" type="Script" id=4]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0, 0, 0, 0.176471 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0, 0, 0, 0.176471 )
 
 [node name="Control" type="Control"]
 size_flags_horizontal = 3
@@ -53,7 +59,10 @@ margin_left = 534.0
 margin_top = 75.0
 margin_right = 582.0
 margin_bottom = 135.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 custom_constants/check_vadjust = -6
+custom_styles/focus = SubResource( 1 )
 
 [node name="VsyncLabel" type="Label" parent="GridContainer"]
 margin_top = 150.0
@@ -66,7 +75,10 @@ margin_left = 534.0
 margin_top = 150.0
 margin_right = 582.0
 margin_bottom = 210.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 custom_constants/check_vadjust = -6
+custom_styles/focus = SubResource( 2 )
 
 [connection signal="Value_changed" from="GridContainer/ResolutionUISelect" to="." method="_on_UISelect_Value_changed"]
 [connection signal="toggled" from="GridContainer/FullscreenCheckbox" to="." method="_on_FullscreenCheckbox_toggled"]

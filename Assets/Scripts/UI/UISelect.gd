@@ -1,4 +1,4 @@
-extends Control
+extends Button
 
 export var SelectDriverScript: Script
 
@@ -7,16 +7,20 @@ var index: int
 var selected_value
 var focus = false
 
-func _process(_delta):
-  if focus:
-    if Input.is_action_just_pressed("ui_left"):
-      _on_Left_pressed()
-    elif Input.is_action_just_pressed("ui_right"):
-      _on_Right_pressed()
+func update_rect_size():
+  rect_size = $HBoxContainer.rect_size
 
-onready var ui_label = $UISelect/Label
-onready var ui_left = $UISelect/Left
-onready var ui_right = $UISelect/Right
+func _process(_delta):
+  update_rect_size()
+  
+  var focused_node = get_focus_owner();
+  if focused_node != null and focused_node == self:
+    if Input.is_action_just_pressed("ui_accept"):
+      _on_Left_pressed()
+
+onready var ui_label = $HBoxContainer/Label
+onready var ui_left = $HBoxContainer/Left
+onready var ui_right = $HBoxContainer/Right
 
 signal Value_changed(value)
 
@@ -24,13 +28,16 @@ func _ready():
   select_driver = SelectDriverScript.new()
   index = select_driver.get_default_selected_index()
   update_selected_item()
+  update_rect_size()
 
 func _on_Left_pressed():
+  grab_focus()
   index = (index + 1) % select_driver.items.size()
   update_selected_item()
   emit_signal("Value_changed", select_driver.item_values[index])
 
 func _on_Right_pressed():
+  grab_focus()
   index = (index - 1) % select_driver.items.size()
   update_selected_item()
   emit_signal("Value_changed", select_driver.item_values[index])

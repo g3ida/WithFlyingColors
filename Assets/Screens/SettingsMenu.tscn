@@ -70,6 +70,7 @@ margin_top = 90.0
 margin_right = -20.0
 margin_bottom = -10.0
 focus_neighbour_right = NodePath("../Controller")
+script = ExtResource( 10 )
 
 [node name="SettingsUI" parent="TabContainer/Display" instance=ExtResource( 7 )]
 margin_left = 20.0
@@ -95,4 +96,5 @@ margin_right = 734.0
 margin_bottom = 485.0
 
 [connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="tab_changed" from="TabContainer" to="TabContainer/Display" method="_on_TabContainer_tab_changed"]
 [connection signal="tab_changed" from="TabContainer" to="TabContainer/Controller" method="_on_TabContainer_tab_changed"]

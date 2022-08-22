@@ -9,6 +9,7 @@ func _ready():
   vsyncCheckbox.pressed = Settings.vsync
   fscreenCheckbox.pressed = Settings.fullscreen
   toggle_auto_resolution()
+  on_gain_focus()
   
 func _on_VsyncCheckbox_toggled(button_pressed):
   Settings.vsync = button_pressed
@@ -41,3 +42,9 @@ func launch_scheduled_rescale():
 
 func on_rescale_timeout():
   Settings.window_size = resolutionSelect.selected_value
+
+func on_gain_focus():
+  if (resolutionSelect.visible):
+    resolutionSelect.grab_focus()
+  else:
+    fscreenCheckbox.grab_focus()

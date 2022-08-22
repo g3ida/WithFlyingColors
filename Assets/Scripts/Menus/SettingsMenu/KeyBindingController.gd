@@ -4,7 +4,7 @@ onready var jump_btn = $GridContainer/JumpBtn
 signal on_action_bound_signal(action, key)
 
 func _ready():
-  jump_btn.grab_focus()
+  pass
 
 func _on_keyboard_input_action_bound(action, key):
   if key == null:
