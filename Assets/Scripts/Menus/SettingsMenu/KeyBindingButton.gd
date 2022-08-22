@@ -29,10 +29,6 @@ func _input(event):
   if not is_listining:
     return
   if event is InputEventKey:
-    if event.scancode == KEY_ESCAPE:
-      undo()
-      handled = true
-    else:
       value = event.scancode
       text = OS.get_scancode_string(value)
       emit_signal("keyboard_action_bound", key, value)
@@ -44,8 +40,8 @@ func _input(event):
   if handled:
     pressed = false
     is_listining = false
-    get_tree().paused = false
     get_tree().set_input_as_handled()
+    get_tree().paused = false
     $AnimationPlayer.play("RESET")
 
 func is_valid() -> bool:

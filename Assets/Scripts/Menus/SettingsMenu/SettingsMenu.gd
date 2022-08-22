@@ -2,7 +2,7 @@ extends GameMenu
 
 onready var tab_container = $TabContainer
 
-func process(_delta):
+func _input(_event):
   if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("ui_home"):
     _on_BackButton_pressed()
   elif Input.is_action_just_pressed("ui_left") and tab_container.current_tab == 1:

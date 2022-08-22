@@ -102,8 +102,15 @@ margin_left = 167.0
 margin_right = 236.0
 key = "pause"
 
+[connection signal="on_action_bound_signal" from="." to="GridContainer/JumpBtn" method="_on_Control_on_action_bound_signal"]
+[connection signal="on_action_bound_signal" from="." to="GridContainer/LeftBtn" method="_on_Control_on_action_bound_signal"]
+[connection signal="on_action_bound_signal" from="." to="GridContainer/RightBtn" method="_on_Control_on_action_bound_signal"]
+[connection signal="on_action_bound_signal" from="." to="GridContainer/RotLeftBtn" method="_on_Control_on_action_bound_signal"]
+[connection signal="on_action_bound_signal" from="." to="GridContainer/RotRightBtn" method="_on_Control_on_action_bound_signal"]
+[connection signal="on_action_bound_signal" from="." to="GridContainer/KeyBindingButton" method="_on_Control_on_action_bound_signal"]
 [connection signal="keyboard_action_bound" from="GridContainer/JumpBtn" to="." method="_on_keyboard_input_action_bound"]
 [connection signal="keyboard_action_bound" from="GridContainer/LeftBtn" to="." method="_on_keyboard_input_action_bound"]
 [connection signal="keyboard_action_bound" from="GridContainer/RightBtn" to="." method="_on_keyboard_input_action_bound"]
 [connection signal="keyboard_action_bound" from="GridContainer/RotLeftBtn" to="." method="_on_keyboard_input_action_bound"]
 [connection signal="keyboard_action_bound" from="GridContainer/RotRightBtn" to="." method="_on_keyboard_input_action_bound"]
+[connection signal="keyboard_action_bound" from="GridContainer/KeyBindingButton" to="." method="_on_keyboard_input_action_bound"]
