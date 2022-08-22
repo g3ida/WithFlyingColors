@@ -5,6 +5,14 @@ export var SelectDriverScript: Script
 var select_driver
 var index: int
 var selected_value
+var focus = false
+
+func _process(_delta):
+  if focus:
+    if Input.is_action_just_pressed("ui_left"):
+      _on_Left_pressed()
+    elif Input.is_action_just_pressed("ui_right"):
+      _on_Right_pressed()
 
 onready var ui_label = $UISelect/Label
 onready var ui_left = $UISelect/Left

@@ -13,5 +13,6 @@ func hide():
     b.hide()
 
 func show():
+  buttons[0].grab_focus()
   for b in buttons:
     b.show()

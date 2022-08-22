@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/SettingsMenu.gd" type="Script" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://Assets/Scenes/MainMenu/GameSettingsUI.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Assets/Styles/Themes/MenuTheme.tres" type="Theme" id=8]
 [ext_resource path="res://Assets/Scenes/MainMenu/ControllerSettingsUI.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Assets/Scripts/UI/TabLogic.gd" type="Script" id=10]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -68,6 +69,7 @@ margin_left = 20.0
 margin_top = 90.0
 margin_right = -20.0
 margin_bottom = -10.0
+focus_neighbour_right = NodePath("../Controller")
 
 [node name="SettingsUI" parent="TabContainer/Display" instance=ExtResource( 7 )]
 margin_left = 20.0
@@ -83,6 +85,8 @@ margin_left = 20.0
 margin_top = 90.0
 margin_right = -20.0
 margin_bottom = -10.0
+focus_neighbour_left = NodePath("../Display")
+script = ExtResource( 10 )
 
 [node name="ControllerSettings" parent="TabContainer/Controller" instance=ExtResource( 9 )]
 margin_left = 20.0
@@ -91,3 +95,4 @@ margin_right = 734.0
 margin_bottom = 485.0
 
 [connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="tab_changed" from="TabContainer" to="TabContainer/Controller" method="_on_TabContainer_tab_changed"]

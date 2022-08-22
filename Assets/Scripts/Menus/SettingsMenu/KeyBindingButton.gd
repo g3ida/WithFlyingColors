@@ -16,7 +16,6 @@ func _ready():
     var input_key_event = input_event as InputEventKey
     value = input_key_event.scancode
     text = OS.get_scancode_string(value)
-    focus_mode = Control.FOCUS_NONE
   $AnimationPlayer.play("RESET")
 
 func undo():
@@ -49,13 +48,6 @@ func _input(event):
     get_tree().set_input_as_handled()
     $AnimationPlayer.play("RESET")
 
-func _on_key_pressed():
-  if pressed:
-    pressed = true
-    is_listining = true
-    $AnimationPlayer.play("Blink")
-    get_tree().paused = true
-
 func is_valid() -> bool:
   return text == default_text
 
@@ -65,3 +57,11 @@ func _on_Control_on_action_bound_signal(action, key):
   value = null
   text = default_text
   emit_signal("keyboard_action_bound", action, null)
+
+
+func _on_KeyBindingButton_pressed():
+  if pressed:
+    pressed = true
+    is_listining = true
+    $AnimationPlayer.play("Blink")
+    get_tree().paused = true

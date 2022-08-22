@@ -1,8 +1,14 @@
 extends GameMenu
 
+onready var tab_container = $TabContainer
+
 func process(_delta):
   if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("ui_home"):
     _on_BackButton_pressed()
+  elif Input.is_action_just_pressed("ui_left") and tab_container.current_tab == 1:
+    tab_container.current_tab = 0
+  elif Input.is_action_just_pressed("ui_right") and tab_container.current_tab == 0:
+    tab_container.current_tab = 1
 
 func on_enter():
   Event.connect("Go_to_main_menu_pressed", self, "_on_go_to_main_menu_pressed")

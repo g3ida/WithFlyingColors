@@ -1,10 +1,10 @@
 extends Control
 
-onready var jump_key = $GridContainer/JumpKey
+onready var jump_btn = $GridContainer/JumpBtn
 signal on_action_bound_signal(action, key)
 
 func _ready():
-  pass
+  jump_btn.grab_focus()
 
 func _on_keyboard_input_action_bound(action, key):
   if key == null:
@@ -12,3 +12,6 @@ func _on_keyboard_input_action_bound(action, key):
   else:
     Settings.bind_action_to_keyboard_key(action, key)
     emit_signal("on_action_bound_signal", action, key)
+
+func on_gain_focus():
+  jump_btn.grab_focus()
