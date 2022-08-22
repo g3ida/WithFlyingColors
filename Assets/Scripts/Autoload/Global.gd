@@ -1,7 +1,6 @@
 extends Node2D
 
 var camera: Camera2D = null
-var HUD_offset: Vector2
 
 enum {SETTINGS_MENU, PLAY_MENU, STATS_MENU, MAIN_MENU}
 

@@ -106,3 +106,5 @@ transform = Transform2D( 1, 0, 0, 1, 0, 15 )
 script = ExtResource( 17 )
 
 [node name="GemContainerHUD" parent="HUD" instance=ExtResource( 16 )]
+anchor_left = 0.5
+anchor_right = 0.5
