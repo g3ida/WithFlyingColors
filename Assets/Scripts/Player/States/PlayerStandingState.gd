@@ -7,6 +7,7 @@ func _init(dependencies: PlayerDependencies).(dependencies):
 func enter():	
 	self.animated_sprite.play("idle")
 	animated_sprite.playing = false
+	Event.emit_signal("player_land")
 func exit():
 	pass
 

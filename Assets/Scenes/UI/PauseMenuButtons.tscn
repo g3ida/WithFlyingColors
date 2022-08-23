@@ -51,6 +51,7 @@ tracks/0/keys = {
 }
 
 [node name="PauseMenuButtons" type="Button"]
+modulate = Color( 1, 1, 1, 0 )
 margin_right = 476.0
 margin_bottom = 82.0
 theme = ExtResource( 1 )

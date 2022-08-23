@@ -17,6 +17,7 @@ func _init(dependencies: PlayerDependencies).(dependencies):
 func enter():
 	entred = true
 	jump_timer.reset()
+	Event.emit_signal("player_jumped")
 
 func exit():
 	entred = false

@@ -9,9 +9,9 @@ func hide():
   if current_state == SHOWN:
     current_state = HIDING
     animation_player.play("Hide")
-    var __ = animation_player.connect("animation_finished", self, "_on_show_animation_done", [], CONNECT_ONESHOT)
+    var __ = animation_player.connect("animation_finished", self, "_on_hide_animation_done", [], CONNECT_ONESHOT)
   elif current_state == SHOWING:
-    animation_player.disconnect("animation_finished", self, "_on_hide_animation_done")
+    animation_player.disconnect("animation_finished", self, "_on_show_animation_done")
     current_state = SHOWN
     hide()
 
@@ -30,12 +30,12 @@ func _ready():
   self.visible = false
   animation_player.play("Hidden")
     
-func _on_hide_animation_done():
+func _on_hide_animation_done(animation):
   self.visible = false
   animation_player.play("Hidden")
   current_state = HIDDEN
 
-func _on_show_animation_done():
+func _on_show_animation_done(animation):
   self.visible = true
   animation_player.play("Shown")
   current_state = SHOWN

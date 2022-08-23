@@ -27,95 +27,95 @@ var player_state
 var player_rotation_state
 
 func _ready():
-	playerRotationAction = PlayerRotationAction.new(self)
-	sprite_size = $AnimatedSprite.frames.get_frame("idle", 0).get_width()
-	
-	idle_animation = TransoformAnimation.new(
-		0.0,
-		ElasticOut.new(1.0, 1.0, 1, 0.1),
-		0)
-	scale_animation = TransoformAnimation.new(
-		SCALE_ANIM_DURATION,
-		ElasticOut.new(1.0, 1.0, 1, 0.1),
-		sprite_size * 0.5)
-		
-	current_animation = idle_animation
-	was_on_floor = is_on_floor()
-	self.reset_position = self.global_position
-	
-	states_store = PlayerStatesStore.new(self)
-	player_state = states_store.standing_state
-	player_state.enter()
-	player_rotation_state = states_store.idle_state
-	player_rotation_state.enter()
+  playerRotationAction = PlayerRotationAction.new(self)
+  sprite_size = $AnimatedSprite.frames.get_frame("idle", 0).get_width()
+  
+  idle_animation = TransoformAnimation.new(
+    0.0,
+    ElasticOut.new(1.0, 1.0, 1, 0.1),
+    0)
+  scale_animation = TransoformAnimation.new(
+    SCALE_ANIM_DURATION,
+    ElasticOut.new(1.0, 1.0, 1, 0.1),
+    sprite_size * 0.5)
+    
+  current_animation = idle_animation
+  was_on_floor = is_on_floor()
+  self.reset_position = self.global_position
+  
+  states_store = PlayerStatesStore.new(self)
+  player_state = states_store.standing_state
+  player_state.enter()
+  player_rotation_state = states_store.idle_state
+  player_rotation_state.enter()
 
 func _physics_process(delta):
-	var next_state = player_rotation_state.physics_update(delta)
-	switch_rotation_state(next_state)
+  var next_state = player_rotation_state.physics_update(delta)
+  switch_rotation_state(next_state)
 
-	var next_player_state = player_state.physics_update(delta)
-	switch_state(next_player_state)
+  var next_player_state = player_state.physics_update(delta)
+  switch_state(next_player_state)
 
-	if is_just_hit_the_floor():
-		on_land()
-	was_on_floor = is_on_floor()
+  if is_just_hit_the_floor():
+    on_land()
+  was_on_floor = is_on_floor()
 
 func reset():
-	$AnimatedSprite.play("idle")
-	$AnimatedSprite.playing = false
-	self.global_position = reset_position
-	switch_rotation_state(states_store.get_state(PlayerStatesEnum.IDLE))
-	switch_state((states_store.get_state(PlayerStatesEnum.FALLING)))
-	self.rotate(self.reset_angle - self.rotation)
-	
+  $AnimatedSprite.play("idle")
+  $AnimatedSprite.playing = false
+  self.global_position = reset_position
+  switch_rotation_state(states_store.get_state(PlayerStatesEnum.IDLE))
+  switch_state((states_store.get_state(PlayerStatesEnum.FALLING)))
+  self.rotate(self.reset_angle - self.rotation)
+  
 
 func connect_signals():
-	Event.connect("player_diying", self, "_on_player_diying")
-	Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
-	Event.connect("checkpoint_loaded", self, "reset")
-	
+  Event.connect("player_diying", self, "_on_player_diying")
+  Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
+  Event.connect("checkpoint_loaded", self, "reset")
+  
 func disconnect_signals():
-	Event.disconnect("player_diying", self, "_on_player_diying")
-	Event.disconnect("checkpoint_reached", self, "_on_checkpoint_hit")
-	Event.disconnect("checkpoint_loaded", self, "reset")
-			
+  Event.disconnect("player_diying", self, "_on_player_diying")
+  Event.disconnect("checkpoint_reached", self, "_on_checkpoint_hit")
+  Event.disconnect("checkpoint_loaded", self, "reset")
+      
 func _enter_tree():
-	connect_signals()
+  connect_signals()
 
 func _exit_tree():
-	disconnect_signals()
-	
+  disconnect_signals()
+  
 func _on_player_diying(area, position):
-	var next_state = player_state._on_player_diying(area, position)
-	switch_state(next_state)
+  var next_state = player_state._on_player_diying(area, position)
+  switch_state(next_state)
 
 func _on_checkpoint_hit(checkpoint_object: Node2D):
-	self.reset_position = checkpoint_object.global_position
-	
-	if checkpoint_object.color_group in $BottomFace.get_groups():
-		self.reset_angle = 0
-	elif checkpoint_object.color_group in $LeftFace.get_groups():
-		self.reset_angle = -PI / 2
-	elif checkpoint_object.color_group in $RightFace.get_groups():
-		self.reset_angle = PI / 2
-	elif checkpoint_object.color_group in $TopFace.get_groups():
-		self.reset_angle = PI
+  self.reset_position = checkpoint_object.global_position
+  
+  if checkpoint_object.color_group in $BottomFace.get_groups():
+    self.reset_angle = 0
+  elif checkpoint_object.color_group in $LeftFace.get_groups():
+    self.reset_angle = -PI / 2
+  elif checkpoint_object.color_group in $RightFace.get_groups():
+    self.reset_angle = PI / 2
+  elif checkpoint_object.color_group in $TopFace.get_groups():
+    self.reset_angle = PI
 
 func is_just_hit_the_floor():
-	return (not was_on_floor) and is_on_floor()
+  return (not was_on_floor) and is_on_floor()
 
 func on_land():
-	var next_player_state = player_state.on_land()
-	switch_state(next_player_state)
+  var next_player_state = player_state.on_land()
+  switch_state(next_player_state)
 
 func switch_state(new_state):
-	if (new_state != null):
-		player_state.exit()
-		player_state = new_state
-		player_state.enter()
+  if (new_state != null):
+    player_state.exit()
+    player_state = new_state
+    player_state.enter()
 
 func switch_rotation_state(new_state):
-	if (new_state != null):
-		player_rotation_state.exit()
-		player_rotation_state = new_state
-		player_rotation_state.enter()
+  if (new_state != null):
+    player_rotation_state.exit()
+    player_rotation_state = new_state
+    player_rotation_state.enter()

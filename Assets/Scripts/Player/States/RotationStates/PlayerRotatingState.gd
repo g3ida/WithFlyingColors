@@ -10,6 +10,7 @@ func _init(dependencies: PlayerDependencies, direction: int).(dependencies):
 
 func enter():
   self.player_rotation.execute(rotation_direction)
+  Event.emit_signal("player_rotate", rotation_direction)
 func exit():
 	pass
 
