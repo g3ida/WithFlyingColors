@@ -24,6 +24,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/StateMachine/BaseStatesStore.gd"
 }, {
+"base": "Reference",
+"class": "ColorUtils",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Utils/Colors.gd"
+}, {
 "base": "Control",
 "class": "GameMenu",
 "language": "GDScript",
@@ -138,6 +143,7 @@ _global_script_class_icons={
 "Animator": "",
 "BaseState": "",
 "BaseStatesStore": "",
+"ColorUtils": "",
 "GameMenu": "",
 "GemBaseState": "",
 "GemCollectedState": "",

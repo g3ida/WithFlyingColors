@@ -1,0 +1,38 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Assets/Scripts/LazerBeam.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Sprites/Particles/glow_circle.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Sprites/Platforms/pink_lazer.png" type="Texture" id=3]
+
+[sub_resource type="Curve" id=1]
+_data = [ Vector2( 0.018797, 0.913447 ), 0.0, 0.0, 0, 0, Vector2( 0.729323, 0.827861 ), 0.0, 0.0, 0, 0, Vector2( 0.984962, 0.165699 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="Gradient" id=2]
+offsets = PoolRealArray( 0.0275229, 1 )
+colors = PoolColorArray( 1, 1, 1, 0.972549, 1, 1, 1, 0 )
+
+[node name="LazerBeam" type="Node2D"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Sprite" type="Sprite" parent="."]
+rotation = 1.5708
+texture = ExtResource( 3 )
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PoolVector2Array( 0, 0, 67, 0 )
+width = 6.0
+
+[node name="Muzzle" type="Position2D" parent="."]
+
+[node name="Particles" type="CPUParticles2D" parent="."]
+position = Vector2( 65, 0 )
+lifetime = 0.3
+texture = ExtResource( 2 )
+gravity = Vector2( 0, 0 )
+initial_velocity = 60.0
+scale_amount = 0.7
+scale_amount_curve = SubResource( 1 )
+color_ramp = SubResource( 2 )

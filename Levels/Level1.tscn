@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://Assets/Sprites/Platforms/purple.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Scenes/Player.tscn" type="PackedScene" id=2]
@@ -21,6 +21,7 @@
 [ext_resource path="res://Assets/Scenes/PauseScreen.tscn" type="PackedScene" id=19]
 [ext_resource path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" type="PackedScene" id=20]
 [ext_resource path="res://Assets/Scenes/Platforms/Platform.tscn" type="PackedScene" id=21]
+[ext_resource path="res://Assets/Scenes/LazerBeam.tscn" type="PackedScene" id=22]
 
 [node name="Level1" type="Node2D"]
 script = ExtResource( 5 )
@@ -72,7 +73,7 @@ texture = ExtResource( 3 )
 group = "blue"
 
 [node name="SimplePlatform" parent="." instance=ExtResource( 7 )]
-position = Vector2( 1232, 208 )
+position = Vector2( 1232, 220 )
 scale = Vector2( 2.546, 1.11 )
 texture = ExtResource( 4 )
 group = "yellow"
@@ -112,13 +113,18 @@ anchor_left = 0.5
 anchor_right = 0.5
 
 [node name="Platform2" parent="." instance=ExtResource( 21 )]
-position = Vector2( 1499, 320 )
+position = Vector2( 1067, -133 )
 scale = Vector2( 3, 2 )
 texture = ExtResource( 8 )
 group = "pink"
 
 [node name="Node2D" parent="Platform2" instance=ExtResource( 20 )]
+wait_time = null
 is_vertical = true
 speed = null
 distance = null
-wait_time = null
+
+[node name="LazerBeam" parent="." instance=ExtResource( 22 )]
+position = Vector2( 1015, 315 )
+rotation = -1.5708
+color = "pink"

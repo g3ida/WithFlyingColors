@@ -3,7 +3,7 @@
 [ext_resource path="res://Assets/Scripts/Player/box_face.gd" type="Script" id=1]
 
 [sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 43.875, 2.5 )
+extents = Vector2( 46.1244, 2.125 )
 
 [node name="Face" type="Area2D"]
 collision_layer = 16
