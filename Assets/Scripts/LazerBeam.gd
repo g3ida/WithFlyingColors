@@ -1,6 +1,7 @@
 extends Node2D
 
 onready var beamNode = $Line2D
+onready var beamBgNode = $Line2Dbackground
 onready var muzzleNode = $Muzzle
 onready var particlesNode = $Particles
 
@@ -8,6 +9,8 @@ export var color: String
 
 func _ready():
   beamNode.default_color = ColorUtils.get_color(color)
+  beamBgNode.default_color = ColorUtils.get_color(color)
+  beamBgNode.default_color.a = 0.63
   particlesNode.color = beamNode.default_color
 
 func cast_beam():
@@ -21,6 +24,7 @@ func cast_beam():
     true) #collide with areas
   var pos = transform.xform_inv(result.position)
   beamNode.set_point_position(1, pos)
+  beamBgNode.set_point_position(1, pos)
   particlesNode.position = pos
   return result
 
