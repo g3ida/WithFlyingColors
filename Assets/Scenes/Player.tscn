@@ -48,13 +48,13 @@ position = Vector2( 45.9, 0 )
 rotation = -1.5708
 
 [node name="FaceSeparatorBR" parent="." instance=ExtResource( 4 )]
-position = Vector2( 46.9, 46.9 )
+position = Vector2( 46.5, 46.5 )
 
 [node name="FaceSeparatorBL" parent="." instance=ExtResource( 4 )]
-position = Vector2( -49.9, 49.9 )
+position = Vector2( -46.5, 46.5 )
 
 [node name="FaceSeparatorTL" parent="." instance=ExtResource( 4 )]
-position = Vector2( -49.9, -49.9 )
+position = Vector2( -46.5, -46.5 )
 
 [node name="FaceSeparatorTR" parent="." instance=ExtResource( 4 )]
-position = Vector2( 46.9, -46.9 )
+position = Vector2( 46.5, -46.5 )

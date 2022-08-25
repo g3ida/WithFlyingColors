@@ -113,20 +113,20 @@ script = ExtResource( 17 )
 anchor_left = 0.5
 anchor_right = 0.5
 
-[node name="Platform2" parent="." instance=ExtResource( 21 )]
+[node name="MovingPlatform" parent="." instance=ExtResource( 21 )]
 position = Vector2( 1067, -133 )
 scale = Vector2( 3, 2 )
 texture = ExtResource( 8 )
 group = "pink"
 
-[node name="Node2D" parent="Platform2" instance=ExtResource( 20 )]
+[node name="Node2D" parent="MovingPlatform" instance=ExtResource( 20 )]
 wait_time = null
 is_vertical = true
 speed = null
 distance = null
 
 [node name="LazerBeam" parent="." instance=ExtResource( 22 )]
-position = Vector2( 1160, 163 )
+position = Vector2( 1158, 175.6 )
 rotation = -1.5708
 color = "yellow"
 texture = ExtResource( 23 )

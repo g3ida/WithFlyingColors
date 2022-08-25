@@ -32,21 +32,25 @@ __meta__ = {
 }
 
 [node name="Base" type="Sprite" parent="."]
+position = Vector2( 12.5, 0 )
 rotation = 1.5708
 texture = ExtResource( 3 )
 
 [node name="Line2D" type="Line2D" parent="."]
 show_behind_parent = true
 material = SubResource( 4 )
+position = Vector2( 0.3, 0 )
 points = PoolVector2Array( 0, 0, 67, 0 )
 width = 6.0
 
 [node name="Line2Dbackground" type="Line2D" parent="."]
 show_behind_parent = true
+position = Vector2( 0.3, 0 )
 points = PoolVector2Array( 0, 0, 67, 0 )
 width = 6.0
 
 [node name="Muzzle" type="Position2D" parent="."]
+position = Vector2( 0.3, 0 )
 
 [node name="Particles" type="CPUParticles2D" parent="."]
 position = Vector2( 65, 0 )
