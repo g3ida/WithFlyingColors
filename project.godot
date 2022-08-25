@@ -238,6 +238,7 @@ pause={
 2d_physics/layer_4="Fallzone"
 2d_physics/layer_5="BoxFace"
 2d_physics/layer_6="Gems"
+2d_physics/layer_7="Bullets"
 
 [physics]
 

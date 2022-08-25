@@ -80,6 +80,7 @@ func disconnect_signals():
   Event.disconnect("checkpoint_loaded", self, "reset")
       
 func _enter_tree():
+  Global.player = self
   connect_signals()
 
 func _exit_tree():

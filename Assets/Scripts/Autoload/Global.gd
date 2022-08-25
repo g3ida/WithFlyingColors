@@ -4,6 +4,7 @@ const EPSILON: float = 0.0001
 const WORLD_TO_SCREEN = 100
 
 var camera: Camera2D = null
+var player: KinematicBody2D = null
 
 enum {SETTINGS_MENU, PLAY_MENU, STATS_MENU, MAIN_MENU}
 

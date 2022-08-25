@@ -7,7 +7,7 @@ extents = Vector2( 46.1244, 2.125 )
 
 [node name="Face" type="Area2D"]
 collision_layer = 16
-collision_mask = 44
+collision_mask = 108
 script = ExtResource( 1 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

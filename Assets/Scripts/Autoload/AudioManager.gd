@@ -53,7 +53,7 @@ func connect_signals():
 
 func disconnect_signals():
   self.disconnect("play_sfx", self, "_sfx_play")
-  Event.disconnect("player_jumped", self, "_on_player_rotate")
+  Event.disconnect("player_jumped", self, "_on_player_jumped")
   Event.disconnect("player_rotate", self, "_on_player_rotate")
   Event.disconnect("player_land", self, "_on_player_land")
   Event.disconnect("Play_button_pressed", self, "_on_menu_pressed")
