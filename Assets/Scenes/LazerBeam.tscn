@@ -3,25 +3,7 @@
 [ext_resource path="res://Assets/Scripts/LazerBeam.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/Particles/glow_circle.png" type="Texture" id=2]
 [ext_resource path="res://Assets/Sprites/Platforms/pink_lazer.png" type="Texture" id=3]
-
-[sub_resource type="Shader" id=3]
-code = "shader_type canvas_item;
-
-uniform sampler2D noise: hint_white;
-
-void fragment(){ float speed_factor = TIME / 5.0;
-
-float thickness_factor = 0.2; // float thickness_factor = (1.0 - pow(COLOR.a, 2));
-
-vec2 fake_UV = vec2(abs(0.5 - UV.y) * thickness_factor, COLOR.a + speed_factor);
-
-vec4 n = texture(noise, fake_UV);
-
-float grey = 1.0 - (0.2126 * n.r + 0.7152 * n.g + 0.0722 * n.b);
-
-if (grey < 0.55) { COLOR.a = COLOR.a * pow(grey, 2); }
-
-if (grey < 0.5) { discard; } }"
+[ext_resource path="res://Assets/Shaders/LazerBeam.gdshader" type="Shader" id=4]
 
 [sub_resource type="OpenSimplexNoise" id=5]
 period = 0.1
@@ -33,7 +15,7 @@ seamless = true
 noise = SubResource( 5 )
 
 [sub_resource type="ShaderMaterial" id=4]
-shader = SubResource( 3 )
+shader = ExtResource( 4 )
 shader_param/noise = SubResource( 6 )
 
 [sub_resource type="Curve" id=1]
@@ -49,7 +31,7 @@ __meta__ = {
 "_edit_group_": true
 }
 
-[node name="Sprite" type="Sprite" parent="."]
+[node name="Base" type="Sprite" parent="."]
 rotation = 1.5708
 texture = ExtResource( 3 )
 

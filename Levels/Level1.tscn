@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=24 format=2]
 
 [ext_resource path="res://Assets/Sprites/Platforms/purple.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Scenes/Player.tscn" type="PackedScene" id=2]
@@ -22,6 +22,7 @@
 [ext_resource path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" type="PackedScene" id=20]
 [ext_resource path="res://Assets/Scenes/Platforms/Platform.tscn" type="PackedScene" id=21]
 [ext_resource path="res://Assets/Scenes/LazerBeam.tscn" type="PackedScene" id=22]
+[ext_resource path="res://Assets/Sprites/Platforms/yellow_lazer.png" type="Texture" id=23]
 
 [node name="Level1" type="Node2D"]
 script = ExtResource( 5 )
@@ -125,6 +126,7 @@ speed = null
 distance = null
 
 [node name="LazerBeam" parent="." instance=ExtResource( 22 )]
-position = Vector2( 1015, 315 )
+position = Vector2( 1160, 163 )
 rotation = -1.5708
-color = "pink"
+color = "yellow"
+texture = ExtResource( 23 )

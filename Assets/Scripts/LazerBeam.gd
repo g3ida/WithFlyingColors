@@ -1,17 +1,21 @@
+tool
 extends Node2D
 
 onready var beamNode = $Line2D
 onready var beamBgNode = $Line2Dbackground
 onready var muzzleNode = $Muzzle
 onready var particlesNode = $Particles
+onready var baseNode = $Base
 
 export var color: String
+export var texture: Texture
 
 func _ready():
   beamNode.default_color = ColorUtils.get_color(color)
   beamBgNode.default_color = ColorUtils.get_color(color)
   beamBgNode.default_color.a = 0.63
   particlesNode.color = beamNode.default_color
+  baseNode.texture = texture
 
 func cast_beam():
   var space_state = get_world_2d().direct_space_state
@@ -29,6 +33,8 @@ func cast_beam():
   return result
 
 func _physics_process(_delta):
+  if Engine.editor_hint:
+    return
   var cast_result = cast_beam()
   var collider = cast_result["collider"]
   if ("Face" in collider.name and collider is Area2D):
