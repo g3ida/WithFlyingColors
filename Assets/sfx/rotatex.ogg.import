@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/rotatex.ogg-8c0b8a8a0fde4c7ee69db3c968376c26.oggstr"
+
+[deps]
+
+source_file="res://Assets/sfx/rotatex.ogg"
+dest_files=[ "res://.import/rotatex.ogg-8c0b8a8a0fde4c7ee69db3c968376c26.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

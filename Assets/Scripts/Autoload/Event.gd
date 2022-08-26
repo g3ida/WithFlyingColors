@@ -7,7 +7,7 @@ signal player_jumped()
 signal player_rotate(dir)
 signal player_land()
 
-signal gem_collected(color, position)
+signal gem_collected(color, position, frames)
 signal slide_animation_ended(animation_name)
 signal checkpoint_reached(checkpoint_object)
 signal checkpoint_loaded()

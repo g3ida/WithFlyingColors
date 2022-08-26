@@ -60,7 +60,6 @@ func _on_checkpoint_hit(_checkpoint):
   if (current_state == states_store.collected) or (current_state == states_store.collecting):
     should_reset_state = false
 
-
 func reset():
   if should_reset_state:
     switch_state(states_store.not_collected)

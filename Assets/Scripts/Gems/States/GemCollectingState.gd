@@ -8,7 +8,7 @@ func _init(
   light: Light2D,
   animated_sprite: AnimatedSprite,
   animation_player: AnimationPlayer,
-  collision_shape: CollisionShape2D,
+  collision_shape: CollisionPolygon2D,
   states_store: BaseStatesStore).(node, light, animated_sprite, animation_player, collision_shape, states_store):
     pass
 

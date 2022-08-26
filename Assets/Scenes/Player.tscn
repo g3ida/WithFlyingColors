@@ -47,14 +47,14 @@ rotation = 1.5708
 position = Vector2( 45.9, 0 )
 rotation = -1.5708
 
-[node name="FaceSeparatorBR" parent="." instance=ExtResource( 4 )]
+[node name="FaceSeparatorBR" parent="." groups=["blue", "pink"] instance=ExtResource( 4 )]
 position = Vector2( 46.5, 46.5 )
 
-[node name="FaceSeparatorBL" parent="." instance=ExtResource( 4 )]
+[node name="FaceSeparatorBL" parent="." groups=["blue", "yellow"] instance=ExtResource( 4 )]
 position = Vector2( -46.5, 46.5 )
 
-[node name="FaceSeparatorTL" parent="." instance=ExtResource( 4 )]
+[node name="FaceSeparatorTL" parent="." groups=["purple", "yellow"] instance=ExtResource( 4 )]
 position = Vector2( -46.5, -46.5 )
 
-[node name="FaceSeparatorTR" parent="." instance=ExtResource( 4 )]
+[node name="FaceSeparatorTR" parent="." groups=["pink", "purple"] instance=ExtResource( 4 )]
 position = Vector2( 46.5, -46.5 )

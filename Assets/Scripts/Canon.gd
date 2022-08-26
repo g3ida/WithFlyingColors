@@ -15,6 +15,7 @@ onready var canonMuzzle = $Canon/Muzzle
 onready var canonAnimation = $Canon/ShootAnimation
 onready var standColorAreaNode = $Body/StandColorArea
 onready var canonColorAreaNode = $Body/CanonColorArea
+onready var shootSound = $ShoutSound
 
 var follow: Node = null
 var angle: float = 0
@@ -31,7 +32,6 @@ func _ready():
   add_to_group(color_group)
   standColorAreaNode.add_to_group(color_group)
   canonColorAreaNode.add_to_group(color_group)
-  
   satndNode.texture = stand_texture
   canonNode.texture = canon_texture
   
@@ -49,6 +49,7 @@ func shoot(direction: Vector2):
   yield(canonAnimation, "animation_finished")
   var bullet = spawn_bullet()
   bullet.shoot(direction)
+  shootSound.play()
   yield(get_tree().create_timer(cooldown), "timeout")
   can_shoot = true
 
