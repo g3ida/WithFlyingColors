@@ -4,7 +4,7 @@ extends PlayerBaseState
 func _init(dependencies: PlayerDependencies).(dependencies):
 	pass
 
-func enter():	
+func enter():
 	self.animated_sprite.play("idle")
 	animated_sprite.playing = false
 	Event.emit_signal("player_land")

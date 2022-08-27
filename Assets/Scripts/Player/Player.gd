@@ -46,7 +46,7 @@ func _ready():
   self.reset_position = self.global_position
   
   states_store = PlayerStatesStore.new(self)
-  player_state = states_store.standing_state
+  player_state = states_store.falling_state
   player_state.enter()
   player_rotation_state = states_store.idle_state
   player_rotation_state.enter()

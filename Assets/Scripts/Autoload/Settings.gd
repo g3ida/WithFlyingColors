@@ -5,9 +5,11 @@ onready var fullscreen: bool = OS.window_fullscreen setget setFullscreen, getFul
 onready var window_size: Vector2 = OS.window_size setget setWindowSize, getWindowSize
 
 const config_file_path = "settings.ini"
+var _is_ready := false
 
 func _ready():
   load_game_settings()
+  _is_ready = true
 
 func setVsync(value: bool):
   vsync = value
@@ -29,8 +31,6 @@ func setWindowSize(value: Vector2):
 
 func getWindowSize() -> Vector2:
   return window_size
-
-
   
 func get_first_key_keyboard_event_from_action_list(action_list: Array) -> InputEvent:
   for el in action_list:
