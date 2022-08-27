@@ -6,6 +6,7 @@ var light: Light2D
 var animated_sprite: AnimatedSprite
 var animation_player: AnimationPlayer
 var collision_shape: CollisionPolygon2D
+var shine_sfx: AudioStreamPlayer2D
 var states_store: BaseStatesStore
   
 func _init(
@@ -14,12 +15,14 @@ func _init(
   animated_sprite: AnimatedSprite,
   animation_player: AnimationPlayer,
   collision_shape: CollisionPolygon2D,
+  shine_sfx: AudioStreamPlayer2D,
   states_store: BaseStatesStore).():
     self.node = node
     self.light = light
     self.animated_sprite = animated_sprite
     self.animation_player = animation_player
     self.collision_shape = collision_shape
+    self.shine_sfx = shine_sfx
     self.states_store = states_store
 func enter():
   pass

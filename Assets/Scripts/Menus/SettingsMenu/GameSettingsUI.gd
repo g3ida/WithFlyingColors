@@ -5,19 +5,24 @@ onready var fscreenCheckbox = $GridContainer/FullscreenCheckbox
 onready var autoResolutionLabel = $GridContainer/AutoResolutionLabel
 onready var resolutionSelect = $GridContainer/ResolutionUISelect
 
+var is_ready = false
+
 func _ready():
   vsyncCheckbox.pressed = Settings.vsync
   fscreenCheckbox.pressed = Settings.fullscreen
   toggle_auto_resolution()
   on_gain_focus()
+  is_ready = true
   
 func _on_VsyncCheckbox_toggled(button_pressed):
   Settings.vsync = button_pressed
-  Event.emit_signal("Vsync_toggled", button_pressed)
+  if (is_ready):
+    Event.emit_signal("Vsync_toggled", button_pressed)
 
 func _on_FullscreenCheckbox_toggled(button_pressed):
   Settings.fullscreen = button_pressed
-  Event.emit_signal("Fullscreen_toggled",button_pressed )
+  if (is_ready):
+    Event.emit_signal("Fullscreen_toggled",button_pressed )
   toggle_auto_resolution()
 
 func toggle_auto_resolution():
@@ -31,7 +36,9 @@ func toggle_auto_resolution():
 
 func _on_UISelect_Value_changed(value):
   Settings.window_size = value
-
+  if (is_ready):
+    Event.emit_signal("Screen_size_changed",value)
+  
 func launch_scheduled_rescale():
   var rescale_timer = Timer.new()
   rescale_timer.connect("timeout",self, "on_rescale_timeout")

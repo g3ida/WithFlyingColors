@@ -5,13 +5,18 @@ var box_rotation: PlayerRotationAction
 var buttons = []
 var buttons_mappings = []
 var active_index = 0
+var is_active = true
 
 onready var play_button = $MenuBox/Sprite/PlayButton
 onready var settings_button = $MenuBox/Sprite/SettingsButton
 onready var stats_button = $MenuBox/Sprite/StatsButton
 onready var quit_button = $MenuBox/Sprite/QuitButton
 
+func can_respond_to_input() -> bool:
+  return is_active && get_parent().is_enter_ceremony_done()
+
 func _enter_tree():
+  var is_active = true
   if Global.PreviousMenu == Global.STATS_MENU:
     $MenuBox.rotate(-PI)
     active_index = 2
@@ -41,6 +46,7 @@ func _physics_process(delta):
     _on_LeftButton_pressed()
   elif Input.is_action_just_pressed("rotate_right") or Input.is_action_just_pressed("ui_right"):
     _on_RightButton_pressed()
+
   elif Input.is_action_just_pressed("ui_accept"):
     click_on_active_button()
 
@@ -49,23 +55,33 @@ func _on_RightButton_pressed():
   active_index = (active_index - 1) % buttons.size()
   buttons[active_index].disabled = false
   box_rotation.execute(1)
-
+  Event.emit_signal("menu_box_rotated")
+  
 func _on_LeftButton_pressed():
   buttons[active_index].disabled = true
   active_index = (active_index + 1) % buttons.size()
   buttons[active_index].disabled = false
   box_rotation.execute(-1)
-
+  Event.emit_signal("menu_box_rotated")
+  
 func _on_PlayButton_pressed():
+  if not can_respond_to_input(): return
+  is_active = false
   Event.emit_signal("Play_button_pressed")
 
 func _on_QuitButton_pressed():
+  if not can_respond_to_input(): return
+  is_active = false
   Event.emit_signal("Quit_button_pressed")
 
 func _on_SettingsButton_pressed():
+  if not can_respond_to_input(): return
+  is_active = false
   Event.emit_signal("Settings_button_pressed")
 
 func _on_StatsButton_pressed():
+  if not can_respond_to_input(): return
+  is_active = false
   Event.emit_signal("Stats_button_pressed")
 
 func click_on_active_button():

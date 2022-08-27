@@ -1,8 +1,8 @@
-extends Control
+extends GameMenu
 
 onready var buttons = [
-  $CenterContainer/VBoxContainer/BackButton,
-  $CenterContainer/VBoxContainer/ResumeButton
+  $CenterContainer/VBoxContainer/ResumeButton,
+  $CenterContainer/VBoxContainer/BackButton
 ]
 
 func _ready():

@@ -12,6 +12,7 @@ func _on_keyboard_input_action_bound(action, key):
   else:
     Settings.bind_action_to_keyboard_key(action, key)
     emit_signal("on_action_bound_signal", action, key)
+    Event.emit_signal("on_action_bound", action, key)
 
 func on_gain_focus():
   jump_btn.grab_focus()

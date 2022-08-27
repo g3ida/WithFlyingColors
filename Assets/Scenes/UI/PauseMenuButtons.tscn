@@ -66,3 +66,5 @@ script = ExtResource( 2 )
 anims/Hidden = SubResource( 3 )
 anims/Hide = SubResource( 1 )
 anims/Shown = SubResource( 2 )
+
+[connection signal="mouse_entered" from="." to="." method="_on_PauseMenuButtons_mouse_entered"]

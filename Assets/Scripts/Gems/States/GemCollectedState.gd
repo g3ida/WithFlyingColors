@@ -8,7 +8,8 @@ func _init(
   animated_sprite: AnimatedSprite,
   animation_player: AnimationPlayer,
   collision_shape: CollisionPolygon2D,
-  states_store: BaseStatesStore).(node, light, animated_sprite, animation_player, collision_shape, states_store):
+  shine_sfx: AudioStreamPlayer2D,
+  states_store: BaseStatesStore).(node, light, animated_sprite, animation_player, collision_shape, shine_sfx, states_store):
     pass
 
 func enter():

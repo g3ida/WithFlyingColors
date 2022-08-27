@@ -15,8 +15,8 @@ func _process(_delta):
     else:
       pause()
 
-
 func resume():
+    Event.emit_signal("pause_menu_exit")
     screen_shaders.disable_pause_shader()
     # pause_menu.visible = false
     pause_menu.hide()
@@ -24,11 +24,12 @@ func resume():
     get_tree().paused = false
       
 func pause():
-    screen_shaders.activate_pause_shader()
-    # pause_menu.visible = true
-    pause_menu.show()
-    is_paused = true
-    get_tree().paused = true
+  Event.emit_signal("pause_menu_enter")  
+  screen_shaders.activate_pause_shader()
+  # pause_menu.visible = true
+  pause_menu.show()
+  is_paused = true
+  get_tree().paused = true
       
 func _on_BackButton_pressed():
   resume()

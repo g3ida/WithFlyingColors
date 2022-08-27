@@ -11,7 +11,7 @@ var states_store: BaseStatesStore
 const TransoformAnimation = preload("res://Assets/Scripts/Utils/TransformAnimation.gd")
 const ElasticOut = preload("res://Assets/Scripts/Utils/Interpolation/ElasticOut.gd")
 
-const SPEED = 250
+const SPEED = 350
 const GRAVITY = 980
 const FALL_FACTOR = 2
 
@@ -49,7 +49,9 @@ func _physics_update(_delta) -> BaseState:
 	return null
 
 func _on_player_diying(_area, _position) -> BaseState:
-	return self.states_store.get_state(PlayerStatesEnum.DYING)
+	var dying_state = self.states_store.get_state(PlayerStatesEnum.DYING)
+	dying_state.is_explosion = false if _area == null else true #if fallzone or platform
+	return dying_state
 
 func on_land() -> BaseState:
 	player.current_animation = player.scale_animation

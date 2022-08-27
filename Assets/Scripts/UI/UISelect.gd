@@ -46,3 +46,6 @@ func update_selected_item():
   ui_label.text = select_driver.items[index]
   select_driver.on_item_selected(ui_label.text)
   selected_value = select_driver.item_values[index]
+
+func _on_Button_mouse_entered():
+  grab_focus()

@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/Scripts/UI/Checkbox.gd" type="Script" id=1]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0, 0, 0, 0.176471 )
+
+[node name="Checkbox" type="CheckBox"]
+margin_left = 534.0
+margin_top = 75.0
+margin_right = 582.0
+margin_bottom = 135.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/check_vadjust = -6
+custom_styles/focus = SubResource( 1 )
+script = ExtResource( 1 )
+
+[connection signal="mouse_entered" from="." to="." method="_on_Checkbox_mouse_entered"]

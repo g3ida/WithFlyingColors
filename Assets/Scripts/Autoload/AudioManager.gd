@@ -10,15 +10,16 @@ var x = preload("res://Assets/sfx/menu_select.ogg")
 
 var sfx_data: Dictionary = {
   "jump": {"path": "res://Assets/sfx/jumping.ogg", "volume": -5},
-  "rotateLeft": {"path": "res://Assets/sfx/rotatex.ogg", "volume": -20, "pitch_scale": 0.8},
+  "rotateLeft": {"path": "res://Assets/sfx/rotatex.ogg", "volume": -20, "pitch_scale": 0.9},
   "rotateRight": {"path": "res://Assets/sfx/rotatex.ogg", "volume":  -20},
   "menuSelect": {"path": "res://Assets/sfx/menu_select.ogg", "volume": 0},
+  "menuValueChange": {"path": "res://Assets/sfx/click.ogg", "volume": 0},
   "menuMove": {"path": "res://Assets/sfx/menu_move.ogg", "volume": 0},
+  "menuFocus": {"path": "res://Assets/sfx/click2.ogg"},
   "land": {"path": "res://Assets/sfx/fall.ogg", "volume": -15},
   "gemCollect": {"path": "res://Assets/sfx/gem.ogg", "volume": -15},
-
-  "checkpointHit": {"path": "res://Assets/sfx/menu_select.ogg", "volume": 0},
-  "checkpointLoad": {"path": "res://Assets/sfx/menu_select.ogg", "volume": 0}
+  "playerExplode": {"path": "res://Assets/sfx/die.ogg", "volume": -10},
+  "playerFalling": {"path": "res://Assets/sfx/falling.ogg", "volume": -10},
 }
 
 var sfx_pool: Dictionary = {}
@@ -41,6 +42,7 @@ func fill_sfx_pool():
     add_child(audio_player)
 
 func _ready():
+  pause_mode = PAUSE_MODE_PROCESS
   fill_sfx_pool()
 
 func _sfx_play(sfx):
@@ -58,6 +60,20 @@ func connect_signals():
   Event.connect("Quit_button_pressed", self, "_on_menu_pressed")
   Event.connect("Go_to_main_menu_pressed", self, "_on_menu_pressed")
   Event.connect("gem_collected", self, "_on_gem_collected")
+  Event.connect("Fullscreen_toggled", self, "_on_button_toggle")
+  Event.connect("Vsync_toggled", self, "_on_button_toggle")
+  Event.connect("Screen_size_changed", self, "_on_button_toggle")
+  Event.connect("on_action_bound", self, "_on_key_bound")
+  Event.connect("tab_changed", self, "_on_tab_changed")
+  Event.connect("focus_changed", self, "_on_focus_changed")
+  Event.connect("menu_box_rotated", self, "_on_menu_box_rotated")
+  Event.connect("keyboard_action_biding", self, "_on_keyboard_action_biding")
+  Event.connect("player_explode", self, "_on_player_explode")
+  Event.connect("pause_menu_enter", self, "_on_pause_menu_enter")
+  Event.connect("pause_menu_exit", self, "_on_pause_menu_exit")
+  Event.connect("player_fall", self, "_on_player_falling")
+
+
 
 func disconnect_signals():
   self.disconnect("play_sfx", self, "_sfx_play")
@@ -70,6 +86,18 @@ func disconnect_signals():
   Event.disconnect("Quit_button_pressed", self, "_on_menu_pressed")
   Event.disconnect("Go_to_main_menu_pressed", self, "_on_menu_pressed")
   Event.disconnect("gem_collected", self, "_on_gem_collected")
+  Event.disconnect("Fullscreen_toggled", self, "_on_button_toggle")
+  Event.disconnect("Vsync_toggled", self, "_on_button_toggle")
+  Event.disconnect("Screen_size_changed", self, "_on_button_toggle")
+  Event.disconnect("on_action_bound", self, "_on_key_bound")
+  Event.disconnect("tab_changed", self, "_on_tab_changed")
+  Event.disconnect("focus_changed", self, "_on_focus_changed")
+  Event.disconnect("menu_box_rotated", self, "_on_menu_box_rotated")
+  Event.disconnect("keyboard_action_biding", self, "_on_keyboard_action_biding")
+  Event.disconnect("player_explode", self, "_on_player_explode")
+  Event.disconnect("pause_menu_enter", self, "_on_pause_menu_enter")
+  Event.disconnect("pause_menu_exit", self, "_on_pause_menu_exit")
+  Event.disconnect("player_fall", self, "_on_player_falling")
 
 func _enter_tree():
   connect_signals()
@@ -81,4 +109,14 @@ func _on_player_jumped(): _sfx_play("jump")
 func _on_player_rotate(dir): _sfx_play("rotateLeft" if dir == -1 else "rotateRight")
 func _on_player_land(): _sfx_play("land")
 func _on_menu_pressed(): _sfx_play("menuSelect")
-func _on_gem_collected(_color, _position, _x):  _sfx_play("gemCollect")
+func _on_gem_collected(_color, _position, _x): _sfx_play("gemCollect")
+func _on_button_toggle(_value):  _sfx_play("menuValueChange")
+func _on_key_bound(_value, _value2):  _sfx_play("menuValueChange")
+func _on_tab_changed():  _sfx_play("menuFocus")
+func _on_focus_changed(): _sfx_play("menuFocus")
+func _on_menu_box_rotated(): _sfx_play("rotateRight")
+func _on_keyboard_action_biding(): _sfx_play("menuValueChange")
+func _on_player_explode(): _sfx_play("playerExplode")
+func _on_pause_menu_enter(): _sfx_play("menuSelect")
+func _on_pause_menu_exit(): _sfx_play("menuSelect")
+func _on_player_falling(): _sfx_play("playerFalling")

@@ -56,4 +56,5 @@ key = "rotate_right"
 anims/Blink = SubResource( 11 )
 anims/RESET = SubResource( 12 )
 
+[connection signal="mouse_entered" from="." to="." method="_on_KeyBindingButton_mouse_entered"]
 [connection signal="pressed" from="." to="." method="_on_KeyBindingButton_pressed"]

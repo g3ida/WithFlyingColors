@@ -4,6 +4,7 @@ export var group_name: String
 export var sprite_frames: SpriteFrames
 
 onready var lightNode = $Light2D
+onready var shineNode = $ShineSfx
 
 var states_store
 var current_state: GemBaseState
@@ -19,7 +20,8 @@ func _ready():
     $Light2D,
     $AnimatedSprite,
     $AnimatedSprite/AnimationPlayer,
-    $CollisionShape2D)
+    $CollisionShape2D,
+    shineNode)
     
   current_state = states_store.not_collected
   current_state.enter()

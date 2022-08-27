@@ -9,12 +9,14 @@ func _init(
   animated_sprite: AnimatedSprite,
   animation_player: AnimationPlayer,
   collision_shape: CollisionPolygon2D,
-  states_store: BaseStatesStore).(node, light, animated_sprite, animation_player, collision_shape, states_store):
+  shine_sfx: AudioStreamPlayer2D,
+  states_store: BaseStatesStore).(node, light, animated_sprite, animation_player, collision_shape, shine_sfx, states_store):
     pass
 
 func enter():
   self.collision_shape.set_deferred("disabled", true)
   self.animation_player.play("gem_collected_animation")
+  self.shine_sfx.stop()
 
 func exit():
   self.collision_shape.set_deferred("disabled", false)

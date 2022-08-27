@@ -39,3 +39,6 @@ func _on_show_animation_done(animation):
   self.visible = true
   animation_player.play("Shown")
   current_state = SHOWN
+
+func _on_PauseMenuButtons_mouse_entered():
+  grab_focus()

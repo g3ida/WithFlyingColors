@@ -15,11 +15,13 @@ func _init(
   animated_sprite: AnimatedSprite,
   animation_player: AnimationPlayer,
   collision_shape: CollisionPolygon2D,
-  states_store: BaseStatesStore).(node, light, animated_sprite, animation_player, collision_shape, states_store):
+  shine_sfx: AudioStreamPlayer2D,
+  states_store: BaseStatesStore).(node, light, animated_sprite, animation_player, collision_shape, shine_sfx, states_store):
     self.ocillator = NodeOcillator.new(self.node, AMPLITUDE, ANIMATION_DURATION)
 
 func enter():
   self.animation_player.play("RESET")
+  self.shine_sfx.play()
     
 func physics_update(delta: float) -> BaseState:
   self.light.position = self.animated_sprite.position

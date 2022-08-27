@@ -59,5 +59,10 @@ func _on_KeyBindingButton_pressed():
   if pressed:
     pressed = true
     is_listining = true
+    Event.emit_signal("keyboard_action_biding")
     $AnimationPlayer.play("Blink")
     get_tree().paused = true
+
+func _on_KeyBindingButton_mouse_entered():
+  if (!get_tree().paused):
+    grab_focus()

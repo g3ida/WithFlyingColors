@@ -39,5 +39,6 @@ margin_right = 149.0
 margin_bottom = 42.0
 icon = ExtResource( 2 )
 
+[connection signal="mouse_entered" from="." to="." method="_on_Button_mouse_entered"]
 [connection signal="pressed" from="HBoxContainer/Left" to="." method="_on_Left_pressed"]
 [connection signal="pressed" from="HBoxContainer/Right" to="." method="_on_Right_pressed"]

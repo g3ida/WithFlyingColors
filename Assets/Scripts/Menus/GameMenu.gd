@@ -10,6 +10,7 @@ enum {ENTER, RUNNING, EXIT}
 onready var screen_state: int
 var destination_screen: String = ""
 var animators = []
+var current_focus = null
 
 func _enter_tree():
   screen_state = ENTER
@@ -52,7 +53,10 @@ func navigate_to_screen(screen_path: String):
   
 
 func process(_delta):
-  pass
+  var focus_owner = get_focus_owner()
+  if (focus_owner != null && focus_owner != self.current_focus):
+    Event.emit_signal("focus_changed")
+  self.current_focus = focus_owner
 
 func on_enter():
   pass
