@@ -22,7 +22,7 @@ func enter():
 func physics_update(delta: float) -> BaseState:
   return .physics_update(delta)
 
-func _on_player_diying(_area, _position) -> BaseState:
+func _on_player_diying(_area, _position, _entity_type) -> BaseState:
     return null
 
 func exit():

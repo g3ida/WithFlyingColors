@@ -6,6 +6,7 @@ const WORLD_TO_SCREEN = 100
 var camera: Camera2D = null
 var player: KinematicBody2D = null
 
+enum EntityType {PLATFORM, FALLZONE, LAZER}
 enum {SETTINGS_MENU, PLAY_MENU, STATS_MENU, MAIN_MENU}
 
 var currentMenu = MAIN_MENU

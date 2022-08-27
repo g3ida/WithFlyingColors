@@ -86,8 +86,8 @@ func _enter_tree():
 func _exit_tree():
   disconnect_signals()
   
-func _on_player_diying(area, position):
-  var next_state = player_state._on_player_diying(area, position)
+func _on_player_diying(area, position, entity_type):
+  var next_state = player_state._on_player_diying(area, position, entity_type)
   switch_state(next_state)
 
 func _on_checkpoint_hit(checkpoint_object: Node2D):

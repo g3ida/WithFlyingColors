@@ -1,7 +1,7 @@
 extends Node
 
 signal player_landed(area, position)
-signal player_diying(area, position)
+signal player_diying(area, position, entity_type)
 signal player_died()
 signal player_jumped()
 signal player_rotate(dir)

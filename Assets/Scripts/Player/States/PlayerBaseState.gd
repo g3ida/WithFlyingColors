@@ -48,9 +48,9 @@ func physics_update(delta: float) -> BaseState:
 func _physics_update(_delta) -> BaseState:
 	return null
 
-func _on_player_diying(_area, _position) -> BaseState:
+func _on_player_diying(_area, _position, entity_type) -> BaseState:
 	var dying_state = self.states_store.get_state(PlayerStatesEnum.DYING)
-	dying_state.is_explosion = false if _area == null else true #if fallzone or platform
+	dying_state.is_explosion = false if entity_type == Global.EntityType.FALLZONE else true
 	return dying_state
 
 func on_land() -> BaseState:
