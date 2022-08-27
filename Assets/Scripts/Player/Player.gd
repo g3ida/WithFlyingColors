@@ -26,6 +26,8 @@ var states_store: PlayerStatesStore
 var player_state
 var player_rotation_state
 
+onready var jumpParticlesNode = $JumpParticles
+
 func _ready():
   playerRotationAction = PlayerRotationAction.new(self)
   sprite_size = $AnimatedSprite.frames.get_frame("idle", 0).get_width()

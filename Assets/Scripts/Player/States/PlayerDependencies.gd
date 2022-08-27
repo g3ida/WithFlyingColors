@@ -6,6 +6,7 @@ var light_occluder: LightOccluder2D
 var animated_sprite: AnimatedSprite
 var collision_shape: CollisionShape2D
 var player_rotation_action: PlayerRotationAction
+var player_jump_particles: CPUParticles2D
 var states_store
 
 func _init(the_player):
@@ -15,3 +16,4 @@ func _init(the_player):
   self.animated_sprite = the_player.get_node("AnimatedSprite")
   self.collision_shape = the_player.get_node("CollisionShape2D")
   self.player_rotation_action = the_player.playerRotationAction
+  self.player_jump_particles = the_player.jumpParticlesNode

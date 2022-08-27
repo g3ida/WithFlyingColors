@@ -18,11 +18,13 @@ func enter():
 	entred = true
 	jump_timer.reset()
 	Event.emit_signal("player_jumped")
+	jump_particles.emitting = true
 
 func exit():
 	entred = false
 	jump_timer.stop()
 	permissiveness_timer.stop()
+	jump_particles.emitting = false
 
 func physics_update(delta: float) -> BaseState:
 	return .physics_update(delta)

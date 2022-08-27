@@ -5,6 +5,7 @@ var player: KinematicBody2D
 var light_occluder: LightOccluder2D
 var animated_sprite: AnimatedSprite
 var collision_shape: CollisionShape2D
+var jump_particles: CPUParticles2D
 var states_store: BaseStatesStore
 
 
@@ -20,6 +21,7 @@ func _init(dependencies: PlayerDependencies).():
 		self.light_occluder = dependencies.light_occluder
 		self.collision_shape = dependencies.collision_shape
 		self.animated_sprite = dependencies.animated_sprite
+		self.jump_particles = dependencies.player_jump_particles
 		self.states_store = dependencies.states_store
 
 func enter():
