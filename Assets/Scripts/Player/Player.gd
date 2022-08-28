@@ -28,6 +28,13 @@ var player_rotation_state
 
 onready var jumpParticlesNode = $JumpParticles
 
+onready var faceSparatorBR_node = $FaceSeparatorBR
+onready var faceSparatorBL_node = $FaceSeparatorBL
+onready var faceSparatorTL_node = $FaceSeparatorTL
+onready var faceSparatorTR_node = $FaceSeparatorTR
+
+var faceSeparatorNodes = []
+
 func _ready():
   playerRotationAction = PlayerRotationAction.new(self)
   sprite_size = $AnimatedSprite.frames.get_frame("idle", 0).get_width()
@@ -50,6 +57,13 @@ func _ready():
   player_state.enter()
   player_rotation_state = states_store.idle_state
   player_rotation_state.enter()
+  
+  faceSeparatorNodes = [
+    faceSparatorBR_node,
+    faceSparatorBL_node,
+    faceSparatorTL_node,
+    faceSparatorTR_node
+  ]
 
 func _physics_process(delta):
   var next_state = player_rotation_state.physics_update(delta)
@@ -122,3 +136,8 @@ func switch_rotation_state(new_state):
     player_rotation_state.exit()
     player_rotation_state = new_state
     player_rotation_state.enter()
+    
+#useful for more permessiveness
+func scale_face_separators_by(factor: float) -> void:
+  for face_sep in faceSeparatorNodes:
+    face_sep.scale_by(factor)

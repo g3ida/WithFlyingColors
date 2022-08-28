@@ -11,8 +11,10 @@ func _init(dependencies: PlayerDependencies, direction: int).(dependencies):
 func enter():
   self.player_rotation.execute(rotation_direction)
   Event.emit_signal("player_rotate", rotation_direction)
+  self.player.scale_face_separators_by(10)
+  
 func exit():
-	pass
+  self.player.scale_face_separators_by(1)
 
 func physics_update(delta: float) -> BaseState:
   self.player_rotation.step(delta)

@@ -51,7 +51,6 @@ __meta__ = {
 occluder = SubResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 shape = SubResource( 1 )
 __meta__ = {
 "_edit_lock_": true
