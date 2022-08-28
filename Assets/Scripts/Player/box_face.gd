@@ -1,4 +1,16 @@
-extends Area2D
+extends BaseFace
+
+func _ready():
+  pass
+
+func scale_by(factor: float):
+  var scale_factor: float = factor
+  self.scale = Vector2(scale_factor, scale_factor)
+
+  var xx = cos(rotation)
+  var yy = sin(rotation)
+  self.position.x = position_x + extents.y * (scale_factor - 1.0) * Helpers.sign_of(self.position.y) * sin(rotation)
+  self.position.y = position_y - extents.y * (scale_factor - 1.0) * Helpers.sign_of(self.position.y) * cos(rotation)
 
 func _on_bottomFace_area_entered(area):
   var group = get_groups()

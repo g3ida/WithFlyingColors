@@ -28,12 +28,18 @@ var player_rotation_state
 
 onready var jumpParticlesNode = $JumpParticles
 
-onready var faceSparatorBR_node = $FaceSeparatorBR
-onready var faceSparatorBL_node = $FaceSeparatorBL
-onready var faceSparatorTL_node = $FaceSeparatorTL
-onready var faceSparatorTR_node = $FaceSeparatorTR
+onready var faceSparatorBR_node := $FaceSeparatorBR
+onready var faceSparatorBL_node := $FaceSeparatorBL
+onready var faceSparatorTL_node := $FaceSeparatorTL
+onready var faceSparatorTR_node := $FaceSeparatorTR
+
+onready var bottomFaceNode := $BottomFace
+onready var topFaceNode := $TopFace
+onready var leftFaceNode := $LeftFace
+onready var rightFaceNode := $RightFace
 
 var faceSeparatorNodes = []
+var faceNodes = []
 
 func _ready():
   playerRotationAction = PlayerRotationAction.new(self)
@@ -64,6 +70,13 @@ func _ready():
     faceSparatorTL_node,
     faceSparatorTR_node
   ]
+  
+  faceNodes = [
+    bottomFaceNode,
+    topFaceNode,
+    leftFaceNode,
+    rightFaceNode
+   ]
 
 func _physics_process(delta):
   var next_state = player_rotation_state.physics_update(delta)
@@ -140,4 +153,8 @@ func switch_rotation_state(new_state):
 #useful for more permessiveness
 func scale_face_separators_by(factor: float) -> void:
   for face_sep in faceSeparatorNodes:
+    face_sep.scale_by(factor)
+    
+func scale_faces_by(factor: float) -> void:
+  for face_sep in faceNodes:
     face_sep.scale_by(factor)
