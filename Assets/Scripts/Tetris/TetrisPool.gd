@@ -21,6 +21,7 @@ var tetrominos = [
   i_block
  ]
 var random_bag = []
+var score = 0
 
 onready var spawnPosNode = $SpawnPosition
 
@@ -32,7 +33,7 @@ var nb_queued_lines_to_remove = 0
 var ai: TetrisAI
 
 var shape_is_in_wait_time = false
-var move_shape_down_wait_time = 0.05
+var move_shape_down_wait_time = 0.01
 
 var block_size: float
 var shape: Tetromino
@@ -55,11 +56,15 @@ func get_random_tetromino_with_next():
     return {"current": current, "next": next}
   elif random_bag.empty():
     random_bag = [ s_block, z_block, l_block, j_block, o_block, t_block, i_block ]
+    #random_bag = [ t_block, t_block ]
+    #########
     random_bag.shuffle()
     return get_random_tetromino_with_next()
   else:
     var current = random_bag.pop_back()
     random_bag = [ s_block, z_block, l_block, j_block, o_block, t_block, i_block ]
+    #random_bag = [ t_block, t_block ]
+#############
     random_bag.shuffle()
     random_bag.push_front(current)
     return get_random_tetromino_with_next()
@@ -74,13 +79,13 @@ func get_random_tetromino():
 
 func ai_spawn_block():
   var pick = get_random_tetromino_with_next()
-  print(pick)
-  var random_tetromino = pick["current"]
-  shape = random_tetromino.instance()
-  shape.set_grid(grid)
-  var best = ai.best(grid, random_tetromino)
+  var current_tetromino = pick["current"]
+  var best = ai.best(grid, current_tetromino)
   var pos = best["position"]
   var rot = best["rotation"]
+
+  shape = current_tetromino.instance()
+  shape.set_grid(grid)
   shape.move_by(pos, Constants.TETRIS_SPAWN_J)
   add_child(shape)
   for _i in range(rot):
@@ -173,11 +178,11 @@ func _ready():
   init_grid()
   ai = TetrisAI.new()
 
+func reset():
+  pass
 
-var cc = 0
 func _on_TetrixPool_lines_removed(count):
-  cc += count
-
+  score += count
 
 func _on_TetrixPool_game_over():
-  print("==== GAME OVER: ", cc)
+  pass

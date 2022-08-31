@@ -76,7 +76,7 @@ func best(grid: Array, tetromino: PackedScene):
   var best_position = Constants.TETRIS_SPAWN_J
   var best_score = -INF
 
-  for i in range(4):    
+  for i in range(4): 
     for c in range(Constants.TETRIS_POOL_WIDTH):
       var rotated_piece: Tetromino = tetromino.instance()
       rotated_piece._ready()
@@ -90,8 +90,8 @@ func best(grid: Array, tetromino: PackedScene):
         rotated_piece.move_by(c, 0)
         while(rotated_piece.move_down_safe()):
           pass
-        
         rotated_piece.add_to_grid()
+
         var score = calculate_grid_score(grid)
         if score > best_score:
           best_score = score
@@ -99,9 +99,7 @@ func best(grid: Array, tetromino: PackedScene):
           best_rotation = i
         rotated_piece.remove_from_grid()
         rotated_piece.queue_free()
-  
-  print(best_score)
-  return {"position": best_position, "rotation": best_rotation}
+  return {"position": best_position, "rotation": best_rotation, "score": best_score}
 
 # line removal functions
 func remove_full_lines(grid):

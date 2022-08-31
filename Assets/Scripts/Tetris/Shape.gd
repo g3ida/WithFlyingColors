@@ -10,7 +10,7 @@ var grid = []
 
 func inc_rotate_index() -> void: rotate_index = (rotate_index + 1) % DIRECTIONS
 func dec_rotate_index() -> void: rotate_index = (rotate_index - 1) % DIRECTIONS
-func move_rotate_index_by(dir: int) -> void: rotate_index = abs((rotate_index + dir) % DIRECTIONS)
+func move_rotate_index_by(dir: int) -> void: rotate_index = (rotate_index + dir) % DIRECTIONS
 
 func set_grid(_grid: Array):
   grid = _grid
@@ -33,7 +33,7 @@ func move_right_safe() -> bool: return move_by_safe(1, 0)
 func rotate_left() -> void: rotate_dir(-1)
 func rotate_left_safe() -> bool: return rotate_dir_safe(-1)
 
-func rotate_right() -> void: rotate_dir(-1)
+func rotate_right() -> void: rotate_dir(1)
 func rotate_right_safe() -> bool: return rotate_dir_safe(1)
 
 
