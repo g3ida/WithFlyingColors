@@ -7,4 +7,5 @@ enum {
   IDLE,
   ROTATING_LEFT,
   ROTATING_RIGHT,
+  DASHING
 }

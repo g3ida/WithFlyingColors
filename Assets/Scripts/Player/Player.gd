@@ -26,6 +26,8 @@ var states_store: PlayerStatesStore
 var player_state
 var player_rotation_state
 
+var can_dash = true
+
 onready var jumpParticlesNode = $JumpParticles
 
 onready var faceSparatorBR_node := $FaceSeparatorBR
@@ -99,9 +101,9 @@ func reset():
   
 
 func connect_signals():
-  Event.connect("player_diying", self, "_on_player_diying")
-  Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
-  Event.connect("checkpoint_loaded", self, "reset")
+  var __ = Event.connect("player_diying", self, "_on_player_diying")
+  __ = Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
+  __ = Event.connect("checkpoint_loaded", self, "reset")
   
 func disconnect_signals():
   Event.disconnect("player_diying", self, "_on_player_diying")

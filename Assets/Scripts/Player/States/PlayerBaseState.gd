@@ -14,7 +14,7 @@ const ElasticOut = preload("res://Assets/Scripts/Utils/Interpolation/ElasticOut.
 
 const SPEED = 350
 const GRAVITY = 980
-const FALL_FACTOR = 2
+const FALL_FACTOR = 2.5
 
 func _init(dependencies: PlayerDependencies).():
 		self.player = dependencies.player
@@ -29,12 +29,18 @@ func enter():
 func exit():
 	pass
 func physics_update(delta: float) -> BaseState:
-	if Input.is_action_pressed("move_right"):
-		player.velocity.x = SPEED
-	elif Input.is_action_pressed("move_left"):
-		player.velocity.x = -SPEED
-	
-	player.velocity.y += GRAVITY * delta * FALL_FACTOR
+	if player.player_state != self.states_store.get_state(PlayerStatesEnum.DYING):
+		if Input.is_action_just_pressed("dash") and player.can_dash:
+			return self.states_store.get_state(PlayerStatesEnum.DASHING)
+
+		if player.player_state != self.states_store.get_state(PlayerStatesEnum.DASHING):
+			if Input.is_action_pressed("move_right"):
+				player.velocity.x = SPEED
+			elif Input.is_action_pressed("move_left"):
+				player.velocity.x = -SPEED
+		
+		player.velocity.y += GRAVITY * delta * FALL_FACTOR
+
 	var new_state = _physics_update(delta)
 	
 	player.velocity = player.move_and_slide(player.velocity, Vector2.UP)

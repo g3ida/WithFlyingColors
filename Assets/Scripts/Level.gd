@@ -3,7 +3,7 @@ extends Node2D
 export var level_path: String
 
 func connect_signals():
-  Event.connect("player_died", self, "_on_game_over")
+  var __ = Event.connect("player_died", self, "_on_game_over")
 
 func disconnect_signals():
   Event.disconnect("player_died", self, "_on_game_over")

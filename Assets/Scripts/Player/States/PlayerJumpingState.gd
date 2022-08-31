@@ -7,7 +7,7 @@ const PERMISSIVENESS = 0.09
 const FACE_SEPARATOR_SCALE_FACTOR = 4.5
 const FACE_SCALE_FACTOR = 0.7
 
-const JUMP_FORCE = 1000
+const JUMP_FORCE = 1200
 var entred = false
 var jump_timer: CountdownTimer
 var permissiveness_timer: CountdownTimer

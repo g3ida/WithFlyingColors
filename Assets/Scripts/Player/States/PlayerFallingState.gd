@@ -3,6 +3,7 @@ extends PlayerBaseState
 
 const CountdownTimer = preload("res://Assets/Scripts/Utils/CountdownTimer.gd")
 var permissiveness_timer: CountdownTimer
+var was_on_floor = false
 const PERMISSIVENESS = 0.04
 
 func _init(dependencies: PlayerDependencies).(dependencies):
@@ -10,7 +11,8 @@ func _init(dependencies: PlayerDependencies).(dependencies):
 func enter():
 	animated_sprite.play("idle")
 	animated_sprite.playing = false
-	permissiveness_timer.reset()
+	if (was_on_floor):
+		permissiveness_timer.reset()
 	jump_particles.emitting = true
 func exit():
 	permissiveness_timer.stop()
