@@ -10,11 +10,11 @@ func _ready():
   labelAnimationNode.play("Fade")
 
 
-func _on_LabelAnimation_animation_finished(anim_name):
+func _on_LabelAnimation_animation_finished(_anim_name):
   on_anim_end()
 
 
-func _on_AnimationPlayer_animation_finished(anim_name):
+func _on_AnimationPlayer_animation_finished(_anim_name):
   on_anim_end()
   
 func on_anim_end():

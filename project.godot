@@ -162,7 +162,7 @@ _global_script_classes=[ {
 "base": "Node2D",
 "class": "Tetromino",
 "language": "GDScript",
-"path": "res://Assets/Scripts/Tetris/Shape.gd"
+"path": "res://Assets/Scripts/Tetris/Tetromino.gd"
 }, {
 "base": "Node",
 "class": "UISelectDriver",

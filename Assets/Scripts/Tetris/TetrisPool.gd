@@ -214,7 +214,7 @@ func update_scorebaord():
   scoreBoardNode.set_high_score(high_score)
   scoreBoardNode.set_score(score)
   var old_level = level
-  level = int(score / 2)+1
+  level = int(score / 10)+1
   if (old_level != level):
     scoreBoardNode.set_level(level)
     var speed = min(level, Constants.TETRIS_MAX_LEVELS)
