@@ -92,9 +92,9 @@ func move_by_safe(i: int, j: int) -> bool:
     return true
   return false
 
-func add_to_grid():
+func add_to_grid(permessive_mode = true):
   for ch in get_children():
-    ch.add_to_grid()
+    ch.add_to_grid(permessive_mode)
 
 func remove_from_grid():
   for ch in get_children():

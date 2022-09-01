@@ -81,3 +81,6 @@ rotation = 1.5708
 [node name="RightFace" parent="." groups=["pink"] instance=ExtResource( 3 )]
 position = Vector2( 45.9, 0 )
 rotation = -1.5708
+
+[node name="FallTimer" type="Timer" parent="."]
+wait_time = 1.5

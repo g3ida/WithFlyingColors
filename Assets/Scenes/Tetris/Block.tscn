@@ -53,6 +53,7 @@ anims/Blink = SubResource( 1 )
 anims/RESET = SubResource( 2 )
 
 [node name="KinematicBody2D" type="KinematicBody2D" parent="."]
+visible = false
 collision_layer = 128
 collision_mask = 71
 
@@ -61,6 +62,7 @@ position = Vector2( 37, 37 )
 shape = SubResource( 3 )
 
 [node name="Area2D" type="Area2D" parent="."]
+visible = false
 collision_layer = 128
 collision_mask = 16
 

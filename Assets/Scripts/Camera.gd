@@ -3,7 +3,6 @@ extends Camera2D
 func _ready():
   if is_current():
     Global.camera = self
-    zoom_by(2)
 
 func _process(_delta):
   if is_current():

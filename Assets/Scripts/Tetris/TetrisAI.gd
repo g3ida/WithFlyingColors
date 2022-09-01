@@ -90,7 +90,7 @@ func best(grid: Array, tetromino: PackedScene):
         rotated_piece.move_by(c, 0)
         while(rotated_piece.move_down_safe()):
           pass
-        rotated_piece.add_to_grid()
+        rotated_piece.add_to_grid(false)
 
         var score = calculate_grid_score(grid)
         if score > best_score:

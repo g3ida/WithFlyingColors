@@ -11,7 +11,7 @@ const o_block =  preload("res://Assets/Scenes/Tetris/O_Block.tscn")
 const t_block =  preload("res://Assets/Scenes/Tetris/T_Block.tscn")
 const i_block =  preload("res://Assets/Scenes/Tetris/I_Block.tscn")
 
-var tetrominos = [
+const tetrominos = [
   s_block,
   z_block,
   l_block,
@@ -20,10 +20,14 @@ var tetrominos = [
   t_block,
   i_block
  ]
+
 var random_bag = []
 var score = 0
 
 onready var spawnPosNode = $SpawnPosition
+onready var scoreBoardNode = $ScoreBoard
+onready var shapeWaitTimerNode = $ShapeWaitTimer
+onready var removeLinesDurationTimerNode = $RemoveLinesDurationTimer
 
 export (NodePath) var playerNode
 
@@ -33,14 +37,20 @@ var nb_queued_lines_to_remove = 0
 var ai: TetrisAI
 
 var shape_is_in_wait_time = false
-var move_shape_down_wait_time = 0.01
 
-var block_size: float
 var shape: Tetromino
 
 var grid = []
 
 onready var player = get_node(playerNode)
+
+func clear_grid():
+  if grid != null:
+    for i in range(Constants.TETRIS_POOL_WIDTH):
+      for j in range(Constants.TETRIS_POOL_HEIGHT):
+        if grid[i][j] != null:
+          grid[i][j].queue_free()
+    grid = null
 
 func init_grid():
   grid = []
@@ -56,26 +66,14 @@ func get_random_tetromino_with_next():
     return {"current": current, "next": next}
   elif random_bag.empty():
     random_bag = [ s_block, z_block, l_block, j_block, o_block, t_block, i_block ]
-    #random_bag = [ t_block, t_block ]
-    #########
     random_bag.shuffle()
     return get_random_tetromino_with_next()
   else:
     var current = random_bag.pop_back()
     random_bag = [ s_block, z_block, l_block, j_block, o_block, t_block, i_block ]
-    #random_bag = [ t_block, t_block ]
-#############
     random_bag.shuffle()
     random_bag.push_front(current)
     return get_random_tetromino_with_next()
-
-func get_random_tetromino():
-  if !random_bag.empty():
-    return random_bag.pop_back()
-  else:
-    random_bag = [ s_block, z_block, l_block, j_block, o_block, t_block, i_block ]
-    random_bag.shuffle()
-    return random_bag.pop_back()
 
 func ai_spawn_block():
   var pick = get_random_tetromino_with_next()
@@ -91,15 +89,6 @@ func ai_spawn_block():
   for _i in range(rot):
     shape.rotate_left()
   shape.position = spawnPosNode.position + Vector2(Constants.TETRIS_BLOCK_SIZE*(pos-Constants.TETRIS_SPAWN_I), 0)
-  return shape
-
-func default_spawn_block():
-  var random_tetromino = get_random_tetromino()
-  shape = random_tetromino.instance()
-  shape.set_grid(grid)
-  shape.move_by(Constants.TETRIS_SPAWN_I, Constants.TETRIS_SPAWN_J)
-  add_child(shape)
-  shape.position = spawnPosNode.position
   return shape
 
 func _generate_blocks():
@@ -125,7 +114,8 @@ func _physics_process(_delta):
 func move_shape_down():
   shape_is_in_wait_time = true
   if shape.move_down_safe():
-    yield(get_tree().create_timer(move_shape_down_wait_time), "timeout")
+    shapeWaitTimerNode.start()
+    yield(shapeWaitTimerNode, "timeout")
   else:
     shape.add_to_grid()
     remove_lines()
@@ -140,11 +130,12 @@ func remove_lines():
 
 func remove_line_cells(line: int):
   nb_queued_lines_to_remove += 1
-  var animation_duration = grid[0][line].blink_animation_duration
+  removeLinesDurationTimerNode.wait_time = grid[0][line].blink_animation_duration
   for i in range(Constants.TETRIS_POOL_WIDTH):
     grid[i][line].destroy()
     grid[i][line] = null
-  yield(get_tree().create_timer(animation_duration), "timeout")
+  removeLinesDurationTimerNode.start()
+  yield(removeLinesDurationTimerNode, "timeout")
   move_down_lines_above(line)
   nb_queued_lines_to_remove -= 1
 
@@ -177,12 +168,51 @@ func _ready():
   randomize()
   init_grid()
   ai = TetrisAI.new()
+  reset(true)
 
-func reset():
-  pass
+func _enter_tree():
+  connect_signals()
+  
+func _exit_tree():
+  disconnect_signals()
+
+func connect_signals():
+  var __ = Event.connect("player_diying", self, "_on_player_diying")
+  __ = Event.connect("checkpoint_loaded", self, "reset")
+    
+func disconnect_signals():
+  Event.disconnect("player_diying", self, "_on_player_diying")
+  Event.disconnect("checkpoint_loaded", self, "reset")
+
+func reset(first_time = false):
+  is_paused = false
+  nb_queued_lines_to_remove = 0
+  score = 0
+  have_active_block = false
+  shape_is_in_wait_time = false
+  shapeWaitTimerNode.wait_time = Constants.TETRIS_SPEEDS[0]
+  random_bag = []
+  if shape != null:
+    shape.queue_free()
+    shape = null
+  if !first_time:
+    clear_grid()
+  init_grid()
+  update_scorebaord()
+
+func update_scorebaord():
+  scoreBoardNode.set_score(score)
+  scoreBoardNode.set_level(int(score / 10)+1)
+
+func _on_player_diying(_area, _position, _entity_type):
+  is_paused = true
 
 func _on_TetrixPool_lines_removed(count):
   score += count
+  update_scorebaord()
 
 func _on_TetrixPool_game_over():
   pass
+  
+func _on_CheckpointArea_playerEntred():
+  Global.camera.zoom_by(1.5)

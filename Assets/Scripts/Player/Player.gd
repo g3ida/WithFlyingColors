@@ -29,6 +29,7 @@ var player_rotation_state
 var can_dash = true
 
 onready var jumpParticlesNode = $JumpParticles
+onready var fallTimerNode = $FallTimer
 
 onready var faceSparatorBR_node := $FaceSeparatorBR
 onready var faceSparatorBL_node := $FaceSeparatorBL

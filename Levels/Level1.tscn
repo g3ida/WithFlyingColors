@@ -50,7 +50,7 @@ texture = ExtResource( 11 )
 centered = false
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
-position = Vector2( 4252, 495 )
+position = Vector2( 3719, 495 )
 collision_mask = 13
 
 [node name="Camera2D" parent="Player" instance=ExtResource( 6 )]
@@ -177,7 +177,7 @@ objectToFollow = NodePath("../Player")
 color_group = "blue"
 
 [node name="TetrixPool" parent="." instance=ExtResource( 31 )]
-position = Vector2( 4850, 550 )
+position = Vector2( 5200, 550 )
 __meta__ = {
 "_edit_group_": true
 }

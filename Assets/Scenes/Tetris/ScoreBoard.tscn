@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/Fonts/pixel_scoreboard.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Assets/Scripts/Tetris/ScoreBoard.gd" type="Script" id=2]
+
+[node name="ScoreBoard" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="Background" type="ColorRect" parent="."]
+margin_right = 504.0
+margin_bottom = 288.0
+color = Color( 0, 0.027451, 0.027451, 1 )
+
+[node name="Background2" type="ColorRect" parent="."]
+margin_left = 18.0
+margin_top = 18.0
+margin_right = 486.0
+margin_bottom = 270.0
+color = Color( 0, 0.12549, 0.12549, 1 )
+
+[node name="Score" type="Label" parent="."]
+margin_left = 37.0
+margin_top = 57.0
+margin_right = 325.0
+margin_bottom = 105.0
+custom_fonts/font = ExtResource( 1 )
+text = "SCORE:"
+
+[node name="Level" type="Label" parent="."]
+margin_left = 37.0
+margin_top = 170.0
+margin_right = 325.0
+margin_bottom = 218.0
+custom_fonts/font = ExtResource( 1 )
+text = "LEVEL:"

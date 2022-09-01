@@ -16,7 +16,8 @@ func enter():
     Event.emit_signal("player_died")
   else:
     Event.emit_signal("player_fall")
-    yield(player.get_tree().create_timer(1.5), "timeout")
+    player.fallTimerNode.start()
+    yield(player.fallTimerNode, "timeout")
     Event.emit_signal("player_died")
 
 func physics_update(delta: float) -> BaseState:
