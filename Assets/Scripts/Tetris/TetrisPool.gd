@@ -23,11 +23,15 @@ const tetrominos = [
 
 var random_bag = []
 var score = 0
+var level = 1
+var high_score = 40
 
 onready var spawnPosNode = $SpawnPosition
 onready var scoreBoardNode = $ScoreBoard
 onready var shapeWaitTimerNode = $ShapeWaitTimer
 onready var removeLinesDurationTimerNode = $RemoveLinesDurationTimer
+onready var tetrisAudioPlayer = $AudioStreamPlayer
+onready var nextPieceNode = $NextPiece
 
 export (NodePath) var playerNode
 
@@ -78,6 +82,7 @@ func get_random_tetromino_with_next():
 func ai_spawn_block():
   var pick = get_random_tetromino_with_next()
   var current_tetromino = pick["current"]
+  nextPieceNode.set_next_piece(pick["next"])
   var best = ai.best(grid, current_tetromino)
   var pos = best["position"]
   var rot = best["rotation"]
@@ -185,7 +190,8 @@ func disconnect_signals():
   Event.disconnect("checkpoint_loaded", self, "reset")
 
 func reset(first_time = false):
-  is_paused = false
+  Global.camera.zoom_by(1.0)
+  is_paused = true
   nb_queued_lines_to_remove = 0
   score = 0
   have_active_block = false
@@ -201,8 +207,16 @@ func reset(first_time = false):
   update_scorebaord()
 
 func update_scorebaord():
+  scoreBoardNode.set_high_score(high_score)
   scoreBoardNode.set_score(score)
-  scoreBoardNode.set_level(int(score / 10)+1)
+  var old_level = level
+  level = int(score / 10)+1
+  if (old_level != level):
+    scoreBoardNode.set_level(level)
+    var speed = min(level, Constants.TETRIS_MAX_LEVELS)
+    shapeWaitTimerNode.wait_time = Constants.TETRIS_SPEEDS[speed]
+    tetrisAudioPlayer.pitch_scale = 1 + (speed-1) * 0.02
+
 
 func _on_player_diying(_area, _position, _entity_type):
   is_paused = true
@@ -216,3 +230,4 @@ func _on_TetrixPool_game_over():
   
 func _on_CheckpointArea_playerEntred():
   Global.camera.zoom_by(1.5)
+  is_paused = false

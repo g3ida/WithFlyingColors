@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Assets/Scripts/Tetris/NextPiece.gd" type="Script" id=1]
+
+[node name="NextPiece" type="Node2D"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Background" type="ColorRect" parent="."]
+margin_left = -252.0
+margin_top = -144.0
+margin_right = 252.0
+margin_bottom = 144.0
+color = Color( 0, 0.027451, 0.027451, 1 )
+
+[node name="Background2" type="ColorRect" parent="."]
+margin_left = -234.0
+margin_top = -126.0
+margin_right = 234.0
+margin_bottom = 126.0
+color = Color( 0, 0.12549, 0.12549, 1 )

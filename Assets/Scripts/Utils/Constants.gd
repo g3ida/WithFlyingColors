@@ -5,4 +5,7 @@ const TETRIS_POOL_WIDTH = 10
 const TETRIS_POOL_HEIGHT = 18
 const TETRIS_SPAWN_I = 5
 const TETRIS_SPAWN_J = 2
-const TETRIS_SPEEDS = [0.3, 0.2, 0.1, 0.07]
+const TETRIS_SPEEDS = [0.3, 0.23, 0.17, 0.11, 0.07]
+const TETRIS_MAX_LEVELS = 5
+
+const EPSILON = 0.001

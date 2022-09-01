@@ -135,10 +135,7 @@ texture = ExtResource( 8 )
 group = "pink"
 
 [node name="Node2D" parent="MovingPlatform" instance=ExtResource( 20 )]
-wait_time = null
 is_vertical = true
-speed = null
-distance = null
 
 [node name="MovingPlatform2" parent="." instance=ExtResource( 21 )]
 position = Vector2( 1374, 365 )
@@ -147,7 +144,6 @@ texture = ExtResource( 29 )
 group = "blue"
 
 [node name="Node2D" parent="MovingPlatform2" instance=ExtResource( 20 )]
-wait_time = null
 distance = 1500.0
 
 [node name="MovingPlatform3" parent="." instance=ExtResource( 21 )]
@@ -157,7 +153,6 @@ texture = ExtResource( 29 )
 group = "blue"
 
 [node name="Node2D" parent="MovingPlatform3" instance=ExtResource( 20 )]
-wait_time = null
 distance = 1000.0
 
 [node name="LazerBeam" parent="." instance=ExtResource( 22 )]
