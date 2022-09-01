@@ -11,7 +11,6 @@ func _process(_delta):
     Global.camera = self
     
 func zoom_by(factor: float):
-  #fixme: use tween
   tweenNode.interpolate_property(self, "zoom", zoom, Vector2(factor, factor), 1.0)
   tweenNode.start()
   zoom = Vector2(factor, factor)

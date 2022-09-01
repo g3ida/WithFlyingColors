@@ -3,6 +3,8 @@ extends Node2D
 signal lines_removed(count)
 signal game_over()
 
+const level_up = preload("res://Assets/Scenes/Tetris/LevelUp.tscn")
+
 const s_block =  preload("res://Assets/Scenes/Tetris/S_Block.tscn")
 const z_block =  preload("res://Assets/Scenes/Tetris/Z_Block.tscn")
 const l_block =  preload("res://Assets/Scenes/Tetris/L_Block.tscn")
@@ -32,6 +34,7 @@ onready var shapeWaitTimerNode = $ShapeWaitTimer
 onready var removeLinesDurationTimerNode = $RemoveLinesDurationTimer
 onready var tetrisAudioPlayer = $AudioStreamPlayer
 onready var nextPieceNode = $NextPiece
+onready var levelUpPositionNode = $LevelUpPosition
 
 export (NodePath) var playerNode
 
@@ -76,7 +79,7 @@ func get_random_tetromino_with_next():
     var current = random_bag.pop_back()
     random_bag = [ s_block, z_block, l_block, j_block, o_block, t_block, i_block ]
     random_bag.shuffle()
-    random_bag.push_front(current)
+    random_bag.push_back(current)
     return get_random_tetromino_with_next()
 
 func ai_spawn_block():
@@ -129,7 +132,8 @@ func move_shape_down():
  
 func remove_lines():
   var lines = detect_lines()
-  emit_signal("lines_removed", lines.size())
+  if (lines.size() > 0):
+    emit_signal("lines_removed", lines.size())
   for l in lines:
     remove_line_cells(l)
 
@@ -210,12 +214,15 @@ func update_scorebaord():
   scoreBoardNode.set_high_score(high_score)
   scoreBoardNode.set_score(score)
   var old_level = level
-  level = int(score / 10)+1
+  level = int(score / 2)+1
   if (old_level != level):
     scoreBoardNode.set_level(level)
     var speed = min(level, Constants.TETRIS_MAX_LEVELS)
     shapeWaitTimerNode.wait_time = Constants.TETRIS_SPEEDS[speed]
     tetrisAudioPlayer.pitch_scale = 1 + (speed-1) * 0.02
+    var level_up_node = level_up.instance()
+    add_child(level_up_node)
+    level_up_node.position = levelUpPositionNode.position
 
 
 func _on_player_diying(_area, _position, _entity_type):
