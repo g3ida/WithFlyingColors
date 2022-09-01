@@ -38,7 +38,7 @@ func _process(delta):
       screen_state = RUNNING
   elif screen_state == EXIT:
     if is_exit_ceremony_done():
-      get_tree().change_scene(destination_screen)
+      var __ = get_tree().change_scene(destination_screen)
   
   for animator in animators:
     animator.update(delta)

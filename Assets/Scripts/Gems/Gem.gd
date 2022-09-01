@@ -45,8 +45,8 @@ func _on_AnimationPlayer_animation_finished(anim_name):
   switch_state(state)
 
 func connect_signals():
-  Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
-  Event.connect("checkpoint_loaded", self, "reset")
+  var __ = Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
+  __ = Event.connect("checkpoint_loaded", self, "reset")
     
 func disconnect_signals():
   Event.disconnect("checkpoint_reached", self, "_on_checkpoint_hit")

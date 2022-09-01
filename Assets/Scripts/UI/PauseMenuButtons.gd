@@ -30,12 +30,12 @@ func _ready():
   self.visible = false
   animation_player.play("Hidden")
     
-func _on_hide_animation_done(animation):
+func _on_hide_animation_done(_animation):
   self.visible = false
   animation_player.play("Hidden")
   current_state = HIDDEN
 
-func _on_show_animation_done(animation):
+func _on_show_animation_done(_animation):
   self.visible = true
   animation_player.play("Shown")
   current_state = SHOWN
