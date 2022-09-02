@@ -5,14 +5,14 @@ var power: float
 var bounces: int
 var scale : float
 
-func _init(value: float, power: float, bounces: int, scale: float).():
-	self.value = value
-	self.power = power
-	self.bounces = bounces * PI * (1 if bounces % 2 == 0 else -1)
-	self.scale = scale
-	
+func _init(_value: float, _power: float, _bounces: int, _scale: float).():
+  self.value = _value
+  self.power = _power
+  self.bounces = int(_bounces * PI * (1 if _bounces % 2 == 0 else -1))
+  self.scale = _scale
+  
 func apply (start: float, end: float, a: float) -> float:
-	return start + (end - start) * _apply(a);
-	
-func _apply(a: float) -> float:
-	return 0.0
+  return start + (end - start) * _apply(a);
+  
+func _apply(_a: float) -> float:
+  return 0.0

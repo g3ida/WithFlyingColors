@@ -26,6 +26,24 @@ var states_store: PlayerStatesStore
 var player_state
 var player_rotation_state
 
+var can_dash = true
+
+onready var jumpParticlesNode = $JumpParticles
+onready var fallTimerNode = $FallTimer
+
+onready var faceSparatorBR_node := $FaceSeparatorBR
+onready var faceSparatorBL_node := $FaceSeparatorBL
+onready var faceSparatorTL_node := $FaceSeparatorTL
+onready var faceSparatorTR_node := $FaceSeparatorTR
+
+onready var bottomFaceNode := $BottomFace
+onready var topFaceNode := $TopFace
+onready var leftFaceNode := $LeftFace
+onready var rightFaceNode := $RightFace
+
+var faceSeparatorNodes = []
+var faceNodes = []
+
 func _ready():
   playerRotationAction = PlayerRotationAction.new(self)
   sprite_size = $AnimatedSprite.frames.get_frame("idle", 0).get_width()
@@ -44,10 +62,24 @@ func _ready():
   self.reset_position = self.global_position
   
   states_store = PlayerStatesStore.new(self)
-  player_state = states_store.standing_state
+  player_state = states_store.falling_state
   player_state.enter()
   player_rotation_state = states_store.idle_state
   player_rotation_state.enter()
+  
+  faceSeparatorNodes = [
+    faceSparatorBR_node,
+    faceSparatorBL_node,
+    faceSparatorTL_node,
+    faceSparatorTR_node
+  ]
+  
+  faceNodes = [
+    bottomFaceNode,
+    topFaceNode,
+    leftFaceNode,
+    rightFaceNode
+   ]
 
 func _physics_process(delta):
   var next_state = player_rotation_state.physics_update(delta)
@@ -70,9 +102,9 @@ func reset():
   
 
 func connect_signals():
-  Event.connect("player_diying", self, "_on_player_diying")
-  Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
-  Event.connect("checkpoint_loaded", self, "reset")
+  var __ = Event.connect("player_diying", self, "_on_player_diying")
+  __ = Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
+  __ = Event.connect("checkpoint_loaded", self, "reset")
   
 func disconnect_signals():
   Event.disconnect("player_diying", self, "_on_player_diying")
@@ -86,8 +118,8 @@ func _enter_tree():
 func _exit_tree():
   disconnect_signals()
   
-func _on_player_diying(area, position):
-  var next_state = player_state._on_player_diying(area, position)
+func _on_player_diying(area, position, entity_type):
+  var next_state = player_state._on_player_diying(area, position, entity_type)
   switch_state(next_state)
 
 func _on_checkpoint_hit(checkpoint_object: Node2D):
@@ -120,3 +152,12 @@ func switch_rotation_state(new_state):
     player_rotation_state.exit()
     player_rotation_state = new_state
     player_rotation_state.enter()
+    
+#useful for more permessiveness
+func scale_face_separators_by(factor: float) -> void:
+  for face_sep in faceSeparatorNodes:
+    face_sep.scale_by(factor)
+    
+func scale_faces_by(factor: float) -> void:
+  for face_sep in faceNodes:
+    face_sep.scale_by(factor)

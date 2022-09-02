@@ -31,5 +31,5 @@ func _physics_process(delta):
   if (global_position - initial_position).length_squared() > MAX_DISTANCE_SQUARED:
     queue_free()
 
-func _on_ColorArea_body_entered(body):
+func _on_ColorArea_body_entered(_body):
     queue_free()

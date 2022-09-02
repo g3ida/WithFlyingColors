@@ -1,9 +1,20 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Assets/Animations/player_frames.tres" type="SpriteFrames" id=1]
 [ext_resource path="res://Assets/Scripts/Player/Player.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Scenes/BoxFace.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/Scenes/FaceSeparator.tscn" type="PackedScene" id=4]
+
+[sub_resource type="Curve" id=6]
+max_value = 45.0
+_data = [ Vector2( 0.0126984, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.984127, 22.7292 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="Curve" id=4]
+max_value = 2.0
+_data = [ Vector2( 0, 0.801536 ), 0.0, 0.0, 0, 0, Vector2( 0.984127, 0.324058 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="Gradient" id=5]
+colors = PoolColorArray( 1, 1, 1, 0.454902, 1, 1, 1, 0.113725 )
 
 [sub_resource type="OccluderPolygon2D" id=2]
 polygon = PoolVector2Array( -47, -47, 47, -47, 47, 47, -47, 47 )
@@ -15,6 +26,22 @@ extents = Vector2( 47.75, 47.75 )
 collision_layer = 2
 collision_mask = 9
 script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="JumpParticles" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 2
+lifetime = 0.5
+local_coords = false
+emission_shape = 2
+emission_rect_extents = Vector2( 1, 1 )
+gravity = Vector2( 0, 0 )
+angle_curve = SubResource( 6 )
+scale_amount = 75.0
+scale_amount_curve = SubResource( 4 )
+color_ramp = SubResource( 5 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = ExtResource( 1 )
@@ -27,11 +54,22 @@ __meta__ = {
 occluder = SubResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 shape = SubResource( 1 )
 __meta__ = {
 "_edit_lock_": true
 }
+
+[node name="FaceSeparatorBR" parent="." groups=["blue", "pink"] instance=ExtResource( 4 )]
+position = Vector2( 46.5, 46.5 )
+
+[node name="FaceSeparatorBL" parent="." groups=["blue", "yellow"] instance=ExtResource( 4 )]
+position = Vector2( -46.5, 46.5 )
+
+[node name="FaceSeparatorTL" parent="." groups=["purple", "yellow"] instance=ExtResource( 4 )]
+position = Vector2( -46.5, -46.5 )
+
+[node name="FaceSeparatorTR" parent="." groups=["pink", "purple"] instance=ExtResource( 4 )]
+position = Vector2( 46.5, -46.5 )
 
 [node name="BottomFace" parent="." groups=["blue"] instance=ExtResource( 3 )]
 position = Vector2( 0, 45.9 )
@@ -47,14 +85,5 @@ rotation = 1.5708
 position = Vector2( 45.9, 0 )
 rotation = -1.5708
 
-[node name="FaceSeparatorBR" parent="." groups=["blue", "pink"] instance=ExtResource( 4 )]
-position = Vector2( 46.5, 46.5 )
-
-[node name="FaceSeparatorBL" parent="." groups=["blue", "yellow"] instance=ExtResource( 4 )]
-position = Vector2( -46.5, 46.5 )
-
-[node name="FaceSeparatorTL" parent="." groups=["purple", "yellow"] instance=ExtResource( 4 )]
-position = Vector2( -46.5, -46.5 )
-
-[node name="FaceSeparatorTR" parent="." groups=["pink", "purple"] instance=ExtResource( 4 )]
-position = Vector2( 46.5, -46.5 )
+[node name="FallTimer" type="Timer" parent="."]
+wait_time = 1.5

@@ -19,9 +19,9 @@ func _ready():
   $TextureRect.texture = texture_empty
 func connect_signals():
   if not Engine.editor_hint:
-    Event.connect("gem_collected", self, "_on_gem_collected")
-    Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
-    Event.connect("checkpoint_loaded", self, "reset")
+    var __ = Event.connect("gem_collected", self, "_on_gem_collected")
+    __ = Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
+    __ = Event.connect("checkpoint_loaded", self, "reset")
 
 func disconnect_signals():
   if not Engine.editor_hint:
@@ -42,7 +42,7 @@ func _on_gem_collected(col, position, frames):
       animation,
       Vector2(20, 20),
       1)
-    Event.connect("slide_animation_ended", self, "_on_slide_anim_ended", [], CONNECT_ONESHOT)
+    var __ = Event.connect("slide_animation_ended", self, "_on_slide_anim_ended", [], CONNECT_ONESHOT)
 
 func _on_slide_anim_ended(anim_name):
   if anim_name == "gem_slide":

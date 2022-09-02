@@ -4,8 +4,10 @@ extends PlayerBaseState
 const CountdownTimer = preload("res://Assets/Scripts/Utils/CountdownTimer.gd")
 const TIME_UNTIL_FULL_JUMP_IS_CONSIDERED = 0.15
 const PERMISSIVENESS = 0.09
+const FACE_SEPARATOR_SCALE_FACTOR = 4.5
+const FACE_SCALE_FACTOR = 0.7
 
-const JUMP_FORCE = 1000
+const JUMP_FORCE = 1200
 var entred = false
 var jump_timer: CountdownTimer
 var permissiveness_timer: CountdownTimer
@@ -18,11 +20,17 @@ func enter():
 	entred = true
 	jump_timer.reset()
 	Event.emit_signal("player_jumped")
+	jump_particles.emitting = true
+	self.player.scale_face_separators_by(FACE_SEPARATOR_SCALE_FACTOR)
+	self.player.scale_faces_by(FACE_SCALE_FACTOR)
 
 func exit():
 	entred = false
 	jump_timer.stop()
 	permissiveness_timer.stop()
+	jump_particles.emitting = false
+	self.player.scale_face_separators_by(1)
+	self.player.scale_faces_by(1)
 
 func physics_update(delta: float) -> BaseState:
 	return .physics_update(delta)

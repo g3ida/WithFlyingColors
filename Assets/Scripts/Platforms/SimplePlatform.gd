@@ -50,7 +50,7 @@ func _process(delta):
       shaderMaterial.set_shader_param("u_aspect_ratio", resolution.y / resolution.x)
 
 func connect_signals():
-  Event.connect("player_landed", self, "_on_Player_landed")
+  var __ = Event.connect("player_landed", self, "_on_Player_landed")
   
 func disconnect_signals():
   Event.disconnect("player_landed", self, "_on_Player_landed")

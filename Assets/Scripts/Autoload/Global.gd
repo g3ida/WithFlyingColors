@@ -6,16 +6,17 @@ const WORLD_TO_SCREEN = 100
 var camera: Camera2D = null
 var player: KinematicBody2D = null
 
+enum EntityType {PLATFORM, FALLZONE, LAZER}
 enum {SETTINGS_MENU, PLAY_MENU, STATS_MENU, MAIN_MENU}
 
 var currentMenu = MAIN_MENU
 var PreviousMenu = PLAY_MENU
 
 func _ready():
-  Event.connect("Stats_button_pressed", self, "_on_menu_change_to_stats")
-  Event.connect("Play_button_pressed", self, "_on_menu_change_to_play")
-  Event.connect("Settings_button_pressed", self, "_on_menu_change_to_settings")
-  Event.connect("Go_to_main_menu_pressed", self, "_on_menu_change_to_main")
+  var __ = Event.connect("Stats_button_pressed", self, "_on_menu_change_to_stats")
+  __ = Event.connect("Play_button_pressed", self, "_on_menu_change_to_play")
+  __ = Event.connect("Settings_button_pressed", self, "_on_menu_change_to_settings")
+  __ = Event.connect("Go_to_main_menu_pressed", self, "_on_menu_change_to_main")
 
 func _on_menu_change_to_stats():
   _on_menu_change(STATS_MENU)

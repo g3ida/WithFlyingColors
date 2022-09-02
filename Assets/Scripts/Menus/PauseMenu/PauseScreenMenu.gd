@@ -33,7 +33,7 @@ func pause():
       
 func _on_BackButton_pressed():
   resume()
-  get_tree().change_scene("res://Assets/Screens/MainMenu.tscn")
+  var __ = get_tree().change_scene("res://Assets/Screens/MainMenu.tscn")
 
 func _on_ResumeButton2_pressed():
   if (is_paused):

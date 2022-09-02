@@ -2,11 +2,11 @@ extends Node
 
 signal play_sfx(sfx_name)
 
+const MusicTrackManager = preload("res://Assets/Scenes/Audio/MusicTrackManager.tscn")
+
 onready var jump_sfx: AudioStreamPlayer = AudioStreamPlayer.new()
 onready var rotate_left_sfx: AudioStreamPlayer = AudioStreamPlayer.new()
 onready var rotate_right_sfx: AudioStreamPlayer = AudioStreamPlayer.new()
-
-var x = preload("res://Assets/sfx/menu_select.ogg")
 
 var sfx_data: Dictionary = {
   "jump": {"path": "res://Assets/sfx/jumping.ogg", "volume": -5},
@@ -23,6 +23,7 @@ var sfx_data: Dictionary = {
 }
 
 var sfx_pool: Dictionary = {}
+var music_track_manager = null
 
 func fill_sfx_pool():
   for key in sfx_data.keys():
@@ -38,11 +39,14 @@ func fill_sfx_pool():
     if sfx_data[key].has("pitch_scale"):
       audio_player.pitch_scale = sfx_data[key]["pitch_scale"]
       
+    audio_player.bus = "sfx"
     sfx_pool[key] = audio_player
     add_child(audio_player)
 
 func _ready():
   pause_mode = PAUSE_MODE_PROCESS
+  music_track_manager = MusicTrackManager.instance()
+  add_child(music_track_manager)
   fill_sfx_pool()
 
 func _sfx_play(sfx):
@@ -50,28 +54,28 @@ func _sfx_play(sfx):
   sfx_pool[sfx].play()
 
 func connect_signals():
-  self.connect("play_sfx", self, "_sfx_play")
-  Event.connect("player_jumped", self, "_on_player_jumped")
-  Event.connect("player_rotate", self, "_on_player_rotate")
-  Event.connect("player_land", self, "_on_player_land")
-  Event.connect("Play_button_pressed", self, "_on_menu_pressed")
-  Event.connect("Stats_button_pressed", self, "_on_menu_pressed")
-  Event.connect("Settings_button_pressed", self, "_on_menu_pressed")
-  Event.connect("Quit_button_pressed", self, "_on_menu_pressed")
-  Event.connect("Go_to_main_menu_pressed", self, "_on_menu_pressed")
-  Event.connect("gem_collected", self, "_on_gem_collected")
-  Event.connect("Fullscreen_toggled", self, "_on_button_toggle")
-  Event.connect("Vsync_toggled", self, "_on_button_toggle")
-  Event.connect("Screen_size_changed", self, "_on_button_toggle")
-  Event.connect("on_action_bound", self, "_on_key_bound")
-  Event.connect("tab_changed", self, "_on_tab_changed")
-  Event.connect("focus_changed", self, "_on_focus_changed")
-  Event.connect("menu_box_rotated", self, "_on_menu_box_rotated")
-  Event.connect("keyboard_action_biding", self, "_on_keyboard_action_biding")
-  Event.connect("player_explode", self, "_on_player_explode")
-  Event.connect("pause_menu_enter", self, "_on_pause_menu_enter")
-  Event.connect("pause_menu_exit", self, "_on_pause_menu_exit")
-  Event.connect("player_fall", self, "_on_player_falling")
+  var __ = self.connect("play_sfx", self, "_sfx_play")
+  __ = Event.connect("player_jumped", self, "_on_player_jumped")
+  __ = Event.connect("player_rotate", self, "_on_player_rotate")
+  __ = Event.connect("player_land", self, "_on_player_land")
+  __ = Event.connect("Play_button_pressed", self, "_on_menu_pressed")
+  __ = Event.connect("Stats_button_pressed", self, "_on_menu_pressed")
+  __ = Event.connect("Settings_button_pressed", self, "_on_menu_pressed")
+  __ = Event.connect("Quit_button_pressed", self, "_on_menu_pressed")
+  __ = Event.connect("Go_to_main_menu_pressed", self, "_on_menu_pressed")
+  __ = Event.connect("gem_collected", self, "_on_gem_collected")
+  __ = Event.connect("Fullscreen_toggled", self, "_on_button_toggle")
+  __ = Event.connect("Vsync_toggled", self, "_on_button_toggle")
+  __ = Event.connect("Screen_size_changed", self, "_on_button_toggle")
+  __ = Event.connect("on_action_bound", self, "_on_key_bound")
+  __ = Event.connect("tab_changed", self, "_on_tab_changed")
+  __ = Event.connect("focus_changed", self, "_on_focus_changed")
+  __ = Event.connect("menu_box_rotated", self, "_on_menu_box_rotated")
+  __ = Event.connect("keyboard_action_biding", self, "_on_keyboard_action_biding")
+  __ = Event.connect("player_explode", self, "_on_player_explode")
+  __ = Event.connect("pause_menu_enter", self, "_on_pause_menu_enter")
+  __ = Event.connect("pause_menu_exit", self, "_on_pause_menu_exit")
+  __ = Event.connect("player_fall", self, "_on_player_falling")
 
 
 
@@ -120,3 +124,6 @@ func _on_player_explode(): _sfx_play("playerExplode")
 func _on_pause_menu_enter(): _sfx_play("menuSelect")
 func _on_pause_menu_exit(): _sfx_play("menuSelect")
 func _on_player_falling(): _sfx_play("playerFalling")
+
+func emit_play_sfx(sfx_name):
+  emit_signal("play_sfx", sfx_name)

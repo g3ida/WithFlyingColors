@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Myuu-Tetris-Dark-Version.mp3-a05fe5198480559afe13406d522501c2.mp3str"
+
+[deps]
+
+source_file="res://Assets/Music/Myuu-Tetris-Dark-Version.mp3"
+dest_files=[ "res://.import/Myuu-Tetris-Dark-Version.mp3-a05fe5198480559afe13406d522501c2.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0

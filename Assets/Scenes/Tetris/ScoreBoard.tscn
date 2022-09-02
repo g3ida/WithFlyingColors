@@ -1,0 +1,43 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Assets/Fonts/pixel_scoreboard.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Assets/Scripts/Tetris/ScoreBoard.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scenes/Tetris/ScoreBlinkingLabel.tscn" type="PackedScene" id=3]
+
+[node name="ScoreBoard" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="Background" type="ColorRect" parent="."]
+margin_right = 504.0
+margin_bottom = 288.0
+color = Color( 0, 0.027451, 0.027451, 1 )
+
+[node name="Background2" type="ColorRect" parent="."]
+margin_left = 18.0
+margin_top = 18.0
+margin_right = 486.0
+margin_bottom = 270.0
+color = Color( 0, 0.12549, 0.12549, 1 )
+
+[node name="Score" parent="." instance=ExtResource( 3 )]
+
+[node name="Level" parent="." instance=ExtResource( 3 )]
+margin_top = 133.0
+margin_bottom = 181.0
+text = "LEVEL:"
+
+[node name="HiScore" type="Label" parent="."]
+margin_left = 35.0
+margin_top = 220.0
+margin_right = 108.0
+margin_bottom = 268.0
+custom_fonts/font = ExtResource( 1 )
+text = "HI"
+
+[node name="HiScore2" type="Label" parent="."]
+margin_left = 115.0
+margin_top = 220.0
+margin_right = 335.0
+margin_bottom = 268.0
+custom_fonts/font = ExtResource( 1 )
+text = "SCORE:"

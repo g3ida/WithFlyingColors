@@ -91,15 +91,41 @@ margin_top = 169.0
 margin_right = 236.0
 margin_bottom = 189.0
 
-[node name="PauseLabel" type="Label" parent="GridContainer"]
+[node name="DashLabel" type="Label" parent="GridContainer"]
 margin_top = 207.0
 margin_right = 117.0
 margin_bottom = 221.0
+text = "DASH"
+
+[node name="DashBtn" parent="GridContainer" instance=ExtResource( 4 )]
+margin_left = 167.0
+margin_right = 236.0
+key = "dash"
+
+[node name="DownLabel" type="Label" parent="GridContainer"]
+margin_top = 242.0
+margin_right = 117.0
+margin_bottom = 256.0
+text = "DOWN"
+
+[node name="DownBtn" parent="GridContainer" instance=ExtResource( 4 )]
+margin_left = 167.0
+margin_top = 239.0
+margin_right = 236.0
+margin_bottom = 259.0
+key = "down"
+
+[node name="PauseLabel" type="Label" parent="GridContainer"]
+margin_top = 277.0
+margin_right = 117.0
+margin_bottom = 291.0
 text = "Pause"
 
 [node name="KeyBindingButton" parent="GridContainer" instance=ExtResource( 4 )]
 margin_left = 167.0
+margin_top = 274.0
 margin_right = 236.0
+margin_bottom = 294.0
 key = "pause"
 
 [connection signal="on_action_bound_signal" from="." to="GridContainer/JumpBtn" method="_on_Control_on_action_bound_signal"]
@@ -113,4 +139,6 @@ key = "pause"
 [connection signal="keyboard_action_bound" from="GridContainer/RightBtn" to="." method="_on_keyboard_input_action_bound"]
 [connection signal="keyboard_action_bound" from="GridContainer/RotLeftBtn" to="." method="_on_keyboard_input_action_bound"]
 [connection signal="keyboard_action_bound" from="GridContainer/RotRightBtn" to="." method="_on_keyboard_input_action_bound"]
+[connection signal="keyboard_action_bound" from="GridContainer/DashBtn" to="." method="_on_keyboard_input_action_bound"]
+[connection signal="keyboard_action_bound" from="GridContainer/DownBtn" to="." method="_on_keyboard_input_action_bound"]
 [connection signal="keyboard_action_bound" from="GridContainer/KeyBindingButton" to="." method="_on_keyboard_input_action_bound"]

@@ -32,10 +32,10 @@ func is_enter_ceremony_done() -> bool:
   return animators_done()
 
 func connect_signals():
-  Event.connect("Play_button_pressed", self, "_on_Play_button_pressed")
-  Event.connect("Quit_button_pressed", self, "_on_Quit_button_pressed")
-  Event.connect("Settings_button_pressed", self, "_on_Settings_button_pressed")
-  Event.connect("Stats_button_pressed", self, "_on_Stats_button_pressed")
+  var __ = Event.connect("Play_button_pressed", self, "_on_Play_button_pressed")
+  __ = Event.connect("Quit_button_pressed", self, "_on_Quit_button_pressed")
+  __ = Event.connect("Settings_button_pressed", self, "_on_Settings_button_pressed")
+  __ = Event.connect("Stats_button_pressed", self, "_on_Stats_button_pressed")
 
 func disconnect_signals():
   Event.disconnect("Play_button_pressed", self, "_on_Play_button_pressed")

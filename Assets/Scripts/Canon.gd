@@ -16,6 +16,7 @@ onready var canonAnimation = $Canon/ShootAnimation
 onready var standColorAreaNode = $Body/StandColorArea
 onready var canonColorAreaNode = $Body/CanonColorArea
 onready var shootSound = $ShoutSound
+onready var cooldownTimerNode = $CooldownTimer
 
 var follow: Node = null
 var angle: float = 0
@@ -34,6 +35,7 @@ func _ready():
   canonColorAreaNode.add_to_group(color_group)
   satndNode.texture = stand_texture
   canonNode.texture = canon_texture
+  cooldownTimerNode.wait_time = cooldown
   
 func spawn_bullet():
   var bullet = bullet_scene.instance()
@@ -50,7 +52,8 @@ func shoot(direction: Vector2):
   var bullet = spawn_bullet()
   bullet.shoot(direction)
   shootSound.play()
-  yield(get_tree().create_timer(cooldown), "timeout")
+  cooldownTimerNode.start()
+  yield(cooldownTimerNode, "timeout")
   can_shoot = true
 
 func sign_of(x : float) -> float:

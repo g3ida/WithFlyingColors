@@ -7,7 +7,7 @@ func _ready():
   if color_group == null:
     push_error("color_group can not be null")
 
-func _on_Checkpoint_body_shape_entered(body_rid, body, body_shape_index, local_shape_index):
+func _on_Checkpoint_body_shape_entered(_body_rid, _body, _body_shape_index, _local_shape_index):
   if (not is_checked):
     is_checked = true
     $CheckHole/CheckDot/AnimationPlayer.play("Checkpoint")

@@ -16,7 +16,7 @@ func can_respond_to_input() -> bool:
   return is_active && get_parent().is_enter_ceremony_done()
 
 func _enter_tree():
-  var is_active = true
+  is_active = true
   if Global.PreviousMenu == Global.STATS_MENU:
     $MenuBox.rotate(-PI)
     active_index = 2

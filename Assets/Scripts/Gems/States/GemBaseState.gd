@@ -10,20 +10,20 @@ var shine_sfx: AudioStreamPlayer2D
 var states_store: BaseStatesStore
   
 func _init(
-  node: Node2D,
-  light: Light2D,
-  animated_sprite: AnimatedSprite,
-  animation_player: AnimationPlayer,
-  collision_shape: CollisionPolygon2D,
-  shine_sfx: AudioStreamPlayer2D,
-  states_store: BaseStatesStore).():
-    self.node = node
-    self.light = light
-    self.animated_sprite = animated_sprite
-    self.animation_player = animation_player
-    self.collision_shape = collision_shape
-    self.shine_sfx = shine_sfx
-    self.states_store = states_store
+  _node: Node2D,
+  _light: Light2D,
+  _animated_sprite: AnimatedSprite,
+  _animation_player: AnimationPlayer,
+  _collision_shape: CollisionPolygon2D,
+  _shine_sfx: AudioStreamPlayer2D,
+  _states_store: BaseStatesStore).():
+    self.node = _node
+    self.light = _light
+    self.animated_sprite = _animated_sprite
+    self.animation_player = _animation_player
+    self.collision_shape = _collision_shape
+    self.shine_sfx = _shine_sfx
+    self.states_store = _states_store
 func enter():
   pass
 func exit():

@@ -43,4 +43,4 @@ func _physics_process(_delta):
       if (groups.front() == color):
         pass #play some sfx maybe ?
       else:
-        Event.emit_signal("player_diying", null, global_position)
+        Event.emit_signal("player_diying", null, global_position, Global.EntityType.LAZER)
