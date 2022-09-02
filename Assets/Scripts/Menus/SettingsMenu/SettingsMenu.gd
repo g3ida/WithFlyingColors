@@ -11,7 +11,7 @@ func _input(_event):
     tab_container.current_tab = 1
 
 func on_enter():
-  Event.connect("Go_to_main_menu_pressed", self, "_on_go_to_main_menu_pressed")
+  var __ = Event.connect("Go_to_main_menu_pressed", self, "_on_go_to_main_menu_pressed")
   animators.append(init_control_element_animator($GAME, DELAY))
   animators.append(init_control_element_animator($SETTINGS, 2*DELAY))
   animators.append(init_control_element_animator($BackButton, DELAY))

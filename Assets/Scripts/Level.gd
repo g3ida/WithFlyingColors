@@ -10,9 +10,12 @@ func disconnect_signals():
   
 func _enter_tree():
   connect_signals()
+  AudioManager.music_track_manager.add_track("level1", "res://Assets/Music/Feelin' Good.mp3", -5.0)
+  AudioManager.music_track_manager.play_track("level1")
 
 func _exit_tree():
   disconnect_signals()
+  AudioManager.music_track_manager.stop()
 
 func _on_game_over():
   Event.emit_signal("checkpoint_loaded")

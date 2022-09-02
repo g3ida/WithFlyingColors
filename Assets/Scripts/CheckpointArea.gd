@@ -1,13 +1,21 @@
 extends Area2D
 
-signal playerEntred()
+signal checkpoint_hit()
+
+export var color_group: String
+var is_checked: bool = false
 
 func _ready():
-  pass
+  if color_group == null:
+    push_error("color_group can not be null")
+  
       
 func _on_CheckpointArea_body_entered(_body):
-  emit_signal("playerEntred")
-  set_camera_limits()
+  if not is_checked:
+    is_checked = true
+    set_camera_limits()
+    emit_signal("checkpoint_hit")
+    Event.emit_signal("checkpoint_reached", self)
 
 func set_camera_limits():
   for ch in get_children():

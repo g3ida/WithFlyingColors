@@ -50,14 +50,14 @@ texture = ExtResource( 11 )
 centered = false
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
-position = Vector2( 3719, 495 )
+position = Vector2( 615, 167 )
 collision_mask = 13
 
 [node name="Camera2D" parent="Player" instance=ExtResource( 6 )]
 limit_left = -200
-limit_top = -2000
-limit_right = 8000
-limit_bottom = 620
+limit_top = -2500
+limit_right = 10000
+limit_bottom = 1000
 drag_margin_h_enabled = true
 drag_margin_top = 0.3
 drag_margin_bottom = 0.3
@@ -99,13 +99,13 @@ position = Vector2( 738, 898 )
 scale = Vector2( 600, 4.788 )
 
 [node name="YellowGem" parent="." instance=ExtResource( 10 )]
-position = Vector2( 355, -159 )
+position = Vector2( 298, -168 )
 z_index = 100
 group_name = "yellow"
 sprite_frames = ExtResource( 13 )
 
 [node name="BuleGem" parent="." instance=ExtResource( 10 )]
-position = Vector2( 3692, -49 )
+position = Vector2( 4132, 476 )
 group_name = "blue"
 sprite_frames = ExtResource( 12 )
 
@@ -147,7 +147,7 @@ group = "blue"
 distance = 1500.0
 
 [node name="MovingPlatform3" parent="." instance=ExtResource( 21 )]
-position = Vector2( 2039, 677 )
+position = Vector2( 3086, 457 )
 scale = Vector2( 3, 2 )
 texture = ExtResource( 29 )
 group = "blue"
@@ -172,8 +172,5 @@ objectToFollow = NodePath("../Player")
 color_group = "blue"
 
 [node name="TetrixPool" parent="." instance=ExtResource( 31 )]
-position = Vector2( 5200, 550 )
-__meta__ = {
-"_edit_group_": true
-}
+position = Vector2( 5950, -987 )
 playerNode = NodePath("../Player")

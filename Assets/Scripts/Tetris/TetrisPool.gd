@@ -32,9 +32,10 @@ onready var spawnPosNode = $SpawnPosition
 onready var scoreBoardNode = $ScoreBoard
 onready var shapeWaitTimerNode = $ShapeWaitTimer
 onready var removeLinesDurationTimerNode = $RemoveLinesDurationTimer
-onready var tetrisAudioPlayer = $AudioStreamPlayer
 onready var nextPieceNode = $NextPiece
 onready var levelUpPositionNode = $LevelUpPosition
+onready var SlidingFloorSliderNode = $SlidingFloor/Node2D
+onready var TriggerEnterAreaNode = $TriggerEnterArea
 
 export (NodePath) var playerNode
 
@@ -42,12 +43,10 @@ var is_paused: bool = false
 var have_active_block = false
 var nb_queued_lines_to_remove = 0
 var ai: TetrisAI
-
 var shape_is_in_wait_time = false
-
 var shape: Tetromino
-
 var grid = []
+var is_vergin := true
 
 onready var player = get_node(playerNode)
 
@@ -148,7 +147,6 @@ func remove_line_cells(line: int):
   move_down_lines_above(line)
   nb_queued_lines_to_remove -= 1
 
-
 func move_down_lines_above(line: int):
   for j in range(line-1, -1, -1):
     for i in range(Constants.TETRIS_POOL_WIDTH):
@@ -194,7 +192,8 @@ func disconnect_signals():
   Event.disconnect("checkpoint_loaded", self, "reset")
 
 func reset(first_time = false):
-  Global.camera.zoom_by(1.0)
+  if (is_vergin and !first_time):
+    return
   is_paused = true
   nb_queued_lines_to_remove = 0
   score = 0
@@ -207,6 +206,7 @@ func reset(first_time = false):
     shape = null
   if !first_time:
     clear_grid()
+    is_paused = false
   init_grid()
   update_scorebaord()
 
@@ -219,10 +219,11 @@ func update_scorebaord():
     scoreBoardNode.set_level(level)
     var speed = min(level, Constants.TETRIS_MAX_LEVELS)
     shapeWaitTimerNode.wait_time = Constants.TETRIS_SPEEDS[speed]
-    tetrisAudioPlayer.pitch_scale = 1 + (speed-1) * 0.02
-    var level_up_node = level_up.instance()
-    add_child(level_up_node)
-    level_up_node.position = levelUpPositionNode.position
+    AudioManager.music_track_manager.set_pitch_scale(1 + (speed-1) * 0.1)
+    if (level > 1):
+      var level_up_node = level_up.instance()
+      add_child(level_up_node)
+      level_up_node.position = levelUpPositionNode.position
 
 
 func _on_player_diying(_area, _position, _entity_type):
@@ -235,6 +236,19 @@ func _on_TetrixPool_lines_removed(count):
 func _on_TetrixPool_game_over():
   pass
   
-func _on_CheckpointArea_playerEntred():
+func _on_TriggerEnterArea_body_entered(_body):
+  #fixme: check player
   Global.camera.zoom_by(1.5)
   is_paused = false
+  SlidingFloorSliderNode.set_looping(false)
+  SlidingFloorSliderNode.stop_slider(false)
+  is_vergin = false
+  
+  #tetrisAudioPlayer.play()
+  print("here")
+  AudioManager.music_track_manager.add_track("tetris", "res://Assets/Music/Myuu-Tetris-Dark-Version.mp3", -5.0)
+  AudioManager.music_track_manager.play_track("tetris")
+  
+  if (TriggerEnterAreaNode != null):
+    TriggerEnterAreaNode.queue_free()
+    TriggerEnterAreaNode = null

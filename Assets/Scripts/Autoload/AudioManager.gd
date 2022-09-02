@@ -2,11 +2,11 @@ extends Node
 
 signal play_sfx(sfx_name)
 
+const MusicTrackManager = preload("res://Assets/Scenes/Audio/MusicTrackManager.tscn")
+
 onready var jump_sfx: AudioStreamPlayer = AudioStreamPlayer.new()
 onready var rotate_left_sfx: AudioStreamPlayer = AudioStreamPlayer.new()
 onready var rotate_right_sfx: AudioStreamPlayer = AudioStreamPlayer.new()
-
-var x = preload("res://Assets/sfx/menu_select.ogg")
 
 var sfx_data: Dictionary = {
   "jump": {"path": "res://Assets/sfx/jumping.ogg", "volume": -5},
@@ -23,6 +23,7 @@ var sfx_data: Dictionary = {
 }
 
 var sfx_pool: Dictionary = {}
+var music_track_manager = null
 
 func fill_sfx_pool():
   for key in sfx_data.keys():
@@ -38,11 +39,14 @@ func fill_sfx_pool():
     if sfx_data[key].has("pitch_scale"):
       audio_player.pitch_scale = sfx_data[key]["pitch_scale"]
       
+    audio_player.bus = "sfx"
     sfx_pool[key] = audio_player
     add_child(audio_player)
 
 func _ready():
   pause_mode = PAUSE_MODE_PROCESS
+  music_track_manager = MusicTrackManager.instance()
+  add_child(music_track_manager)
   fill_sfx_pool()
 
 func _sfx_play(sfx):

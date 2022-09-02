@@ -2,11 +2,12 @@ extends Camera2D
 
 onready var tweenNode = $Tween
 
+var target_zoom: float = 1.0
 var saved_zoom_factor: float = 1.0
-var saved_bottom_limit: float = INF
-var saved_top_limit: float = 0
-var saved_left_limit: float = 0
-var saved_right_limit: float = INF
+var saved_bottom_limit: int = 10000
+var saved_top_limit: int = 0
+var saved_left_limit: int = 0
+var saved_right_limit: int = 10000
 
 var did_checkpoint_hit = false
 
@@ -18,8 +19,8 @@ func _process(_delta):
   if is_current():
     Global.camera = self
 
-func _on_checkpoint_hit():
-  saved_zoom_factor = zoom.x
+func _on_checkpoint_hit(_checkpoint):
+  saved_zoom_factor = target_zoom
   saved_bottom_limit = limit_bottom
   saved_top_limit = limit_top
   saved_left_limit = limit_left
@@ -28,13 +29,14 @@ func _on_checkpoint_hit():
   
 func reset():
   if (did_checkpoint_hit):
-    zoom = Vector2(saved_zoom_factor, saved_zoom_factor)
+    zoom_by (saved_zoom_factor)
     limit_bottom = saved_bottom_limit
     limit_top = saved_top_limit
     limit_left = saved_left_limit
     limit_right = saved_right_limit
-  
+       
 func zoom_by(factor: float):
+  target_zoom = factor
   tweenNode.interpolate_property(self, "zoom", zoom, Vector2(factor, factor), 1.0)
   tweenNode.start()
   zoom = Vector2(factor, factor)

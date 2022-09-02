@@ -47,12 +47,12 @@ func _input(event):
 func is_valid() -> bool:
   return text == default_text
 
-func _on_Control_on_action_bound_signal(action, key):
-  if action == self.key or key != value:
+func _on_Control_on_action_bound_signal(_action, _key):
+  if _action == self.key or _key != value:
     return
   value = null
   text = default_text
-  emit_signal("keyboard_action_bound", action, null)
+  emit_signal("keyboard_action_bound", _action, null)
 
 
 func _on_KeyBindingButton_pressed():
