@@ -8,12 +8,15 @@ const PERMISSIVENESS = 0.04
 
 func _init(dependencies: PlayerDependencies).(dependencies):
 	permissiveness_timer = CountdownTimer.new(PERMISSIVENESS, false)
+	self.base_state = PlayerStatesEnum.FALLING
+
 func enter():
 	animated_sprite.play("idle")
 	animated_sprite.playing = false
 	if (was_on_floor):
 		permissiveness_timer.reset()
 	jump_particles.emitting = true
+	
 func exit():
 	permissiveness_timer.stop()
 	jump_particles.emitting = false

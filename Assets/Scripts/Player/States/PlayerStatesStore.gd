@@ -28,20 +28,20 @@ func _init(player):
   idle_state = PlayerRotatingIdleState.new(dependencies)
 
 func get_state(_state: int):
-	if _state ==  PlayerStatesEnum.IDLE:
-		return idle_state
-	if _state ==  PlayerStatesEnum.ROTATING_LEFT:
-		return rotating_left_state
-	if _state ==  PlayerStatesEnum.ROTATING_RIGHT:
-		return rotating_right_state
-	if _state ==  PlayerStatesEnum.STANDING:
-		return standing_state
-	if _state ==  PlayerStatesEnum.JUMPING:
-		return jumping_state
-	if _state ==  PlayerStatesEnum.FALLING:
-		return falling_state
-	if _state ==  PlayerStatesEnum.DYING:
-		return dying_state
-	if _state ==  PlayerStatesEnum.DASHING:
-		return dashing_state
-	return null
+  if _state ==  PlayerStatesEnum.IDLE:
+    return idle_state
+  if _state ==  PlayerStatesEnum.ROTATING_LEFT:
+    return rotating_left_state
+  if _state ==  PlayerStatesEnum.ROTATING_RIGHT:
+    return rotating_right_state
+  if _state ==  PlayerStatesEnum.STANDING:
+    return standing_state
+  if _state ==  PlayerStatesEnum.JUMPING:
+    return jumping_state
+  if _state ==  PlayerStatesEnum.FALLING:
+    return falling_state
+  if _state ==  PlayerStatesEnum.DYING:
+    return dying_state
+  if _state ==  PlayerStatesEnum.DASHING:
+    return dashing_state
+  return null

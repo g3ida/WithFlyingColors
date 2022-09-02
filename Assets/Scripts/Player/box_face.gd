@@ -19,5 +19,5 @@ func _on_bottomFace_area_entered(area):
   
   if not (area.is_in_group(group.front())):
     Event.emit_signal("player_diying", area, global_position, Global.EntityType.PLATFORM)
-  else:
+  elif Global.player.player_state.base_state != PlayerStatesEnum.STANDING:
     Event.emit_signal("player_landed", area, global_position)

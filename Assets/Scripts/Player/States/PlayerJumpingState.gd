@@ -15,6 +15,7 @@ var permissiveness_timer: CountdownTimer
 func _init(dependencies: PlayerDependencies).(dependencies):
 	jump_timer = CountdownTimer.new(TIME_UNTIL_FULL_JUMP_IS_CONSIDERED, false)
 	permissiveness_timer = CountdownTimer.new(PERMISSIVENESS, false)
+	self.base_state = PlayerStatesEnum.JUMPING
 
 func enter():
 	entred = true

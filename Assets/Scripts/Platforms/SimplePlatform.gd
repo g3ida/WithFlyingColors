@@ -36,7 +36,7 @@ func _process(delta):
   animation_timer += delta
   var shaderMaterial = $NinePatchRect.material as ShaderMaterial
   if (shaderMaterial != null):
-    var resolution = get_viewport().size
+    var resolution = get_viewport().get_size_override()
     var cam = Global.camera
     if (cam != null):
       var camPos = cam.get_camera_screen_center()
@@ -50,7 +50,7 @@ func _process(delta):
       shaderMaterial.set_shader_param("u_aspect_ratio", resolution.y / resolution.x)
 
 func connect_signals():
-  var __ = Event.connect("player_landed", self, "_on_Player_landed")
+  Event.connect("player_landed", self, "_on_Player_landed")
   
 func disconnect_signals():
   Event.disconnect("player_landed", self, "_on_Player_landed")

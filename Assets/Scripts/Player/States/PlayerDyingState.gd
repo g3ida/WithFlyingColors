@@ -6,6 +6,8 @@ var is_explosion = true
 
 func _init(dependencies: PlayerDependencies).(dependencies):
   light_mask = light_occluder.light_mask
+  self.base_state = PlayerStatesEnum.DYING
+
 func enter():
   if (is_explosion):
     Event.emit_signal("player_explode")

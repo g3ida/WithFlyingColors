@@ -10,5 +10,5 @@ func _on_area_entered(area: Area2D):
   var groups = get_groups()
   if not (check_group(area, groups)):
     Event.emit_signal("player_diying", area, global_position, Global.EntityType.PLATFORM)
-  else:
+  elif Global.player.player_state.base_state != PlayerStatesEnum.STANDING:
     Event.emit_signal("player_landed", area, global_position)
