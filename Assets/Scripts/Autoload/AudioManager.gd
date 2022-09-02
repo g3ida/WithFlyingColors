@@ -16,10 +16,11 @@ var sfx_data: Dictionary = {
   "menuValueChange": {"path": "res://Assets/sfx/click.ogg", "volume": 0},
   "menuMove": {"path": "res://Assets/sfx/menu_move.ogg", "volume": 0},
   "menuFocus": {"path": "res://Assets/sfx/click2.ogg"},
-  "land": {"path": "res://Assets/sfx/fall.ogg", "volume": -15},
+  "land": {"path": "res://Assets/sfx/stand.ogg", "volume": -15},
   "gemCollect": {"path": "res://Assets/sfx/gem.ogg", "volume": -15},
   "playerExplode": {"path": "res://Assets/sfx/die.ogg", "volume": -10},
   "playerFalling": {"path": "res://Assets/sfx/falling.ogg", "volume": -10},
+  "tetrisLine": {"path": "res://Assets/sfx/tetris_line.ogg", "volume": -7},
 }
 
 var sfx_pool: Dictionary = {}
@@ -76,6 +77,7 @@ func connect_signals():
   __ = Event.connect("pause_menu_enter", self, "_on_pause_menu_enter")
   __ = Event.connect("pause_menu_exit", self, "_on_pause_menu_exit")
   __ = Event.connect("player_fall", self, "_on_player_falling")
+  __ = Event.connect("tetris_lines_removed", self, "_on_tetris_lines_removed")
 
 
 
@@ -102,6 +104,7 @@ func disconnect_signals():
   Event.disconnect("pause_menu_enter", self, "_on_pause_menu_enter")
   Event.disconnect("pause_menu_exit", self, "_on_pause_menu_exit")
   Event.disconnect("player_fall", self, "_on_player_falling")
+  Event.disconnect("tetris_lines_removed", self, "_on_tetris_lines_removed")
 
 func _enter_tree():
   connect_signals()
@@ -124,6 +127,7 @@ func _on_player_explode(): _sfx_play("playerExplode")
 func _on_pause_menu_enter(): _sfx_play("menuSelect")
 func _on_pause_menu_exit(): _sfx_play("menuSelect")
 func _on_player_falling(): _sfx_play("playerFalling")
+func _on_tetris_lines_removed(): _sfx_play("tetrisLine")
 
 func emit_play_sfx(sfx_name):
   emit_signal("play_sfx", sfx_name)

@@ -208,6 +208,7 @@ _global_script_class_icons={
 
 config/name="WithFlyingColors"
 run/main_scene="res://Assets/Screens/MainMenu.tscn"
+boot_splash/show_image=false
 config/icon="res://icon.png"
 
 [autoload]

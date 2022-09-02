@@ -133,6 +133,7 @@ func remove_lines():
   var lines = detect_lines()
   if (lines.size() > 0):
     emit_signal("lines_removed", lines.size())
+    Event.emit_signal("tetris_lines_removed")
   for l in lines:
     remove_line_cells(l)
 

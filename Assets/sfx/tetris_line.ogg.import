@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/tetris_line.ogg-575b7ef3774078ca88cebf554f3ef25d.oggstr"
+
+[deps]
+
+source_file="res://Assets/sfx/tetris_line.ogg"
+dest_files=[ "res://.import/tetris_line.ogg-575b7ef3774078ca88cebf554f3ef25d.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0
