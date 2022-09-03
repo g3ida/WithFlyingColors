@@ -8,7 +8,9 @@ onready var shineNode = $ShineSfx
 
 var states_store
 var current_state: GemBaseState
-var should_reset_state: bool = true
+
+var is_saved = false
+var saved_state: GemBaseState
 
 func _ready():
   self.add_to_group(group_name)
@@ -59,9 +61,9 @@ func _exit_tree():
   disconnect_signals()
 
 func _on_checkpoint_hit(_checkpoint):
-  if (current_state == states_store.collected) or (current_state == states_store.collecting):
-    should_reset_state = false
+  is_saved = true
+  saved_state = current_state if current_state != states_store.collecting else states_store.collected
 
 func reset():
-  if should_reset_state:
-    switch_state(states_store.not_collected)
+  if is_saved:
+    switch_state(saved_state)

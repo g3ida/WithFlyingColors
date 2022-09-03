@@ -16,7 +16,7 @@ var sfx_data: Dictionary = {
   "menuValueChange": {"path": "res://Assets/sfx/click.ogg", "volume": 0},
   "menuMove": {"path": "res://Assets/sfx/menu_move.ogg", "volume": 0},
   "menuFocus": {"path": "res://Assets/sfx/click2.ogg"},
-  "land": {"path": "res://Assets/sfx/stand.ogg", "volume": -15},
+  "land": {"path": "res://Assets/sfx/stand.ogg", "volume": -8},
   "gemCollect": {"path": "res://Assets/sfx/gem.ogg", "volume": -15},
   "playerExplode": {"path": "res://Assets/sfx/die.ogg", "volume": -10},
   "playerFalling": {"path": "res://Assets/sfx/falling.ogg", "volume": -10},

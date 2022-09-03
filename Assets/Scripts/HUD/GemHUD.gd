@@ -9,7 +9,9 @@ export var color: String
 
 enum {EMPTY, COLLECTING, COLLECTED}
 var current_state = EMPTY
-var should_reset_state = true
+
+var is_saved = false
+var saved_state = EMPTY
 
 var animation: AnimatedSprite
 var collected_animation: SlideAnimation
@@ -65,12 +67,12 @@ func _process(delta):
     collected_animation.update(delta)
 
 func reset():
-  if should_reset_state:
-    current_state = EMPTY
-    if current_state == COLLECTED:
+  if is_saved:
+    if saved_state == EMPTY:
       $TextureRect.texture = texture_empty
+    else:
+      $TextureRect.texture = texture_collected
 
 func _on_checkpoint_hit(_checkpoint):
-  if should_reset_state:
-    if current_state == COLLECTED or current_state == COLLECTING:
-      should_reset_state = false
+  is_saved = true
+  saved_state = current_state if current_state != COLLECTING else EMPTY
