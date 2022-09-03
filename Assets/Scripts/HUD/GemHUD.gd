@@ -38,6 +38,8 @@ func _on_gem_collected(col, position, frames):
     animation.set_sprite_frames(frames)
     animation.play()
     add_child(animation)
+    animation.set_owner(self)
+    
     animation.global_position = position
     collected_animation = SlideAnimation.new(
       "gem_slide",
