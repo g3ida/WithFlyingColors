@@ -30,13 +30,13 @@ func set_camera_limits():
     
 func set_camera_drag_margins():
   if full_viewport_drag_margin:
-    Global.camera.drag_margin_bottom = 1
-    Global.camera.drag_margin_left = 1
-    Global.camera.drag_margin_right = 1
-    Global.camera.drag_margin_top = 1
+    Global.camera.set_drag_margin_bottom(1)
+    Global.camera.set_drag_margin_left(1)
+    Global.camera.set_drag_margin_right(1)
+    Global.camera.set_drag_margin_top(1)
   else:
     #to do in a constant
-    Global.camera.drag_margin_bottom = Constants.DEFAULT_DRAG_MARGIN
-    Global.camera.drag_margin_left = Constants.DEFAULT_DRAG_MARGIN
-    Global.camera.drag_margin_right =  Constants.DEFAULT_DRAG_MARGIN
-    Global.camera.drag_margin_top =  Constants.DEFAULT_DRAG_MARGIN
+    Global.camera.set_drag_margin_bottom(Constants.DEFAULT_DRAG_MARGIN_TB)
+    Global.camera.set_drag_margin_left(Constants.DEFAULT_DRAG_MARGIN_LR)
+    Global.camera.set_drag_margin_right(Constants.DEFAULT_DRAG_MARGIN_LR)
+    Global.camera.set_drag_margin_top(Constants.DEFAULT_DRAG_MARGIN_TB)
