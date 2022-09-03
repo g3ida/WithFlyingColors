@@ -9,3 +9,5 @@ const TETRIS_SPEEDS = [0.3, 0.23, 0.17, 0.11, 0.07]
 const TETRIS_MAX_LEVELS = 4
 
 const EPSILON = 0.001
+
+const DEFAULT_DRAG_MARGIN = 0.27

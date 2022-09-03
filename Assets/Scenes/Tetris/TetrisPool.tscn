@@ -42,6 +42,7 @@ next_piece = ExtResource( 7 )
 [node name="CheckpointArea" parent="." instance=ExtResource( 5 )]
 position = Vector2( 34.6667, -41.3333 )
 scale = Vector2( 9, 3 )
+full_viewport_drag_margin = true
 
 [node name="TopRight" type="Position2D" parent="CheckpointArea"]
 position = Vector2( 107.407, -394 )

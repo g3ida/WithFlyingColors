@@ -36,7 +36,7 @@ func _process(delta):
   animation_timer += delta
   var shaderMaterial = $NinePatchRect.material as ShaderMaterial
   if (shaderMaterial != null):
-    var resolution = get_viewport().size
+    var resolution = get_viewport().get_size_override()
     var cam = Global.camera
     if (cam != null):
       var camPos = cam.get_camera_screen_center()
