@@ -45,6 +45,7 @@ func launch_scheduled_rescale():
   rescale_timer.wait_time = 0.4
   rescale_timer.one_shot = true
   add_child(rescale_timer, true)
+  rescale_timer.set_owner(self)
   rescale_timer.start()
 
 func on_rescale_timeout():

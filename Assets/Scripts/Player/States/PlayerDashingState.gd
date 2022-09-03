@@ -24,6 +24,7 @@ func enter():
   player.can_dash = false
   dash_done = false
   set_dash_diretion()
+  Global.camera.get_node("CameraShake").start()  
 
 func exit():
   if dash_done:

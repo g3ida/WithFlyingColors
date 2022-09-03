@@ -11,6 +11,7 @@ func set_next_piece(piece: PackedScene):
   next_piece = piece
   next_piece_node = next_piece.instance()
   add_child(next_piece_node)
+  next_piece_node.set_owner(self)
   next_piece_node.position -= get_piece_bounds(next_piece_node)
   
 func _ready():

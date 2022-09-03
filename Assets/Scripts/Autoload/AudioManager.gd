@@ -43,11 +43,13 @@ func fill_sfx_pool():
     audio_player.bus = "sfx"
     sfx_pool[key] = audio_player
     add_child(audio_player)
+    audio_player.set_owner(self)
 
 func _ready():
   pause_mode = PAUSE_MODE_PROCESS
   music_track_manager = MusicTrackManager.instance()
   add_child(music_track_manager)
+  music_track_manager.set_owner(self)
   fill_sfx_pool()
 
 func _sfx_play(sfx):

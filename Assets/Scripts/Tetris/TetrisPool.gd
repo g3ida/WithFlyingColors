@@ -93,6 +93,7 @@ func ai_spawn_block():
   shape.set_grid(grid)
   shape.move_by(pos, Constants.TETRIS_SPAWN_J)
   add_child(shape)
+  shape.set_owner(self)
   for _i in range(rot):
     shape.rotate_left()
   shape.position = spawnPosNode.position + Vector2(Constants.TETRIS_BLOCK_SIZE*(pos-Constants.TETRIS_SPAWN_I), 0)
@@ -224,6 +225,7 @@ func update_scorebaord():
     if (level > 1):
       var level_up_node = level_up.instance()
       add_child(level_up_node)
+      level_up_node.set_owner(self)
       level_up_node.position = levelUpPositionNode.position
 
 
@@ -245,8 +247,6 @@ func _on_TriggerEnterArea_body_entered(_body):
   SlidingFloorSliderNode.stop_slider(false)
   is_vergin = false
   
-  #tetrisAudioPlayer.play()
-  print("here")
   AudioManager.music_track_manager.add_track("tetris", "res://Assets/Music/Myuu-Tetris-Dark-Version.mp3", -5.0)
   AudioManager.music_track_manager.play_track("tetris")
   

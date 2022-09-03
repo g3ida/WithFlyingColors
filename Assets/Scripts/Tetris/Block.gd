@@ -106,6 +106,7 @@ func add_permessiveness_bounds(dir):
   edgeArea.add_to_group(group)
   edgeArea.add_to_group(color_group)
   add_child(edgeArea)
+  edgeArea.set_owner(self)
 
   edgeArea.position.y = areaShapeNode.shape.extents.y
   edgeArea.position.x = edgeArea.width if dir == DIR_LEFT else Constants.TETRIS_BLOCK_SIZE - edgeArea.width

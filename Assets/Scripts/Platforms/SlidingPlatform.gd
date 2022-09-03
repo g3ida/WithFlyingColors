@@ -14,7 +14,6 @@ var follow: Vector2
 
 #saved params
 var saved_looping = true
-var saved_position: Vector2
 var saved_is_stopped = false
 var is_saved = false
 
@@ -74,7 +73,6 @@ func _exit_tree():
   
 func _on_checkpoint_hit(_checkpoint):
   saved_looping = tweenNode.repeat
-  saved_position = position
   saved_is_stopped = is_stopped or delayed_stop
   is_saved = true
   
@@ -94,7 +92,6 @@ func resume_slider():
 func reset():
   if is_saved:
     tweenNode.repeat = saved_looping
-    position = saved_position
     if is_stopped and not saved_is_stopped:
        resume_slider()
   

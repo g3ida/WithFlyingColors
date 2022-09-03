@@ -41,6 +41,7 @@ func spawn_bullet():
   var bullet = bullet_scene.instance()
   bullet.global_position = canonMuzzle.global_position
   get_parent().add_child(bullet)
+  bullet.set_owner(get_parent())
   bullet.set_texture(bullet_texture)
   bullet.set_color_group(color_group)
   return bullet

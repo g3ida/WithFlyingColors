@@ -12,7 +12,7 @@ func ready():
 
 func process(_delta):
   pass
-
+  
 func on_enter():
   animators.append(init_control_element_animator($WITH, DELAY))
   animators.append(init_control_element_animator($FLYING, 2*DELAY))

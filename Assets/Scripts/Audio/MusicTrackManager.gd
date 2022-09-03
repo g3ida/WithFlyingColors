@@ -20,6 +20,7 @@ const BUS_INDEX = 1
 var pitch_scale = 2.0
 
 func set_pitch_scale(_pitch_scale):
+  # see https://godotengine.org/qa/88935/how-can-i-change-speed-of-an-audio-without-changing-its-pitch
   var shift = AudioServer.get_bus_effect(BUS_INDEX, EFF_INDEX)
   shift.pitch_scale = 1.0 / _pitch_scale
   current_track.pitch_scale = _pitch_scale
@@ -34,6 +35,7 @@ func add_track(name: String, path: String, volume: float):
   music_pool[name] = {"player": audio_player, "volume": volume}
   audio_player.volume_db = volume
   add_child(audio_player)
+  audio_player.set_owner(self)
   
 func remove_track(name: String) -> void:
   if music_pool.has(name):

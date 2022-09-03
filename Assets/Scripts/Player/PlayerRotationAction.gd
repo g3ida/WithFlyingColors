@@ -1,7 +1,7 @@
 class_name PlayerRotationAction
 const CountdownTimer = preload("res://Assets/Scripts/Utils/CountdownTimer.gd")
 
-const ROTATION_DURATION = 0.12
+const ROTATION_DURATION = 0.10
 var thetaZero = 0.0 # initial angle, before the rotation is performed.
 var thetaTarget = 0.0 # target angle, after the rotation is completed.
 var thetaPoint = 0 # the calculated angule.
