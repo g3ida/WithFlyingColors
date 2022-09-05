@@ -51,18 +51,18 @@ func _physics_process(delta):
     click_on_active_button()
 
 func _on_RightButton_pressed():
-  buttons[active_index].disabled = true
-  active_index = (active_index - 1) % buttons.size()
-  buttons[active_index].disabled = false
-  box_rotation.execute(1)
-  Event.emit_signal("menu_box_rotated")
+  if box_rotation.execute(1, Constants.PI2, 0.1, false):
+    buttons[active_index].disabled = true
+    active_index = (active_index - 1) % buttons.size()
+    buttons[active_index].disabled = false
+    Event.emit_signal("menu_box_rotated")
   
 func _on_LeftButton_pressed():
-  buttons[active_index].disabled = true
-  active_index = (active_index + 1) % buttons.size()
-  buttons[active_index].disabled = false
-  box_rotation.execute(-1)
-  Event.emit_signal("menu_box_rotated")
+  if box_rotation.execute(-1, Constants.PI2, 0.1, false):
+    buttons[active_index].disabled = true
+    active_index = (active_index + 1) % buttons.size()
+    buttons[active_index].disabled = false
+    Event.emit_signal("menu_box_rotated")
   
 func _on_PlayButton_pressed():
   if not can_respond_to_input(): return

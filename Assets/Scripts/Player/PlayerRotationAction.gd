@@ -1,11 +1,12 @@
 class_name PlayerRotationAction
 const CountdownTimer = preload("res://Assets/Scripts/Utils/CountdownTimer.gd")
 
-const ROTATION_DURATION = 0.10
+const DEFAULT_ROTATION_DURATION = 0.1
+var duration: float
 var thetaZero = 0.0 # initial angle, before the rotation is performed.
 var thetaTarget = 0.0 # target angle, after the rotation is completed.
 var thetaPoint = 0 # the calculated angule.
-var rotationTimer = CountdownTimer.new(ROTATION_DURATION, false)
+var rotationTimer = CountdownTimer.new(DEFAULT_ROTATION_DURATION, false)
 var canRotate = true # set to false when rotation is in progress.
 var body: KinematicBody2D
   
@@ -26,10 +27,32 @@ func step(delta: float):
     rotationTimer.stop()
     canRotate = true
     
-func execute(direction: int):
+func execute(direction: int, # -1 left 1 right (can be removed since I added the angle param)
+  angle_radians: float = Constants.PI2,
+  _duration = DEFAULT_ROTATION_DURATION,
+  should_force = true,
+  cumulate_target = true,
+  use_round = true):
+
+  if !canRotate and !should_force: return false
   canRotate = false
+  self.duration = _duration
+  rotationTimer = CountdownTimer.new(duration, false)
+  
   thetaZero = body.rotation
-  var PI2 = PI / 2
-  thetaTarget = round((thetaZero + direction*PI2)/PI2) * PI2
-  thetaPoint = (thetaTarget - thetaZero) / ROTATION_DURATION
+  
+  if abs(thetaPoint) > Constants.EPSILON and cumulate_target:
+    thetaZero = thetaTarget
+  
+  var unrounded_angle = (thetaZero + direction*angle_radians)/angle_radians
+  if (use_round):
+    thetaTarget = round(unrounded_angle) * angle_radians
+  else:
+    thetaTarget = int(unrounded_angle) * angle_radians
+
+  if abs(thetaPoint) > Constants.EPSILON and cumulate_target:
+    thetaZero = body.rotation
+
+  thetaPoint = (thetaTarget - thetaZero) / duration
   rotationTimer.reset()
+  return true

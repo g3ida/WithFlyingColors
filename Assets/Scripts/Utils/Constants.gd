@@ -13,3 +13,6 @@ const EPSILON = 0.001
 const DEFAULT_DRAG_MARGIN_LR = 0.27
 const DEFAULT_DRAG_MARGIN_TB = 0.05
 
+const DEGREES_TO_RAD = PI / 180.0
+const RAD_TO_DEGREES = 180.0 / PI
+const PI2 = PI * 0.5
