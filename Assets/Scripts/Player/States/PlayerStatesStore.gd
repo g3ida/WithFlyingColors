@@ -7,6 +7,7 @@ var jumping_state: PlayerJumpingState
 var falling_state: PlayerFallingState
 var dying_state: PlayerDyingState
 var dashing_state: PlayerDashingState
+var slippering_state: PlayerSlipperingState
 
 #rotation states
 var rotating_right_state: PlayerRotatingState
@@ -26,6 +27,7 @@ func _init(player):
   rotating_right_state = PlayerRotatingState.new(dependencies, 1)
   rotating_left_state = PlayerRotatingState.new(dependencies, -1)
   idle_state = PlayerRotatingIdleState.new(dependencies)
+  slippering_state = PlayerSlipperingState.new(dependencies)
 
 func get_state(_state: int):
   if _state ==  PlayerStatesEnum.IDLE:
@@ -44,4 +46,6 @@ func get_state(_state: int):
     return dying_state
   if _state ==  PlayerStatesEnum.DASHING:
     return dashing_state
+  if _state == PlayerStatesEnum.SLIPPERING:
+    return slippering_state
   return null

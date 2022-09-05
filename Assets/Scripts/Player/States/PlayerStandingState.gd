@@ -1,6 +1,9 @@
 class_name PlayerStandingState
 extends PlayerBaseState
 
+const RAYCAST_LENGTH = 5.0
+const SLIPPERING_LIMIT = 0.3 # higher is less slippering
+
 func _init(dependencies: PlayerDependencies).(dependencies):
   self.base_state = PlayerStatesEnum.STANDING
 
@@ -22,4 +25,34 @@ func _physics_update(_delta: float) -> BaseState:
     var falling_state = self.states_store.get_state(PlayerStatesEnum.FALLING)
     falling_state.was_on_floor = true
     return falling_state
+  else:
+    if (abs(player.velocity.x) < SPEED_UNIT\
+      and player.player_rotation_state.base_state == PlayerStatesEnum.IDLE):
+      return raycast_floor()
   return null
+
+func raycast_floor():
+  var space_state = player.get_world_2d().direct_space_state
+  var player_half_size = player.get_collision_shape_size() * 0.5
+  
+  var combination = 0
+  var i = 1
+  var from_offset_x = [
+    -player_half_size.x,
+    -player_half_size.x*SLIPPERING_LIMIT,
+    player_half_size.x*SLIPPERING_LIMIT,
+    player_half_size.x
+  ]
+
+  for offset in from_offset_x:
+    var from := player.global_position + Vector2(offset, player_half_size.y)
+    var to := from + Vector2(0.0, RAYCAST_LENGTH)
+    var result = space_state.intersect_ray(from, to, [player])
+    if (!result.empty()):
+      combination += i
+    i*=2
+  if combination == 1 or combination == 8: #flags values
+    var slippering_state = self.states_store.get_state(PlayerStatesEnum.SLIPPERING)
+    slippering_state.direction = 1 if combination == 1 else -1
+    return slippering_state
+    

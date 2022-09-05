@@ -5,6 +5,8 @@ var player_rotation: PlayerRotationAction
 
 func _init(dependencies: PlayerDependencies).(dependencies):
   player_rotation = dependencies.player_rotation_action
+  self.base_state = PlayerStatesEnum.IDLE
+
 func enter():
   pass
 func exit():

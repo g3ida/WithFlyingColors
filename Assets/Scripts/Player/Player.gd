@@ -41,6 +41,8 @@ onready var topFaceNode := $TopFace
 onready var leftFaceNode := $LeftFace
 onready var rightFaceNode := $RightFace
 
+onready var collisionShapeNode := $CollisionShape2D
+
 var faceSeparatorNodes = []
 var faceNodes = []
 
@@ -100,7 +102,6 @@ func reset():
   switch_state((states_store.get_state(PlayerStatesEnum.FALLING)))
   self.rotate(self.reset_angle - self.rotation)
   
-
 func connect_signals():
   var __ = Event.connect("player_diying", self, "_on_player_diying")
   __ = Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
@@ -161,3 +162,9 @@ func scale_face_separators_by(factor: float) -> void:
 func scale_faces_by(factor: float) -> void:
   for face_sep in faceNodes:
     face_sep.scale_by(factor)
+
+func get_collision_shape_size() -> Vector2:
+  return collisionShapeNode.shape.extents * 2.0
+  
+func contains_node(node) -> bool:
+  return node in get_children()

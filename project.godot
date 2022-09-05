@@ -135,6 +135,11 @@ _global_script_classes=[ {
 "path": "res://Assets/Scripts/Player/PlayerRotationAction.gd"
 }, {
 "base": "PlayerBaseState",
+"class": "PlayerSlipperingState",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Player/States/PlayerSlipperingState.gd"
+}, {
+"base": "PlayerBaseState",
 "class": "PlayerStandingState",
 "language": "GDScript",
 "path": "res://Assets/Scripts/Player/States/PlayerStandingState.gd"
@@ -195,6 +200,7 @@ _global_script_class_icons={
 "PlayerRotatingIdleState": "",
 "PlayerRotatingState": "",
 "PlayerRotationAction": "",
+"PlayerSlipperingState": "",
 "PlayerStandingState": "",
 "PlayerStatesEnum": "",
 "PlayerStatesStore": "",
