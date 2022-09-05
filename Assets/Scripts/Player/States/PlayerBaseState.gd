@@ -12,6 +12,7 @@ var base_state
 const TransoformAnimation = preload("res://Assets/Scripts/Utils/TransformAnimation.gd")
 const ElasticOut = preload("res://Assets/Scripts/Utils/Interpolation/ElasticOut.gd")
 
+const SPEED_UNIT = 70
 const SPEED = 350
 const GRAVITY = 980
 const FALL_FACTOR = 2.5
@@ -35,9 +36,10 @@ func physics_update(delta: float) -> BaseState:
 
     if player.player_state != self.states_store.get_state(PlayerStatesEnum.DASHING):
       if Input.is_action_pressed("move_right"):
-        player.velocity.x = SPEED
+        player.velocity.x = clamp(player.velocity.x + SPEED_UNIT, 0, SPEED)
       elif Input.is_action_pressed("move_left"):
-        player.velocity.x = -SPEED
+        player.velocity.x = clamp(player.velocity.x - SPEED_UNIT, -SPEED, -0)
+
     
     player.velocity.y += GRAVITY * delta * FALL_FACTOR
 
