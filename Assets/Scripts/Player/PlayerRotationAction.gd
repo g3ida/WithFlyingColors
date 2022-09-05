@@ -43,12 +43,13 @@ func execute(direction: int, # -1 left 1 right (can be removed since I added the
   
   if abs(thetaPoint) > Constants.EPSILON and cumulate_target:
     thetaZero = thetaTarget
-  
-  var unrounded_angle = (thetaZero + direction*angle_radians)/angle_radians
+
+  var unrounded_angle = deg2rad(rad2deg(thetaZero + direction*angle_radians))/angle_radians
   if (use_round):
     thetaTarget = round(unrounded_angle) * angle_radians
   else:
-    thetaTarget = int(unrounded_angle) * angle_radians
+    var rounded_angle = ceil(unrounded_angle) if direction == -1 else floor(unrounded_angle)
+    thetaTarget = rounded_angle * angle_radians
 
   if abs(thetaPoint) > Constants.EPSILON and cumulate_target:
     thetaZero = body.rotation

@@ -11,6 +11,7 @@ const SLIPPERING_ROTATION_DURATION = 3.0
 const SLIPPERING_RECOVERY_INITIAL_DURATION = 0.8
 
 var exit_rotation_speed = CORRECT_ROTATION_JUMP_SPEED
+var skip_exit_rotation = false
 
 func _init(dependencies: PlayerDependencies).(dependencies):
   self.base_state = PlayerStatesEnum.SLIPPERING
@@ -19,8 +20,9 @@ func _init(dependencies: PlayerDependencies).(dependencies):
 func enter():
   self.animated_sprite.play("idle")
   animated_sprite.playing = false
+  skip_exit_rotation = false
   exit_rotation_speed = CORRECT_ROTATION_JUMP_SPEED
-  self.player_rotation.execute(direction, Constants.PI2, SLIPPERING_ROTATION_DURATION, true, false, false)
+  self.player_rotation.execute(direction, Constants.PI2, SLIPPERING_ROTATION_DURATION, true, false, true)
   Event.emit_signal("player_slippering")
   player.can_dash = true
 func exit():
@@ -29,9 +31,10 @@ func exit():
   #    won't work because the player will touch the platform before jump is completed)
   # 2- to make falling less sudden (rotation should be slow for visual appeal and fast
   #    for gameplay so the combination is the best option )
-  self.player_rotation.execute(-direction, Constants.PI2, SLIPPERING_RECOVERY_INITIAL_DURATION, true, false, false)
-  yield(player.get_tree().create_timer(0.05), "timeout")
-  self.player_rotation.execute(-direction, Constants.PI2, exit_rotation_speed, true, false, false)
+  if not skip_exit_rotation:
+    self.player_rotation.execute(-direction, Constants.PI2, SLIPPERING_RECOVERY_INITIAL_DURATION, true, false, false)
+    yield(player.get_tree().create_timer(0.05), "timeout")
+    self.player_rotation.execute(-direction, Constants.PI2, exit_rotation_speed, true, false, false)
 
 
 func physics_update(delta: float) -> BaseState:
@@ -49,9 +52,11 @@ func _physics_update(_delta: float) -> BaseState:
     direction = -direction
     return falling_state
   
-  if player.player_rotation_state.base_state != PlayerStatesEnum.IDLE\
-    or self.player_rotation.canRotate\
-    or self.player.velocity.x*direction < PLAYER_SPEED_THRESHOLD_TO_STAND:
+  if (player.player_rotation_state.base_state != PlayerStatesEnum.IDLE):
+    skip_exit_rotation = true
+    return self.states_store.get_state(PlayerStatesEnum.STANDING)
+
+  if self.player_rotation.canRotate or self.player.velocity.x*direction < PLAYER_SPEED_THRESHOLD_TO_STAND:
     return self.states_store.get_state(PlayerStatesEnum.STANDING)
 
   return null

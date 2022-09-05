@@ -11,7 +11,8 @@ func _init(dependencies: PlayerDependencies, direction: int).(dependencies):
 
 
 func enter():
-  self.player_rotation.execute(rotation_direction)
+  var cumulate_angle = false if player.player_state.base_state == PlayerStatesEnum.SLIPPERING else true
+  self.player_rotation.execute(rotation_direction, Constants.PI2, 0.1, true, cumulate_angle)
   Event.emit_signal("player_rotate", rotation_direction)
   
 func exit():
