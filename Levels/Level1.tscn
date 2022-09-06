@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=2]
+[gd_scene load_steps=34 format=2]
 
 [ext_resource path="res://Assets/Sprites/Platforms/purple.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Scenes/Player.tscn" type="PackedScene" id=2]
@@ -31,6 +31,10 @@
 [ext_resource path="res://Assets/Sprites/Platforms/blue.png" type="Texture" id=29]
 [ext_resource path="res://Assets/Scenes/Camera/CameraShake.tscn" type="PackedScene" id=30]
 [ext_resource path="res://Assets/Scenes/Tetris/TetrisPool.tscn" type="PackedScene" id=31]
+[ext_resource path="res://Assets/Scenes/Camera/CameraLocalizer.tscn" type="PackedScene" id=32]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 14.5, 46 )
 
 [node name="Level1" type="Node2D"]
 script = ExtResource( 5 )
@@ -51,7 +55,7 @@ texture = ExtResource( 11 )
 centered = false
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
-position = Vector2( 674, 165 )
+position = Vector2( 621, 117 )
 collision_mask = 13
 
 [node name="Camera2D" parent="Player" instance=ExtResource( 6 )]
@@ -108,7 +112,7 @@ group_name = "yellow"
 sprite_frames = ExtResource( 13 )
 
 [node name="BuleGem" parent="." instance=ExtResource( 10 )]
-position = Vector2( 4132, 476 )
+position = Vector2( 5254, 277 )
 group_name = "blue"
 sprite_frames = ExtResource( 12 )
 
@@ -177,3 +181,16 @@ color_group = "blue"
 [node name="TetrixPool" parent="." instance=ExtResource( 31 )]
 position = Vector2( 5950, -987 )
 playerNode = NodePath("../Player")
+
+[node name="CameraLocalizer" parent="." instance=ExtResource( 32 )]
+position = Vector2( 4358, 559 )
+position_clipping_mode = 2
+
+[node name="Area2D" type="Area2D" parent="CameraLocalizer"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizer/Area2D"]
+position = Vector2( 279, 13 )
+shape = SubResource( 1 )
+
+[node name="Position2D" type="Position2D" parent="CameraLocalizer"]
+position = Vector2( -56, 186 )
