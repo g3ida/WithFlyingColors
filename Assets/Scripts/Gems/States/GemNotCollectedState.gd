@@ -31,6 +31,8 @@ func physics_update(delta: float) -> BaseState:
   return null
   
 func on_collision_with_body(area: Area2D) -> BaseState:
+  #fixme: this would be better be implemented in the player side
+  if Global.player.player_state.base_state == PlayerStatesEnum.DYING: return null
   if (node.group_name in area.get_groups()):
     return self.states_store.collecting
   return null
