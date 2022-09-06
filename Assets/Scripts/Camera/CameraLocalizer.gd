@@ -99,7 +99,6 @@ func set_camera_limits():
     Global.camera.limit_right = right
     Global.camera.limit_top = Constants.DEFAULT_CAMERA_LIMIT_TOP
   elif position_clipping_mode == CamLimitEnum.LIMIT_BOTTOM_LEFT:
-    print(left, " ", bottom)
     Global.camera.limit_left = left
     Global.camera.limit_bottom = bottom
     Global.camera.limit_right = Constants.DEFAULT_CAMERA_LIMIT_RIGHT

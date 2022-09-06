@@ -114,3 +114,6 @@ func load_game_settings():
         var values = key_value.split("x")
         if values.size() == 2:
           self.window_size = Vector2(float(values[0]), float(values[1]))
+  else: #default settings if settings file does not exist:
+    self.fullscreen = true
+    self.vsync = true
