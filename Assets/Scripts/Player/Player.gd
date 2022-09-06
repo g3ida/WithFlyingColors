@@ -42,6 +42,8 @@ onready var leftFaceNode := $LeftFace
 onready var rightFaceNode := $RightFace
 
 onready var collisionShapeNode := $CollisionShape2D
+onready var animatedSpriteNode := $AnimatedSprite
+onready var dashGhostTimerNode := $DashGhostTimer
 
 var faceSeparatorNodes = []
 var faceNodes = []

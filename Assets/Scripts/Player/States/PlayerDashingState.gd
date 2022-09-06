@@ -1,11 +1,13 @@
 class_name PlayerDashingState
 extends PlayerBaseState
 
+const DashGhost = preload("res://Assets/Scenes/Player/DashGhost.tscn")
 const CountdownTimer = preload("res://Assets/Scripts/Utils/CountdownTimer.gd")
-const DAH_DURATION = 0.17
+const DASH_DURATION = 0.17
 const PERMISSIVENESS = 0.05
 
 const DASH_SPEED = 2000
+const DASH_GHOST_INSTANCE_DELAY = 0.04
 
 var dash_timer: CountdownTimer
 var permissiveness_timer: CountdownTimer
@@ -13,9 +15,12 @@ var direction: Vector2
 var dash_done = false
 
 func _init(dependencies: PlayerDependencies).(dependencies):
-  dash_timer = CountdownTimer.new(DAH_DURATION, false)
+  dash_timer = CountdownTimer.new(DASH_DURATION, false)
   permissiveness_timer = CountdownTimer.new(PERMISSIVENESS, false)
   self.base_state = PlayerStatesEnum.DASHING
+  player.dashGhostTimerNode.wait_time = DASH_GHOST_INSTANCE_DELAY
+  var __ = player.dashGhostTimerNode.connect("timeout", self, "_on_dash_ghost_timer_timeout")
+
 
 func enter():
   direction = Vector2()
@@ -25,12 +30,16 @@ func enter():
   dash_done = false
   set_dash_diretion()
   Global.camera.get_node("CameraShake").start()  
+  instance_ghost()
+  player.dashGhostTimerNode.start()
 
 func exit():
   if dash_done:
     player.velocity.x = 0
   dash_timer.stop()
   permissiveness_timer.stop()
+  player.dashGhostTimerNode.stop()
+
 
 func physics_update(delta: float) -> BaseState:
   return .physics_update(delta)
@@ -71,3 +80,13 @@ func set_dash_diretion():
     direction.x = 0
   if Input.is_action_pressed("down"):
     direction.y = 1
+
+func _on_dash_ghost_timer_timeout():
+  instance_ghost()
+
+func instance_ghost():
+  var ghost: Sprite = DashGhost.instance()
+  player.get_parent().add_child(ghost)
+  ghost.global_position = player.global_position
+  ghost.texture = player.animatedSpriteNode.frames.get_frame(player.animatedSpriteNode.animation, player.animatedSpriteNode.frame)
+  ghost.rotate((player.rotation))
