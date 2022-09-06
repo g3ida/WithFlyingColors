@@ -5,19 +5,35 @@ onready var fadeTween = $Fade
 var music_pool: Dictionary = {}
 var is_switching = false
 var current_track: AudioStreamPlayer = null
-
-func _ready():
-  var shift = AudioEffectPitchShift.new()
-  shift.pitch_scale = 1.0
-  AudioServer.add_bus_effect(BUS_INDEX, shift, EFF_INDEX)
+var pitch_scale = 2.0
 
 const FADE_DURATION = 3.0
 const FADE_VOLUME = -30.0
 
 const BUS_NAME  = "music"
 const EFF_INDEX = 0
+const NOTCH_EFF_INDEX = 1
+
 const BUS_INDEX = 1
-var pitch_scale = 2.0
+
+func _ready():
+  _add_pitch_scale_effect()
+  _add_notch_effect()
+  set_pause_menu_effect(false)
+
+func _add_pitch_scale_effect():
+  var shift = AudioEffectPitchShift.new()
+  shift.pitch_scale = 1.0
+  AudioServer.add_bus_effect(BUS_INDEX, shift, EFF_INDEX)
+
+func _add_notch_effect():
+  var notch = AudioEffectNotchFilter.new()
+  notch.resonance = 0.05
+  AudioServer.add_bus_effect(BUS_INDEX, notch, NOTCH_EFF_INDEX)
+
+func set_pause_menu_effect(is_on: bool):
+  AudioServer.set_bus_effect_enabled(BUS_INDEX, NOTCH_EFF_INDEX, is_on)
+
 
 func set_pitch_scale(_pitch_scale):
   # see https://godotengine.org/qa/88935/how-can-i-change-speed-of-an-audio-without-changing-its-pitch

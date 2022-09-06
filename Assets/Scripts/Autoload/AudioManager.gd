@@ -82,7 +82,6 @@ func connect_signals():
   __ = Event.connect("tetris_lines_removed", self, "_on_tetris_lines_removed")
 
 
-
 func disconnect_signals():
   self.disconnect("play_sfx", self, "_sfx_play")
   Event.disconnect("player_jumped", self, "_on_player_jumped")
@@ -126,10 +125,15 @@ func _on_focus_changed(): _sfx_play("menuFocus")
 func _on_menu_box_rotated(): _sfx_play("rotateRight")
 func _on_keyboard_action_biding(): _sfx_play("menuValueChange")
 func _on_player_explode(): _sfx_play("playerExplode")
-func _on_pause_menu_enter(): _sfx_play("menuSelect")
-func _on_pause_menu_exit(): _sfx_play("menuSelect")
 func _on_player_falling(): _sfx_play("playerFalling")
 func _on_tetris_lines_removed(): _sfx_play("tetrisLine")
+
+func _on_pause_menu_enter():
+  _sfx_play("menuSelect")
+  music_track_manager.set_pause_menu_effect(true)
+func _on_pause_menu_exit():
+  _sfx_play("menuSelect")
+  music_track_manager.set_pause_menu_effect(false)
 
 func emit_play_sfx(sfx_name):
   emit_signal("play_sfx", sfx_name)
