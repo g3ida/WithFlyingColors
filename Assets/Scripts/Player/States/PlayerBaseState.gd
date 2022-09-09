@@ -123,7 +123,7 @@ func _handle_rotate():
     return self.states_store.get_state(PlayerStatesEnum.ROTATING_RIGHT)
   #touch
   if player.touch_rotation_input != null:
-    if player.touch_rotation_input.direction.x > 0:
+    if player.touch_rotation_input.direction > 0:
       return self.states_store.get_state(PlayerStatesEnum.ROTATING_RIGHT)
     else:
       return self.states_store.get_state(PlayerStatesEnum.ROTATING_LEFT)
