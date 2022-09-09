@@ -22,11 +22,7 @@ func physics_update(delta: float) -> BaseState:
   self.player_rotation.step(delta)
   if self.player_rotation.canRotate:
     return self.states_store.get_state(PlayerStatesEnum.IDLE)
-  if Input.is_action_just_pressed("rotate_left"):
-    return self.states_store.get_state(PlayerStatesEnum.ROTATING_LEFT)
-  if Input.is_action_just_pressed("rotate_right"):
-    return self.states_store.get_state(PlayerStatesEnum.ROTATING_RIGHT)
-  return null
+  return _handle_rotate()
 
 func on_animation_finished(_anim_name) -> BaseState:
   return null

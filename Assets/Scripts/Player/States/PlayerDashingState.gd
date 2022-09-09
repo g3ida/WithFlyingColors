@@ -11,7 +11,7 @@ const DASH_GHOST_INSTANCE_DELAY = 0.04
 
 var dash_timer: CountdownTimer
 var permissiveness_timer: CountdownTimer
-var direction: Vector2
+var direction = null
 var dash_done = false
 
 func _init(dependencies: PlayerDependencies).(dependencies):
@@ -23,12 +23,16 @@ func _init(dependencies: PlayerDependencies).(dependencies):
 
 
 func enter():
-  direction = Vector2()
+  if direction == null:
+    permissiveness_timer.reset()
+    set_dash_diretion()
+    dash_done = false
+  else: # in case of touch input we already have dash direction
+    dash_done = true
+    permissiveness_timer.stop()
+
   dash_timer.reset()
-  permissiveness_timer.reset()
   player.can_dash = false
-  dash_done = false
-  set_dash_diretion()
   Global.camera.get_node("CameraShake").start()  
   instance_ghost()
   player.dashGhostTimerNode.start()
@@ -39,6 +43,7 @@ func exit():
   dash_timer.stop()
   permissiveness_timer.stop()
   player.dashGhostTimerNode.stop()
+  direction = null
 
 
 func physics_update(delta: float) -> BaseState:
@@ -68,6 +73,7 @@ func _physics_update(_delta: float) -> BaseState:
   return null
 
 func set_dash_diretion():
+  direction = Vector2()
   if Input.is_action_pressed("move_right") and Input.is_action_pressed("move_left"):
     direction.x = 0
   elif Input.is_action_pressed("move_left"):

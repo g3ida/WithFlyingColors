@@ -79,6 +79,31 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/Utils/Helpers.gd"
 }, {
+"base": "InputEventAction",
+"class": "InputEventSwipe",
+"language": "GDScript",
+"path": "res://SwipeModule/InputEventSwipe.gd"
+}, {
+"base": "InputEventAction",
+"class": "InputTouchDash",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Touch/InputTouchDash.gd"
+}, {
+"base": "InputEventAction",
+"class": "InputTouchJump",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Touch/InputTouchJump.gd"
+}, {
+"base": "InputEventAction",
+"class": "InputTouchMove",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Touch/InputTouchMove.gd"
+}, {
+"base": "InputEventAction",
+"class": "InputTouchRotate",
+"language": "GDScript",
+"path": "res://Assets/Scripts/Touch/InputTouchRotate.gd"
+}, {
 "base": "Reference",
 "class": "NodeOcillator",
 "language": "GDScript",
@@ -159,6 +184,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/Utils/Interpolation/Pow.gd"
 }, {
+"base": "_SwipeEventCore",
+"class": "SwipeModule",
+"language": "GDScript",
+"path": "res://SwipeModule/SwipeModule.gd"
+}, {
 "base": "Reference",
 "class": "TetrisAI",
 "language": "GDScript",
@@ -169,10 +199,25 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/Tetris/Tetromino.gd"
 }, {
+"base": "InputEventAction",
+"class": "ThrowedFooter",
+"language": "GDScript",
+"path": "res://SwipeModule/ThrowedFooter.gd"
+}, {
+"base": "InputEventAction",
+"class": "ThrowedHeader",
+"language": "GDScript",
+"path": "res://SwipeModule/ThrowedHeader.gd"
+}, {
 "base": "Node",
 "class": "UISelectDriver",
 "language": "GDScript",
 "path": "res://Assets/Scripts/UI/UISelectDriver.gd"
+}, {
+"base": "Node",
+"class": "_SwipeEventCore",
+"language": "GDScript",
+"path": "res://SwipeModule/_SwipeEventCore.gd"
 } ]
 _global_script_class_icons={
 "Animator": "",
@@ -189,6 +234,11 @@ _global_script_class_icons={
 "GemStatesStore": "",
 "GitAPI": "",
 "Helpers": "",
+"InputEventSwipe": "res://SwipeModule/SwipeEventCore.png",
+"InputTouchDash": "",
+"InputTouchJump": "",
+"InputTouchMove": "",
+"InputTouchRotate": "",
 "NodeOcillator": "",
 "Player": "",
 "PlayerBaseState": "",
@@ -205,9 +255,13 @@ _global_script_class_icons={
 "PlayerStatesEnum": "",
 "PlayerStatesStore": "",
 "PowInterpolation": "",
+"SwipeModule": "",
 "TetrisAI": "",
 "Tetromino": "",
-"UISelectDriver": ""
+"ThrowedFooter": "res://SwipeModule/SwipeEventCore.png",
+"ThrowedHeader": "res://SwipeModule/SwipeEventCore.png",
+"UISelectDriver": "",
+"_SwipeEventCore": "res://SwipeModule/SwipeEventCore.png"
 }
 
 [application]
@@ -223,6 +277,7 @@ Global="*res://Assets/Scripts/Autoload/Global.gd"
 Event="*res://Assets/Scripts/Autoload/Event.gd"
 Settings="*res://Assets/Scripts/Autoload/Settings.gd"
 AudioManager="*res://Assets/Scripts/Autoload/AudioManager.gd"
+TouchInput="*res://Assets/Scripts/Autoload/TouchInput.gd"
 
 [display]
 
@@ -282,6 +337,10 @@ down={
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777234,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
 
 [layer_names]
 

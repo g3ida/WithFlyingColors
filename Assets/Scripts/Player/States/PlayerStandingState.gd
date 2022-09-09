@@ -12,6 +12,7 @@ func enter():
   animated_sprite.playing = false
   Event.emit_signal("player_land")
   player.can_dash = true
+
 func exit():
   pass
 
@@ -19,8 +20,9 @@ func physics_update(delta: float) -> BaseState:
   return .physics_update(delta)
 
 func _physics_update(_delta: float) -> BaseState:
-  if Input.is_action_just_pressed("jump") and player.is_on_floor():
-    return self.states_store.get_state(PlayerStatesEnum.JUMPING)
+  if _jump_pressed() and player.is_on_floor():
+    return _on_jump()
+  
   if not player.is_on_floor():
     var falling_state = self.states_store.get_state(PlayerStatesEnum.FALLING)
     falling_state.was_on_floor = true
@@ -28,7 +30,7 @@ func _physics_update(_delta: float) -> BaseState:
   else:
     if (abs(player.velocity.x) < SPEED_UNIT\
       and player.player_rotation_state.base_state == PlayerStatesEnum.IDLE):
-      return raycast_floor()
+      return raycast_floor()  
   return null
 
 func raycast_floor():
@@ -55,4 +57,5 @@ func raycast_floor():
     var slippering_state = self.states_store.get_state(PlayerStatesEnum.SLIPPERING)
     slippering_state.direction = 1 if combination == 1 else -1
     return slippering_state
+  return null
     

@@ -9,6 +9,8 @@ const ElasticOut = preload("res://Assets/Scripts/Utils/Interpolation/ElasticOut.
 const SQUEEZE_ANIM_DURATION = 0.17
 const SCALE_ANIM_DURATION = 0.17
 
+export(Script) var StatesStore
+
 var velocity = Vector2(0, 0)
 var playerRotationAction: PlayerRotationAction
 
@@ -22,11 +24,17 @@ var was_on_floor: bool = true
 var reset_position: Vector2
 var reset_angle: float = 0
 
-var states_store: PlayerStatesStore
+var states_store
 var player_state
 var player_rotation_state
 
 var can_dash = true
+
+#touch input
+var touch_move_input = null
+var touch_jump_input = null
+var touch_dash_input = null
+var touch_rotation_input = null
 
 onready var jumpParticlesNode = $JumpParticles
 onready var fallTimerNode = $FallTimer
@@ -65,11 +73,11 @@ func _ready():
   was_on_floor = is_on_floor()
   self.reset_position = self.global_position
   
-  states_store = PlayerStatesStore.new(self)
+  states_store = StatesStore.new(self)
   player_state = states_store.falling_state
-  player_state.enter()
+  player_state._enter()
   player_rotation_state = states_store.idle_state
-  player_rotation_state.enter()
+  player_rotation_state._enter()
   
   faceSeparatorNodes = [
     faceSparatorBR_node,
@@ -84,6 +92,10 @@ func _ready():
     leftFaceNode,
     rightFaceNode
    ]
+
+func _input(event):
+  player_state._input(event)
+  player_rotation_state._input(event)
 
 func _physics_process(delta):
   var next_state = player_rotation_state.physics_update(delta)
@@ -146,15 +158,15 @@ func on_land():
 
 func switch_state(new_state):
   if (new_state != null):
-    player_state.exit()
+    player_state._exit()
     player_state = new_state
-    player_state.enter()
+    player_state._enter()
 
 func switch_rotation_state(new_state):
   if (new_state != null):
-    player_rotation_state.exit()
+    player_rotation_state._exit()
     player_rotation_state = new_state
-    player_rotation_state.enter()
+    player_rotation_state._enter()
     
 #useful for more permessiveness
 func scale_face_separators_by(factor: float) -> void:

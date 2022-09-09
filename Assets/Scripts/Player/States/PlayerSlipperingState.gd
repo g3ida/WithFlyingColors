@@ -25,6 +25,7 @@ func enter():
   self.player_rotation.execute(direction, Constants.PI2, SLIPPERING_ROTATION_DURATION, true, false, true)
   Event.emit_signal("player_slippering")
   player.can_dash = true
+
 func exit():
   # the fact that I am splitting this into a slow then rapid action is for these reasons:
   # 1- to prevent collision if the player jumped (if rotation speed is high move_and_slide
@@ -35,15 +36,14 @@ func exit():
     self.player_rotation.execute(-direction, Constants.PI2, SLIPPERING_RECOVERY_INITIAL_DURATION, true, false, false)
     yield(player.get_tree().create_timer(0.05), "timeout")
     self.player_rotation.execute(-direction, Constants.PI2, exit_rotation_speed, true, false, false)
-
-
+  
 func physics_update(delta: float) -> BaseState:
   return .physics_update(delta)
 
 func _physics_update(_delta: float) -> BaseState:
-  if Input.is_action_just_pressed("jump") and player.is_on_floor(): 
+  if _jump_pressed() and player.is_on_floor(): 
     exit_rotation_speed = CORRECT_ROTATION_JUMP_SPEED
-    return self.states_store.get_state(PlayerStatesEnum.JUMPING)
+    return _on_jump()
 
   if not player.is_on_floor():
     var falling_state = self.states_store.get_state(PlayerStatesEnum.FALLING)
@@ -58,5 +58,4 @@ func _physics_update(_delta: float) -> BaseState:
 
   if self.player_rotation.canRotate or self.player.velocity.x*direction < PLAYER_SPEED_THRESHOLD_TO_STAND:
     return self.states_store.get_state(PlayerStatesEnum.STANDING)
-
   return null
