@@ -90,8 +90,10 @@ project.properties
 platform/android/java/*/.cxx/
 platform/android/java/*/build/
 platform/android/java/*/libs/
-andorid/build/assets/*
-andorid/build/build/*
+android/build/assets/*
+android/build/build/*
+android/build/assets/
+android/build/build/
 
 # iOS
 *.dSYM
