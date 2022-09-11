@@ -28,7 +28,7 @@ func _physics_update(_delta: float) -> BaseState:
     falling_state.was_on_floor = true
     return falling_state
   else:
-    if (abs(player.velocity.x) < SPEED_UNIT\
+    if (abs(player.velocity.x) < player.speed_unit\
       and player.player_rotation_state.base_state == PlayerStatesEnum.IDLE):
       return raycast_floor()  
   return null

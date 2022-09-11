@@ -1,6 +1,7 @@
+class_name BouncingBall
 extends KinematicBody2D
 
-export var color_group: String
+export var color_group: String = "blue"
 
 onready var AreaNode = $Area2D
 onready var SpriteNode = $Sprite
@@ -64,19 +65,24 @@ func _physics_process(_delta):
       var angle_degrees = velocity.angle()*Constants.RAD_TO_DEGREES
       if abs(angle_degrees) < DEVIATION_THRESHOLD or abs(angle_degrees) > 180.0 - DEVIATION_THRESHOLD:
         velocity = velocity.rotated(sign(angle_degrees) * DEVIATION_DEGREES_ADDED * Constants.DEGREES_TO_RAD)
-    
+
+func is_probably_a_brick(area, groups):
+  var is_box_face = Global.player.contains_node(area)
+  return !is_box_face and groups.size() > 0
+
 func _on_Area2D_area_entered(area):
   if area == death_zone:
-    Event.emit_signal("player_died")
-  
+    Event.emit_signal("bouncing_ball_removed", self)
+    queue_free()
+    return
   var groups = area.get_groups()
-  var is_box_face = Global.player.contains_node(area)
-  if !is_box_face and groups.size() > 0:
-    var current_groups = AreaNode.get_groups()
-    for group in current_groups:
-      AreaNode.remove_from_group(group)
-    AreaNode.add_to_group(groups[0])
-    SpriteNode.set_color(groups[0])
+  if is_probably_a_brick(area, groups):
+    if groups[0] in ColorUtils.COLORS:
+      var current_groups = AreaNode.get_groups()
+      for group in current_groups:
+        AreaNode.remove_from_group(group)
+      AreaNode.add_to_group(groups[0])
+      SpriteNode.set_color(groups[0])
     
 func reset():
   self.position = spawn_position

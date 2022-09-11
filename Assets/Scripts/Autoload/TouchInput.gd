@@ -94,7 +94,8 @@ func update_rotate_list(list, _delta):
   for el in list:
     el.time += _delta
     if el.time > ROTATE_TOUCH_MAX_DELAY:
-      trash_list.append(i)
+      # items are inserted in reverse order to avoid IndexOutOfRangeExceptions
+      trash_list.push_front(i)
     i += 1
   for el in trash_list:
     list.remove(el)
@@ -111,7 +112,8 @@ func _hadle_rotation_action_with_drag(list, drag: InputEventScreenDrag):
   for el in list:
     if el.event.index == drag.index:
       if (el.event.position - drag.position).length_squared() > ROTATE_TOUCH_MAX_DRAG_MODULE_SQUARED:
-        list_to_remove.append(i)
+        # items are inserted in reverse order to avoid IndexOutOfRangeExceptions
+        list_to_remove.push_front(i)
       i += 1
   for el in list_to_remove:
     list.remove(el)

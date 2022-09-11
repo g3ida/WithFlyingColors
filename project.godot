@@ -29,6 +29,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/StateMachine/BaseStatesStore.gd"
 }, {
+"base": "KinematicBody2D",
+"class": "BouncingBall",
+"language": "GDScript",
+"path": "res://Assets/Scripts/BrickBreaker/BouncingBallBody.gd"
+}, {
 "base": "Reference",
 "class": "ColorUtils",
 "language": "GDScript",
@@ -184,6 +189,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/Utils/Interpolation/Pow.gd"
 }, {
+"base": "Node2D",
+"class": "PowerUpScript",
+"language": "GDScript",
+"path": "res://Assets/Scripts/BrickBreaker/Powerups/PowerUpScript.gd"
+}, {
 "base": "_SwipeEventCore",
 "class": "SwipeModule",
 "language": "GDScript",
@@ -224,6 +234,7 @@ _global_script_class_icons={
 "BaseFace": "",
 "BaseState": "",
 "BaseStatesStore": "",
+"BouncingBall": "",
 "ColorUtils": "",
 "Constants": "",
 "GameMenu": "",
@@ -255,6 +266,7 @@ _global_script_class_icons={
 "PlayerStatesEnum": "",
 "PlayerStatesStore": "",
 "PowInterpolation": "",
+"PowerUpScript": "",
 "SwipeModule": "",
 "TetrisAI": "",
 "Tetromino": "",
@@ -352,6 +364,9 @@ pointing/emulate_touch_from_mouse=true
 2d_physics/layer_6="Gems"
 2d_physics/layer_7="Bullets"
 2d_physics/layer_8="Tetrix"
+2d_physics/layer_9="PowerUp"
+2d_physics/layer_10="BouncingBall"
+2d_physics/layer_11="Bricks"
 
 [physics]
 

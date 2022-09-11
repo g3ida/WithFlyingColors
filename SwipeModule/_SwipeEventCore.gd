@@ -24,7 +24,8 @@ class SwipeCondidate:
   var EventQueue	= []
 
 func end_parse(_el, idx):
-  remove_list.append(idx)
+    # items are inserted in reverse order to avoid IndexOutOfRangeExceptions
+  remove_list.push_font(idx)
 
 var swipe_condidates = []
 var remove_list = []
@@ -58,6 +59,7 @@ func _process(delta):
       el.TimeProcessing = false
     i += 1
 
+  # items are sorted in reverse order to avoid IndexOutOfRangeExceptions
   for el in remove_list:
     swipe_condidates.remove(el)
   remove_list = []

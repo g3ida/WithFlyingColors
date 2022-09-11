@@ -12,9 +12,7 @@ var base_state
 const TransoformAnimation = preload("res://Assets/Scripts/Utils/TransformAnimation.gd")
 const ElasticOut = preload("res://Assets/Scripts/Utils/Interpolation/ElasticOut.gd")
 
-const SPEED_UNIT = 70
-const SPEED = 350
-const GRAVITY = 980
+const GRAVITY = 9.8 * Global.WORLD_TO_SCREEN
 const FALL_FACTOR = 2.5
 
 func _init(dependencies: PlayerDependencies).():
@@ -59,14 +57,14 @@ func physics_update(delta: float) -> BaseState:
 
     if player.player_state != self.states_store.get_state(PlayerStatesEnum.DASHING):
       if Input.is_action_pressed("move_right"):
-        player.velocity.x = clamp(player.velocity.x + SPEED_UNIT, 0, SPEED)
+        player.velocity.x = clamp(player.velocity.x + player.speed_unit, 0, player.speed_limit)
       elif Input.is_action_pressed("move_left"):
-        player.velocity.x = clamp(player.velocity.x - SPEED_UNIT, -SPEED, -0)
+        player.velocity.x = clamp(player.velocity.x - player.speed_unit, -player.speed_limit, -0)
       
       elif (player.touch_move_input != null):
-        var min_v = min(sign(player.touch_move_input.direction.x) * SPEED, 0)
-        var max_v = max(sign(player.touch_move_input.direction.x) * SPEED, 0)
-        player.velocity.x = clamp(player.velocity.x + player.touch_move_input.direction.x * SPEED_UNIT, min_v, max_v)
+        var min_v = min(sign(player.touch_move_input.direction.x) * player.speed_limit, 0)
+        var max_v = max(sign(player.touch_move_input.direction.x) * player.speed_limit, 0)
+        player.velocity.x = clamp(player.velocity.x + player.touch_move_input.direction.x * player.speed_unit, min_v, max_v)
     
     player.velocity.y += GRAVITY * delta * FALL_FACTOR
 

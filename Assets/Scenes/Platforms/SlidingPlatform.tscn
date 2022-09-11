@@ -4,7 +4,7 @@
 [ext_resource path="res://Assets/Scripts/Platforms/SlidingPlatform.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Scripts/Platforms/SlidingPlatformGear.gd" type="Script" id=3]
 
-[node name="Node2D" type="Node2D"]
+[node name="SlidingPlatform" type="Node2D"]
 script = ExtResource( 2 )
 
 [node name="Tween" type="Tween" parent="."]

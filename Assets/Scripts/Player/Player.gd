@@ -9,6 +9,12 @@ const ElasticOut = preload("res://Assets/Scripts/Utils/Interpolation/ElasticOut.
 const SQUEEZE_ANIM_DURATION = 0.17
 const SCALE_ANIM_DURATION = 0.17
 
+# max player speed
+const SPEED = 3.5 * Global.WORLD_TO_SCREEN
+const SPEED_UNIT = 0.7 * Global.WORLD_TO_SCREEN
+var speed_limit = SPEED
+var speed_unit = SPEED_UNIT
+
 export(Script) var StatesStore
 
 var velocity = Vector2(0, 0)

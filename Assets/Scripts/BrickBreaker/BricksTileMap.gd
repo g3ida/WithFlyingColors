@@ -11,11 +11,8 @@ func fill_grid():
       set_cell(cell.x, cell.y, -1)
       var brick = Brick.instance()
       brick.color_group = color_groups[i]
-      var texture = tile_set.tile_get_texture(i)
-      brick.sprite = texture
       add_child(brick)
       brick.position = pos
-
 
 func _ready():
   fill_grid()

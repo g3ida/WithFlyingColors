@@ -1,5 +1,7 @@
 class_name ColorUtils
 
+const COLORS = ['blue', 'pink', 'yellow', 'purple']
+
 static func get_color(color_name: String):
   if color_name == 'blue':
     return Color( 0, 0.9215, 1, 1 )

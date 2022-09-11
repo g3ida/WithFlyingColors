@@ -34,7 +34,7 @@ onready var shapeWaitTimerNode = $ShapeWaitTimer
 onready var removeLinesDurationTimerNode = $RemoveLinesDurationTimer
 onready var nextPieceNode = $NextPiece
 onready var levelUpPositionNode = $LevelUpPosition
-onready var SlidingFloorSliderNode = $SlidingFloor/Node2D
+onready var SlidingFloorSliderNode = $SlidingFloor/SlidingPlatform
 onready var TriggerEnterAreaNode = $TriggerEnterArea
 
 export (NodePath) var playerNode
@@ -240,7 +240,7 @@ func _on_TetrixPool_game_over():
   pass
   
 func _on_TriggerEnterArea_body_entered(_body):
-  #fixme: check player
+  if _body != Global.player: return
   Global.camera.zoom_by(1.5)
   is_paused = false
   SlidingFloorSliderNode.set_looping(false)
