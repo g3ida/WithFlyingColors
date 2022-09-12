@@ -1,7 +1,7 @@
 extends Node2D
 
 const COLDDOWN = 1.5
-const ITEM_INV_PROBA = 5
+const ITEM_INV_PROBA = 1
 
 const PowerUp = preload("res://Assets/Scenes/BrickBreaker/Powerups/PowerUp.tscn")
 const SlowPowerUp = preload("res://Assets/Scenes/BrickBreaker/Powerups/SlowPowerUp.tscn")
@@ -67,7 +67,7 @@ func remove_irrelevant_powerups():
   for el in active_powerup_nodes:
     if !el.is_still_relevant():
       # items are inserted in reverse order to avoid IndexOutOfRangeExceptions
-      list_to_delete.push_front(i)
+      list_to_delete.insert(0, i)
     i += 1
   for el in list_to_delete:
     active_powerup_nodes[el].queue_free()

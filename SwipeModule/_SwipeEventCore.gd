@@ -24,11 +24,11 @@ class SwipeCondidate:
   var EventQueue	= []
 
 func end_parse(_el, idx):
-    # items are inserted in reverse order to avoid IndexOutOfRangeExceptions
-  remove_list.push_font(idx)
+  # items are inserted in reverse order to avoid IndexOutOfRangeExceptions
+  remove_list.insert(0, idx)
 
-var swipe_condidates = []
-var remove_list = []
+var swipe_condidates: Array = []
+var remove_list: Array = []
 
 func _ready():
   pass
