@@ -23,7 +23,7 @@ func _process(delta):
 
 func _on_Area2D_body_entered(body):
   if body == Global.player:
-    if Global.player.player_state.base_state !=  PlayerStatesEnum.DYING:
+    if Global.player.player_state.base_state != PlayerStatesEnum.DYING:
       emit_signal("on_player_hit", self, on_hit_script)
       queue_free()
 

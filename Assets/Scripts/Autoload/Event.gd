@@ -41,6 +41,7 @@ signal tetris_lines_removed()
 #brick breaker
 signal brick_broken(color, position)
 signal bouncing_ball_removed(ball)
+signal picked_powerup()
 
 
 func emit_player_landed(area, position): emit_signal("player_landed", area, position)
@@ -75,3 +76,4 @@ func emit_keyboard_action_biding(): emit_signal("keyboard_action_biding")
 func emit_tetris_lines_removed(): emit_signal("tetris_lines_removed")
 func emit_brick_broken(color, position): emit_signal("brick_broken", color, position)
 func emit_bouncing_ball_removed(ball): emit_signal("bouncing_ball_removed", ball)
+func emit_picked_powerup(): emit_signal("picked_powerup")

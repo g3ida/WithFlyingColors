@@ -82,6 +82,7 @@ func on_player_hit(powerup, hit_node: PackedScene):
     call_deferred("add_child", hit)
   if powerup != null:
     powerup.disconnect("on_player_hit", self, "on_player_hit")
+  Event.emit_signal("picked_powerup")
   
 func _process(_delta):
   set_process(false)
