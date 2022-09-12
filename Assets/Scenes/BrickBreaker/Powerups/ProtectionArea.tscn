@@ -1,12 +1,24 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/Scripts/BrickBreaker/Powerups/ProtectionArea.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Shaders/LazerBeam.gdshader" type="Shader" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 610, 2.8 )
+extents = Vector2( 612, 2.8 )
 
 [sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 610, 3 )
+extents = Vector2( 612, 3 )
+
+[sub_resource type="OpenSimplexNoise" id=6]
+seed = 1
+persistence = 0.33
+
+[sub_resource type="NoiseTexture" id=5]
+noise = SubResource( 6 )
+
+[sub_resource type="ShaderMaterial" id=4]
+shader = ExtResource( 2 )
+shader_param/noise = SubResource( 5 )
 
 [sub_resource type="CubeMesh" id=3]
 
@@ -26,7 +38,14 @@ collision_mask = 512
 shape = SubResource( 2 )
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="."]
-scale = Vector2( 610, 3 )
+modulate = Color( 1, 1, 1, 0.537255 )
+material = SubResource( 4 )
+scale = Vector2( 612, 3.5 )
+mesh = SubResource( 3 )
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="."]
+modulate = Color( 1, 1, 1, 0.501961 )
+scale = Vector2( 612, 3.5 )
 mesh = SubResource( 3 )
 
 [connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]

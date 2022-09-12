@@ -69,6 +69,6 @@ position = Vector2( 1188, 1116 )
 shape = SubResource( 2 )
 
 [node name="ProtectionAreaSpawnerPosition" type="Position2D" parent="."]
-position = Vector2( 1187, 1148 )
+position = Vector2( 1188, 1148 )
 
 [connection signal="body_entered" from="TriggerEnterArea" to="." method="_on_TriggerEnterArea_body_entered"]
