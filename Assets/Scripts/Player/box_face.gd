@@ -1,5 +1,8 @@
 extends BaseFace
 
+onready var CollisionShapeNode = $CollisionShape2D
+onready var edge_length = CollisionShapeNode.shape.extents.x
+
 func _ready():
   pass
 

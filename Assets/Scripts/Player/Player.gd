@@ -62,10 +62,20 @@ onready var dashGhostTimerNode := $DashGhostTimer
 var faceSeparatorNodes = []
 var faceNodes = []
 
+var saved_default_corner_scale_factor = 1.0
+var current_default_corner_scale_factor = 1.0
+var current_scale_factor = 1.0 # do not edit by yourself this is used by scale_corners_by
+
 func _ready():
   playerRotationAction = PlayerRotationAction.new(self)
   sprite_size = $AnimatedSprite.frames.get_frame("idle", 0).get_width()
-  
+  _init_sprite_animation()
+  was_on_floor = is_on_floor()
+  self.reset_position = self.global_position
+  _init_faces_areas()
+  _init_state()
+
+func _init_sprite_animation():
   idle_animation = TransoformAnimation.new(
     0.0,
     ElasticOut.new(1.0, 1.0, 1, 0.1),
@@ -74,30 +84,28 @@ func _ready():
     SCALE_ANIM_DURATION,
     ElasticOut.new(1.0, 1.0, 1, 0.1),
     sprite_size * 0.5)
-    
-  current_animation = idle_animation
-  was_on_floor = is_on_floor()
-  self.reset_position = self.global_position
-  
+  current_animation = idle_animation  
+
+func _init_state():
   states_store = StatesStore.new(self)
   player_state = states_store.falling_state
   player_state._enter()
   player_rotation_state = states_store.idle_state
   player_rotation_state._enter()
-  
+
+func _init_faces_areas():
   faceSeparatorNodes = [
     faceSparatorBR_node,
     faceSparatorBL_node,
     faceSparatorTL_node,
     faceSparatorTR_node
   ]
-  
   faceNodes = [
     bottomFaceNode,
     topFaceNode,
     leftFaceNode,
     rightFaceNode
-   ]
+  ]
 
 func _input(event):
   player_state._input(event)
@@ -145,6 +153,7 @@ func _on_player_diying(area, position, entity_type):
 
 func _on_checkpoint_hit(checkpoint_object: Node2D):
   self.reset_position = checkpoint_object.global_position
+  self.saved_default_corner_scale_factor = current_default_corner_scale_factor
   
   if checkpoint_object.color_group in $BottomFace.get_groups():
     self.reset_angle = 0
@@ -175,13 +184,23 @@ func switch_rotation_state(new_state):
     player_rotation_state._enter()
     
 #useful for more permessiveness
-func scale_face_separators_by(factor: float) -> void:
+func _scale_face_separators_by(factor: float) -> void:
   for face_sep in faceSeparatorNodes:
     face_sep.scale_by(factor)
     
-func scale_faces_by(factor: float) -> void:
+func _scale_faces_by(factor: float) -> void:
   for face_sep in faceNodes:
     face_sep.scale_by(factor)
+
+func scale_corners_by(factor: float) -> void:
+  if current_scale_factor == factor: return  
+  current_scale_factor = factor
+  var edge = faceSeparatorNodes[0].edge_length
+  var face = faceNodes[0].edge_length
+  var total_length = 2*edge + face
+  var reverse_factor = (total_length - 2 * edge * factor) / face
+  _scale_face_separators_by(factor)
+  _scale_faces_by(reverse_factor)
 
 func get_collision_shape_size() -> Vector2:
   return collisionShapeNode.shape.extents * 2.0

@@ -1,5 +1,7 @@
 extends Node2D
 
+const FACE_SEPARATOR_SCALE_FACTOR = 3.5
+
 const BricksTileMap = preload("res://Assets/Scenes/BrickBreaker/BricksTileMap.tscn")
 const BouncingBallScene = preload("res://Assets/Scenes/BrickBreaker/BouncingBall.tscn")
 
@@ -74,6 +76,7 @@ func play():
   if !is_playing:
     is_playing = true
     spawn_ball()
+    Global.player.current_default_corner_scale_factor = FACE_SEPARATOR_SCALE_FACTOR
 
 func _on_bouncing_ball_removed(_ball):
   num_balls -= 1

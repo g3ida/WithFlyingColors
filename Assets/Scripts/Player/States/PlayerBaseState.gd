@@ -25,6 +25,7 @@ func _init(dependencies: PlayerDependencies).():
 
 func _enter():
   reset_touch_input()
+  player.scale_corners_by(player.current_default_corner_scale_factor)
   enter()
 
 func _exit():

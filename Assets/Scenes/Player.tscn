@@ -72,16 +72,20 @@ position = Vector2( -46.5, -46.5 )
 position = Vector2( 46.5, -46.5 )
 
 [node name="BottomFace" parent="." groups=["blue"] instance=ExtResource( 3 )]
+visible = false
 position = Vector2( 0, 45.9 )
 
 [node name="TopFace" parent="." groups=["purple"] instance=ExtResource( 3 )]
+visible = false
 position = Vector2( 0, -45.9 )
 
 [node name="LeftFace" parent="." groups=["yellow"] instance=ExtResource( 3 )]
+visible = false
 position = Vector2( -45.9, 0 )
 rotation = 1.5708
 
 [node name="RightFace" parent="." groups=["pink"] instance=ExtResource( 3 )]
+visible = false
 position = Vector2( 45.9, 0 )
 rotation = -1.5708
 
