@@ -1,7 +1,7 @@
 class_name PlayerStandingState
 extends PlayerBaseState
 
-const RAYCAST_LENGTH = 5.0
+const RAYCAST_LENGTH = 10.0
 const SLIPPERING_LIMIT = 0.3 # higher is less slippering
 
 func _init(dependencies: PlayerDependencies).(dependencies):
