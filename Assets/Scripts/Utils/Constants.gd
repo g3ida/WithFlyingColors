@@ -20,3 +20,4 @@ const DEFAULT_CAMERA_LIMIT_BOTTOM = 10000
 const DEGREES_TO_RAD = PI / 180.0
 const RAD_TO_DEGREES = 180.0 / PI
 const PI2 = PI * 0.5
+const PI3 = PI * 0.3333

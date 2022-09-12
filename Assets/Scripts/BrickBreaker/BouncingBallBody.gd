@@ -82,9 +82,13 @@ func _on_Area2D_area_entered(area):
       for group in current_groups:
         AreaNode.remove_from_group(group)
       AreaNode.add_to_group(groups[0])
+      color_group = groups[0]
       SpriteNode.set_color(groups[0])
     
 func reset():
   self.position = spawn_position
   var randomness = rand_range(-SPAWN_DIRECTION_RANDOM_DEGREES, SPAWN_DIRECTION_RANDOM_DEGREES)
   self.velocity = SPAWN_DIRECTION.rotated(randomness*Constants.DEGREES_TO_RAD)*SPEED
+
+func set_velocity(_velocity: Vector2):
+  self.velocity = _velocity

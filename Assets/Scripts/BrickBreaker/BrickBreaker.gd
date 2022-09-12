@@ -17,9 +17,10 @@ onready var ProtectionAreaSpawnerPositionNode = $ProtectionAreaSpawnerPosition
 var is_playing = false
 var num_balls = 0
 
-func spawn_ball():
+func spawn_ball(color = "blue"):
   var bouncing_ball = BouncingBallScene.instance()
   bouncing_ball.death_zone = DeathZoneNode
+  bouncing_ball.color_group = color
   BallsContainer.call_deferred("add_child", bouncing_ball)
   bouncing_ball.position = BallSpawnPosNode.position
   bouncing_ball.call_deferred("set_owner", BallsContainer)
