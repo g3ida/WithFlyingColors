@@ -35,7 +35,7 @@ func _physics_update(_delta: float) -> BaseState:
 
 func raycast_floor():
   var space_state = player.get_world_2d().direct_space_state
-  var player_half_size = player.get_collision_shape_size() * 0.5
+  var player_half_size = player.get_collision_shape_size() * 0.5 * player.scale
   
   var combination = 0
   var i = 1
