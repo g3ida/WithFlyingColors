@@ -1,7 +1,7 @@
 extends Node2D
 
 const COLDDOWN = 1.5
-const ITEM_INV_PROBA = 1
+const ITEM_INV_PROBA = 4
 
 const PowerUp = preload("res://Assets/Scenes/BrickBreaker/Powerups/PowerUp.tscn")
 const SlowPowerUp = preload("res://Assets/Scenes/BrickBreaker/Powerups/SlowPowerUp.tscn")

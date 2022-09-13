@@ -1,7 +1,6 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/Tilesets/Tetrisl.tres" type="TileSet" id=1]
-[ext_resource path="res://Assets/Scenes/BrickBreaker/BricksTileMap.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Assets/Scenes/BrickBreaker/Powerups/BrickPowerUpHandler.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/Scenes/CheckpointArea.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Assets/Scripts/BrickBreaker/BrickBreaker.gd" type="Script" id=5]
@@ -43,13 +42,15 @@ position = Vector2( -97.9, 36 )
 
 [node name="BricksContainer" type="Node2D" parent="."]
 
-[node name="BricksTileMap" parent="BricksContainer" instance=ExtResource( 2 )]
-position = Vector2( 594, 50 )
-
 [node name="BrickPowerUpHandler" parent="BricksContainer" instance=ExtResource( 3 )]
 
 [node name="BricksSpawnPos" type="Position2D" parent="BricksContainer"]
-position = Vector2( 594, 50 )
+position = Vector2( 594, -2 )
+
+[node name="LevelUpTimer" type="Timer" parent="BricksContainer"]
+wait_time = 60.0
+
+[node name="BricksMoveTween" type="Tween" parent="BricksContainer"]
 
 [node name="DeathZone" parent="." instance=ExtResource( 8 )]
 
@@ -71,4 +72,5 @@ shape = SubResource( 2 )
 [node name="ProtectionAreaSpawnerPosition" type="Position2D" parent="."]
 position = Vector2( 1188, 1148 )
 
+[connection signal="timeout" from="BricksContainer/LevelUpTimer" to="." method="_on_LevelUpTimer_timeout"]
 [connection signal="body_entered" from="TriggerEnterArea" to="." method="_on_TriggerEnterArea_body_entered"]

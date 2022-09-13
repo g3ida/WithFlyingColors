@@ -120,7 +120,7 @@ func _init_faces_areas():
   FaceCollisionShapeR_node.add_to_group(rightFaceNode.get_groups()[0])
   FaceCollisionShapeT_node.add_to_group(topFaceNode.get_groups()[0])
   FaceCollisionShapeB_node.add_to_group(bottomFaceNode.get_groups()[0])
-  
+
   for group in faceSparatorBR_node.get_groups():
     FaceCollisionShapeBR_node.add_to_group(group)
   for group in faceSparatorTR_node.get_groups():
@@ -240,6 +240,5 @@ func on_fast_area_colliding_with_player_shape(body_shape_index, color_area: Area
   for group in shape_groups:
     if color_area.is_in_group(group):
       group_found = true
-  
   if not group_found:
     Event.emit_signal("player_diying", color_area, global_position, entity_type) 

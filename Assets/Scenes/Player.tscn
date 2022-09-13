@@ -63,15 +63,19 @@ __meta__ = {
 
 [node name="FaceSeparatorBR" parent="." groups=["blue", "pink"] instance=ExtResource( 4 )]
 position = Vector2( 46.5, 46.5 )
+priority = 1.0
 
 [node name="FaceSeparatorBL" parent="." groups=["blue", "yellow"] instance=ExtResource( 4 )]
 position = Vector2( -46.5, 46.5 )
+priority = 1.0
 
 [node name="FaceSeparatorTL" parent="." groups=["purple", "yellow"] instance=ExtResource( 4 )]
 position = Vector2( -46.5, -46.5 )
+priority = 1.0
 
 [node name="FaceSeparatorTR" parent="." groups=["pink", "purple"] instance=ExtResource( 4 )]
 position = Vector2( 46.5, -46.5 )
+priority = 1.0
 
 [node name="BottomFace" parent="." groups=["blue"] instance=ExtResource( 3 )]
 position = Vector2( 0, 45.9 )
