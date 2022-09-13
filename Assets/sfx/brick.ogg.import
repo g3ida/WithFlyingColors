@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/brick.ogg-7068b2e11f47fee2f0ea2986dc97e895.oggstr"
+
+[deps]
+
+source_file="res://Assets/sfx/brick.ogg"
+dest_files=[ "res://.import/brick.ogg-7068b2e11f47fee2f0ea2986dc97e895.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

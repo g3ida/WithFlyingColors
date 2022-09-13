@@ -22,6 +22,7 @@ var sfx_data: Dictionary = {
   "playerFalling": {"path": "res://Assets/sfx/falling.ogg", "volume": -10},
   "tetrisLine": {"path": "res://Assets/sfx/tetris_line.ogg", "volume": -7},
   "pickup": {"path": "res://Assets/sfx/pickup.ogg", "volume": -4},
+  "brick": {"path": "res://Assets/sfx/brick.ogg", "volume": -4},
 }
 
 var sfx_pool: Dictionary = {}
@@ -82,6 +83,7 @@ func connect_signals():
   __ = Event.connect("player_fall", self, "_on_player_falling")
   __ = Event.connect("tetris_lines_removed", self, "_on_tetris_lines_removed")
   __ = Event.connect("picked_powerup", self, "_on_picked_powerup")
+  __ = Event.connect("brick_broken", self, "_on_brick_broken")
 
 
 func disconnect_signals():
@@ -109,6 +111,7 @@ func disconnect_signals():
   Event.disconnect("player_fall", self, "_on_player_falling")
   Event.disconnect("tetris_lines_removed", self, "_on_tetris_lines_removed")
   Event.disconnect("picked_powerup", self, "_on_picked_powerup")
+  Event.disconnect("brick_broken", self, "_on_brick_broken")
 
 func _enter_tree():
   connect_signals()
@@ -131,6 +134,7 @@ func _on_player_explode(): _sfx_play("playerExplode")
 func _on_player_falling(): _sfx_play("playerFalling")
 func _on_tetris_lines_removed(): _sfx_play("tetrisLine")
 func _on_picked_powerup(): _sfx_play("pickup")
+func _on_brick_broken(_color, _position): _sfx_play("brick")
 
 func _on_pause_menu_enter():
   _sfx_play("menuSelect")
