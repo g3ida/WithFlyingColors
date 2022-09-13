@@ -56,9 +56,9 @@ func _physics_process(_delta):
     else:
       velocity = w - u
       if side_collision:
-        if (Global.player.velocity.x*n.x >= 0):
+        if Global.player.velocity.x*n.x >= 0:
           Global.player.velocity.x = -n.x * PLAYER_SIDE_HIT_PUSH_VELOCITY
-        if (velocity.y > Constants.EPSILON):
+        if velocity.y > Constants.EPSILON and global_position.y <= Global.player.global_position.y:
           velocity.y = - velocity.y
     
     if collision.collider.is_in_group("wall"):
@@ -92,3 +92,7 @@ func reset():
 
 func set_velocity(_velocity: Vector2):
   self.velocity = _velocity
+
+func _on_Area2D_body_shape_entered(_body_rid:RID, body:Node, body_shape_index:int, _local_shape_index:int):
+  if body != Global.player: return
+  body.on_fast_area_colliding_with_player_shape(body_shape_index, AreaNode, Global.EntityType.BALL)

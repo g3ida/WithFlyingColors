@@ -33,3 +33,7 @@ func _physics_process(delta):
 
 func _on_ColorArea_body_entered(_body):
     queue_free()
+
+func _on_ColorArea_body_shape_entered(_body_rid, body, body_shape_index, _local_shape_index):
+  if body != Global.player: return
+  body.on_fast_area_colliding_with_player_shape(body_shape_index, ColorAreaNode, Global.EntityType.BULLET)

@@ -55,6 +55,16 @@ onready var topFaceNode := $TopFace
 onready var leftFaceNode := $LeftFace
 onready var rightFaceNode := $RightFace
 
+onready var FaceCollisionShapeL_node = $FaceCollisionShapeL
+onready var FaceCollisionShapeR_node = $FaceCollisionShapeR
+onready var FaceCollisionShapeT_node = $FaceCollisionShapeT
+onready var FaceCollisionShapeB_node = $FaceCollisionShapeB
+
+onready var FaceCollisionShapeTL_node = $FaceCollisionShapeTL
+onready var FaceCollisionShapeTR_node = $FaceCollisionShapeTR
+onready var FaceCollisionShapeBL_node = $FaceCollisionShapeBL
+onready var FaceCollisionShapeBR_node = $FaceCollisionShapeBR
+
 onready var collisionShapeNode := $CollisionShape2D
 onready var animatedSpriteNode := $AnimatedSprite
 onready var dashGhostTimerNode := $DashGhostTimer
@@ -106,6 +116,19 @@ func _init_faces_areas():
     leftFaceNode,
     rightFaceNode
   ]
+  FaceCollisionShapeL_node.add_to_group(leftFaceNode.get_groups()[0])
+  FaceCollisionShapeR_node.add_to_group(rightFaceNode.get_groups()[0])
+  FaceCollisionShapeT_node.add_to_group(topFaceNode.get_groups()[0])
+  FaceCollisionShapeB_node.add_to_group(bottomFaceNode.get_groups()[0])
+  
+  for group in faceSparatorBR_node.get_groups():
+    FaceCollisionShapeBR_node.add_to_group(group)
+  for group in faceSparatorTR_node.get_groups():
+    FaceCollisionShapeTR_node.add_to_group(group)
+  for group in faceSparatorBL_node.get_groups():
+    FaceCollisionShapeBL_node.add_to_group(group)
+  for group in faceSparatorTL_node.get_groups():
+    FaceCollisionShapeTL_node.add_to_group(group)
 
 func _input(event):
   player_state._input(event)
@@ -207,3 +230,16 @@ func get_collision_shape_size() -> Vector2:
   
 func contains_node(node) -> bool:
   return node in get_children()
+
+#this function is a hack for bullets and fast monving objects because of this godot issue:
+#https://github.com/godotengine/godot/issues/43743
+func on_fast_area_colliding_with_player_shape(body_shape_index, color_area: Area2D, entity_type):
+  var collision_shape: CollisionShape2D =  self.shape_owner_get_owner(body_shape_index)
+  var shape_groups = collision_shape.get_groups()
+  var group_found = false
+  for group in shape_groups:
+    if color_area.is_in_group(group):
+      group_found = true
+  
+  if not group_found:
+    Event.emit_signal("player_diying", color_area, global_position, entity_type) 

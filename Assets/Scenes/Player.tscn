@@ -1,9 +1,11 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Assets/Animations/player_frames.tres" type="SpriteFrames" id=1]
 [ext_resource path="res://Assets/Scripts/Player/Player.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Scenes/BoxFace.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/Scenes/FaceSeparator.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Assets/Scenes/Player/FaceCollisionShape.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Assets/Scenes/Player/CornerCollisionShape.tscn" type="PackedScene" id=6]
 
 [sub_resource type="Curve" id=6]
 max_value = 45.0
@@ -20,7 +22,7 @@ colors = PoolColorArray( 1, 1, 1, 0.454902, 1, 1, 1, 0.113725 )
 polygon = PoolVector2Array( -47, -47, 47, -47, 47, 47, -47, 47 )
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 47.75, 47.75 )
+extents = Vector2( 43.5, 43.5 )
 
 [node name="Player" type="KinematicBody2D"]
 collision_layer = 2
@@ -72,20 +74,16 @@ position = Vector2( -46.5, -46.5 )
 position = Vector2( 46.5, -46.5 )
 
 [node name="BottomFace" parent="." groups=["blue"] instance=ExtResource( 3 )]
-visible = false
 position = Vector2( 0, 45.9 )
 
 [node name="TopFace" parent="." groups=["purple"] instance=ExtResource( 3 )]
-visible = false
 position = Vector2( 0, -45.9 )
 
 [node name="LeftFace" parent="." groups=["yellow"] instance=ExtResource( 3 )]
-visible = false
 position = Vector2( -45.9, 0 )
 rotation = 1.5708
 
 [node name="RightFace" parent="." groups=["pink"] instance=ExtResource( 3 )]
-visible = false
 position = Vector2( 45.9, 0 )
 rotation = -1.5708
 
@@ -94,3 +92,29 @@ wait_time = 1.5
 
 [node name="DashGhostTimer" type="Timer" parent="."]
 wait_time = 0.1
+
+[node name="FaceCollisionShapeL" parent="." instance=ExtResource( 5 )]
+position = Vector2( -45.7, 0 )
+
+[node name="FaceCollisionShapeR" parent="." instance=ExtResource( 5 )]
+position = Vector2( 45.7, 0 )
+
+[node name="FaceCollisionShapeT" parent="." instance=ExtResource( 5 )]
+position = Vector2( 0, -45.7 )
+rotation = 1.5708
+
+[node name="FaceCollisionShapeB" parent="." instance=ExtResource( 5 )]
+position = Vector2( 0, 45.7 )
+rotation = 1.5708
+
+[node name="FaceCollisionShapeTL" parent="." instance=ExtResource( 6 )]
+position = Vector2( -45.7, -45.7 )
+
+[node name="FaceCollisionShapeBL" parent="." instance=ExtResource( 6 )]
+position = Vector2( -45.7, 45.7 )
+
+[node name="FaceCollisionShapeTR" parent="." instance=ExtResource( 6 )]
+position = Vector2( 45.7, -45.7 )
+
+[node name="FaceCollisionShapeBR" parent="." instance=ExtResource( 6 )]
+position = Vector2( 45.7, 45.7 )
