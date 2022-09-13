@@ -4,7 +4,7 @@
 [ext_resource path="res://Assets/Sprites/Tetris/platform2.png" type="Texture" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 106, 36 )
+extents = Vector2( 108, 36 )
 
 [node name="SlidingFloor" type="KinematicBody2D"]
 __meta__ = {

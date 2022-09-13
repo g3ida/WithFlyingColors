@@ -2,6 +2,7 @@ class_name PlayerStandingState
 extends PlayerBaseState
 
 const RAYCAST_LENGTH = 10.0
+const RAYCAST_Y_OFFSET = -3.0 #https://godotengine.org/qa/63336/raycast2d-doesnt-collide-with-tilemap
 const SLIPPERING_LIMIT = 0.3 # higher is less slippering
 
 func _init(dependencies: PlayerDependencies).(dependencies):
@@ -47,7 +48,7 @@ func raycast_floor():
   ]
 
   for offset in from_offset_x:
-    var from := player.global_position + Vector2(offset, player_half_size.y)
+    var from := player.global_position + Vector2(offset, player_half_size.y+RAYCAST_Y_OFFSET)
     var to := from + Vector2(0.0, RAYCAST_LENGTH)
     var result = space_state.intersect_ray(from, to, [player])
     if (!result.empty()):
