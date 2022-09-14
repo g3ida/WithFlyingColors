@@ -39,6 +39,7 @@ func spawn_ball(color = "blue"):
 
 func remove_bricks():
   BricksTileMapNode.disconnect("bricks_cleared", self, "_on_bricks_cleared")
+  BricksTileMapNode.disconnect("level_cleared", self, "_on_level_cleared")
   BricksTileMapNode.queue_free()
 
 func spawn_bricks():
@@ -68,6 +69,11 @@ func _enter_tree():
 
 func _exit_tree():
   disconnect_signals()
+
+func increment_balls_speed():
+  for b in BallsContainer.get_children():
+    if b is BouncingBall:
+      b.increment_speed()
 
 func remove_balls():
   for b in BallsContainer.get_children():
@@ -100,6 +106,7 @@ func play():
   BricksTimerNode.start()
   BricksTileMapNode = spawn_bricks()
   var __ = BricksTileMapNode.connect("bricks_cleared", self, "_on_bricks_cleared")
+  __ = BricksTileMapNode.connect("level_cleared", self, "_on_level_cleared")
   Global.player.current_default_corner_scale_factor = FACE_SEPARATOR_SCALE_FACTOR
 
 func _on_bouncing_ball_removed(_ball):
@@ -123,15 +130,28 @@ func _on_LevelUpTimer_timeout():
   current_level += 1
   if current_level == NUM_LEVELS:
     BricksTimerNode.stop()
+  move_bricks_down_by(LEVELS_Y_GAP)
+  increment_balls_speed()
 
+func move_bricks_down_by(value: float):
   BricksMoveTweenNode.interpolate_property(
     BricksTileMapNode,
     "position:y",
     BricksTileMapNode.position.y,
-    BricksTileMapNode.position.y + LEVELS_Y_GAP,
+    BricksTileMapNode.position.y + value,
     0.15)
   BricksMoveTweenNode.start()
 
 func _on_bricks_cleared():
-  current_state = State.WIN
-  remove_balls()
+  if current_state == State.PLAYING:
+    current_state = State.WIN
+    Event.emit_break_breaker_win()
+    remove_balls()
+    move_bricks_down_by(2*LEVELS_Y_GAP)
+
+func _on_level_cleared(level):
+  if current_state == State.PLAYING:
+    if level != NUM_LEVELS and current_level+1 <= level and BricksTimerNode.time_left < 2.0:
+      BricksTimerNode.stop()
+      BricksTimerNode.start()
+      _on_LevelUpTimer_timeout()

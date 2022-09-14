@@ -18,6 +18,7 @@ const PLAYER_SIDE_HIT_PUSH_VELOCITY = 200.0
 onready var spawn_position: Vector2 = position
 var velocity = Vector2.UP * SPEED
 var death_zone: Area2D
+var speed = SPEED
 
 func _ready():
   randomize()
@@ -92,6 +93,10 @@ func reset():
 
 func set_velocity(_velocity: Vector2):
   self.velocity = _velocity
+
+func increment_speed():
+  speed = speed+1
+  self.velocity = self.velocity.normalized() * speed
 
 func _on_Area2D_body_shape_entered(_body_rid:RID, body:Node, body_shape_index:int, _local_shape_index:int):
   if body != Global.player: return

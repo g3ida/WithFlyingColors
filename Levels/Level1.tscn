@@ -200,3 +200,13 @@ position = Vector2( -56, 186 )
 
 [node name="BrickBreaker" parent="." instance=ExtResource( 34 )]
 position = Vector2( 397, -2866 )
+
+[node name="FiringCanon" parent="." instance=ExtResource( 24 )]
+position = Vector2( 1285, -706 )
+stand_texture = ExtResource( 27 )
+canon_texture = ExtResource( 26 )
+bullet_texture = ExtResource( 28 )
+followNodeName = "player"
+bullet_scene = ExtResource( 25 )
+objectToFollow = NodePath("../Player")
+color_group = "blue"
