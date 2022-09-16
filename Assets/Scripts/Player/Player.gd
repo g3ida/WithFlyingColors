@@ -226,8 +226,9 @@ func scale_corners_by(factor: float) -> void:
   _scale_faces_by(reverse_factor)
 
 func get_collision_shape_size() -> Vector2:
-  return collisionShapeNode.shape.extents * 2.0
-  
+  var extra_w = FaceCollisionShapeL_node.shape.extents.x
+  return (collisionShapeNode.shape.extents + 2.0 * Vector2(extra_w, extra_w)) * 2.0
+
 func contains_node(node) -> bool:
   return node in get_children()
 

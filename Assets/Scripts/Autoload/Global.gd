@@ -13,6 +13,7 @@ var currentMenu = MAIN_MENU
 var PreviousMenu = PLAY_MENU
 
 func _ready():
+  set_process(false)
   var __ = Event.connect("Stats_button_pressed", self, "_on_menu_change_to_stats")
   __ = Event.connect("Play_button_pressed", self, "_on_menu_change_to_play")
   __ = Event.connect("Settings_button_pressed", self, "_on_menu_change_to_settings")

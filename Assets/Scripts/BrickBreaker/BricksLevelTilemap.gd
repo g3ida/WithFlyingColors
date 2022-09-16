@@ -19,7 +19,7 @@ func fill_grid():
       brick.color_group = color_groups[i]
       parent.call_deferred("add_child", brick)
       brick.call_deferred("set_owner", parent)
-      var __ = brick.connect("tree_exited", self, "_on_brick_broken")
+      var __ = brick.connect("brick_broken", self, "_on_brick_broken")
       brick.position = pos
       bricks_count += 1
 

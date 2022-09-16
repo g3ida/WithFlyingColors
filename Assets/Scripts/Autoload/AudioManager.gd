@@ -23,7 +23,7 @@ var sfx_data: Dictionary = {
   "tetrisLine": {"path": "res://Assets/sfx/tetris_line.ogg", "volume": -7},
   "pickup": {"path": "res://Assets/sfx/pickup.ogg", "volume": -4},
   "brick": {"path": "res://Assets/sfx/brick.ogg", "volume": -4},
-  "winMiniGame": {"path": "res://Assets/sfx/win_mini_game.ogg", "volume": -2},
+  "winMiniGame": {"path": "res://Assets/sfx/win_mini_game.ogg", "volume": 0},
 }
 
 var sfx_pool: Dictionary = {}
@@ -49,7 +49,7 @@ func fill_sfx_pool():
     audio_player.set_owner(self)
 
 func _ready():
-  pause_mode = PAUSE_MODE_PROCESS
+  set_process(false)
   music_track_manager = MusicTrackManager.instance()
   add_child(music_track_manager)
   music_track_manager.set_owner(self)

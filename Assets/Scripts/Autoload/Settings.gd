@@ -8,6 +8,7 @@ const config_file_path = "settings.ini"
 var _is_ready := false
 
 func _ready():
+  set_process(false)
   load_game_settings()
   _is_ready = true
 

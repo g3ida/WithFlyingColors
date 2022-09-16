@@ -14,6 +14,7 @@ onready var BallSpawnPosNode = $BallsContainer/BallSpawnPos
 onready var BricksSpawnPosNode = $BricksContainer/BricksSpawnPos
 onready var BricksTimerNode = $BricksContainer/LevelUpTimer
 onready var BricksMoveTweenNode = $BricksContainer/BricksMoveTween
+onready var BricksPowerUpHandler = $BricksContainer/BrickPowerUpHandler
 onready var Checkpoint = $CheckpointArea
 onready var TriggerEnterAreaNode = $TriggerEnterArea
 onready var SlidingFloorNode = $SlidingFloor
@@ -101,6 +102,7 @@ func stop():
   BricksTimerNode.stop()
 
 func play():
+  current_state = State.PLAYING
   current_level = 0
   spawn_ball()
   BricksTimerNode.start()
@@ -133,13 +135,13 @@ func _on_LevelUpTimer_timeout():
   move_bricks_down_by(LEVELS_Y_GAP)
   increment_balls_speed()
 
-func move_bricks_down_by(value: float):
+func move_bricks_down_by(value: float, speed = 0.25):
   BricksMoveTweenNode.interpolate_property(
     BricksTileMapNode,
     "position:y",
     BricksTileMapNode.position.y,
     BricksTileMapNode.position.y + value,
-    0.15)
+    speed)
   BricksMoveTweenNode.start()
 
 func _on_bricks_cleared():
@@ -147,11 +149,13 @@ func _on_bricks_cleared():
     current_state = State.WIN
     Event.emit_break_breaker_win()
     remove_balls()
-    move_bricks_down_by(2*LEVELS_Y_GAP)
+    BricksPowerUpHandler.remove_falling_powerups()
+    BricksPowerUpHandler.remove_active_powerups()
+    move_bricks_down_by(2.5*LEVELS_Y_GAP, 3.0)
 
 func _on_level_cleared(level):
   if current_state == State.PLAYING:
-    if level != NUM_LEVELS and current_level+1 <= level and BricksTimerNode.time_left < 2.0:
+    if current_level != NUM_LEVELS and current_level+1 <= level and BricksTimerNode.time_left > 2.0:
       BricksTimerNode.stop()
       BricksTimerNode.start()
       _on_LevelUpTimer_timeout()

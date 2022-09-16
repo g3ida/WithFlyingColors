@@ -1,5 +1,8 @@
 extends Node
 
+func _ready():
+  set_process(false)
+
 signal player_landed(area, position)
 signal player_diying(area, position, entity_type)
 signal player_died()
