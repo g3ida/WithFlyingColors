@@ -1,53 +1,77 @@
 extends Node2D
 
 export var wait_time: float = 1.0
-export var is_vertical: bool = false
 export var speed: float = 3.0
-export var distance: float = 350.0
+export var is_stopped = false
+export var one_shot = false
+export var smooth_landing = true
+export var show_gear = true
 
 onready var platform: KinematicBody2D = get_parent()
 onready var tweenNode = $Tween
 onready var gearNone = $Gear
+onready var destination: Vector2 = _parse_destination()
+onready var follow: Vector2 = platform.global_position
 
-var direction: Vector2
-var follow: Vector2
+enum State {WAIT_1, SLIDING_FORTH, WAIT_2, SLIDING_BACK}
 
 #saved params
 var saved_looping = true
 var saved_is_stopped = false
 var is_saved = false
-
-var is_stopped = false
 var delayed_stop = false
+var current_state = State.WAIT_1
 
+var distance: float
+var duration: float
+var start_pos: Vector2
+var end_pos: Vector2
 
+func _parse_destination() -> Vector2:
+  for ch in get_children():
+    if ch is Position2D:
+      return ch.global_position
+  return global_position
+  
+func _setup():
+  tweenNode.repeat = false
+  distance = (destination - follow).length()
+  duration = distance / float(speed*Global.WORLD_TO_SCREEN)
+  start_pos = follow
+  end_pos = destination
+  if !show_gear: gearNone.visible = false
+  
 func _ready():
-  direction = Vector2.UP if is_vertical else Vector2.RIGHT
-  follow = platform.position
-  _init_tween()
+  _setup()
+  _process_tween()
 
 func _physics_process(_delta):
-  platform.position = platform.position.linear_interpolate(follow, 0.075)
+  if smooth_landing:
+    platform.global_position = platform.global_position.linear_interpolate(follow, 0.075)
+  else:
+    platform.global_position = follow
 
-func _init_tween():
-  var duration = distance / float(speed*Global.WORLD_TO_SCREEN)
-  var start_pos = platform.position
-  var end_pos = start_pos + direction * distance
+func _process_tween():
+  if is_stopped: return
 
-  #waits are added just for signals
-  slide(start_pos, start_pos, wait_time, 0) #wait
-  slide(start_pos, end_pos, duration, wait_time) #slide
-  slide(end_pos, end_pos, wait_time, duration + wait_time) #wait
-  slide(end_pos, start_pos, duration, duration + wait_time * 2) #slide back
-  tweenNode.start()
+  if current_state == State.WAIT_1:
+    slide(start_pos, start_pos, wait_time, 0) #wait
+  elif current_state == State.SLIDING_FORTH:
+    slide(start_pos, end_pos, duration, 0) #slide
+  elif current_state == State.WAIT_2:
+    slide(end_pos, end_pos, wait_time, 0) #wait
+  elif current_state == State.SLIDING_BACK:
+    slide(end_pos, start_pos, duration, 0) #slide back
 
-func slide(start: Vector2, end: Vector2, duration: float, wait: float):
+    tweenNode.start()
+
+func slide(start: Vector2, end: Vector2, _duration: float, wait: float):
   tweenNode.interpolate_property(
     self,
     "follow",
     start,
     end,
-    duration,
+    _duration,
     Tween.TRANS_LINEAR,
     Tween.EASE_IN_OUT,
     wait)
@@ -55,7 +79,6 @@ func slide(start: Vector2, end: Vector2, duration: float, wait: float):
   
 func set_looping(looping: bool):
   tweenNode.repeat = looping
-
 
 func connect_signals():
   var __ = Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
@@ -87,15 +110,31 @@ func stop_slider(stop_directly: bool):
   
 func resume_slider():
   is_stopped = false
-  _init_tween()
+  _process_tween()
   
 func reset():
   if is_saved:
     tweenNode.repeat = saved_looping
     if is_stopped and not saved_is_stopped:
        resume_slider()
-  
+
+func _get_next_state(state):
+  if state == State.WAIT_1:
+    return State.SLIDING_FORTH
+  if state == State.SLIDING_FORTH:
+    return State.WAIT_2
+  if state == State.WAIT_2:
+    return State.SLIDING_BACK
+  if state == State.SLIDING_BACK:
+    return State.WAIT_1
+  return null
+
 func _on_Tween_tween_completed(_object, _key):
+  current_state = _get_next_state(current_state)
   if delayed_stop:
     delayed_stop = false
     stop_slider(true)
+  if one_shot and current_state == State.SLIDING_BACK:
+    delayed_stop = true
+  _process_tween()
+
