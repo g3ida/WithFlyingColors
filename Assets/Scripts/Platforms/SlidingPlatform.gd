@@ -1,19 +1,20 @@
 extends Node2D
 
+enum State {WAIT_1, SLIDING_FORTH, WAIT_2, SLIDING_BACK}
+
 export var wait_time: float = 1.0
 export var speed: float = 3.0
 export var is_stopped = false
 export var one_shot = false
+export(State) var one_shot_state = State.SLIDING_BACK
 export var smooth_landing = true
 export var show_gear = true
 
 onready var platform: KinematicBody2D = get_parent()
 onready var tweenNode = $Tween
 onready var gearNone = $Gear
-onready var destination: Vector2 = _parse_destination()
 onready var follow: Vector2 = platform.global_position
-
-enum State {WAIT_1, SLIDING_FORTH, WAIT_2, SLIDING_BACK}
+onready var destination: Vector2 = _parse_destination()
 
 #saved params
 var saved_looping = true
@@ -30,7 +31,7 @@ var end_pos: Vector2
 func _parse_destination() -> Vector2:
   for ch in get_children():
     if ch is Position2D:
-      return ch.global_position
+      return ch.position * platform.global_scale + follow
   return global_position
   
 func _setup():
@@ -134,7 +135,7 @@ func _on_Tween_tween_completed(_object, _key):
   if delayed_stop:
     delayed_stop = false
     stop_slider(true)
-  if one_shot and current_state == State.SLIDING_BACK:
+  if one_shot and current_state == one_shot_state:
     delayed_stop = true
   _process_tween()
 

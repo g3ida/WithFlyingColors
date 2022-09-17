@@ -1,13 +1,16 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Assets/Tilesets/Tetrisl.tres" type="TileSet" id=1]
 [ext_resource path="res://Assets/Scripts/Tetris/TetrisPool.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scenes/Camera/CameraLocalizer.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/Scenes/Tetris/ScoreBoard.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Assets/Scenes/CheckpointArea.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Assets/Scenes/Tetris/NextPiece.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Assets/Scenes/Tetris/Z_Block.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" type="PackedScene" id=8]
 [ext_resource path="res://Assets/Scenes/Tetris/SlidingFloor.tscn" type="PackedScene" id=9]
+
+[sub_resource type="RectangleShape2D" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 100.667, 3.66667 )
@@ -39,16 +42,29 @@ position = Vector2( 431.333, -575.333 )
 position = Vector2( 683.333, -860.667 )
 next_piece = ExtResource( 7 )
 
+[node name="CameraLocalizer" parent="." instance=ExtResource( 3 )]
+position = Vector2( 34.667, -21 )
+scale = Vector2( 9, 3 )
+full_viewport_drag_margin = true
+zoom = 1.5
+
+[node name="TopRight" type="Position2D" parent="CameraLocalizer"]
+position = Vector2( 107.407, -394 )
+scale = Vector2( 1, 1 )
+
+[node name="BottomLeft" type="Position2D" parent="CameraLocalizer"]
+position = Vector2( -103.778, 16.4444 )
+scale = Vector2( 1, 1 )
+
+[node name="Area2D" type="Area2D" parent="CameraLocalizer"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizer/Area2D"]
+shape = SubResource( 2 )
+
 [node name="CheckpointArea" parent="." instance=ExtResource( 5 )]
 position = Vector2( 34.6667, -41.3333 )
 scale = Vector2( 9, 3 )
 full_viewport_drag_margin = true
-
-[node name="TopRight" type="Position2D" parent="CheckpointArea"]
-position = Vector2( 107.407, -394 )
-
-[node name="BottomLeft" type="Position2D" parent="CheckpointArea"]
-position = Vector2( -103.778, 16.4444 )
 
 [node name="SlidingFloor" parent="." instance=ExtResource( 9 )]
 position = Vector2( 36, 36 )

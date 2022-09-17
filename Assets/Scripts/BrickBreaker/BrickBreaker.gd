@@ -20,6 +20,7 @@ onready var TriggerEnterAreaNode = $TriggerEnterArea
 onready var SlidingFloorNode = $SlidingFloor
 onready var SlidingFloorSliderNode = $SlidingFloor/SlidingPlatform
 onready var ProtectionAreaSpawnerPositionNode = $ProtectionAreaSpawnerPosition
+onready var SlidingDoorNode = $SlidingDoor/SlidingPlatform
 
 enum State {PLAYING, PAUSED, LOSE, STOPPED, WIN}
 var current_state = State.STOPPED
@@ -147,11 +148,16 @@ func move_bricks_down_by(value: float, speed = 0.25):
 func _on_bricks_cleared():
   if current_state == State.PLAYING:
     current_state = State.WIN
+    BricksTimerNode.stop()
     Event.emit_break_breaker_win()
     remove_balls()
-    BricksPowerUpHandler.remove_falling_powerups()
     BricksPowerUpHandler.remove_active_powerups()
+    BricksPowerUpHandler.remove_falling_powerups()
     move_bricks_down_by(2.5*LEVELS_Y_GAP, 3.0)
+    yield(BricksMoveTweenNode, "tween_completed")
+    BricksPowerUpHandler.remove_active_powerups()
+    BricksPowerUpHandler.remove_falling_powerups()
+    SlidingDoorNode.resume_slider()
 
 func _on_level_cleared(level):
   if current_state == State.PLAYING:

@@ -12,6 +12,7 @@ enum CamLimitEnum {
 
 export var full_viewport_drag_margin = false
 export(CamLimitEnum) var position_clipping_mode := CamLimitEnum.FULL_LIMIT
+export var zoom = 1.0
 
 var areaNodes = []
 var positionsNodes = []
@@ -86,6 +87,7 @@ func _on_body_entred(_body):
   if _body == Global.player:
     set_camera_limits()
     set_camera_drag_margins()
+    Global.camera.zoom_by(zoom)
   
 func set_camera_limits():
   if position_clipping_mode == CamLimitEnum.FULL_LIMIT:

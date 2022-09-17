@@ -19,6 +19,6 @@ func _ready():
 
 func _on_Area2D_area_entered(_area):
   var extents = CollisionShapeNode.shape.extents
-  Event.emit_signal("brick_broken", color_group, position + get_parent().position + extents)
   emit_signal("brick_broken")
+  Event.emit_signal("brick_broken", color_group, position + get_parent().position + extents)
   queue_free()

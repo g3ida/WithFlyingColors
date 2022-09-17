@@ -241,7 +241,6 @@ func _on_TetrixPool_game_over():
   
 func _on_TriggerEnterArea_body_entered(_body):
   if _body != Global.player: return
-  Global.camera.zoom_by(1.5)
   is_paused = false
   SlidingFloorSliderNode.set_looping(false)
   SlidingFloorSliderNode.stop_slider(false)
