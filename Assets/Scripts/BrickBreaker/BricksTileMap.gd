@@ -27,6 +27,9 @@ func _on_level_bricks_cleared(id):
   is_level_cleared[id] = true
   var new_uncleated_level = _get_least_uncleared_level()
   if new_uncleated_level == -1:
-    emit_signal("bricks_cleared")
+    call_deferred("emit_signal","bricks_cleared")
   elif new_uncleated_level != least_uncleared_level:
-    emit_signal("level_cleared", new_uncleated_level)
+    call_deferred("emit_signal","level_cleared", new_uncleated_level)
+    
+func _emit_level_cleared(new_uncleated_level):
+  emit_signal("level_cleared", new_uncleated_level)

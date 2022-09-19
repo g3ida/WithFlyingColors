@@ -175,7 +175,8 @@ func _on_player_diying(area, position, entity_type):
   switch_state(next_state)
 
 func _on_checkpoint_hit(checkpoint_object: Node2D):
-  self.reset_position = checkpoint_object.global_position
+  if checkpoint_object.is_inside_tree():
+    self.reset_position = checkpoint_object.global_position
   self.saved_default_corner_scale_factor = current_default_corner_scale_factor
   
   if checkpoint_object.color_group in $BottomFace.get_groups():

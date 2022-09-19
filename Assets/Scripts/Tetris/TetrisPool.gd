@@ -246,7 +246,7 @@ func _on_TriggerEnterArea_body_entered(_body):
   SlidingFloorSliderNode.stop_slider(false)
   is_vergin = false
   
-  AudioManager.music_track_manager.add_track("tetris", "res://Assets/Music/Myuu-Tetris-Dark-Version.mp3", -5.0)
+  AudioManager.music_track_manager.load_track("tetris")
   AudioManager.music_track_manager.play_track("tetris")
   
   if (TriggerEnterAreaNode != null):

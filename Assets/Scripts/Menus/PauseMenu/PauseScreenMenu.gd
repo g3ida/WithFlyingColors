@@ -32,6 +32,7 @@ func pause():
   get_tree().paused = true
       
 func _on_BackButton_pressed():
+  AudioManager.stop_all_sfx()
   resume()
   var __ = get_tree().change_scene("res://Assets/Screens/MainMenu.tscn")
 

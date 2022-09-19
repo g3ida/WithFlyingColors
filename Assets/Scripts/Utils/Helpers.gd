@@ -15,3 +15,9 @@ static func intersects(circlePos: Vector2, circleRadius: float, rectPos: Vector2
       
   var cornerDistance_sq = pow((circle_dist.x - rect.x/2), 2) + pow((circle_dist.y - rect.y/2), 2)  
   return (cornerDistance_sq <= (circleRadius*circleRadius))
+
+static func array_contains_scene_type(array, scene):
+  for el in array:
+    if scene is el:
+      return true
+  return false

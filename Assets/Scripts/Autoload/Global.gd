@@ -35,3 +35,9 @@ func _on_menu_change(next_menu):
   if (currentMenu != next_menu):
     PreviousMenu = currentMenu
     currentMenu = next_menu
+
+#the opposite is physical checkoint by using checkpointArea.tscn
+func trigger_functional_checkoint():
+  var checkpoint = CheckpointArea.new()
+  checkpoint.color_group = "blue"
+  checkpoint._on_CheckpointArea_body_entered(player)

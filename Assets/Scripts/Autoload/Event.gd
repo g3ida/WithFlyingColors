@@ -46,6 +46,7 @@ signal brick_broken(color, position)
 signal bouncing_ball_removed(ball)
 signal picked_powerup()
 signal break_breaker_win()
+signal brick_breaker_start()
 
 
 func emit_player_landed(area, position): emit_signal("player_landed", area, position)
@@ -82,3 +83,4 @@ func emit_brick_broken(color, position): emit_signal("brick_broken", color, posi
 func emit_bouncing_ball_removed(ball): emit_signal("bouncing_ball_removed", ball)
 func emit_picked_powerup(): emit_signal("picked_powerup")
 func emit_break_breaker_win(): emit_signal("break_breaker_win")
+func emit_brick_breaker_start(): emit_signal("brick_breaker_start")

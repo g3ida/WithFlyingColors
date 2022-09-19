@@ -21,9 +21,9 @@ onready var SlidingFloorNode = $SlidingFloor
 onready var SlidingFloorSliderNode = $SlidingFloor/SlidingPlatform
 onready var ProtectionAreaSpawnerPositionNode = $ProtectionAreaSpawnerPosition
 onready var SlidingDoorNode = $SlidingDoor/SlidingPlatform
+onready var CameraLocalizerNode = $CameraLocalizer
 
-enum State {PLAYING, PAUSED, LOSE, STOPPED, WIN}
-var current_state = State.STOPPED
+var current_state = BrickBreakerState.STOPPED
 
 var num_balls = 0
 var current_level = 0
@@ -46,9 +46,10 @@ func remove_bricks():
 
 func spawn_bricks():
   var bricks = BricksTileMap.instance()
-  bricks.position = BricksSpawnPosNode.position
+  bricks.position = BricksSpawnPosNode.position + Vector2.UP * 500.0
   call_deferred("add_child", bricks)
   bricks.call_deferred("set_owner", self)
+  call_deferred("move_bricks_down_by", 500.0, 5.0)
   return bricks
 
 func _ready():
@@ -84,8 +85,9 @@ func remove_balls():
   num_balls = 0
   
 func reset():
-  if current_state == State.LOSE:
-    current_state = State.PLAYING
+  if current_state == BrickBreakerState.LOSE:
+    current_state = BrickBreakerState.PLAYING
+    AudioManager.music_track_manager.set_pitch_scale(1)
     stop()
     play()
     
@@ -94,8 +96,8 @@ func _on_checkpoint_hit(_checkpoint):
     pass
 
 func _on_player_dying(_area, _position, _entity_type):
-  if current_state == State.PLAYING:
-    current_state = State.LOSE
+  if current_state == BrickBreakerState.PLAYING:
+    current_state = BrickBreakerState.LOSE
 
 func stop():
   remove_balls()
@@ -103,11 +105,13 @@ func stop():
   BricksTimerNode.stop()
 
 func play():
-  current_state = State.PLAYING
+  current_state = BrickBreakerState.PLAYING
   current_level = 0
+  BricksTileMapNode = spawn_bricks()
+  Event.emit_brick_breaker_start()
+  yield(BricksMoveTweenNode, "tween_completed")
   spawn_ball()
   BricksTimerNode.start()
-  BricksTileMapNode = spawn_bricks()
   var __ = BricksTileMapNode.connect("bricks_cleared", self, "_on_bricks_cleared")
   __ = BricksTileMapNode.connect("level_cleared", self, "_on_level_cleared")
   Global.player.current_default_corner_scale_factor = FACE_SEPARATOR_SCALE_FACTOR
@@ -115,7 +119,7 @@ func play():
 func _on_bouncing_ball_removed(_ball):
   num_balls -= 1
   if num_balls == 0:
-    current_state = State.LOSE
+    current_state = BrickBreakerState.LOSE
     Event.emit_signal("player_died")  
 
 func _on_TriggerEnterArea_body_entered(body):
@@ -123,8 +127,8 @@ func _on_TriggerEnterArea_body_entered(body):
   play()
   SlidingFloorSliderNode.set_looping(false)
   SlidingFloorSliderNode.stop_slider(false)
-  #AudioManager.music_track_manager.add_track("tetris", "res://Assets/Music/Myuu-Tetris-Dark-Version.mp3", -5.0)
-  #AudioManager.music_track_manager.play_track("tetris")
+  AudioManager.music_track_manager.load_track("brickBreaker")
+  AudioManager.music_track_manager.play_track("brickBreaker")
   if (TriggerEnterAreaNode != null):
     TriggerEnterAreaNode.queue_free()
     TriggerEnterAreaNode = null
@@ -134,33 +138,46 @@ func _on_LevelUpTimer_timeout():
   if current_level == NUM_LEVELS:
     BricksTimerNode.stop()
   move_bricks_down_by(LEVELS_Y_GAP)
+  AudioManager.music_track_manager.set_pitch_scale(1 + (current_level-1) * 0.1)
   increment_balls_speed()
 
-func move_bricks_down_by(value: float, speed = 0.25):
+func move_bricks_down_by(value: float, duration = 0.25):
   BricksMoveTweenNode.interpolate_property(
     BricksTileMapNode,
     "position:y",
     BricksTileMapNode.position.y,
     BricksTileMapNode.position.y + value,
-    speed)
+    duration)
   BricksMoveTweenNode.start()
 
 func _on_bricks_cleared():
-  if current_state == State.PLAYING:
-    current_state = State.WIN
+  if current_state == BrickBreakerState.PLAYING:
+    current_state = BrickBreakerState.WIN
     BricksTimerNode.stop()
     Event.emit_break_breaker_win()
-    remove_balls()
-    BricksPowerUpHandler.remove_active_powerups()
-    BricksPowerUpHandler.remove_falling_powerups()
+    _clean_up_game()
     move_bricks_down_by(2.5*LEVELS_Y_GAP, 3.0)
     yield(BricksMoveTweenNode, "tween_completed")
-    BricksPowerUpHandler.remove_active_powerups()
-    BricksPowerUpHandler.remove_falling_powerups()
+    AudioManager.music_track_manager.set_pitch_scale(1)
     SlidingDoorNode.resume_slider()
+    _change_camera_view_after_win()
+    Global.trigger_functional_checkoint()
+
+func _clean_up_game():
+  remove_balls()
+  BricksPowerUpHandler.is_active = false
+  BricksPowerUpHandler.remove_active_powerups()
+  BricksPowerUpHandler.remove_falling_powerups()
+
+
+func _change_camera_view_after_win():
+  CameraLocalizerNode.position_clipping_mode = CamLimitEnum.LIMIT_ALL_BUT_TOP
+  CameraLocalizerNode.full_viewport_drag_margin = false
+  CameraLocalizerNode.set_camera_limits()
+  CameraLocalizerNode.apply_camera_changes()
 
 func _on_level_cleared(level):
-  if current_state == State.PLAYING:
+  if current_state == BrickBreakerState.PLAYING:
     if current_level != NUM_LEVELS and current_level+1 <= level and BricksTimerNode.time_left > 2.0:
       BricksTimerNode.stop()
       BricksTimerNode.start()

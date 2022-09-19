@@ -25,7 +25,7 @@ script = ExtResource( 5 )
 [node name="BallsContainer" type="Node2D" parent="."]
 
 [node name="BallSpawnPos" type="Position2D" parent="BallsContainer"]
-position = Vector2( 1192, 822 )
+position = Vector2( 1188, 753 )
 
 [node name="TileMap" type="TileMap" parent="." groups=["wall"]]
 tile_set = ExtResource( 1 )

@@ -107,7 +107,6 @@ func connect_signals():
   __ = Event.connect("player_jumped", self, "_on_player_jump")
   __ = Event.connect("player_land", self, "_on_player_land")
 
-  
 func disconnect_signals():
   Event.disconnect("checkpoint_reached", self, "_on_checkpoint_hit")
   Event.disconnect("checkpoint_loaded", self, "reset")

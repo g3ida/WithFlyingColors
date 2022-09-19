@@ -13,6 +13,8 @@ const ProtectionAreaPowerUp = preload("res://Assets/Scenes/BrickBreaker/Powerups
 const  powerups = [SlowPowerUp, FastPowerUp, ScaleUpPowerUp, ScaleDownPowerUp, TripleBallsPowerUp, ProtectionAreaPowerUp]
 
 var active_powerup_nodes = []
+var is_active = true
+var powerups_random_list = []
 
 onready var FallingPowerUpsContainer = $FallingPowerUpsContainer
 onready var ColddownTimer = $ColddownTimer
@@ -30,6 +32,17 @@ func reset():
   remove_active_powerups()
   remove_falling_powerups()
   ColddownTimer.stop()
+
+func _fill_powerups_random_list():
+  powerups_random_list = []
+  for el in  powerups:
+    powerups_random_list.append(el)
+  powerups_random_list.shuffle()
+  
+func _get_random_powerup():
+  if powerups_random_list.empty():
+    _fill_powerups_random_list()
+  return powerups_random_list.pop_back()
 
 func remove_active_powerups():
   for el in active_powerup_nodes:
@@ -50,9 +63,9 @@ func create_powerup(powerup_node, color, _position):
   ColddownTimer.start()
 
 func _on_brick_broken(color, _position):
-  if ColddownTimer.time_left < Constants.EPSILON:
+  if ColddownTimer.time_left < Constants.EPSILON and is_active:
     if (randi() % ITEM_INV_PROBA) == 0:
-      var powerup = powerups[randi() % powerups.size()]
+      var powerup = _get_random_powerup()
       create_powerup(powerup, color, _position)
     
 func check_if_can_add_powerup(hit_node: PackedScene):

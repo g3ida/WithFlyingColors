@@ -7,7 +7,11 @@ enum CamLimitEnum {
   LIMIT_TOP_RIGHT,
   LIMIT_TOP_LEFT,
   LIMIT_X_AXIS,
-  LIMIT_Y_AXIS
+  LIMIT_Y_AXIS,
+  LIMIT_ALL_BUT_TOP,
+  LIMIT_ALL_BUT_LEFT,
+  LIMIT_ALL_BUT_RIGHT,
+  LIMIT_ALL_BUT_BOTTOM
 }
 
 export var full_viewport_drag_margin = false
@@ -85,9 +89,12 @@ func setup_limiting():
 
 func _on_body_entred(_body):
   if _body == Global.player:
-    set_camera_limits()
-    set_camera_drag_margins()
-    Global.camera.zoom_by(zoom)
+    apply_camera_changes()
+
+func apply_camera_changes():
+  set_camera_limits()
+  set_camera_drag_margins()
+  Global.camera.zoom_by(zoom)
   
 func set_camera_limits():
   if position_clipping_mode == CamLimitEnum.FULL_LIMIT:
@@ -124,6 +131,26 @@ func set_camera_limits():
     Global.camera.limit_left = Constants.DEFAULT_CAMERA_LIMIT_LEFT
     Global.camera.limit_bottom = bottom
     Global.camera.limit_right = Constants.DEFAULT_CAMERA_LIMIT_RIGHT
+    Global.camera.limit_top = top
+  elif position_clipping_mode == CamLimitEnum.LIMIT_ALL_BUT_TOP:
+    Global.camera.limit_left = left
+    Global.camera.limit_bottom = bottom
+    Global.camera.limit_right = right
+    Global.camera.limit_top = Constants.DEFAULT_CAMERA_LIMIT_TOP
+  elif position_clipping_mode == CamLimitEnum.LIMIT_ALL_BUT_LEFT:
+    Global.camera.limit_left = Constants.DEFAULT_CAMERA_LIMIT_LEFT
+    Global.camera.limit_bottom = bottom
+    Global.camera.limit_right = right
+    Global.camera.limit_top = top
+  elif position_clipping_mode == CamLimitEnum.LIMIT_ALL_BUT_RIGHT:
+    Global.camera.limit_left = left
+    Global.camera.limit_bottom = bottom
+    Global.camera.limit_right = Constants.DEFAULT_CAMERA_LIMIT_RIGHT
+    Global.camera.limit_top = top
+  elif position_clipping_mode == CamLimitEnum.LIMIT_ALL_BUT_BOTTOM:
+    Global.camera.limit_left = left
+    Global.camera.limit_bottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM
+    Global.camera.limit_right = right
     Global.camera.limit_top = top
     
 func set_camera_drag_margins():
