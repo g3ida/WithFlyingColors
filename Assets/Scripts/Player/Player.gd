@@ -27,9 +27,6 @@ var current_animation: TransoformAnimation
 var sprite_size: int
 var was_on_floor: bool = true
 
-var reset_position: Vector2
-var reset_angle: float = 0
-
 var states_store
 var player_state
 var player_rotation_state
@@ -72,7 +69,13 @@ onready var dashGhostTimerNode := $DashGhostTimer
 var faceSeparatorNodes = []
 var faceNodes = []
 
-var saved_default_corner_scale_factor = 1.0
+onready var save_data = {
+  "position_x": self.global_position.x,
+  "position_y": self.global_position.y,
+  "angle": 0.0,
+  "default_corner_scale_factor": 1.0
+}
+
 var current_default_corner_scale_factor = 1.0
 var current_scale_factor = 1.0 # do not edit by yourself this is used by scale_corners_by
 
@@ -81,7 +84,6 @@ func _ready():
   sprite_size = $AnimatedSprite.frames.get_frame("idle", 0).get_width()
   _init_sprite_animation()
   was_on_floor = is_on_floor()
-  self.reset_position = self.global_position
   _init_faces_areas()
   _init_state()
 
@@ -145,14 +147,35 @@ func _physics_process(delta):
     on_land()
   was_on_floor = is_on_floor()
 
+func save():
+  return save_data
+
 func reset():
   $AnimatedSprite.play("idle")
   $AnimatedSprite.playing = false
-  self.global_position = reset_position
+  self.global_position = Vector2(save_data["position_x"], save_data["position_y"])
   switch_rotation_state(states_store.get_state(PlayerStatesEnum.IDLE))
   switch_state((states_store.get_state(PlayerStatesEnum.FALLING)))
-  self.rotate(self.reset_angle - self.rotation)
-  
+  var angle_rot = save_data["angle"]
+  self.rotate(angle_rot - self.rotation)
+  self.current_default_corner_scale_factor = save_data["default_corner_scale_factor"]
+
+func _on_checkpoint_hit(checkpoint_object: Node2D):  
+  if checkpoint_object.color_group in $BottomFace.get_groups():
+    save_data["angle"] = 0
+  elif checkpoint_object.color_group in $LeftFace.get_groups():
+    save_data["angle"] = -PI / 2
+  elif checkpoint_object.color_group in $RightFace.get_groups():
+    save_data["angle"] = PI / 2
+  elif checkpoint_object.color_group in $TopFace.get_groups():
+    save_data["angle"] = PI
+
+  if checkpoint_object.is_inside_tree():
+    save_data["position_x"] = checkpoint_object.global_position.x
+    save_data["position_y"] = checkpoint_object.global_position.y
+
+  save_data["default_corner_scale_factor"] = current_default_corner_scale_factor
+
 func connect_signals():
   var __ = Event.connect("player_diying", self, "_on_player_diying")
   __ = Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
@@ -173,20 +196,6 @@ func _exit_tree():
 func _on_player_diying(area, position, entity_type):
   var next_state = player_state._on_player_diying(area, position, entity_type)
   switch_state(next_state)
-
-func _on_checkpoint_hit(checkpoint_object: Node2D):
-  if checkpoint_object.is_inside_tree():
-    self.reset_position = checkpoint_object.global_position
-  self.saved_default_corner_scale_factor = current_default_corner_scale_factor
-  
-  if checkpoint_object.color_group in $BottomFace.get_groups():
-    self.reset_angle = 0
-  elif checkpoint_object.color_group in $LeftFace.get_groups():
-    self.reset_angle = -PI / 2
-  elif checkpoint_object.color_group in $RightFace.get_groups():
-    self.reset_angle = PI / 2
-  elif checkpoint_object.color_group in $TopFace.get_groups():
-    self.reset_angle = PI
 
 func is_just_hit_the_floor():
   return (not was_on_floor) and is_on_floor()

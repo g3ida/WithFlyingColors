@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Assets/Scripts/Camera.gd" type="Script" id=1]
 
-[node name="Camera2D" type="Camera2D"]
+[node name="Camera2D" type="Camera2D" groups=["persist"]]
 current = true
 limit_left = 0
 limit_top = 0

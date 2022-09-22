@@ -25,3 +25,11 @@ func get_state(state: int):
   if state == StatesEnum.COLLECTED:
     return collected
   return null
+
+func get_state_enum(_state):
+  if _state == not_collected:
+    return StatesEnum.NOT_COLLECTED
+  elif _state == collecting:
+    return StatesEnum.COLLECTING
+  else:
+    return StatesEnum.COLLECTED

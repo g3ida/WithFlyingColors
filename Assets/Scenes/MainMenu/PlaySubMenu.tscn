@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Assets/Scripts/Menus/SubMenu/PlaySubMenu.gd" type="Script" id=2]
+
+[node name="PlaySubMenu" type="Control"]
+show_behind_parent = true
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -318.0
+margin_right = 318.0
+margin_bottom = 324.0
+rect_min_size = Vector2( 636, 324 )
+script = ExtResource( 2 )

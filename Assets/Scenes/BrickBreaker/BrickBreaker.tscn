@@ -11,15 +11,15 @@
 [ext_resource path="res://Assets/Scenes/Camera/CameraLocalizer.tscn" type="PackedScene" id=9]
 
 [sub_resource type="RectangleShape2D" id=4]
-extents = Vector2( 110.5, 22.375 )
+extents = Vector2( 126.25, 22.375 )
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 114.75, 10 )
 
 [sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 108, 36 )
+extents = Vector2( 111.375, 244.875 )
 
-[node name="BrickBreaker" type="Node2D"]
+[node name="BrickBreaker" type="Node2D" groups=["persist"]]
 script = ExtResource( 5 )
 
 [node name="BallsContainer" type="Node2D" parent="."]
@@ -59,12 +59,12 @@ shape = SubResource( 4 )
 position = Vector2( 0, -1000 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizer/ExitArea"]
+position = Vector2( -13, 32 )
 shape = SubResource( 4 )
 
 [node name="CheckpointArea" parent="." instance=ExtResource( 4 )]
 position = Vector2( 1198, 1080 )
 scale = Vector2( 10, 3 )
-full_viewport_drag_margin = true
 
 [node name="BricksContainer" type="Node2D" parent="."]
 
@@ -119,12 +119,14 @@ position_clipping_mode = 2
 position = Vector2( 216, 0 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ExitCameraLocalizer/Area2D"]
+position = Vector2( 79, -210 )
 shape = SubResource( 3 )
 
 [node name="Area2D2" type="Area2D" parent="ExitCameraLocalizer"]
 position = Vector2( -216, 0 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ExitCameraLocalizer/Area2D2"]
+position = Vector2( -81, -209 )
 shape = SubResource( 3 )
 
 [node name="Position2D" type="Position2D" parent="ExitCameraLocalizer"]

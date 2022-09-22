@@ -1,8 +1,9 @@
 class_name BrickBreakerState
 
 enum {
+  INIT_PLAYING,
   PLAYING,
-  PAUSED,
+  PAUSED, #not used for now
   LOSE,
   STOPPED,
   WIN

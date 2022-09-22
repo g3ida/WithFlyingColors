@@ -1,4 +1,5 @@
 tool
+class_name Brick
 extends Node2D
 
 signal brick_broken()

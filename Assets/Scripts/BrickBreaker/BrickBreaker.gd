@@ -3,6 +3,8 @@ extends Node2D
 const FACE_SEPARATOR_SCALE_FACTOR = 3.5
 const NUM_LEVELS = 2
 const LEVELS_Y_GAP = 36 * 4
+const LEVELS_WIN_GAP = 2.5 * LEVELS_Y_GAP
+const BRIKS_TRANSLATION_Y_AMOUNT = 500.0
 
 const BricksTileMap = preload("res://Assets/Scenes/BrickBreaker/BricksTileMap.tscn")
 const BouncingBallScene = preload("res://Assets/Scenes/BrickBreaker/BouncingBall.tscn")
@@ -28,6 +30,10 @@ var current_state = BrickBreakerState.STOPPED
 var num_balls = 0
 var current_level = 0
 
+var save_data = {
+  "state": current_state
+}
+
 func spawn_ball(color = "blue"):
   var bouncing_ball = BouncingBallScene.instance()
   bouncing_ball.death_zone = DeathZoneNode
@@ -40,16 +46,20 @@ func spawn_ball(color = "blue"):
   return bouncing_ball
 
 func remove_bricks():
-  BricksTileMapNode.disconnect("bricks_cleared", self, "_on_bricks_cleared")
-  BricksTileMapNode.disconnect("level_cleared", self, "_on_level_cleared")
-  BricksTileMapNode.queue_free()
+  if BricksTileMapNode != null:
+    BricksTileMapNode.disconnect("bricks_cleared", self, "_on_bricks_cleared")
+    BricksTileMapNode.disconnect("level_cleared", self, "_on_level_cleared")
+    BricksTileMapNode.queue_free()
+    BricksTileMapNode = null
 
-func spawn_bricks():
+func spawn_bricks(should_instance_bricks = true, should_translate_down = true):
   var bricks = BricksTileMap.instance()
-  bricks.position = BricksSpawnPosNode.position + Vector2.UP * 500.0
+  bricks.should_instance_bricks = should_instance_bricks
+  bricks.position = BricksSpawnPosNode.position + ((Vector2.UP * BRIKS_TRANSLATION_Y_AMOUNT) if should_translate_down else Vector2.ZERO)
   call_deferred("add_child", bricks)
   bricks.call_deferred("set_owner", self)
-  call_deferred("move_bricks_down_by", 500.0, 5.0)
+  if should_translate_down:
+    call_deferred("move_bricks_down_by", BRIKS_TRANSLATION_Y_AMOUNT, 5.0)
   return bricks
 
 func _ready():
@@ -83,21 +93,34 @@ func remove_balls():
     if b is BouncingBall:
       b.queue_free()
   num_balls = 0
+
+func save():
+  return save_data
   
 func reset():
-  if current_state == BrickBreakerState.LOSE:
-    current_state = BrickBreakerState.PLAYING
+  current_state = save_data["state"]
+  if current_state == BrickBreakerState.INIT_PLAYING:
     AudioManager.music_track_manager.set_pitch_scale(1)
-    stop()
     play()
-    
+  elif current_state == BrickBreakerState.WIN:
+    if BricksTileMapNode == null:
+      BricksTileMapNode = spawn_bricks(false, false)
+      BricksTileMapNode.position.y += LEVELS_Y_GAP * NUM_LEVELS + LEVELS_WIN_GAP
+
+func _get_save_state_from_current_state():
+  if current_state == BrickBreakerState.LOSE or current_state == BrickBreakerState.PLAYING:
+    return BrickBreakerState.INIT_PLAYING
+  return current_state
+  
 func _on_checkpoint_hit(_checkpoint):
+  save_data["state"] = _get_save_state_from_current_state()
   if Checkpoint == _checkpoint:
-    pass
+    pass #nothing todo for now
 
 func _on_player_dying(_area, _position, _entity_type):
   if current_state == BrickBreakerState.PLAYING:
     current_state = BrickBreakerState.LOSE
+    stop()
 
 func stop():
   remove_balls()
@@ -105,30 +128,35 @@ func stop():
   BricksTimerNode.stop()
 
 func play():
-  current_state = BrickBreakerState.PLAYING
-  current_level = 0
-  BricksTileMapNode = spawn_bricks()
-  Event.emit_brick_breaker_start()
-  yield(BricksMoveTweenNode, "tween_completed")
-  spawn_ball()
-  BricksTimerNode.start()
-  var __ = BricksTileMapNode.connect("bricks_cleared", self, "_on_bricks_cleared")
-  __ = BricksTileMapNode.connect("level_cleared", self, "_on_level_cleared")
-  Global.player.current_default_corner_scale_factor = FACE_SEPARATOR_SCALE_FACTOR
+  if current_state != BrickBreakerState.PLAYING:
+    current_state = BrickBreakerState.PLAYING
+    current_level = 0
+    BricksTileMapNode = spawn_bricks()
+    Event.emit_brick_breaker_start()
+    yield(BricksMoveTweenNode, "tween_completed")
+    spawn_ball()
+    BricksTimerNode.start()
+    var __ = BricksTileMapNode.connect("bricks_cleared", self, "_on_bricks_cleared")
+    __ = BricksTileMapNode.connect("level_cleared", self, "_on_level_cleared")
+    Global.player.current_default_corner_scale_factor = FACE_SEPARATOR_SCALE_FACTOR
 
 func _on_bouncing_ball_removed(_ball):
   num_balls -= 1
-  if num_balls == 0:
-    current_state = BrickBreakerState.LOSE
-    Event.emit_signal("player_died")  
+  if num_balls <= 0:
+    Event.emit_signal("player_diying", DeathZoneNode, _ball.global_position, Global.EntityType.BRICK_BREAKER)  
 
 func _on_TriggerEnterArea_body_entered(body):
   if body != Global.player: return
-  play()
-  SlidingFloorSliderNode.set_looping(false)
-  SlidingFloorSliderNode.stop_slider(false)
-  AudioManager.music_track_manager.load_track("brickBreaker")
-  AudioManager.music_track_manager.play_track("brickBreaker")
+  if current_state == BrickBreakerState.STOPPED:
+    play()
+    SlidingFloorSliderNode.set_looping(false)
+    SlidingFloorSliderNode.stop_slider(false)
+    AudioManager.music_track_manager.load_track("brickBreaker")
+    AudioManager.music_track_manager.play_track("brickBreaker")
+  
+  if current_state == BrickBreakerState.WIN:
+    _change_camera_view_after_win()
+
   if (TriggerEnterAreaNode != null):
     TriggerEnterAreaNode.queue_free()
     TriggerEnterAreaNode = null
@@ -156,7 +184,7 @@ func _on_bricks_cleared():
     BricksTimerNode.stop()
     Event.emit_break_breaker_win()
     _clean_up_game()
-    move_bricks_down_by(2.5*LEVELS_Y_GAP, 3.0)
+    move_bricks_down_by(LEVELS_WIN_GAP, 3.0)
     yield(BricksMoveTweenNode, "tween_completed")
     AudioManager.music_track_manager.set_pitch_scale(1)
     SlidingDoorNode.resume_slider()
@@ -166,9 +194,8 @@ func _on_bricks_cleared():
 func _clean_up_game():
   remove_balls()
   BricksPowerUpHandler.is_active = false
-  BricksPowerUpHandler.remove_active_powerups()
-  BricksPowerUpHandler.remove_falling_powerups()
-
+  BricksPowerUpHandler.call_deferred("remove_active_powerups")
+  BricksPowerUpHandler.call_deferred("remove_falling_powerups")
 
 func _change_camera_view_after_win():
   CameraLocalizerNode.position_clipping_mode = CamLimitEnum.LIMIT_ALL_BUT_TOP

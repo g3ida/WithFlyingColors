@@ -29,6 +29,15 @@ __meta__ = {
 "_edit_group_": true
 }
 
+[node name="OutsideButton" type="Button" parent="."]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = -3682.0
+margin_top = -2308.0
+margin_right = 3668.0
+margin_bottom = 2618.0
+focus_mode = 0
+enabled_focus_mode = 0
+
 [node name="MenuBox" type="KinematicBody2D" parent="."]
 
 [node name="Sprite" type="Sprite" parent="MenuBox"]
@@ -40,6 +49,7 @@ margin_left = -256.0
 margin_top = -468.0
 margin_right = 256.0
 margin_bottom = -162.0
+focus_mode = 0
 custom_colors/font_color_disabled = Color( 0, 0, 0, 0.196078 )
 custom_colors/font_color_focus = Color( 0, 0, 0, 0.588235 )
 custom_colors/font_color = Color( 0, 0, 0, 0.392157 )
@@ -47,6 +57,7 @@ custom_colors/font_color_hover = Color( 0, 0, 0, 0.588235 )
 custom_colors/font_color_pressed = Color( 0, 0, 0, 0.627451 )
 custom_fonts/font = ExtResource( 2 )
 custom_styles/focus = SubResource( 3 )
+enabled_focus_mode = 0
 text = "play"
 flat = true
 
@@ -56,6 +67,7 @@ margin_top = 260.0
 margin_right = 47.0
 margin_bottom = 566.0
 rect_rotation = -90.0
+focus_mode = 0
 custom_colors/font_color_disabled = Color( 0, 0, 0, 0.196078 )
 custom_colors/font_color_focus = Color( 0, 0, 0, 0.588235 )
 custom_colors/font_color = Color( 0, 0, 0, 0.392157 )
@@ -63,6 +75,7 @@ custom_colors/font_color_hover = Color( 0, 0, 0, 0.588235 )
 custom_colors/font_color_pressed = Color( 0, 0, 0, 0.627451 )
 custom_fonts/font = ExtResource( 2 )
 custom_styles/focus = SubResource( 4 )
+enabled_focus_mode = 0
 text = "QUIT"
 flat = true
 
@@ -72,6 +85,7 @@ margin_top = -275.0
 margin_right = 1028.0
 margin_bottom = 31.0
 rect_rotation = 90.0
+focus_mode = 0
 custom_colors/font_color_disabled = Color( 0, 0, 0, 0.196078 )
 custom_colors/font_color_focus = Color( 0, 0, 0, 0.588235 )
 custom_colors/font_color = Color( 0, 0, 0, 0.392157 )
@@ -79,6 +93,7 @@ custom_colors/font_color_hover = Color( 0, 0, 0, 0.588235 )
 custom_colors/font_color_pressed = Color( 0, 0, 0, 0.627451 )
 custom_fonts/font = ExtResource( 2 )
 custom_styles/focus = SubResource( 5 )
+enabled_focus_mode = 0
 text = "SETTINGS"
 flat = true
 
@@ -88,6 +103,7 @@ margin_top = 468.0
 margin_right = 768.0
 margin_bottom = 774.0
 rect_rotation = 180.0
+focus_mode = 0
 custom_colors/font_color_disabled = Color( 0, 0, 0, 0.196078 )
 custom_colors/font_color_focus = Color( 0, 0, 0, 0.588235 )
 custom_colors/font_color = Color( 0, 0, 0, 0.392157 )
@@ -95,19 +111,24 @@ custom_colors/font_color_hover = Color( 0, 0, 0, 0.588235 )
 custom_colors/font_color_pressed = Color( 0, 0, 0, 0.627451 )
 custom_fonts/font = ExtResource( 2 )
 custom_styles/focus = SubResource( 6 )
+enabled_focus_mode = 0
 text = "STATS"
 flat = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MenuBox"]
 shape = SubResource( 1 )
 
+[node name="SubMenuTween" type="Tween" parent="MenuBox"]
+
 [node name="RightButton" type="Button" parent="."]
 margin_left = 516.0
 margin_top = -221.0
 margin_right = 662.0
 margin_bottom = -3.0
+focus_mode = 0
 custom_styles/pressed = ExtResource( 6 )
 custom_styles/focus = SubResource( 2 )
+enabled_focus_mode = 0
 icon = ExtResource( 4 )
 flat = true
 
@@ -116,14 +137,18 @@ margin_left = -670.0
 margin_top = -221.0
 margin_right = -524.0
 margin_bottom = -3.0
+focus_mode = 0
 custom_styles/pressed = ExtResource( 6 )
 custom_styles/focus = SubResource( 7 )
+enabled_focus_mode = 0
 icon = ExtResource( 3 )
 flat = true
 
+[connection signal="pressed" from="OutsideButton" to="." method="_on_OutsideButton_pressed"]
 [connection signal="pressed" from="MenuBox/Sprite/PlayButton" to="." method="_on_PlayButton_pressed"]
 [connection signal="pressed" from="MenuBox/Sprite/QuitButton" to="." method="_on_QuitButton_pressed"]
 [connection signal="pressed" from="MenuBox/Sprite/SettingsButton" to="." method="_on_SettingsButton_pressed"]
 [connection signal="pressed" from="MenuBox/Sprite/StatsButton" to="." method="_on_StatsButton_pressed"]
+[connection signal="tween_completed" from="MenuBox/SubMenuTween" to="." method="_on_SubMenuTween_tween_completed"]
 [connection signal="pressed" from="RightButton" to="." method="_on_RightButton_pressed"]
 [connection signal="pressed" from="LeftButton" to="." method="_on_LeftButton_pressed"]

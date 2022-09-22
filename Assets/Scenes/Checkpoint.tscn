@@ -82,7 +82,7 @@ tracks/1/keys = {
 [sub_resource type="CircleShape2D" id=2]
 radius = 27.074
 
-[node name="Checkpoint" type="Area2D"]
+[node name="Checkpoint" type="Area2D" groups=["persist"]]
 z_index = -1
 script = ExtResource( 4 )
 __meta__ = {

@@ -11,9 +11,10 @@
 [ext_resource path="res://Assets/Scenes/Tetris/SlidingFloor.tscn" type="PackedScene" id=9]
 
 [sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 10, 8.44444 )
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 100.667, 3.66667 )
+extents = Vector2( 118.167, 17.6667 )
 
 [node name="TetrixPool" type="Node2D"]
 scale = Vector2( 1.5, 1.5 )
@@ -50,28 +51,26 @@ zoom = 1.5
 
 [node name="TopRight" type="Position2D" parent="CameraLocalizer"]
 position = Vector2( 107.407, -394 )
-scale = Vector2( 1, 1 )
 
 [node name="BottomLeft" type="Position2D" parent="CameraLocalizer"]
 position = Vector2( -103.778, 16.4444 )
-scale = Vector2( 1, 1 )
 
 [node name="Area2D" type="Area2D" parent="CameraLocalizer"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizer/Area2D"]
+position = Vector2( -3.69549e-05, -1.44444 )
+scale = Vector2( 1, 1 )
 shape = SubResource( 2 )
 
 [node name="CheckpointArea" parent="." instance=ExtResource( 5 )]
-position = Vector2( 34.6667, -41.3333 )
-scale = Vector2( 9, 3 )
-full_viewport_drag_margin = true
+position = Vector2( 36.6667, -74 )
+scale = Vector2( 10, 3 )
 
 [node name="SlidingFloor" parent="." instance=ExtResource( 9 )]
 position = Vector2( 36, 36 )
 
 [node name="SlidingPlatform" parent="SlidingFloor" instance=ExtResource( 8 )]
 wait_time = 3.0
-smooth_landing = false
 
 [node name="Position2D" type="Position2D" parent="SlidingFloor/SlidingPlatform"]
 position = Vector2( 0, 1008 )
@@ -80,7 +79,7 @@ position = Vector2( 0, 1008 )
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TriggerEnterArea"]
-position = Vector2( 36.6667, -6.33333 )
+position = Vector2( 29.5001, -18.3333 )
 shape = SubResource( 1 )
 
 [connection signal="game_over" from="." to="." method="_on_TetrixPool_game_over"]

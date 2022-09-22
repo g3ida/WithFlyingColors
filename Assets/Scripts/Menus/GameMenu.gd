@@ -8,12 +8,13 @@ const DELAY = 0.25
 enum {ENTER, RUNNING, EXIT}
 
 onready var screen_state: int
-var destination_screen: String = ""
+var destination_screen: int
 var animators = []
 var current_focus = null
 
 func _enter_tree():
   screen_state = ENTER
+  var __ = Event.connect("menu_button_pressed", self, "_on_menu_button_pressed")
   on_enter()
   enter_tree()
 
@@ -21,6 +22,7 @@ func enter_tree():
   pass
 
 func _exit_tree():
+  Event.disconnect("menu_button_pressed", self, "_on_menu_button_pressed")
   exit_tree()
 
 func exit_tree():
@@ -33,24 +35,31 @@ func ready():
   pass
 
 func _process(delta):
+  if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("ui_home"):
+    Event.emit_menu_button_pressed(MenuButtons.BACK)	
   if screen_state == ENTER:
     if is_enter_ceremony_done():
       screen_state = RUNNING
   elif screen_state == EXIT:
     if is_exit_ceremony_done():
-      var __ = get_tree().change_scene(destination_screen)
-  
+      MenuManager.go_to_menu(destination_screen)
   for animator in animators:
     animator.update(delta)
-    
   process(delta)
 
-func navigate_to_screen(screen_path: String):
+func navigate_to_screen(menu_screen):
   if screen_state == RUNNING:
     screen_state = EXIT
-    destination_screen = screen_path
+    destination_screen = menu_screen
     on_exit()
   
+func _on_menu_button_pressed(menu_button):
+  if not on_menu_button_pressed(menu_button):
+    if menu_button == MenuButtons.BACK:
+      navigate_to_screen(MenuManager.previous_menu)
+
+func on_menu_button_pressed(_menu_button) -> bool:
+  return false
 
 func process(_delta):
   var focus_owner = get_focus_owner()

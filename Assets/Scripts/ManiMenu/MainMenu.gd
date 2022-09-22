@@ -1,5 +1,7 @@
 extends GameMenu
 
+onready var MenuBoxNode = $MenuBox
+
 func init_box_animator(el, delay: float) -> Animator:
   var start = el.rect_position.y + DISTANCE
   var end = el.rect_position.y
@@ -8,9 +10,6 @@ func init_box_animator(el, delay: float) -> Animator:
   return Animator.new(start, end, funcref(el, "update_position_y"), duration, delay, interpolation)
 
 func ready():
-  pass
-
-func process(_delta):
   pass
   
 func on_enter():
@@ -31,33 +30,25 @@ func is_exit_ceremony_done() -> bool:
 func is_enter_ceremony_done() -> bool:
   return animators_done()
 
-func connect_signals():
-  var __ = Event.connect("Play_button_pressed", self, "_on_Play_button_pressed")
-  __ = Event.connect("Quit_button_pressed", self, "_on_Quit_button_pressed")
-  __ = Event.connect("Settings_button_pressed", self, "_on_Settings_button_pressed")
-  __ = Event.connect("Stats_button_pressed", self, "_on_Stats_button_pressed")
+func on_menu_button_pressed(menu_button) -> bool:
+  if menu_button == MenuButtons.QUIT:
+    if (screen_state == RUNNING):
+      get_tree().quit()
+      return true
+  elif menu_button == MenuButtons.PLAY:
+    return true
+  elif menu_button == MenuButtons.STATS:
+    navigate_to_screen(MenuManager.Menus.STATS_MENU)
+    return true
+  elif menu_button == MenuButtons.SETTINGS:
+    navigate_to_screen(MenuManager.Menus.SETTINGS_MENU)
+    return true
+  elif menu_button == MenuButtons.BACK:
+    MenuBoxNode._hide_sub_menu_if_needed()
+    return true
+  return process_play_sub_menus(menu_button)
 
-func disconnect_signals():
-  Event.disconnect("Play_button_pressed", self, "_on_Play_button_pressed")
-  Event.disconnect("Quit_button_pressed", self, "_on_Quit_button_pressed")
-  Event.disconnect("Settings_button_pressed", self, "_on_Settings_button_pressed")
-  Event.disconnect("Stats_button_pressed", self, "_on_Stats_button_pressed")
-          
-func enter_tree():
-  connect_signals()
-    
-func exit_tree():
-  disconnect_signals()
+func process_play_sub_menus(_menu_button) -> bool:
+  #TODO FILL THIS SHIT
+  return false
 
-func _on_Play_button_pressed():
-  navigate_to_screen("res://Levels/Level1.tscn")
-
-func _on_Quit_button_pressed():
-  if (screen_state == RUNNING):
-    get_tree().quit()
-
-func _on_Settings_button_pressed():
-  navigate_to_screen("res://Assets/Screens/SettingsMenu.tscn")
-  
-func _on_Stats_button_pressed():
-  navigate_to_screen("res://Assets/Screens/StatsMenu.tscn")

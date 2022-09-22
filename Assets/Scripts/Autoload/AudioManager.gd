@@ -127,6 +127,7 @@ func stop_all_except(sfx_list: Array):
       sfx_pool[sfx].stop()
 
 func _ready():
+  pause_mode = PAUSE_MODE_PROCESS # se we can play sfx in pause menu
   set_process(false)
   music_track_manager = MusicTrackManager.instance()
   add_child(music_track_manager)
@@ -142,11 +143,6 @@ func connect_signals():
   __ = Event.connect("player_jumped", self, "_on_player_jumped")
   __ = Event.connect("player_rotate", self, "_on_player_rotate")
   __ = Event.connect("player_land", self, "_on_player_land")
-  __ = Event.connect("Play_button_pressed", self, "_on_menu_pressed")
-  __ = Event.connect("Stats_button_pressed", self, "_on_menu_pressed")
-  __ = Event.connect("Settings_button_pressed", self, "_on_menu_pressed")
-  __ = Event.connect("Quit_button_pressed", self, "_on_menu_pressed")
-  __ = Event.connect("Go_to_main_menu_pressed", self, "_on_menu_pressed")
   __ = Event.connect("gem_collected", self, "_on_gem_collected")
   __ = Event.connect("Fullscreen_toggled", self, "_on_button_toggle")
   __ = Event.connect("Vsync_toggled", self, "_on_button_toggle")
@@ -165,6 +161,7 @@ func connect_signals():
   __ = Event.connect("brick_broken", self, "_on_brick_broken")
   __ = Event.connect("break_breaker_win", self, "_on_win_mini_game")
   __ = Event.connect("brick_breaker_start", self, "_on_brick_breaker_start")
+  __ = Event.connect("menu_button_pressed", self, "_on_menu_button_pressed")
 
 
 func disconnect_signals():
@@ -172,11 +169,6 @@ func disconnect_signals():
   Event.disconnect("player_jumped", self, "_on_player_jumped")
   Event.disconnect("player_rotate", self, "_on_player_rotate")
   Event.disconnect("player_land", self, "_on_player_land")
-  Event.disconnect("Play_button_pressed", self, "_on_menu_pressed")
-  Event.disconnect("Stats_button_pressed", self, "_on_menu_pressed")
-  Event.disconnect("Settings_button_pressed", self, "_on_menu_pressed")
-  Event.disconnect("Quit_button_pressed", self, "_on_menu_pressed")
-  Event.disconnect("Go_to_main_menu_pressed", self, "_on_menu_pressed")
   Event.disconnect("gem_collected", self, "_on_gem_collected")
   Event.disconnect("Fullscreen_toggled", self, "_on_button_toggle")
   Event.disconnect("Vsync_toggled", self, "_on_button_toggle")
@@ -195,6 +187,7 @@ func disconnect_signals():
   Event.disconnect("brick_broken", self, "_on_brick_broken")
   Event.disconnect("break_breaker_win", self, "_on_win_mini_game")
   Event.disconnect("brick_breaker_start", self, "_on_brick_breaker_start")
+  Event.disconnect("menu_button_pressed", self, "_on_menu_button_pressed")
 
 func _enter_tree():
   connect_signals()
@@ -205,7 +198,7 @@ func _exit_tree():
 func _on_player_jumped(): _sfx_play("jump")
 func _on_player_rotate(dir): _sfx_play("rotateLeft" if dir == -1 else "rotateRight")
 func _on_player_land(): _sfx_play("land")
-func _on_menu_pressed(): _sfx_play("menuSelect")
+func _on_menu_button_pressed(_menu_button): _sfx_play("menuSelect")
 func _on_gem_collected(_color, _position, _x): _sfx_play("gemCollect")
 func _on_button_toggle(_value):  _sfx_play("menuValueChange")
 func _on_key_bound(_value, _value2):  _sfx_play("menuValueChange")

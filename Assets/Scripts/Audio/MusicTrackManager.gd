@@ -1,21 +1,41 @@
 extends Node2D
 
+class Track:
+  func _init(_name: String, _stream: AudioStreamPlayer, _volume: float):
+    name = _name; stream = _stream; volume = _volume
+  var name: String
+  var stream: AudioStreamPlayer
+  var volume: float
+
+enum State {
+  STOPPED,
+  FADE_IN,
+  PLAYING,
+  FADE_OUT
+}
+
 onready var fadeTween = $Fade
 
 var music_pool: Dictionary = {}
-var is_switching = false
-var current_track: AudioStreamPlayer = null
-var pitch_scale = 2.0
-var switching_stopped = false
+var current_track: Track = null
+var next_track: Track = null
+var pitch_scale = 1.0
 
-const FADE_DURATION = 3.0
-const FADE_VOLUME = -30.0
+const FADE_DURATION = 1.0
+const FADE_VOLUME = -40.0
 
 const BUS_NAME  = "music"
 const EFF_INDEX = 0
 const NOTCH_EFF_INDEX = 1
 
 const BUS_INDEX = 1
+
+var current_state = State.STOPPED
+
+var save_data = {
+  "track": null,
+  "scale": 1.0,
+}
 
 var track_list = {
   "brickBreaker": {
@@ -69,10 +89,11 @@ func set_pause_menu_effect(is_on: bool):
   AudioServer.set_bus_effect_enabled(BUS_INDEX, NOTCH_EFF_INDEX, is_on)
 
 func set_pitch_scale(_pitch_scale):
+  if current_track == null: return
   # see https://godotengine.org/qa/88935/how-can-i-change-speed-of-an-audio-without-changing-its-pitch
   var shift = AudioServer.get_bus_effect(BUS_INDEX, EFF_INDEX)
   shift.pitch_scale = 1.0 / _pitch_scale
-  current_track.pitch_scale = _pitch_scale
+  current_track.stream.pitch_scale = _pitch_scale
   pitch_scale = _pitch_scale
 
 func load_track(name: String):
@@ -83,12 +104,14 @@ func load_track(name: String):
     add_track(name, track_list[name]["path"], volume)
   
 func add_track(name: String, path: String, volume: float):
+  if music_pool.has(name):
+    return
   var stream = load(path)
   var audio_player := AudioStreamPlayer.new()
   audio_player.stream = stream
   audio_player.stream.set_loop(true)
   audio_player.bus = BUS_NAME
-  music_pool[name] = {"player": audio_player, "volume": volume}
+  music_pool[name] = Track.new(name, audio_player, volume)
   audio_player.volume_db = volume
   add_child(audio_player)
   audio_player.set_owner(self)
@@ -97,41 +120,85 @@ func remove_track(name: String) -> void:
   if music_pool.has(name):
     var music = music_pool[name]
     if music != null:
-      remove_child(music["player"])
+      remove_child(music.player)
       var __ = music_pool.erase(name)
-  
+
 func play_track(name: String):
-  if (is_switching): return
-  switching_stopped = false
-  is_switching = true
-  if (current_track != null):
-    fade_out()
-    yield(fadeTween, "tween_completed")
-    current_track.stop()
-  if switching_stopped:
-    is_switching = false
-    switching_stopped = false
+  if !music_pool.has(name):
     return
-  if music_pool.has(name):
-    var track = music_pool[name]
-    current_track = track["player"] 
-    var volume = track["volume"]
-    set_pitch_scale(1.0)
-    current_track.volume_db = FADE_VOLUME
-    current_track.play()
-    fade_in(volume)
-    yield(fadeTween, "tween_completed")
-  is_switching =false
-  
+  var track = music_pool[name]
+  if current_state == State.STOPPED:
+    current_track = track
+    fade_in()
+  elif current_state == State.FADE_IN:
+    next_track = track
+    fade_out()
+  elif current_state == State.FADE_OUT:
+    next_track = track
+  elif current_state == State.PLAYING:
+    if current_track.name != track.name:
+      next_track = track
+      fade_out()
+
 func stop():
-  current_track.stop()
-  current_track = null
-  if is_switching:
-    switching_stopped = true
+  if current_track != null:
+    current_track.stream.stop()
+    current_track = null
+    next_track = null
+  current_state = State.STOPPED
 
 func fade_out():
-  fadeTween.interpolate_property(current_track, "volume_db", current_track.volume_db, FADE_VOLUME, FADE_DURATION)
+  fadeTween.remove_all()
+  current_state = State.FADE_OUT
+  # this is useful in case we changed track during the fade in of one other track so we don't want
+  # to wait the whole duration. This is usually the case when loading a checkpoint
+  var duration = FADE_DURATION*(current_track.stream.volume_db - FADE_VOLUME+1.0)/(current_track.volume - FADE_VOLUME+1.0)
+  fadeTween.interpolate_property(current_track.stream, "volume_db", current_track.stream.volume_db, FADE_VOLUME, duration)
   fadeTween.start()
-func fade_in(volume):
-  fadeTween.interpolate_property(current_track, "volume_db", FADE_VOLUME, volume, FADE_DURATION)
+
+func fade_in():
+  fadeTween.remove_all()
+  current_state = State.FADE_IN
+  current_track.stream.play()
+  current_track.stream.volume_db = FADE_VOLUME
+  set_pitch_scale(1.0)
+  fadeTween.interpolate_property(current_track.stream, "volume_db", FADE_VOLUME, current_track.volume, FADE_DURATION)
   fadeTween.start()
+
+func _tween_completed(_object, _key):
+  if current_state == State.FADE_IN:
+    current_state = State.PLAYING
+  elif current_state == State.FADE_OUT:
+    current_track.stream.stop()
+    if next_track != null:
+      current_track = next_track
+      fade_in()
+    else:
+      current_state = State.STOPPED
+      current_track = null
+    
+func _on_checkpoint_hit(_checkpoint):
+  if current_state == State.FADE_OUT:
+    if next_track != null:
+      save_data["track"] = next_track.name
+  elif current_state != State.STOPPED:     
+    save_data["track"] = current_track.name
+  save_data["scale"] = pitch_scale
+
+func reset():
+  var track = save_data["track"]
+  if track != null and current_track != null and track != current_track.name:
+    load_track(track)
+    play_track(track)
+  set_pitch_scale(save_data["scale"])
+
+func save():
+  return save_data
+
+func _enter_tree():
+  var __ = Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
+  __ = Event.connect("checkpoint_loaded", self, "reset")
+
+func _exit_tree():
+  Event.disconnect("checkpoint_reached", self, "_on_checkpoint_hit")
+  Event.disconnect("checkpoint_loaded", self, "reset")

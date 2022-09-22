@@ -117,7 +117,7 @@ tracks/1/keys = {
 "values": [ Vector2( -12, -12 ), Vector2( -15, -15 ), Vector2( 0, 0 ) ]
 }
 
-[node name="GemHUD" type="Node2D"]
+[node name="GemHUD" type="Node2D" groups=["persist"]]
 z_index = 100
 script = ExtResource( 1 )
 

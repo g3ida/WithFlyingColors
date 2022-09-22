@@ -6,23 +6,25 @@ onready var tweenNode = $Tween
 
 var target_zoom: float = 1.0
 
-var saved_zoom_factor: float = 1.0
-var saved_bottom_limit: int = 10000
-var saved_top_limit: int = 0
-var saved_left_limit: int = 0
-var saved_right_limit: int = 10000
-var saved_drag_margin_bottom = Constants.DEFAULT_DRAG_MARGIN_TB
-var saved_drag_margin_left = Constants.DEFAULT_DRAG_MARGIN_LR
-var saved_drag_margin_right = Constants.DEFAULT_DRAG_MARGIN_LR
-var saved_drag_margin_top = Constants.DEFAULT_DRAG_MARGIN_TB
+onready var default_save_data = {
+  "zoom_factor": 1.0,
+  "bottom_limit": 10000,
+  "top_limit": 0,
+  "left_limit": 0,
+  "right_limit": 10000,
+  "drag_margin_bottom": Constants.DEFAULT_DRAG_MARGIN_TB,
+  "drag_margin_left": Constants.DEFAULT_DRAG_MARGIN_LR,
+  "drag_margin_right": Constants.DEFAULT_DRAG_MARGIN_LR,
+  "drag_margin_top": Constants.DEFAULT_DRAG_MARGIN_TB,
+}
+
+var save_data = default_save_data
 
 #used for tuning camera
 var cached_drag_margin_top = drag_margin_top
 var cached_drag_margin_bottom = drag_margin_bottom
 var cached_drag_margin_left = drag_margin_left
 var cached_drag_margin_right = drag_margin_right
-
-var did_checkpoint_hit = false
   
 func set_drag_margin_top(v):
   self.drag_margin_top = v
@@ -50,28 +52,34 @@ func _process(_delta):
     Global.camera = self
 
 func _on_checkpoint_hit(_checkpoint):
-  saved_zoom_factor = target_zoom
-  saved_bottom_limit = limit_bottom
-  saved_top_limit = limit_top
-  saved_left_limit = limit_left
-  saved_right_limit = limit_right
-  did_checkpoint_hit = true
-  saved_drag_margin_bottom = cached_drag_margin_bottom
-  saved_drag_margin_left = cached_drag_margin_left
-  saved_drag_margin_right = cached_drag_margin_right
-  saved_drag_margin_top = cached_drag_margin_top
+  save_data = {}
+  save_data["zoom_factor"] = target_zoom
+  save_data["bottom_limit"] = limit_bottom
+  save_data["top_limit"] = limit_top
+  save_data["left_limit"] = limit_left
+  save_data["right_limit"] = limit_right
+  save_data["drag_margin_bottom"] = cached_drag_margin_bottom
+  save_data["drag_margin_left"] = cached_drag_margin_left
+  save_data["drag_margin_right"] = cached_drag_margin_right
+  save_data["drag_margin_top"] = cached_drag_margin_top
 
 func reset():
-  if (did_checkpoint_hit):
-    zoom_by (saved_zoom_factor)
-    limit_bottom = saved_bottom_limit
-    limit_top = saved_top_limit
-    limit_left = saved_left_limit
-    limit_right = saved_right_limit
-    self.drag_margin_bottom = saved_drag_margin_bottom
-    self.drag_margin_left = saved_drag_margin_left
-    self.drag_margin_right = saved_drag_margin_right
-    self.drag_margin_top = saved_drag_margin_top
+  if save_data !=  null:
+    zoom_by (save_data["zoom_factor"])
+    limit_bottom = save_data["bottom_limit"]
+    limit_top = save_data["top_limit"]
+    limit_left = save_data["left_limit"]
+    limit_right = save_data["right_limit"]
+    self.drag_margin_bottom = save_data["drag_margin_bottom"]
+    self.drag_margin_left = save_data["drag_margin_left"]
+    self.drag_margin_right = save_data["drag_margin_right"]
+    self.drag_margin_top = save_data["drag_margin_top"]
+
+func save():
+  if save_data != null:
+    return save_data
+  return default_save_data
+
 
 func _on_player_jump():
   cache_drag_margins()

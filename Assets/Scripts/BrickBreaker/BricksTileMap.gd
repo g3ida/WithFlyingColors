@@ -5,6 +5,7 @@ signal level_cleared(level)
 
 onready var levels = get_children()
 onready var is_level_cleared = []
+export var should_instance_bricks = true
 
 var color_groups = ["blue", "pink", "purple", "yellow"]
 var least_uncleared_level = 0
@@ -15,7 +16,7 @@ func _ready():
 func _init_is_level_cleared():
   is_level_cleared = []
   for _i in range(levels.size()):
-    is_level_cleared.append(0) 
+    is_level_cleared.append(!should_instance_bricks) 
         
 func _get_least_uncleared_level():
   for i in range(is_level_cleared.size()):
@@ -33,3 +34,6 @@ func _on_level_bricks_cleared(id):
     
 func _emit_level_cleared(new_uncleated_level):
   emit_signal("level_cleared", new_uncleated_level)
+  
+func _emit_bricks_cleared():
+  emit_signal("bricks_cleared")

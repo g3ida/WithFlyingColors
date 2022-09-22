@@ -19,3 +19,7 @@ func _exit_tree():
 
 func _on_game_over():
   Event.emit_signal("checkpoint_loaded")
+  
+func _ready():
+  set_process(false)
+  SaveGame.load()

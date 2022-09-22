@@ -20,14 +20,10 @@ signal checkpoint_reached(checkpoint_object)
 signal checkpoint_loaded()
 
 #UI Signals
-signal Play_button_pressed()
-signal Stats_button_pressed()
-signal Settings_button_pressed()
-signal Quit_button_pressed()
-signal Go_to_main_menu_pressed()
 signal menu_box_rotated()
 signal pause_menu_enter()
 signal pause_menu_exit()
+signal menu_button_pressed(menu_button)
 
 #Settings signals
 signal Fullscreen_toggled(value)
@@ -48,7 +44,6 @@ signal picked_powerup()
 signal break_breaker_win()
 signal brick_breaker_start()
 
-
 func emit_player_landed(area, position): emit_signal("player_landed", area, position)
 func emit_player_diying(area, position, entity_type): emit_signal("player_diying", area, position, entity_type)
 func emit_player_died(): emit_signal("player_died")
@@ -63,11 +58,7 @@ func emit_gem_collected(color, position, frames): emit_signal("gem_collected", c
 func emit_slide_animation_ended(animation_name): emit_signal("slide_animation_ended", animation_name)
 func emit_checkpoint_reached(checkpoint): emit_signal("checkpoint_reached", checkpoint)
 func checkpoint_loaded(): emit_signal("checkpoint_loaded")
-func emit_Play_button_pressed(): emit_signal("Play_button_pressed")
-func emit_Stats_button_pressed(): emit_signal("Stats_button_pressed")
-func emit_Settings_button_pressed(): emit_signal("Settings_button_pressed")
-func emit_Quit_button_pressed(): emit_signal("Quit_button_pressed")
-func emit_Go_to_main_menu_pressed(): emit_signal("Go_to_main_menu_pressed")
+func emit_menu_button_pressed(menu_button): emit_signal("menu_button_pressed", menu_button)
 func emit_menu_box_rotated(): emit_signal("menu_box_rotated")
 func emit_pause_menu_enter(): emit_signal("pause_menu_enter")
 func emit_pause_menu_exit(): emit_signal("pause_menu_exit")
