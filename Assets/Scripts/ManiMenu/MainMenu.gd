@@ -34,7 +34,7 @@ func on_menu_button_pressed(menu_button) -> bool:
   if menu_button == MenuButtons.QUIT:
     if (screen_state == RUNNING):
       get_tree().quit()
-      return true
+    return true
   elif menu_button == MenuButtons.PLAY:
     return true
   elif menu_button == MenuButtons.STATS:
