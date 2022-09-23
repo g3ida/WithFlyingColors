@@ -3,7 +3,7 @@
 [ext_resource path="res://Assets/Sprites/MainMenu/background.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Scenes/MainMenu/MenuBox.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Assets/Scripts/ManiMenu/MainMenu.gd" type="Script" id=4]
+[ext_resource path="res://Assets/Scripts/Menus/MainMenu/MainMenu.gd" type="Script" id=4]
 
 [node name="MainMenu" type="Control"]
 anchor_right = 1.0

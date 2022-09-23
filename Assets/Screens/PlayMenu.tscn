@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Assets/Scripts/Menus/PlayMenu/PlayMenu.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/MainMenu/background.png" type="Texture" id=3]
-[ext_resource path="res://Assets/Scripts/ManiMenu/BackButton.gd" type="Script" id=4]
+[ext_resource path="res://Assets/Scripts/Menus/MainMenu/BackButton.gd" type="Script" id=4]
 [ext_resource path="res://Assets/Styles/MenuButtonPressedStyle.tres" type="StyleBox" id=5]
 [ext_resource path="res://Assets/Sprites/MainMenu/back.png" type="Texture" id=6]
 

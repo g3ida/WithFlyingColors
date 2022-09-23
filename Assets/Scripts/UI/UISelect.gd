@@ -19,7 +19,7 @@ func update_rect_size():
   set_deferred("rect_min_size", ChildContainerNode.rect_size)
   set_deferred("rect_size", ChildContainerNode.rect_size)
 
-func _input(event):
+func _input(_event):
   var focused_node = get_focus_owner()
   if focused_node != null and focused_node == self:
     if Input.is_action_just_pressed("ui_left"):
