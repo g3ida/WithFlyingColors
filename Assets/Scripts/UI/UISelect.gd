@@ -19,10 +19,6 @@ func update_rect_size():
   set_deferred("rect_min_size", ChildContainerNode.rect_size)
   set_deferred("rect_size", ChildContainerNode.rect_size)
 
-func _process(_delta):
-  pass
-  #update_rect_size()
-
 func _input(event):
   var focused_node = get_focus_owner()
   if focused_node != null and focused_node == self:
@@ -41,6 +37,7 @@ func _ready():
   index = select_driver.get_default_selected_index()
   update_selected_item()
   update_rect_size()
+  set_process(false)
   is_ready = true
 
 func _on_Left_pressed():
