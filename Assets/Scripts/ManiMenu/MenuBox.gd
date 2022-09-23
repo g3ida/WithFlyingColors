@@ -96,7 +96,7 @@ func _on_PlayButton_pressed():
     Event.emit_menu_button_pressed(MenuButtons.PLAY)
 
 func _on_QuitButton_pressed():
-  _process_button_press(MenuButtons.STATS)
+  _process_button_press(MenuButtons.QUIT)
 
 func _on_SettingsButton_pressed():
   _process_button_press(MenuButtons.SETTINGS)
