@@ -16,10 +16,10 @@ var play_sub_menu_pos: Vector2
 enum States {MENU, SUB_MENU_ENTER, SUB_MENU, SUB_MENU_EXIT, EXIT}
 var current_state = States.MENU
 
-onready var play_button = $MenuBox/Sprite/PlayButton
-onready var settings_button = $MenuBox/Sprite/SettingsButton
-onready var stats_button = $MenuBox/Sprite/StatsButton
-onready var quit_button = $MenuBox/Sprite/QuitButton
+onready var play_button = $MenuBox/Sprite/PlayBoxButton
+onready var settings_button = $MenuBox/Sprite/SettingsBoxButton
+onready var stats_button = $MenuBox/Sprite/StatsBoxButton
+onready var quit_button = $MenuBox/Sprite/QuitBoxButton
 
 onready var MenuBoxNode = $MenuBox
 onready var PlaySubMenuNode = null
@@ -47,7 +47,7 @@ func _ready():
     stats_button,
     quit_button
     ]
-    
+
   for b in buttons:
     b.disabled = true
   buttons[active_index].disabled = false
