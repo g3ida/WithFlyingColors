@@ -16,7 +16,7 @@ func move_to(pos: Vector2):
     create_tween()
 
 func _process(_delta):
-    pass
+    pass #set_process is false
     
 func create_tween():
   TweenNode.remove_all()

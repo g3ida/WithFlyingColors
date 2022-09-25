@@ -37,4 +37,3 @@ func set_disabled(value):
   
 func get_disabled():
   return disabled
-  

@@ -20,7 +20,6 @@ func _enter_tree():
   on_enter()
   enter_tree()
 
-
 func enter_tree():
   pass
 

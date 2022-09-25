@@ -40,7 +40,7 @@ script = ExtResource( 2 )
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 0, -72 )
 texture = ExtResource( 1 )
-offset = Vector2( 0, -4.42475 )
+offset = Vector2( 0, -0.0966396 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite"]
 reset_on_save = false
