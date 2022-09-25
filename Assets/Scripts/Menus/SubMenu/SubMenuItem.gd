@@ -12,7 +12,9 @@ onready var ButtonNode = $Button
 func _ready():
   ButtonNode.text = text
   ButtonNode.modulate = color
+  focus_mode = Control.FOCUS_NONE
   set_disabled(disabled)
+  set_process(false)
   
 func update_colors():
   ButtonNode.modulate = color
@@ -25,7 +27,7 @@ func _on_Button_pressed():
 
 func _on_Button_mouse_entered():
   button_grab_focus()
-
+  
 func set_disabled(value):
   disabled = value
   if ButtonNode != null:

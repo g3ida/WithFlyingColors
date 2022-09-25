@@ -17,6 +17,7 @@ onready var TopNode = $VBoxContainer/Top
 var button_nodes = []
 
 func _ready():
+  set_process(false)
   assert(buttons.size() == buttons_ids.size())
   assert(buttons.size() == buttons_events.size())
   assert(buttons.size() == buttons_disabled.size())
