@@ -30,11 +30,11 @@ func pause():
   pause_menu.show()
   is_paused = true
   get_tree().paused = true
-      
+  
 func _on_BackButton_pressed():
   AudioManager.stop_all_sfx()
   resume()
-  var __ = get_tree().change_scene("res://Assets/Screens/MainMenu.tscn")
+  var __ = get_tree().change_scene(MenuManager.MAIN_MENU_SCENE)
 
 func _on_ResumeButton2_pressed():
   if (is_paused):

@@ -2,7 +2,7 @@ class_name GameMenu
 extends Control
 
 const DURATION = 0.3
-const DISTANCE = 800.0
+const DISTANCE = 900.0
 const DELAY = 0.25
 
 enum {ENTER, RUNNING, EXIT}
@@ -11,17 +11,21 @@ onready var screen_state: int
 var destination_screen: int
 var animators = []
 var current_focus = null
+var handle_back_event = true
 
 func _enter_tree():
   screen_state = ENTER
   var __ = Event.connect("menu_button_pressed", self, "_on_menu_button_pressed")
+  set_process(true)
   on_enter()
   enter_tree()
+
 
 func enter_tree():
   pass
 
 func _exit_tree():
+  set_process(false)
   Event.disconnect("menu_button_pressed", self, "_on_menu_button_pressed")
   exit_tree()
 
@@ -35,8 +39,8 @@ func ready():
   pass
 
 func _process(delta):
-  if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("ui_home"):
-    Event.emit_menu_button_pressed(MenuButtons.BACK)	
+  if handle_back_event and (Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("ui_home")):
+    Event.emit_menu_button_pressed(MenuButtons.BACK)
   if screen_state == ENTER:
     if is_enter_ceremony_done():
       screen_state = RUNNING

@@ -30,8 +30,8 @@ static func rgb_to_hsl(color: Color) -> HSLColor:
   var m = min(min(R, G), B)
   var d = (M - m) / 255.0
   var L = (0.5*(M+m)) / 255.0
-  var S = 0.0 if L <= 0.0 else d/(1-abs(2*L-1))
-  var t = acos((R- 0.5*G - 0.5*B) / sqrt(R*R + G*G + B*B - R*G - R*B - G*B)) * Constants.RAD_TO_DEGREES
+  var S = 0.0 if L <= 0.0 else d/(1-abs(2*L-1)+0.001)
+  var t = acos((R- 0.5*G - 0.5*B) / sqrt((R*R + G*G + B*B - R*G - R*B - G*B)+0.001)) * Constants.RAD_TO_DEGREES
   var H = 360.0-t if B > G else t
   return HSLColor.new(H, S, L)
 

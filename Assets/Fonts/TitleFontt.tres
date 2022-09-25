@@ -4,4 +4,5 @@
 
 [resource]
 size = 200
+extra_spacing_space = -50
 font_data = ExtResource( 1 )

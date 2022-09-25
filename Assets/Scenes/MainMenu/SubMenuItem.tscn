@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/Scripts/Menus/SubMenu/SubMenuItem.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Fonts/HeavyEquipment.ttf" type="DynamicFontData" id=3]
@@ -16,6 +16,9 @@ bg_color = Color( 0.156863, 0.156863, 0.156863, 1 )
 [sub_resource type="StyleBoxFlat" id=4]
 bg_color = Color( 0.156863, 0.156863, 0.156863, 1 )
 
+[sub_resource type="StyleBoxFlat" id=7]
+bg_color = Color( 0.901961, 0.901961, 0.901961, 1 )
+
 [sub_resource type="StyleBoxFlat" id=2]
 bg_color = Color( 1, 1, 1, 1 )
 
@@ -26,17 +29,20 @@ margin_right = -1283.0
 margin_bottom = -982.0
 rect_min_size = Vector2( 637, 98 )
 script = ExtResource( 2 )
+disabled = null
 
 [node name="Button" type="Button" parent="."]
+modulate = Color( 0, 0, 0, 1 )
 margin_right = 637.0
 margin_bottom = 98.0
+custom_colors/font_color_disabled = Color( 0.784314, 0.784314, 0.784314, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 3 )
 custom_styles/hover = SubResource( 5 )
 custom_styles/pressed = SubResource( 6 )
 custom_styles/focus = SubResource( 4 )
+custom_styles/disabled = SubResource( 7 )
 custom_styles/normal = SubResource( 2 )
-text = "NEW GAME"
 
 [connection signal="mouse_entered" from="Button" to="." method="_on_Button_mouse_entered"]
 [connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]

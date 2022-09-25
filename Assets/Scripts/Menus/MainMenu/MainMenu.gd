@@ -49,6 +49,20 @@ func on_menu_button_pressed(menu_button) -> bool:
   return process_play_sub_menus(menu_button)
 
 func process_play_sub_menus(_menu_button) -> bool:
-  #TODO FILL THIS SHIT
+  if _menu_button == MenuButtons.NEW_GAME:
+    if SaveGame.has_filled_slots:
+      navigate_to_screen(MenuManager.Menus.PLAY_MENU)
+    else:
+      navigate_to_screen(MenuManager.Menus.GAME)
+    MenuBoxNode._hide_sub_menu_if_needed()
+    return true
+  if _menu_button == MenuButtons.CONTINUE_GAME:
+    navigate_to_screen(MenuManager.Menus.GAME)
+    MenuBoxNode._hide_sub_menu_if_needed()
+    return true
+  if _menu_button == MenuButtons.LOAD_GAME:
+    navigate_to_screen(MenuManager.Menus.PLAY_MENU)
+    MenuBoxNode._hide_sub_menu_if_needed()
+    return true
   return false
 

@@ -5,8 +5,8 @@ onready var buttons = [
   $CenterContainer/VBoxContainer/BackButton
 ]
 
-func _ready():
-  pass
+func ready():
+  handle_back_event = false
 
 func hide():
   for b in buttons:
