@@ -27,3 +27,4 @@ func _ready():
   var scene_instance = scene_ressource.instance()
   add_child(scene_instance)
   scene_instance.set_owner(self)
+  SaveGame.call_deferred("load_if_needed")

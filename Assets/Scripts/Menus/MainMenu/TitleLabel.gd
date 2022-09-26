@@ -11,6 +11,7 @@ func update_position_x(value):
 func _ready():
   self.text = content
   $Shadow.text = content
+  set_process(false)
   
   var scale = get_minimum_size().x / $Underline.rect_size.x
   $Underline.rect_scale = Vector2(scale, $Underline.rect_scale.y)

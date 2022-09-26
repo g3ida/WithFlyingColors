@@ -13,7 +13,8 @@ enum Menus {
   STATS_MENU,
   MAIN_MENU,
   GAME,
-  QUIT
+  QUIT,
+  LOAD
 }
 
 var current_menu = Menus.MAIN_MENU

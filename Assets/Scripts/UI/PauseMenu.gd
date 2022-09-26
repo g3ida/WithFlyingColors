@@ -16,3 +16,6 @@ func show():
   buttons[0].grab_focus()
   for b in buttons:
     b.show()
+
+func go_to_main_menu():
+  navigate_to_screen(MenuManager.Menus.MAIN_MENU)

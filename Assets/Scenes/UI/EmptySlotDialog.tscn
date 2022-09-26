@@ -1,0 +1,58 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://Assets/Fonts/HeavyEquipment.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://Assets/Sprites/MainMenu/button-normal.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Sprites/MainMenu/empty_close_button.png" type="Texture" id=3]
+
+[sub_resource type="StyleBoxTexture" id=6]
+texture = ExtResource( 2 )
+region_rect = Rect2( 0, 0, 280, 100 )
+modulate_color = Color( 0.501961, 0.501961, 0.501961, 1 )
+
+[sub_resource type="StyleBoxTexture" id=4]
+content_margin_left = 70.0
+content_margin_right = 70.0
+texture = ExtResource( 2 )
+region_rect = Rect2( 0, 0, 280, 100 )
+
+[sub_resource type="StyleBoxTexture" id=5]
+texture = ExtResource( 2 )
+region_rect = Rect2( 0, 0, 280, 100 )
+modulate_color = Color( 0.25098, 0.25098, 0.25098, 1 )
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0, 0, 0, 0.588235 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 65
+extra_spacing_top = 30
+extra_spacing_bottom = 20
+font_data = ExtResource( 1 )
+
+[sub_resource type="Theme" id=3]
+default_font = SubResource( 2 )
+Button/colors/font_color_hover = Color( 0.501961, 0.501961, 0.501961, 1 )
+Button/colors/font_color_pressed = Color( 0.501961, 0.501961, 0.501961, 1 )
+Button/styles/hover = SubResource( 6 )
+Button/styles/normal = SubResource( 4 )
+Button/styles/pressed = SubResource( 5 )
+Dialogs/constants/button_margin = 40
+Dialogs/constants/margin = 20
+Label/constants/line_spacing = 3
+WindowDialog/icons/close = ExtResource( 3 )
+WindowDialog/icons/close_highlight = ExtResource( 3 )
+WindowDialog/styles/panel = SubResource( 1 )
+
+[node name="EmptySlotDialog" type="AcceptDialog"]
+visible = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -443.5
+margin_top = -81.0
+margin_right = 443.5
+margin_bottom = 81.0
+theme = SubResource( 3 )
+window_title = ""
+dialog_text = "You can't load an empty slot."

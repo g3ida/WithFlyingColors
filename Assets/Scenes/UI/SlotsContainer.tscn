@@ -48,3 +48,7 @@ margin_left = 1046.0
 margin_right = 1526.0
 margin_bottom = 270.0
 rect_min_size = Vector2( 480, 270 )
+
+[connection signal="pressed" from="HBoxContainer/SaveSlot1" to="." method="_on_SaveSlot1_pressed"]
+[connection signal="pressed" from="HBoxContainer/SaveSlot2" to="." method="_on_SaveSlot2_pressed"]
+[connection signal="pressed" from="HBoxContainer/SaveSlot3" to="." method="_on_SaveSlot3_pressed"]

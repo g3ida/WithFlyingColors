@@ -55,13 +55,14 @@ func save(save_slot_index):
   current_slot_index = save_slot_index
   save_file.close()
   
-func load(save_slot_index):
+func load_level(save_slot_index):
   var file_path = get_save_slot_file_path(save_slot_index)
   var save_game = File.new()
-  if not is_slot_filled(file_path):
+  if not is_slot_filled(save_slot_index):
     push_error("FILE NOT FOUND")
     return # Error! We don't have a save to load.
   save_game.open(file_path, File.READ)
+  var __ = parse_json(save_game.get_line()) #discard meta_data
   while save_game.get_position() < save_game.get_len():
     var node_data = parse_json(save_game.get_line())
     var node_path = node_data[NODE_PATH_VAR]
@@ -124,7 +125,7 @@ func save_to_current_slot():
   
 func load_if_needed() -> bool:
   if is_slot_filled(current_slot_index):
-    var __ = load(current_slot_index)
+    var __ = load_level(current_slot_index)
     return true
   return false
 

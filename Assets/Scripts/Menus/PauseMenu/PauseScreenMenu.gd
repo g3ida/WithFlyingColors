@@ -34,7 +34,7 @@ func pause():
 func _on_BackButton_pressed():
   AudioManager.stop_all_sfx()
   resume()
-  var __ = get_tree().change_scene(MenuManager.MAIN_MENU_SCENE)
+  pause_menu.go_to_main_menu()
 
 func _on_ResumeButton2_pressed():
   if (is_paused):

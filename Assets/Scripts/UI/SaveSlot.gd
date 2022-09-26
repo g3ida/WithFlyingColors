@@ -2,11 +2,15 @@ extends Control
 
 signal pressed()
 
+const MOVE_DURATION = 0.1
+
 var texture: ImageTexture = null setget set_texture, get_texture
 var timestamp: int = -1 setget set_timestamp, get_timestamp
 var description: String = "" setget set_description, get_description
 var bg_color: Color = Color.white setget set_bg_color, get_bg_color
 var has_focus: bool setget set_has_focus, get_has_focus
+var is_disabled: bool = false setget set_is_disabled, get_is_disabled
+var id = 0
 
 onready var TextureButtonNode = $Center/ColorRect/MarginContainer/VBoxContainer/TextureContainer/TextureButton 
 onready var DescriptionNode = $Center/ColorRect/MarginContainer/VBoxContainer/DescriptionContainer/Description
@@ -17,6 +21,9 @@ onready var MarginContainerNode = $Center/ColorRect/MarginContainer
 onready var TextureBackgroundNode = $Center/ColorRect/MarginContainer/VBoxContainer/TextureContainer/TextureBackground
 onready var BottomLine = $Center/ColorRect/MarginContainer/VBoxContainer/BottomLine
 onready var ButtonNode = $Button
+onready var TweenNode = $Tween
+
+onready var pos_y = rect_position.y
 
 func _ready():
   _set_rect_size()
@@ -91,18 +98,43 @@ func _on_Button_pressed():
   
 func _process(_delta):
   if get_has_focus():
-    ColorRectNode.rect_scale = Vector2(1.05, 1.05)
+    setup_tween(pos_y - 60)
+    #rect_position.y = pos_y - 60
   else:
-    ColorRectNode.rect_scale = Vector2(1, 1)
+    setup_tween(pos_y)
+    #rect_position.y = pos_y
     
 func _on_Button_mouse_entered():
   ButtonNode.grab_focus()
 
 func set_has_focus(value):
   if value:
-    ButtonNode.grabFocus()
+    ButtonNode.grab_focus()
   else:
     pass
 
 func get_has_focus():
   return ButtonNode.has_focus()
+  
+func set_is_disabled(value):
+  is_disabled = value
+  ButtonNode.disabled = value
+  if value:
+    ButtonNode.focus_mode = Control.FOCUS_NONE
+  else:
+    ButtonNode.focus_mode = Control.FOCUS_ALL
+  
+func get_is_disabled():
+  return is_disabled
+
+func setup_tween(position_y):
+  TweenNode.remove_all()
+  TweenNode.interpolate_property(
+    self,
+    "rect_position:y",
+    rect_position.y,
+    position_y,
+    MOVE_DURATION,
+    Tween.TRANS_LINEAR,
+    Tween.EASE_IN_OUT)
+  TweenNode.start()
