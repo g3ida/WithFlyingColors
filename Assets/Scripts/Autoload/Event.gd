@@ -58,7 +58,7 @@ func emit_gem_collected(color, position, frames): emit_signal("gem_collected", c
 func emit_slide_animation_ended(animation_name): emit_signal("slide_animation_ended", animation_name)
 func emit_checkpoint_reached(checkpoint): emit_signal("checkpoint_reached", checkpoint)
 func checkpoint_loaded(): emit_signal("checkpoint_loaded")
-func emit_menu_button_pressed(menu_button): emit_signal("menu_button_pressed", menu_button)
+func emit_menu_button_pressed(menu_button): emit_signal("menu_button_pressed", menu_button) #see MenuButtons
 func emit_menu_box_rotated(): emit_signal("menu_box_rotated")
 func emit_pause_menu_enter(): emit_signal("pause_menu_enter")
 func emit_pause_menu_exit(): emit_signal("pause_menu_exit")

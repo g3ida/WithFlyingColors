@@ -44,7 +44,6 @@ WindowDialog/icons/close_highlight = ExtResource( 3 )
 WindowDialog/styles/panel = SubResource( 1 )
 
 [node name="EmptySlotDialog" type="AcceptDialog"]
-visible = true
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

@@ -5,8 +5,7 @@ const CENTER_CONTAINER_POS_Y = 405
 onready var BackButtonNode = $BackButton
 onready var LoadTextNode = $LOAD
 onready var SlotsContainer = $SlotsContainer
-onready var EmptySlotDialogNode = $EmptySlotDialog
-onready var ColorRectNode = $ColorRect
+onready var DialogContainerNode = $DialogContainer
 
 func on_enter():
   animators.append(init_control_element_animator($BackButton, 2*DELAY))
@@ -40,29 +39,15 @@ func update_slots_y_pos(pos_y):
 func _on_SlotsContainer_slot_pressed(id):
   if SaveGame.is_slot_filled(id):
     SaveGame.current_slot_index = id
-    Event.emit_menu_button_pressed(MenuManager.Menus.LOAD)
-    navigate_to_screen(MenuManager.Menus.GAME)
+    Event.emit_menu_button_pressed(MenuButtons.LOAD_GAME)
   else:
-    _show_dialog()
+    Event.emit_menu_button_pressed(MenuButtons.SHOW_DIALOG)
 
 func on_menu_button_pressed(menu_button):
-  if menu_button == MenuManager.Menus.GAME:
+  if menu_button == MenuButtons.LOAD_GAME:
     navigate_to_screen(MenuManager.Menus.GAME)
     return true
-  return false
+  if menu_button == MenuButtons.SHOW_DIALOG:
+    DialogContainerNode.show_dialog()
 
-func _show_dialog():
-    EmptySlotDialogNode.show()
-    ColorRectNode.show()
-    handle_back_event = false
-    
-func _hide_dialog():
-  if EmptySlotDialogNode != null:
-    EmptySlotDialogNode.hide()
-    ColorRectNode.hide()
-    handle_back_event = true
-  
-func process(_event):
-  if Input.is_action_just_pressed("ui_cancel") and EmptySlotDialogNode.visible:
-    call_deferred("_hide_dialog")
-    
+  return false
