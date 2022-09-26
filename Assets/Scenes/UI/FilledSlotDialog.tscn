@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Assets/Styles/Themes/Dialog.tres" type="Theme" id=1]
+
+[node name="FilledSlotDialog" type="ConfirmationDialog"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -687.5
+margin_top = -205.5
+margin_right = 687.5
+margin_bottom = 205.5
+rect_min_size = Vector2( 400, 140 )
+theme = ExtResource( 1 )
+window_title = ""
+dialog_text = "THis slot already contains a saved game. Are you sure you want to override it ?"
+dialog_autowrap = true

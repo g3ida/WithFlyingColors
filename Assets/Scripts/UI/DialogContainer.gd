@@ -22,6 +22,7 @@ onready var hidden_pos_y = shown_pos_y - 1000
 var current_state = DialogStates.HIDDEN
 
 func _ready():
+  pause_mode = PAUSE_MODE_PROCESS
   hide_dialog()
   var __ = DialogNode.connect("hide", self, "start_hiding_dialog")
   __ = DialogNode.connect("confirmed", self, "start_hiding_dialog")
@@ -31,8 +32,9 @@ func _exit_tree():
   DialogNode.disconnect("confirmed", self, "start_hiding_dialog")
 
 func show_dialog():
-  if current_state == DialogStates.SHOWING or current_state == DialogStates.SHOWN:
+  if _is_shown_or_showing_state():
     return
+  get_tree().paused = true
   prepare_tween(shown_pos_y)
   current_state = DialogStates.SHOWING
   show_nodes()
@@ -46,6 +48,7 @@ func show_nodes():
 func hide_dialog():
   DialogNode.rect_position.y = hidden_pos_y
   hide_nodes()
+  get_tree().paused = false
   current_state = DialogStates.HIDDEN
 
 func hide_nodes():
@@ -55,7 +58,7 @@ func hide_nodes():
   GameMenuNode.handle_back_event = true
 
 func _input(_event):
-  if Input.is_action_just_pressed("ui_cancel") and DialogNode.visible:
+  if _is_accept_or_cancel_pressed() and _is_shown_or_showing_state():
     start_hiding_dialog()
 
 func prepare_tween(target_pos_y):
@@ -71,7 +74,7 @@ func prepare_tween(target_pos_y):
   TweenNode.start()
 
 func start_hiding_dialog():
-  if current_state == DialogStates.HIDING or current_state == DialogStates.HIDDEN:
+  if _is_hidden_or_hiding_state():
     return
   Event.emit_menu_button_pressed(MenuButtons.CONFIRM_DIALOG)
   show_nodes() #just to make sure they are visible
@@ -83,3 +86,12 @@ func _on_Tween_tween_completed(_object, _key):
     hide_dialog()
   elif current_state == DialogStates.SHOWING:
     current_state = DialogStates.SHOWN
+
+func _is_accept_or_cancel_pressed():
+  return Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("ui_accept")
+
+func _is_shown_or_showing_state():
+  return current_state == DialogStates.SHOWING or current_state == DialogStates.SHOWN
+
+func _is_hidden_or_hiding_state():
+  return current_state == DialogStates.HIDDEN or current_state == DialogStates.HIDING

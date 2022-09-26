@@ -73,6 +73,9 @@ func load_level(save_slot_index):
   save_game.close()
 
 func _ready():
+  init()
+  
+func init():
   _init_check_filled_slots()
   _init_save_slot_meta_data()
   #remove_all_save_slots()
@@ -88,6 +91,7 @@ func _on_checkpoint(_checkpoint):
   self.call_deferred("save_to_current_slot")
 
 func _init_check_filled_slots():
+  is_slot_filled_array = []
   var file = File.new()
   for slot_path in SAVE_SLOTS:
     var exists = file.file_exists(slot_path)
@@ -104,6 +108,7 @@ func is_slot_filled(save_slot_index):
   return is_slot_filled_array[save_slot_index]
 
 func _init_save_slot_meta_data():
+  slot_meta_data = []
   for slot_idx in range(is_slot_filled_array.size()):
     if is_slot_filled(slot_idx):
       var save_file = File.new()

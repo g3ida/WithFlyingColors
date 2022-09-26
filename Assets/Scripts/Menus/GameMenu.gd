@@ -4,6 +4,7 @@ extends Control
 const DURATION = 0.3
 const DISTANCE = 900.0
 const DELAY = 0.25
+const CENTER_CONTAINER_POS_Y = 405 #for game slots
 
 enum {ENTER, RUNNING, EXIT}
 
@@ -101,3 +102,11 @@ func reverse_animators():
     animator.reset()
     animator.reverse()
   
+# For save slots
+func init_slots_animator(delay: float) -> Animator:
+  var start = CENTER_CONTAINER_POS_Y + DISTANCE
+  var end = CENTER_CONTAINER_POS_Y
+  var interpolation = PowInterpolation.new(2)
+  var duration = DURATION
+  return Animator.new(start, end, funcref(self, "update_slots_y_pos"), duration, delay, interpolation)
+

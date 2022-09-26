@@ -48,9 +48,6 @@ underline_shadow_color = Color( 0, 0.776471, 0.843137, 1 )
 DialogNodePath = NodePath("EmptySlotDialog")
 
 [node name="EmptySlotDialog" parent="DialogContainer" instance=ExtResource( 8 )]
-margin_top = -131.0
-margin_right = 467.5
-margin_bottom = 161.0
 
 [connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]
 [connection signal="slot_pressed" from="SlotsContainer" to="." method="_on_SlotsContainer_slot_pressed"]
