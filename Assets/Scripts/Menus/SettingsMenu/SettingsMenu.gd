@@ -1,6 +1,7 @@
 extends GameMenu
 
 onready var tab_container = $TabContainer
+onready var DialogContainerNode = $DialogContainer
 
 func _input(_event):
   if Input.is_action_just_pressed("ui_left") and tab_container.current_tab == 1:
@@ -25,7 +26,12 @@ func is_enter_ceremony_done() -> bool:
   return animators_done()
 
 func on_menu_button_pressed(_menu_button) -> bool:
-  Settings.save_game_settings()
+  if _menu_button == MenuButtons.SHOW_DIALOG:
+    DialogContainerNode.show_dialog()
+    return true
+  elif _menu_button == MenuButtons.BACK:
+    Settings.save_game_settings()
+    # we don't return true here because we want the default behaviour to be called
   return false
 
 func is_valid_state() -> bool:
@@ -36,4 +42,4 @@ func _on_BackButton_pressed():
     if is_valid_state():
       Event.emit_menu_button_pressed(MenuButtons.BACK)
     else:
-      pass #fixme: add popup or something
+      Event.emit_menu_button_pressed(MenuButtons.SHOW_DIALOG)

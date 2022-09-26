@@ -62,7 +62,6 @@ text = "Please choose a save slot to create a new game."
 DialogNodePath = NodePath("FilledSlotDialog")
 
 [node name="FilledSlotDialog" parent="DialogContainer" instance=ExtResource( 2 )]
-visible = false
 margin_left = -585.5
 margin_top = -265.0
 margin_right = 585.5

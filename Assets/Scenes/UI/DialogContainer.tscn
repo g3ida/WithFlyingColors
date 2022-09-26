@@ -16,7 +16,7 @@ margin_left = -5007.5
 margin_top = -1927.5
 margin_right = 5007.5
 margin_bottom = 1927.5
-color = Color( 0, 0, 0, 0.196078 )
+color = Color( 0, 0, 0, 0.313726 )
 
 [node name="Tween" type="Tween" parent="."]
 
