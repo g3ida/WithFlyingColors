@@ -3,6 +3,7 @@ extends CenterContainer
 signal slot_pressed(id)
 
 export var disable_empty_slots = false
+export var centered_on_screen = true
 
 onready var SaveSlot1Node = $HBoxContainer/SaveSlot1
 onready var SaveSlot2Node = $HBoxContainer/SaveSlot2
@@ -31,6 +32,10 @@ func _ready():
     if not save_slots[i].is_disabled:
       save_slots[i].has_focus = true
       break
+  
+  if centered_on_screen:
+    rect_position = (get_viewport_rect().size - rect_size) * 0.5
+
     
 func _process(_delta):
   pass #set_process = false
