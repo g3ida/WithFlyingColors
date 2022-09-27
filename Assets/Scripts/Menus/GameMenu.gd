@@ -1,38 +1,32 @@
 class_name GameMenu
 extends Control
 
-const DURATION = 0.3
-const DISTANCE = 900.0
-const DELAY = 0.25
-const CENTER_CONTAINER_POS_Y = 405 #for game slots
+enum MenuScreenState {ENTERING, ENTERED, EXITING, EXITED}
 
-enum {ENTER, RUNNING, EXIT}
-
-onready var screen_state: int
+var screen_state: int
 var destination_screen: int
-var animators = []
 var current_focus = null
 var handle_back_event = true
 
-func _enter_tree():
-  screen_state = ENTER
-  var __ = Event.connect("menu_button_pressed", self, "_on_menu_button_pressed")
-  set_process(true)
-  on_enter()
-  enter_tree()
+var transition_elements = []
+var entered_transition_elements_count = 0
 
-func enter_tree():
-  pass
+func _enter_tree():
+  _connect_signals()
+  _parse_transition_elems()
+  if _has_no_transition_elems():
+    screen_state = MenuScreenState.ENTERED
+  else:
+    screen_state = MenuScreenState.ENTERING
+  on_enter()
 
 func _exit_tree():
+  _disconnect_signals()
   set_process(false)
-  Event.disconnect("menu_button_pressed", self, "_on_menu_button_pressed")
-  exit_tree()
-
-func exit_tree():
-  pass
+  on_exit()
 
 func _ready():
+  _enter_transition_elements()
   ready()
 
 func ready():
@@ -41,20 +35,17 @@ func ready():
 func _process(delta):
   if handle_back_event and (Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("ui_home")):
     Event.emit_menu_button_pressed(MenuButtons.BACK)
-  if screen_state == ENTER:
-    if is_enter_ceremony_done():
-      screen_state = RUNNING
-  elif screen_state == EXIT:
-    if is_exit_ceremony_done():
-      MenuManager.go_to_menu(destination_screen)
-  for animator in animators:
-    animator.update(delta)
   process(delta)
 
 func navigate_to_screen(menu_screen):
-  if screen_state == RUNNING:
-    screen_state = EXIT
+  if screen_state == MenuScreenState.ENTERING or MenuScreenState.ENTERED:
     destination_screen = menu_screen
+    if _has_no_transition_elems():
+      screen_state = MenuScreenState.EXITED
+      MenuManager.go_to_menu(destination_screen)
+    else:
+      screen_state = MenuScreenState.EXITING
+      _exit_transition_elements()
     on_exit()
   
 func _on_menu_button_pressed(menu_button):
@@ -77,36 +68,49 @@ func on_enter():
 func on_exit():
   pass
 
-func is_exit_ceremony_done() -> bool:
-  return true
+func _connect_signals():
+  var __ = Event.connect("menu_button_pressed", self, "_on_menu_button_pressed")
 
-func is_enter_ceremony_done() -> bool:
-  return true
+func _disconnect_signals():
+  Event.disconnect("menu_button_pressed", self, "_on_menu_button_pressed")
 
-#animators
-func init_control_element_animator(el, delay: float) -> Animator:
-  var start = el.rect_position.x - DISTANCE
-  var end = el.rect_position.x    
-  var interpolation = PowInterpolation.new(2)
-  var duration = DURATION
-  return Animator.new(start, end, funcref(el, "update_position_x"), duration, delay, interpolation)
+func _parse_transition_elems():
+  transition_elements = []
+  for ch in get_children():
+    for chch in ch.get_children():
+      if chch is UITransition:
+        transition_elements.append(chch)
+        var __ = chch.connect("entered", self, "_transition_element_entered")
+        __ = chch.connect("exited", self, "_transition_element_exited")
+        break
 
-func animators_done() -> bool:
-  for animator in animators:
-    if animator.is_running():
-      return false
-  return true
-  
-func reverse_animators():
-  for animator in animators:
-    animator.reset()
-    animator.reverse()
-  
-# For save slots
-func init_slots_animator(delay: float) -> Animator:
-  var start = CENTER_CONTAINER_POS_Y + DISTANCE
-  var end = CENTER_CONTAINER_POS_Y
-  var interpolation = PowInterpolation.new(2)
-  var duration = DURATION
-  return Animator.new(start, end, funcref(self, "update_slots_y_pos"), duration, delay, interpolation)
+func clear_transition_elems():
+  for ch in transition_elements:
+    ch.disconnect("entered", self, "_transition_element_entered")
+    ch.disconnect("exited", self, "_transition_element_exited")
 
+func _enter_transition_elements():
+  for el in transition_elements:
+    el.enter()
+
+func _exit_transition_elements():
+  for el in transition_elements:
+    el.exit()
+
+func is_in_transition_state():
+  return screen_state != MenuScreenState.ENTERED
+
+func _has_no_transition_elems():
+  return transition_elements.size() == 0
+
+func _transition_element_entered():
+  entered_transition_elements_count += 1
+  if entered_transition_elements_count == transition_elements.size():
+    screen_state = MenuScreenState.ENTERED
+    
+func _transition_element_exited():
+  entered_transition_elements_count -= 1
+  if entered_transition_elements_count == 0:
+    screen_state = MenuScreenState.EXITED
+    MenuManager.go_to_menu(destination_screen)
+    

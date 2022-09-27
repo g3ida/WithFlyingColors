@@ -28,7 +28,7 @@ onready var SpriteNode = $MenuBox/Sprite
 onready var SpriteHeight = SpriteNode.texture.get_height()
 
 func can_respond_to_input() -> bool:
-  return current_state != States.EXIT && get_parent().is_enter_ceremony_done()
+  return current_state != States.EXIT && !get_parent().is_in_transition_state()
 
 func _enter_tree():
   current_state = States.MENU
