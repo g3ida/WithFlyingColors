@@ -1,9 +1,11 @@
-[gd_resource type="Theme" load_steps=11 format=2]
+[gd_resource type="Theme" load_steps=13 format=2]
 
 [ext_resource path="res://Assets/Fonts/HeavyEquipment.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Assets/Sprites/UI/checkbox_checked.png" type="Texture" id=2]
 [ext_resource path="res://Assets/Sprites/UI/checkbox_unchecked.png" type="Texture" id=3]
 [ext_resource path="res://Assets/Styles/TabContainerBackground.tres" type="StyleBox" id=4]
+[ext_resource path="res://Assets/Sprites/MainMenu/empty_close_button.png" type="Texture" id=5]
+[ext_resource path="res://Assets/Sprites/MainMenu/slider-grabber.png" type="Texture" id=6]
 
 [sub_resource type="StyleBoxEmpty" id=2]
 
@@ -32,6 +34,10 @@ Button/styles/normal = SubResource( 3 )
 Button/styles/pressed = SubResource( 4 )
 CheckBox/icons/checked = ExtResource( 2 )
 CheckBox/icons/unchecked = ExtResource( 3 )
+HSlider/icons/grabber = ExtResource( 6 )
+HSlider/icons/grabber_disabled = ExtResource( 6 )
+HSlider/icons/grabber_highlight = ExtResource( 6 )
+HSlider/icons/tick = ExtResource( 5 )
 Label/colors/font_color = Color( 0.176471, 0.176471, 0.176471, 1 )
 TabContainer/colors/font_color_bg = Color( 0.392157, 0.392157, 0.392157, 1 )
 TabContainer/colors/font_color_fg = Color( 0.176471, 0.176471, 0.176471, 1 )

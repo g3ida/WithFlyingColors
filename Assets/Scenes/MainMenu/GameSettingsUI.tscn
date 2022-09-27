@@ -39,7 +39,7 @@ text = "auto"
 
 [node name="ResolutionUISelect" parent="GridContainer" instance=ExtResource( 1 )]
 margin_left = 534.0
-margin_right = 582.0
+margin_right = 834.0
 margin_bottom = 60.0
 SelectDriverScript = ExtResource( 2 )
 
@@ -50,6 +50,7 @@ margin_bottom = 135.0
 text = "Fullscreen"
 
 [node name="FullscreenCheckbox" parent="GridContainer" instance=ExtResource( 5 )]
+margin_right = 834.0
 
 [node name="VsyncLabel" type="Label" parent="GridContainer"]
 margin_top = 150.0
@@ -59,6 +60,7 @@ text = "VSYNC"
 
 [node name="VsyncCheckbox" parent="GridContainer" instance=ExtResource( 5 )]
 margin_top = 150.0
+margin_right = 834.0
 margin_bottom = 210.0
 
 [connection signal="Value_changed" from="GridContainer/ResolutionUISelect" to="." method="_on_UISelect_Value_changed"]

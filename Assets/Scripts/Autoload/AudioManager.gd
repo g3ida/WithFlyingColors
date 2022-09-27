@@ -162,6 +162,8 @@ func connect_signals():
   __ = Event.connect("break_breaker_win", self, "_on_win_mini_game")
   __ = Event.connect("brick_breaker_start", self, "_on_brick_breaker_start")
   __ = Event.connect("menu_button_pressed", self, "_on_menu_button_pressed")
+  __ = Event.connect("sfx_volume_changed", self, "_on_button_toggle")
+  __ = Event.connect("music_volume_changed", self, "_on_button_toggle")
 
 
 func disconnect_signals():
@@ -188,6 +190,8 @@ func disconnect_signals():
   Event.disconnect("break_breaker_win", self, "_on_win_mini_game")
   Event.disconnect("brick_breaker_start", self, "_on_brick_breaker_start")
   Event.disconnect("menu_button_pressed", self, "_on_menu_button_pressed")
+  Event.disconnect("sfx_volume_changed", self, "_on_button_toggle")
+  Event.disconnect("music_volume_changed", self, "_on_button_toggle")
 
 func _enter_tree():
   connect_signals()

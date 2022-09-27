@@ -1,13 +1,14 @@
 extends GameMenu
 
 onready var tab_container = $TabContainer
+onready var tabs_count = tab_container.get_child_count()
 onready var DialogContainerNode = $DialogContainer
 
 func _input(_event):
-  if Input.is_action_just_pressed("ui_left") and tab_container.current_tab == 1:
-    tab_container.current_tab = 0
-  elif Input.is_action_just_pressed("ui_right") and tab_container.current_tab == 0:
-    tab_container.current_tab = 1
+  if Input.is_action_just_pressed("ui_left"):
+    tab_container.current_tab = clamp(tab_container.current_tab - 1, 0, tabs_count-1)
+  elif Input.is_action_just_pressed("ui_right"):
+    tab_container.current_tab = clamp(tab_container.current_tab + 1, 0, tabs_count-1)
     
 func on_menu_button_pressed(_menu_button) -> bool:
   if _menu_button == MenuButtons.SHOW_DIALOG:
