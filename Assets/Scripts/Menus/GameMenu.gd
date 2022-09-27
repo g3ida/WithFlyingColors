@@ -22,7 +22,6 @@ func _enter_tree():
 
 func _exit_tree():
   _disconnect_signals()
-  set_process(false)
   on_exit()
 
 func _ready():
@@ -33,9 +32,17 @@ func ready():
   pass
 
 func _process(delta):
+  var focus_owner = get_focus_owner()
+  if (focus_owner != null && focus_owner != self.current_focus):
+    Event.emit_signal("focus_changed")
+  self.current_focus = focus_owner
+  process(delta)
+
+func _input(_event):
+  if screen_state == MenuScreenState.ENTERING or screen_state == MenuScreenState.EXITING:
+    get_tree().set_input_as_handled()
   if handle_back_event and (Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("ui_home")):
     Event.emit_menu_button_pressed(MenuButtons.BACK)
-  process(delta)
 
 func navigate_to_screen(menu_screen):
   if screen_state == MenuScreenState.ENTERING or MenuScreenState.ENTERED:
@@ -45,6 +52,7 @@ func navigate_to_screen(menu_screen):
       MenuManager.go_to_menu(destination_screen)
     else:
       screen_state = MenuScreenState.EXITING
+      _stop_process_input()
       _exit_transition_elements()
     on_exit()
   
@@ -57,10 +65,7 @@ func on_menu_button_pressed(_menu_button) -> bool:
   return false
 
 func process(_delta):
-  var focus_owner = get_focus_owner()
-  if (focus_owner != null && focus_owner != self.current_focus):
-    Event.emit_signal("focus_changed")
-  self.current_focus = focus_owner
+  pass
 
 func on_enter():
   pass
@@ -114,3 +119,7 @@ func _transition_element_exited():
     screen_state = MenuScreenState.EXITED
     MenuManager.go_to_menu(destination_screen)
     
+func _stop_process_input(node = self):
+  for ch in node.get_children():
+    ch.set_process_input(false)
+    _stop_process_input(ch)
