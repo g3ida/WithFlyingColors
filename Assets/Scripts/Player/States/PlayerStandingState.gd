@@ -3,7 +3,7 @@ extends PlayerBaseState
 
 const RAYCAST_LENGTH = 10.0
 const RAYCAST_Y_OFFSET = -3.0 #https://godotengine.org/qa/63336/raycast2d-doesnt-collide-with-tilemap
-const SLIPPERING_LIMIT = 0.3 # higher is less slippering
+const SLIPPERING_LIMIT = 0.42 # higher is less slippering
 
 func _init(dependencies: PlayerDependencies).(dependencies):
   self.base_state = PlayerStatesEnum.STANDING

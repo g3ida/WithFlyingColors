@@ -21,3 +21,6 @@ const DEGREES_TO_RAD = PI / 180.0
 const RAD_TO_DEGREES = 180.0 / PI
 const PI2 = PI * 0.5
 const PI3 = PI * 0.3333
+const PI4 = PI * 0.25
+const PI6 = PI * 0.166667
+const PI8 = PI * 0.125

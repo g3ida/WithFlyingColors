@@ -8,6 +8,7 @@ var collision_shape: CollisionShape2D
 var jump_particles: CPUParticles2D
 var states_store: BaseStatesStore
 var base_state
+var player_moved = false
 
 const TransoformAnimation = preload("res://Assets/Scripts/Utils/TransformAnimation.gd")
 const ElasticOut = preload("res://Assets/Scripts/Utils/Interpolation/ElasticOut.gd")
@@ -52,17 +53,21 @@ func _input(event):
   input(event)
 
 func physics_update(delta: float) -> BaseState:
+  player_moved = false
   if player.player_state != self.states_store.get_state(PlayerStatesEnum.DYING):
     if (Input.is_action_just_pressed("dash") or player.touch_dash_input) and player.can_dash:
       return _on_dash()
 
     if player.player_state != self.states_store.get_state(PlayerStatesEnum.DASHING):
       if Input.is_action_pressed("move_right"):
+        player_moved = true
         player.velocity.x = clamp(player.velocity.x + player.speed_unit, 0, player.speed_limit)
       elif Input.is_action_pressed("move_left"):
+        player_moved = true
         player.velocity.x = clamp(player.velocity.x - player.speed_unit, -player.speed_limit, -0)
       
       elif (player.touch_move_input != null):
+        player_moved = true
         var min_v = min(sign(player.touch_move_input.direction.x) * player.speed_limit, 0)
         var max_v = max(sign(player.touch_move_input.direction.x) * player.speed_limit, 0)
         player.velocity.x = clamp(player.velocity.x + player.touch_move_input.direction.x * player.speed_unit, min_v, max_v)
