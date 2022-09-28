@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Assets/Styles/Themes/MenuTheme.tres" type="Theme" id=1]
 [ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/AudioSettingsUI.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scenes/UI/UISliderButton.tscn" type="PackedScene" id=3]
 
 [node name="AudioSettings" type="Control"]
 margin_right = 1920.0
@@ -25,15 +26,10 @@ rect_min_size = Vector2( 420, 0 )
 size_flags_horizontal = 3
 text = "SFX Volume"
 
-[node name="SfxSlider" type="HSlider" parent="GridContainer"]
-margin_left = 470.0
-margin_right = 770.0
-margin_bottom = 50.0
-rect_min_size = Vector2( 300, 50 )
-max_value = 1.0
-step = 0.1
-tick_count = 10
-ticks_on_borders = true
+[node name="SfxSlider" parent="GridContainer" instance=ExtResource( 3 )]
+margin_top = 0.0
+margin_bottom = 60.0
+rect_min_size = Vector2( 300, 0 )
 
 [node name="MusicLabel" type="Label" parent="GridContainer"]
 margin_top = 75.0
@@ -42,21 +38,12 @@ margin_bottom = 135.0
 rect_min_size = Vector2( 400, 0 )
 text = "Music Volume"
 
-[node name="MusicSlider" type="HSlider" parent="GridContainer"]
-margin_left = 470.0
+[node name="MusicSlider" parent="GridContainer" instance=ExtResource( 3 )]
 margin_top = 75.0
-margin_right = 770.0
-margin_bottom = 107.0
-max_value = 1.0
-step = 0.1
-tick_count = 10
-ticks_on_borders = true
+margin_bottom = 135.0
+rect_min_size = Vector2( 300, 0 )
 
-[node name="Label" type="Label" parent="GridContainer"]
-margin_top = 150.0
-margin_right = 420.0
-margin_bottom = 210.0
-text = "test"
-
-[connection signal="drag_ended" from="GridContainer/SfxSlider" to="." method="_on_SfxSlider_drag_ended"]
-[connection signal="drag_ended" from="GridContainer/MusicSlider" to="." method="_on_MusicSlider_drag_ended"]
+[connection signal="selection_changed" from="GridContainer/SfxSlider" to="." method="_on_SfxSlider_selection_changed"]
+[connection signal="value_changed" from="GridContainer/SfxSlider" to="." method="_on_SfxSliderButton_value_changed"]
+[connection signal="selection_changed" from="GridContainer/MusicSlider" to="." method="_on_MusicSlider_selection_changed"]
+[connection signal="value_changed" from="GridContainer/MusicSlider" to="." method="_on_MusicSlider_value_changed"]

@@ -32,9 +32,10 @@ text = "SCREEN Resolution"
 
 [node name="AutoResolutionLabel" type="Label" parent="GridContainer"]
 visible = false
-margin_left = 327.0
-margin_right = 621.0
+margin_left = 534.0
+margin_right = 828.0
 margin_bottom = 60.0
+rect_min_size = Vector2( 294, 0 )
 text = "auto"
 
 [node name="ResolutionUISelect" parent="GridContainer" instance=ExtResource( 1 )]
@@ -64,5 +65,6 @@ margin_right = 834.0
 margin_bottom = 210.0
 
 [connection signal="Value_changed" from="GridContainer/ResolutionUISelect" to="." method="_on_UISelect_Value_changed"]
+[connection signal="selection_changed" from="GridContainer/ResolutionUISelect" to="." method="_on_ResolutionUISelect_selection_changed"]
 [connection signal="toggled" from="GridContainer/FullscreenCheckbox" to="." method="_on_FullscreenCheckbox_toggled"]
 [connection signal="toggled" from="GridContainer/VsyncCheckbox" to="." method="_on_VsyncCheckbox_toggled"]

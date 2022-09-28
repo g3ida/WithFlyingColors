@@ -6,31 +6,49 @@ onready var ChildContainerNode = $HBoxContainer
 onready var LeftArrowNode = $HBoxContainer/Left
 onready var RightArrowNode = $HBoxContainer/Right
 onready var LabelNode = $HBoxContainer/Label
+onready var AnimationPlayerNode = $AnimationPlayer
 
 var select_driver
 var index: int
 var selected_value
 var focus = false
 var is_ready = false
+var is_in_edit_mode = false
 
 signal Value_changed(value)
+signal selection_changed(is_edit)
 
 func update_rect_size():
   set_deferred("rect_min_size", ChildContainerNode.rect_size)
   set_deferred("rect_size", ChildContainerNode.rect_size)
 
 func _input(_event):
-  var focused_node = get_focus_owner()
-  if focused_node != null and focused_node == self:
-    if Input.is_action_just_pressed("ui_left"):
-      _on_Left_pressed()
+  if has_focus():
+    if is_in_edit_mode:
+      if Input.is_action_just_pressed("ui_left"):
+        _on_Left_pressed()
+        get_tree().set_input_as_handled()
+      elif Input.is_action_just_pressed("ui_right"):
+        _on_Right_pressed()
+        get_tree().set_input_as_handled()
+    
+    if Input.is_action_just_pressed("ui_accept"):
+      _set_edit_mode(!is_in_edit_mode)
       get_tree().set_input_as_handled()
-    elif Input.is_action_just_pressed("ui_right"):
-      _on_Right_pressed()
+    elif Input.is_action_just_pressed("ui_cancel") and is_in_edit_mode:
+      _set_edit_mode(false)
       get_tree().set_input_as_handled()
-    elif Input.is_action_just_pressed("ui_accept"):
-      _on_Left_pressed()
-      get_tree().set_input_as_handled()
+      
+func _set_edit_mode(value):
+  if is_in_edit_mode and not value:
+    AnimationPlayerNode.stop()
+    AnimationPlayerNode.play("RESET")
+    _emit_selection_changed_signal()
+  if not is_in_edit_mode and value:
+    AnimationPlayerNode.stop()
+    AnimationPlayerNode.play("Blink")
+    _emit_selection_changed_signal()
+  is_in_edit_mode = value
 
 func _ready():
   select_driver = SelectDriverScript.new()
@@ -64,3 +82,6 @@ func _on_Button_mouse_entered():
 func _on_Label_resized():
   if is_ready:
     update_rect_size()
+
+func _emit_selection_changed_signal():
+  emit_signal("selection_changed", is_in_edit_mode)

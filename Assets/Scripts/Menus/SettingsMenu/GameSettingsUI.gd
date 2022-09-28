@@ -56,3 +56,8 @@ func on_gain_focus():
     resolutionSelect.grab_focus()
   else:
     fscreenCheckbox.grab_focus()
+
+#just for the audio player to play the sfx
+func _on_ResolutionUISelect_selection_changed(_is_edit):
+  if (is_ready):
+    Event.emit_signal("Screen_size_changed", Settings.window_size)
