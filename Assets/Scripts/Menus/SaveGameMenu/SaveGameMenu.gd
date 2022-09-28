@@ -31,4 +31,5 @@ func on_menu_button_pressed(menu_button):
 
 func _on_FilledSlotDialog_confirmed():
   SaveGame.remove_save_slot(SaveGame.current_slot_index)
+  SaveGame.init()
   navigate_to_screen(MenuManager.Menus.GAME)
