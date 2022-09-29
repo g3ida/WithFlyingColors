@@ -161,6 +161,7 @@ func reset():
   $AnimatedSprite.play("idle")
   $AnimatedSprite.playing = false
   self.global_position = Vector2(save_data["position_x"], save_data["position_y"])
+  self.velocity = Vector2.ZERO
   var angle_rot = save_data["angle"]
   self.rotate(angle_rot - self.rotation)
   self.current_default_corner_scale_factor = save_data["default_corner_scale_factor"]

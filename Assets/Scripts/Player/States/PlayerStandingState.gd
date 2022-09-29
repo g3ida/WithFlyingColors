@@ -23,7 +23,6 @@ func physics_update(delta: float) -> BaseState:
 func _physics_update(_delta: float) -> BaseState:
   if _jump_pressed() and player.is_on_floor():
     return _on_jump()
-  
   if not player.is_on_floor():
     var falling_state = self.states_store.get_state(PlayerStatesEnum.FALLING)
     falling_state.was_on_floor = true
