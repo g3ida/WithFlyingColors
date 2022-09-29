@@ -66,8 +66,33 @@ onready var collisionShapeNode := $CollisionShape2D
 onready var animatedSpriteNode := $AnimatedSprite
 onready var dashGhostTimerNode := $DashGhostTimer
 
-var faceSeparatorNodes = []
-var faceNodes = []
+onready var faceSeparatorNodes = [
+  faceSparatorBR_node,
+  faceSparatorBL_node,
+  faceSparatorTL_node,
+  faceSparatorTR_node
+]
+
+onready var faceNodes = [
+  bottomFaceNode,
+  topFaceNode,
+  leftFaceNode,
+  rightFaceNode
+]
+
+onready var faceCollisionNodes = [
+  FaceCollisionShapeB_node,
+  FaceCollisionShapeT_node,
+  FaceCollisionShapeL_node,
+  FaceCollisionShapeR_node,
+]
+
+onready var faceCornerCollisionNodes = [
+  FaceCollisionShapeBR_node,
+  FaceCollisionShapeBL_node,
+  FaceCollisionShapeTL_node,
+  FaceCollisionShapeTR_node,
+]
 
 onready var save_data = {
   "position_x": self.global_position.x,
@@ -75,6 +100,11 @@ onready var save_data = {
   "angle": 0.0,
   "default_corner_scale_factor": 1.0
 }
+
+
+#used to backup collision layer and collision mask of the player areas
+var _face_separators_mask_backup = []
+var _face_nodes_mask_backup = []
 
 var current_default_corner_scale_factor = 1.0
 var current_scale_factor = 1.0 # do not edit by yourself this is used by scale_corners_by
@@ -88,14 +118,8 @@ func _ready():
   _init_state()
 
 func _init_sprite_animation():
-  idle_animation = TransoformAnimation.new(
-    0.0,
-    ElasticOut.new(1.0, 1.0, 1, 0.1),
-    0)
-  scale_animation = TransoformAnimation.new(
-    SCALE_ANIM_DURATION,
-    ElasticOut.new(1.0, 1.0, 1, 0.1),
-    sprite_size * 0.5)
+  idle_animation = TransoformAnimation.new(0, ElasticOut.new(1, 1, 1, 0.1),0)
+  scale_animation = TransoformAnimation.new(SCALE_ANIM_DURATION, ElasticOut.new(1, 1, 1, 0.1), sprite_size * 0.5)
   current_animation = idle_animation  
 
 func _init_state():
@@ -106,31 +130,14 @@ func _init_state():
   player_rotation_state._enter()
 
 func _init_faces_areas():
-  faceSeparatorNodes = [
-    faceSparatorBR_node,
-    faceSparatorBL_node,
-    faceSparatorTL_node,
-    faceSparatorTR_node
-  ]
-  faceNodes = [
-    bottomFaceNode,
-    topFaceNode,
-    leftFaceNode,
-    rightFaceNode
-  ]
-  FaceCollisionShapeL_node.add_to_group(leftFaceNode.get_groups()[0])
-  FaceCollisionShapeR_node.add_to_group(rightFaceNode.get_groups()[0])
-  FaceCollisionShapeT_node.add_to_group(topFaceNode.get_groups()[0])
-  FaceCollisionShapeB_node.add_to_group(bottomFaceNode.get_groups()[0])
-
-  for group in faceSparatorBR_node.get_groups():
-    FaceCollisionShapeBR_node.add_to_group(group)
-  for group in faceSparatorTR_node.get_groups():
-    FaceCollisionShapeTR_node.add_to_group(group)
-  for group in faceSparatorBL_node.get_groups():
-    FaceCollisionShapeBL_node.add_to_group(group)
-  for group in faceSparatorTL_node.get_groups():
-    FaceCollisionShapeTL_node.add_to_group(group)
+  for i in range(faceCollisionNodes.size()):
+    for grp in faceNodes[i].get_groups():
+      faceCollisionNodes[i].add_to_group(grp)
+  for i in range(faceCornerCollisionNodes.size()):
+    for grp in faceSeparatorNodes[i].get_groups():
+      faceCornerCollisionNodes[i].add_to_group(grp)
+  _fill_face_nodes_backup()
+  _fill_face_separators_backup()
 
 func _input(event):
   player_state._input(event)
@@ -154,11 +161,12 @@ func reset():
   $AnimatedSprite.play("idle")
   $AnimatedSprite.playing = false
   self.global_position = Vector2(save_data["position_x"], save_data["position_y"])
-  switch_rotation_state(states_store.get_state(PlayerStatesEnum.IDLE))
-  switch_state((states_store.get_state(PlayerStatesEnum.FALLING)))
   var angle_rot = save_data["angle"]
   self.rotate(angle_rot - self.rotation)
   self.current_default_corner_scale_factor = save_data["default_corner_scale_factor"]
+  show_color_areas()
+  switch_rotation_state(states_store.get_state(PlayerStatesEnum.IDLE))
+  switch_state((states_store.get_state(PlayerStatesEnum.FALLING)))
 
 func _on_checkpoint_hit(checkpoint_object: Node2D):  
   if checkpoint_object.color_group in $BottomFace.get_groups():
@@ -253,3 +261,30 @@ func on_fast_area_colliding_with_player_shape(body_shape_index, color_area: Area
       group_found = true
   if not group_found:
     Event.emit_signal("player_diying", color_area, global_position, entity_type) 
+
+# Face areas backup
+func _fill_face_nodes_backup():
+  _face_nodes_mask_backup = []
+  for face in faceNodes:
+    _face_nodes_mask_backup.append({"layer": face.collision_layer, "mask": face.collision_mask})
+
+func _fill_face_separators_backup():
+  _face_separators_mask_backup = []
+  for face in faceSeparatorNodes:
+    _face_separators_mask_backup.append({"layer": face.collision_layer, "mask": face.collision_mask})
+
+func hide_color_areas():
+  _fill_face_separators_backup()
+  for face in faceSeparatorNodes:
+    face.collision_layer = 0; face.collision_mask = 0
+  _fill_face_nodes_backup()
+  for face in faceNodes:
+    face.collision_layer = 0; face.collision_mask = 0
+
+func show_color_areas():
+  for i in range(faceSeparatorNodes.size()):
+    faceSeparatorNodes[i].collision_layer = _face_separators_mask_backup[i]["layer"]
+    faceSeparatorNodes[i].collision_mask = _face_separators_mask_backup[i]["mask"]
+  for i in range(faceNodes.size()):
+    faceNodes[i].collision_layer = _face_nodes_mask_backup[i]["layer"]
+    faceNodes[i].collision_mask = _face_nodes_mask_backup[i]["mask"]

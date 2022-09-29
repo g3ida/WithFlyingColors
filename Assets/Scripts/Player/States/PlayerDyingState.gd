@@ -9,6 +9,7 @@ func _init(dependencies: PlayerDependencies).(dependencies):
   self.base_state = PlayerStatesEnum.DYING
 
 func enter():
+  player.hide_color_areas()
   if (is_explosion):
     Event.emit_signal("player_explode")
     light_occluder.light_mask = 0
@@ -29,6 +30,7 @@ func _on_player_diying(_area, _position, _entity_type) -> BaseState:
     return null
 
 func exit():
-  pass
+  player.show_color_areas()
+
 func _physics_update(_delta: float) -> BaseState:
   return null

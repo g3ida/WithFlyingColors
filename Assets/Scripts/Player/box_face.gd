@@ -16,11 +16,13 @@ func scale_by(factor: float):
 func _on_bottomFace_area_entered(area):
   var group = get_groups()
   assert(group.size() == 1)
-  
   if area.is_in_group("fallzone"):
     Event.emit_signal("player_diying", null, global_position, Global.EntityType.FALLZONE)
-  
+    return
+
   if not (area.is_in_group(group.front())):
     Event.emit_signal("player_diying", area, global_position, Global.EntityType.PLATFORM)
+  elif area is Gem:
+    (area as Gem)._on_Gem_area_entered(self)  
   elif Global.player.player_state.base_state != PlayerStatesEnum.STANDING:
     Event.emit_signal("player_landed", area, global_position)

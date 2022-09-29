@@ -1,3 +1,4 @@
+class_name Gem
 extends Area2D
 
 export var group_name: String
@@ -40,9 +41,12 @@ func _physics_process(delta):
   var state = current_state.physics_update(delta)
   switch_state(state)
 
-func _on_Gem_area_entered(area: Area2D):
-    var state = current_state.on_collision_with_body(area)
-    switch_state(state)
+func _on_Gem_area_entered(area: Area2D): 
+  var player_state = Global.player.player_state.base_state
+  if player_state == PlayerStatesEnum.DYING or current_state != states_store.not_collected:
+    return
+  var state = current_state.on_collision_with_body(area)
+  switch_state(state)
     
 func _on_AnimationPlayer_animation_finished(anim_name):
   var state = current_state.on_animation_finished(anim_name)
@@ -71,3 +75,15 @@ func save():
 
 func reset():
   switch_state(states_store.get_state(save_data["state"]))
+
+func is_in_group(grp) -> bool:
+  #if the player is dying we don't want to collect it
+  var player_state = Global.player.player_state.base_state
+  if player_state == PlayerStatesEnum.DYING:
+    return false
+  #if the gem is already collecting we don't wan't the player to die
+  if current_state == states_store.collecting:
+    if grp in ["blue", "yellow", "purple", "pink"]:
+      return true
+  #return super method
+  return .is_in_group(grp)
