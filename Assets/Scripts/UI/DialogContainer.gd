@@ -20,13 +20,16 @@ onready var shown_pos_y = DialogNode.rect_position.y
 onready var hidden_pos_y = shown_pos_y - 1000
 
 var current_state = DialogStates.HIDDEN
+var dialog_buttons = []
+var last_focus_owner = null #last item that had focus before the dialog pop up
 
 func _ready():
   pause_mode = PAUSE_MODE_PROCESS
   hide_dialog()
   var __ = DialogNode.connect("hide", self, "start_hiding_dialog")
   __ = DialogNode.connect("confirmed", self, "start_hiding_dialog")
-    
+  dialog_buttons = _get_dialog_buttons()
+
 func _exit_tree():
   DialogNode.disconnect("hide", self, "start_hiding_dialog")
   DialogNode.disconnect("confirmed", self, "start_hiding_dialog")
@@ -38,6 +41,8 @@ func show_dialog():
   prepare_tween(shown_pos_y)
   current_state = DialogStates.SHOWING
   show_nodes()
+  last_focus_owner = get_focus_owner()
+  dialog_buttons[0].grab_focus()
 
 func show_nodes():
   show()
@@ -49,6 +54,7 @@ func hide_dialog():
   DialogNode.rect_position.y = hidden_pos_y
   hide_nodes()
   get_tree().paused = false
+  if last_focus_owner != null: last_focus_owner.grab_focus()
   current_state = DialogStates.HIDDEN
 
 func hide_nodes():
@@ -95,3 +101,12 @@ func _is_shown_or_showing_state():
 
 func _is_hidden_or_hiding_state():
   return current_state == DialogStates.HIDDEN or current_state == DialogStates.HIDING
+
+func _get_dialog_buttons():
+  var btns = []
+  for ch in DialogNode.get_children():
+    if ch is HBoxContainer:
+      for chch in ch.get_children():
+        if chch is Button:
+          btns.append(chch)
+      return btns
