@@ -21,7 +21,7 @@ func _ready():
   var meta_data = SaveGame.get_current_slot_meta_data()
   var scene_ressource = null
   if meta_data == null:
-    scene_ressource = load(MenuManager.TUTORIAL_MENU_SCENE)
+    scene_ressource = load(MenuManager.START_LEVEL_MENU_SCENE)
   else:
     scene_ressource = load(meta_data["scene_path"])
   var scene_instance = scene_ressource.instance()

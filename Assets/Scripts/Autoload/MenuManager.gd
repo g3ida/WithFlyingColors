@@ -5,7 +5,7 @@ const STATS_MENU_SCENE = "res://Assets/Screens/StatsMenu.tscn"
 const MAIN_MENU_SCENE = "res://Assets/Screens/MainMenu.tscn"
 const LOAD_MENU_SCENE = "res://Assets/Screens/LoadGameMenu.tscn"
 const SAVE_MENU_SCENE = "res://Assets/Screens/SaveGameMenu.tscn"
-const TUTORIAL_MENU_SCENE = "res://Levels/Level1.tscn"
+const START_LEVEL_MENU_SCENE = "res://Levels/Level1.tscn"
 const SCENE_ORCHESTER_SCENE = "res://Assets/Scenes/SceneOrchester.tscn"
 
 enum Menus {

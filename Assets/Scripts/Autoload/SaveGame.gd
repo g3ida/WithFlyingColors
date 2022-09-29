@@ -71,6 +71,11 @@ func load_level(save_slot_index):
     object.reset()
   current_slot_index = save_slot_index
   save_game.close()
+  # Update camera position to the player position avoiding smoothing
+  # which would make you see the camera move quickly to the checkpoint position
+  # when we load a level. We put it here instead of the reset method because
+  # I like the smoothing effect when the player looses
+  Global.camera.update_position(Global.player.global_position)
 
 func _ready():
   init()

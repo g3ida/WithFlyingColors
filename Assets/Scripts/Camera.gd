@@ -126,3 +126,9 @@ func _enter_tree():
 
 func _exit_tree():
   disconnect_signals()
+
+func update_position(pos: Vector2):
+  smoothing_enabled = false
+  global_position = pos
+  yield(get_tree(), "idle_frame")
+  set_deferred("smoothing_enabled", true)
