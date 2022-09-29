@@ -15,8 +15,12 @@ func on_menu_button_pressed(_menu_button) -> bool:
     DialogContainerNode.show_dialog()
     return true
   elif _menu_button == MenuButtons.BACK:
-    Settings.save_game_settings()
-    # we don't return true here because we want the default behaviour to be called
+    if is_valid_state():
+      Settings.save_game_settings()
+      return false # we don't return true here because we want the default behaviour to be called
+    else:
+      Event.emit_menu_button_pressed(MenuButtons.SHOW_DIALOG)
+      return true
   return false
 
 func is_valid_state() -> bool:
