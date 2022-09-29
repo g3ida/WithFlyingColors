@@ -220,10 +220,22 @@ func _on_brick_breaker_start(): _sfx_play("bricksSlide")
 
 func _on_pause_menu_enter():
   _sfx_play("menuSelect")
-  music_track_manager.set_pause_menu_effect(true)
+  
+
 func _on_pause_menu_exit():
   _sfx_play("menuSelect")
-  music_track_manager.set_pause_menu_effect(false)
 
 func emit_play_sfx(sfx_name):
   emit_signal("play_sfx", sfx_name)
+
+func pause_all_sfx():
+  for sfx in sfx_pool:
+    var audio_player = (sfx_pool[sfx] as AudioStreamPlayer)
+    if audio_player.playing:
+      audio_player.stream_paused = true
+
+func resume_all_sfx():
+  for sfx in sfx_pool:
+    var audio_player = (sfx_pool[sfx] as AudioStreamPlayer)
+    if audio_player.playing:
+      audio_player.stream_paused = false

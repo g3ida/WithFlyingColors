@@ -5,7 +5,6 @@ onready var pause_menu = $PauseMenu
 var is_paused := false
 
 func _ready():
-  # pause_menu.visible = false
   pass
   
 func _process(_delta):
@@ -16,20 +15,22 @@ func _process(_delta):
       pause()
 
 func resume():
-    Event.emit_signal("pause_menu_exit")
+    AudioManager.resume_all_sfx()
+    AudioManager.music_track_manager.set_pause_menu_effect(false)
     screen_shaders.disable_pause_shader()
-    # pause_menu.visible = false
     pause_menu.hide()
     is_paused = false
     get_tree().paused = false
+    Event.emit_signal("pause_menu_exit")
       
 func pause():
-  Event.emit_signal("pause_menu_enter")  
+  AudioManager.pause_all_sfx() 
+  AudioManager.music_track_manager.set_pause_menu_effect(true)
   screen_shaders.activate_pause_shader()
-  # pause_menu.visible = true
   pause_menu.show()
   is_paused = true
   get_tree().paused = true
+  Event.emit_signal("pause_menu_enter")
   
 func _on_BackButton_pressed():
   AudioManager.stop_all_sfx()

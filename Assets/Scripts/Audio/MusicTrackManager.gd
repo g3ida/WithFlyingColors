@@ -202,3 +202,5 @@ func _enter_tree():
 func _exit_tree():
   Event.disconnect("checkpoint_reached", self, "_on_checkpoint_hit")
   Event.disconnect("checkpoint_loaded", self, "reset")
+
+  
