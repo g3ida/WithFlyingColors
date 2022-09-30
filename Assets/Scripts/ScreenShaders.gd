@@ -46,8 +46,10 @@ func _on_blackout_animation_reversed_finished(_animation_name):
   darker_shader_animation_player.play("RESET")
   simple_blur_animation_player.play("RESET")
   darker_shader.visible = false
+  simple_blur.visible = false
   current_state = DISABLED
 
 func _on_blackout_animation_finished(_animation_name):
   darker_shader.visible = true
+  simple_blur.visible = true
   current_state = ENABLED
