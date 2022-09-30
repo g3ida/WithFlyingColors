@@ -41,6 +41,7 @@ var touch_rotation_input = null
 
 onready var jumpParticlesNode = $JumpParticles
 onready var fallTimerNode = $FallTimer
+onready var remoteTransformNode = $RemoteTransform2D
 
 onready var faceSparatorBR_node := $FaceSeparatorBR
 onready var faceSparatorBL_node := $FaceSeparatorBL
@@ -289,3 +290,7 @@ func show_color_areas():
   for i in range(faceNodes.size()):
     faceNodes[i].collision_layer = _face_nodes_mask_backup[i]["layer"]
     faceNodes[i].collision_mask = _face_nodes_mask_backup[i]["mask"]
+
+func set_remote_transform(follow):
+  var node_path = follow.get_path()
+  self.remoteTransformNode.remote_path = node_path

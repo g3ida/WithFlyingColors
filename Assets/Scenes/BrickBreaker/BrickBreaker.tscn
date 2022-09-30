@@ -40,6 +40,8 @@ __meta__ = {
 [node name="CameraLocalizer" parent="." instance=ExtResource( 9 )]
 position = Vector2( 1198, 1044 )
 full_viewport_drag_margin = true
+limit_x_axis_to_view_size = true
+limit_y_axis_to_view_size = true
 
 [node name="TopRight" type="Position2D" parent="CameraLocalizer"]
 position = Vector2( 960, -968.001 )
