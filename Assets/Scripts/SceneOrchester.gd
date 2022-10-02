@@ -20,7 +20,8 @@ func _ready():
   set_process(false)
   var meta_data = SaveGame.get_current_slot_meta_data()
   var scene_ressource = null
-  if meta_data == null:
+  var is_new_game = (meta_data == null)
+  if is_new_game:
     scene_ressource = load(MenuManager.START_LEVEL_MENU_SCENE)
   else:
     scene_ressource = load(meta_data["scene_path"])

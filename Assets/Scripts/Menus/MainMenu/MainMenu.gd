@@ -32,7 +32,7 @@ func process_play_sub_menus(_menu_button) -> bool:
     MenuBoxNode._hide_sub_menu_if_needed()
     return true
   if _menu_button == MenuButtons.CONTINUE_GAME:
-    SaveGame.current_slot_index = SaveGame.get_most_recent_saved_slot_index()
+    SaveGame.current_slot_index = SaveGame.get_most_recently_loaded_slot_index()
     MenuBoxNode._hide_sub_menu_if_needed()
     navigate_to_screen(MenuManager.Menus.GAME)
     return true

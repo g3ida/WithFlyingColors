@@ -16,15 +16,15 @@ enum ButtonConditions {
 var buttons_def = [
   {
     "id": 0,
-    "text": "New Game",
-    "button": MenuButtons.NEW_GAME,
-    "conditions": ButtonConditions.NONE
-  },
-  {
-    "id": 1,
     "text": "Continue",
     "button": MenuButtons.CONTINUE_GAME,
     "conditions": ButtonConditions.NEED_ACTIVE_SLOT
+  },
+  {
+    "id": 1,
+    "text": "New Game",
+    "button": MenuButtons.NEW_GAME,
+    "conditions": ButtonConditions.NONE
   },
   {
     "id": 2,
