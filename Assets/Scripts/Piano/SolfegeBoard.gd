@@ -4,6 +4,8 @@ const DURATION = 0.8
 const NotesCursorScene = preload("res://Assets/Scenes/Piano/NotesCursor.tscn")
 const MusicPaperRectTexture = preload("res://Assets/Sprites/Piano/music-paper-rect.png")
 
+signal board_notes_played()
+
 const PAGES = [
   ["do", "do", "sol", "sol", "la", "la", "sol"],
   ["sol", "sol", "mi", "mi", "re", "re", "do"],
@@ -41,6 +43,7 @@ func flip_next_page():
   current_page += 1
   if current_page >= NUM_PAGES:
     current_state = BoardState.FINISHED
+    emit_signal("board_notes_played")
     _set_flip_page_shader(MusicPaperRectTexture)
     _init_state()
   else:

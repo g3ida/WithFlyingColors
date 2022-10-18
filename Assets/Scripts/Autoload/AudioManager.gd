@@ -99,6 +99,10 @@ var sfx_data: Dictionary = {
     "path": BASE_PATH + "rotatex.ogg",
     "volume":  -20,
   },
+  "success": {
+    "path": BASE_PATH + "success.ogg",
+    "volume": -1,
+  },
   "tetrisLine": {
     "path": BASE_PATH + "tetris_line.ogg",
     "volume": -7,
@@ -191,6 +195,7 @@ func connect_signals():
   __ = Event.connect("piano_note_released", self, "_on_piano_note_released")
   __ = Event.connect("page_flipped", self, "_on_page_flipped")
   __ = Event.connect("wrong_piano_note_played", self, "_on_wrong_piano_note_played")
+  __ = Event.connect("piano_puzzle_won", self, "_on_piano_puzzle_won")
 
 func disconnect_signals():
   self.disconnect("play_sfx", self, "_sfx_play")
@@ -222,6 +227,7 @@ func disconnect_signals():
   Event.disconnect("piano_note_released", self, "_on_piano_note_released")
   Event.disconnect("page_flipped", self, "_on_page_flipped")
   Event.disconnect("wrong_piano_note_played", self, "_on_wrong_piano_note_played")
+  Event.disconnect("piano_puzzle_won", self, "_on_piano_puzzle_won")
 
 func _enter_tree():
   connect_signals()
@@ -251,6 +257,7 @@ func _on_piano_note_pressed(note): _sfx_play("piano_" + note)
 func _on_piano_note_released(_note): pass #nothing to do
 func _on_page_flipped(): _sfx_play("pageFlip")
 func _on_wrong_piano_note_played(): _sfx_play("wrongAnswer")
+func _on_piano_puzzle_won(): _sfx_play("success")
 
 func _on_pause_menu_enter():
   _sfx_play("menuSelect")

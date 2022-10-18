@@ -191,7 +191,7 @@ func get_color_group():
   return color_group
 
 func set_note_edge_index(note_index: int):
-  var scale = -1 if((note_index / (NoteEdgeTextures.size()+1)) % 2 == 0) else 1
+  var scale = -1 if(int((note_index / (NoteEdgeTextures.size()+1.0))) % 2 == 0) else 1
   note_edge_index = note_index % NoteEdgeTextures.size()
   $NoteEdge.texture = NoteEdgeTextures[note_edge_index]
   $NoteEdge.scale = Vector2(scale, 1)
