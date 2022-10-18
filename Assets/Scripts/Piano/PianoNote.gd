@@ -26,6 +26,7 @@ const RESPONSIVENESS = 0.06
 
 export var index = 0
 export(String) var color_group setget set_color_group, get_color_group
+# a numn int from 0 to 5
 export var note_edge_index = 0 setget set_note_edge_index, get_note_edge_index
 
 onready var SpriteNode = $Sprite
@@ -190,8 +191,10 @@ func get_color_group():
   return color_group
 
 func set_note_edge_index(note_index: int):
+  var scale = -1 if((note_index / (NoteEdgeTextures.size()+1)) % 2 == 0) else 1
   note_edge_index = note_index % NoteEdgeTextures.size()
   $NoteEdge.texture = NoteEdgeTextures[note_edge_index]
+  $NoteEdge.scale = Vector2(scale, 1)
   
 func get_note_edge_index():
   return note_edge_index

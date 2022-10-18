@@ -52,31 +52,31 @@ var sfx_data: Dictionary = {
   },
   "piano_do": {
     "path": BASE_PATH + "piano/do.ogg",
-    "volume": 1,
+    "volume": -3,
   },
   "piano_re": {
     "path": BASE_PATH + "piano/re.ogg",
-    "volume": 1,
+    "volume": -3,
   },
   "piano_mi": {
     "path": BASE_PATH + "piano/mi.ogg",
-    "volume": 1,
+    "volume": -3,
   },
   "piano_fa": {
     "path": BASE_PATH + "piano/fa.ogg",
-    "volume": 1,
+    "volume": -3,
   },
   "piano_sol": {
     "path": BASE_PATH + "piano/sol.ogg",
-    "volume": 1,
+    "volume": -3,
   },
   "piano_la": {
     "path": BASE_PATH + "piano/la.ogg",
-    "volume": 1,
+    "volume": -3,
   },
   "piano_si": {
     "path": BASE_PATH + "piano/si.ogg",
-    "volume": 1,
+    "volume": -3,
   },
   "pickup": {
     "path": BASE_PATH + "pickup.ogg",

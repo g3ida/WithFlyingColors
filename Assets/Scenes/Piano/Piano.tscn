@@ -25,12 +25,12 @@ note_edge_index = 1
 position = Vector2( -294, 0 )
 index = 2
 color_group = "pink"
+note_edge_index = 2
 
 [node name="PianoNote3" parent="NotesContainer" instance=ExtResource( 1 )]
 position = Vector2( -147, 0 )
 index = 3
 color_group = "purple"
-note_edge_index = 2
 
 [node name="PianoNote4" parent="NotesContainer" instance=ExtResource( 1 )]
 index = 4
@@ -41,17 +41,19 @@ note_edge_index = 2
 position = Vector2( 147, 0 )
 index = 5
 color_group = "purple"
+note_edge_index = 4
 
 [node name="PianoNote6" parent="NotesContainer" instance=ExtResource( 1 )]
 position = Vector2( 294, 0 )
 index = 6
 color_group = "pink"
+note_edge_index = 3
 
 [node name="PianoNote7" parent="NotesContainer" instance=ExtResource( 1 )]
 position = Vector2( 441, 0 )
 index = 7
 color_group = "blue"
-note_edge_index = 2
+note_edge_index = 5
 
 [node name="PianoBase" parent="." instance=ExtResource( 3 )]
 position = Vector2( -4, 88.75 )
