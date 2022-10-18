@@ -229,11 +229,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/BrickBreaker/Powerups/PowerUpScript.gd"
 }, {
-"base": "Sprite",
-"class": "SolfegeNoteSprite",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Piano/SulfegeNoteSprite.gd"
-}, {
 "base": "Reference",
 "class": "SolfegeNotesTextureGenerator",
 "language": "GDScript",
@@ -324,7 +319,6 @@ _global_script_class_icons={
 "PlayerStatesStore": "",
 "PowInterpolation": "",
 "PowerUpScript": "",
-"SolfegeNoteSprite": "",
 "SolfegeNotesTextureGenerator": "",
 "SwipeModule": "",
 "TetrisAI": "",

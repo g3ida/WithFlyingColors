@@ -31,6 +31,7 @@ var current_page = 0
 var current_note_index = 0
 var current_state = BoardState.PLAYING
 var notes_cursor = null
+var current_texture = MusicPaperRectTexture
 
 func _ready():
   _init_shader()
@@ -49,7 +50,7 @@ func flip_next_page():
 func _set_flip_page_shader(next_texture):
   MusicPaperRectNode.material.set_shader_param("flip_left", true)
   MusicPaperRectNode.material.set_shader_param("cylinder_direction", Vector2(5.0, 1.0))
-  var current_texture = solfegeNotesTextureGenerator.current_texture 
+  current_texture = current_texture 
   MusicPaperRectNode.material.set_shader_param("current_page", current_texture)
   MusicPaperRectNode.material.set_shader_param("next_page", next_texture)
   time = 0.0
@@ -68,7 +69,7 @@ func _process(delta):
     MusicPaperRectNode.material.set_shader_param("time", time)
     if time > DURATION:
       is_flipping = false
-      MusicPaperRectNode.texture = solfegeNotesTextureGenerator.current_texture
+      MusicPaperRectNode.texture = current_texture
 
 func _enter_tree():
   var __ = Event.connect("piano_note_pressed", self, "_on_note_pressed")
@@ -84,9 +85,10 @@ func _init_state():
   if current_state == BoardState.PLAYING:
     current_note_index = 0
     current_page = 0
+    current_texture = MusicPaperRectNode.texture
     var reset_texture = solfegeNotesTextureGenerator.create_from_notes(PAGES[current_page], music_paper_rect_size)
     _set_flip_page_shader(reset_texture)
-    MusicPaperRectNode.material.set_shader_param("current_page", MusicPaperRectNode.texture)
+    MusicPaperRectNode.material.set_shader_param("current_page", current_texture)
     if notes_cursor != null:
       notes_cursor.queue_free()
       notes_cursor = null
@@ -100,9 +102,15 @@ func _init_state():
       notes_cursor = null
       MusicPaperRectNode.texture = MusicPaperRectTexture
     
+func _get_note_position_from_index(note_index):
+  var gen = solfegeNotesTextureGenerator
+  var x = gen.SOLFEGE_KEY_OFFSET + note_index * gen.NOTE_SPRITE_WIDTH
+  var y = 0
+  return Vector2(x, y)
+
 func _set_notes_cursor_position():
   if notes_cursor != null:
-    var pos = solfegeNotesTextureGenerator._get_note_position_of_index(current_note_index)
+    var pos = _get_note_position_from_index(current_note_index)
     notes_cursor.move_to_position(pos)
 
 func reset():
