@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/wrong-answer.ogg-8f4ff572fde8c2f80c16182b02f0e571.oggstr"
+
+[deps]
+
+source_file="res://Assets/sfx/piano/wrong-answer.ogg"
+dest_files=[ "res://.import/wrong-answer.ogg-8f4ff572fde8c2f80c16182b02f0e571.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

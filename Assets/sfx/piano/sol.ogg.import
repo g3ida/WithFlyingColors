@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/sol.ogg-b1ad26e67b761c4a90e6c973ae09698a.oggstr"
+
+[deps]
+
+source_file="res://Assets/sfx/piano/sol.ogg"
+dest_files=[ "res://.import/sol.ogg-b1ad26e67b761c4a90e6c973ae09698a.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

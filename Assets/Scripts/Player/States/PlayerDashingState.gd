@@ -6,7 +6,7 @@ const CountdownTimer = preload("res://Assets/Scripts/Utils/CountdownTimer.gd")
 const DASH_DURATION = 0.17
 const PERMISSIVENESS = 0.05
 
-const DASH_SPEED = 2000
+const DASH_SPEED = 20 * Global.WORLD_TO_SCREEN
 const DASH_GHOST_INSTANCE_DELAY = 0.04
 
 var dash_timer: CountdownTimer
@@ -66,6 +66,8 @@ func _physics_update(_delta: float) -> BaseState:
 
   if !dash_timer.is_running():
     return self.states_store.get_state(PlayerStatesEnum.FALLING)
+  else:
+    player.velocity.y = 0
     
   dash_timer.step(_delta)
   permissiveness_timer.step(_delta)

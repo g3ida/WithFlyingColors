@@ -3,6 +3,7 @@ extends Node
 signal play_sfx(sfx_name)
 
 const MusicTrackManager = preload("res://Assets/Scenes/Audio/MusicTrackManager.tscn")
+const BASE_PATH = "res://Assets/sfx/"
 
 onready var jump_sfx: AudioStreamPlayer = AudioStreamPlayer.new()
 onready var rotate_left_sfx: AudioStreamPlayer = AudioStreamPlayer.new()
@@ -11,84 +12,106 @@ onready var rotate_right_sfx: AudioStreamPlayer = AudioStreamPlayer.new()
 # please keep alphabetic order for convenience
 var sfx_data: Dictionary = {
   "brick": {
-    "path": "res://Assets/sfx/brick.ogg",
+    "path": BASE_PATH + "brick.ogg",
     "volume": -4,
-    "bus": "sfx"
   },
   "bricksSlide": {
-    "path": "res://Assets/sfx/bricks_slide.ogg",
+    "path": BASE_PATH + "bricks_slide.ogg",
     "volume": 0,
-    "bus": "sfx"
   },
   "gemCollect": {
-    "path": "res://Assets/sfx/gem.ogg",
+    "path": BASE_PATH + "gem.ogg",
     "volume": -15,
-    "bus": "sfx"
   },
   "jump": {
-    "path": "res://Assets/sfx/jumping.ogg",
+    "path": BASE_PATH + "jumping.ogg",
     "volume": -5,
-    "bus": "sfx"
   },
   "land": {
-    "path": "res://Assets/sfx/stand.ogg",
+    "path": BASE_PATH + "stand.ogg",
     "volume": -8,
-    "bus": "sfx",
   },
   "menuFocus": {
-    "path": "res://Assets/sfx/click2.ogg",
-    "bus": "sfx"
+    "path": BASE_PATH + "click2.ogg",
   },
   "menuMove": {
-    "path": "res://Assets/sfx/menu_move.ogg",
+    "path": BASE_PATH + "menu_move.ogg",
     "volume": 0,
-    "bus": "sfx"
   },
   "menuSelect":{
-    "path": "res://Assets/sfx/menu_select.ogg",
+    "path": BASE_PATH + "menu_select.ogg",
     "volume": 0,
-    "bus": "sfx"
   },
   "menuValueChange": {
-    "path": "res://Assets/sfx/click.ogg",
+    "path": BASE_PATH + "click.ogg",
     "volume": 0,
-    "bus": "sfx"
+  },
+  "pageFlip": {
+    "path": BASE_PATH + "piano/page-flip.ogg",
+    "volume": 5,
+  },
+  "piano_do": {
+    "path": BASE_PATH + "piano/do.ogg",
+    "volume": 1,
+  },
+  "piano_re": {
+    "path": BASE_PATH + "piano/re.ogg",
+    "volume": 1,
+  },
+  "piano_mi": {
+    "path": BASE_PATH + "piano/mi.ogg",
+    "volume": 1,
+  },
+  "piano_fa": {
+    "path": BASE_PATH + "piano/fa.ogg",
+    "volume": 1,
+  },
+  "piano_sol": {
+    "path": BASE_PATH + "piano/sol.ogg",
+    "volume": 1,
+  },
+  "piano_la": {
+    "path": BASE_PATH + "piano/la.ogg",
+    "volume": 1,
+  },
+  "piano_si": {
+    "path": BASE_PATH + "piano/si.ogg",
+    "volume": 1,
   },
   "pickup": {
-    "path": "res://Assets/sfx/pickup.ogg",
+    "path": BASE_PATH + "pickup.ogg",
     "volume": -4,
-    "bus": "sfx"
   },
   "playerExplode": {
-    "path": "res://Assets/sfx/die.ogg",
+    "path": BASE_PATH + "die.ogg",
     "volume": -10,
-    "bus": "sfx"
   },
   "playerFalling": {
-    "path": "res://Assets/sfx/falling.ogg",
+    "path": BASE_PATH + "falling.ogg",
     "volume": -10
   },
   "rotateLeft": {
-    "path": "res://Assets/sfx/rotatex.ogg",
+    "path": BASE_PATH + "rotatex.ogg",
     "volume": -20,
     "pitch_scale": 0.9,
-    "bus": "sfx"
   },
   "rotateRight": {
-    "path": "res://Assets/sfx/rotatex.ogg",
+    "path": BASE_PATH + "rotatex.ogg",
     "volume":  -20,
-    "bus": "sfx"
   },
   "tetrisLine": {
-    "path": "res://Assets/sfx/tetris_line.ogg",
+    "path": BASE_PATH + "tetris_line.ogg",
     "volume": -7,
-    "bus": "sfx"
   },
   "winMiniGame": {
-    "path": "res://Assets/sfx/win_mini_game.ogg",
+    "path": BASE_PATH + "win_mini_game.ogg",
     "volume": 1,
-    "bus": "sfx"
   },
+  "wrongAnswer": {
+    "path": BASE_PATH + "piano/wrong-answer.ogg",
+    "volume": 10,
+  },
+
 }
 
 var sfx_pool: Dictionary = {}
@@ -164,7 +187,10 @@ func connect_signals():
   __ = Event.connect("menu_button_pressed", self, "_on_menu_button_pressed")
   __ = Event.connect("sfx_volume_changed", self, "_on_button_toggle")
   __ = Event.connect("music_volume_changed", self, "_on_button_toggle")
-
+  __ = Event.connect("piano_note_pressed", self, "_on_piano_note_pressed")
+  __ = Event.connect("piano_note_released", self, "_on_piano_note_released")
+  __ = Event.connect("page_flipped", self, "_on_page_flipped")
+  __ = Event.connect("wrong_piano_note_played", self, "_on_wrong_piano_note_played")
 
 func disconnect_signals():
   self.disconnect("play_sfx", self, "_sfx_play")
@@ -192,6 +218,10 @@ func disconnect_signals():
   Event.disconnect("menu_button_pressed", self, "_on_menu_button_pressed")
   Event.disconnect("sfx_volume_changed", self, "_on_button_toggle")
   Event.disconnect("music_volume_changed", self, "_on_button_toggle")
+  Event.disconnect("piano_note_pressed", self, "_on_piano_note_pressed")
+  Event.disconnect("piano_note_released", self, "_on_piano_note_released")
+  Event.disconnect("page_flipped", self, "_on_page_flipped")
+  Event.disconnect("wrong_piano_note_played", self, "_on_wrong_piano_note_played")
 
 func _enter_tree():
   connect_signals()
@@ -217,6 +247,10 @@ func _on_picked_powerup(): _sfx_play("pickup")
 func _on_brick_broken(_color, _position): _sfx_play("brick")
 func _on_win_mini_game(): _sfx_play("winMiniGame")
 func _on_brick_breaker_start(): _sfx_play("bricksSlide")
+func _on_piano_note_pressed(note): _sfx_play("piano_" + note)
+func _on_piano_note_released(_note): pass #nothing to do
+func _on_page_flipped(): _sfx_play("pageFlip")
+func _on_wrong_piano_note_played(): _sfx_play("wrongAnswer")
 
 func _on_pause_menu_enter():
   _sfx_play("menuSelect")

@@ -46,6 +46,12 @@ signal picked_powerup()
 signal break_breaker_win()
 signal brick_breaker_start()
 
+#piano
+signal piano_note_pressed(note)
+signal piano_note_released(note)
+signal page_flipped()
+signal wrong_piano_note_played()
+
 func emit_player_landed(area, position): emit_signal("player_landed", area, position)
 func emit_player_diying(area, position, entity_type): emit_signal("player_diying", area, position, entity_type)
 func emit_player_died(): emit_signal("player_died")
@@ -79,3 +85,7 @@ func emit_bouncing_ball_removed(ball): emit_signal("bouncing_ball_removed", ball
 func emit_picked_powerup(): emit_signal("picked_powerup")
 func emit_break_breaker_win(): emit_signal("break_breaker_win")
 func emit_brick_breaker_start(): emit_signal("brick_breaker_start")
+func emit_piano_note_pressed(note): emit_signal("piano_note_pressed", note)
+func emit_piano_note_released(note): emit_signal("piano_note_released", note)
+func emit_page_flipped(): emit_signal("page_flipped")
+func emit_wrong_piano_note_played(): emit_signal("wrong_piano_note_played")
