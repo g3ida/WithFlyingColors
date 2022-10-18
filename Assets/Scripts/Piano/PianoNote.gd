@@ -13,6 +13,11 @@ signal on_note_released(note)
 const PairTexture = preload("res://Assets/Sprites/Piano/note_1.png")
 const OddTexture = preload("res://Assets/Sprites/Piano/note_2.png")
 
+const NoteEdgeTextures = [
+  preload("res://Assets/Sprites/Piano/note_edge.png"),
+  preload("res://Assets/Sprites/Piano/note_edge2.png"),
+  preload("res://Assets/Sprites/Piano/note_edge3.png"),
+]
 const PRESS_OFFSET = Vector2(0, 25)
 const PRESS_SPEED = 2.5 * Global.WORLD_TO_SCREEN
 const RAYCAST_Y_OFFSET = 3.0
@@ -20,6 +25,8 @@ const RAYCAST_LENGTH = 20.0
 const RESPONSIVENESS = 0.06
 
 export var index = 0
+export(String) var color_group setget set_color_group, get_color_group
+export var note_edge_index = 0 setget set_note_edge_index, get_note_edge_index
 
 onready var SpriteNode = $Sprite
 onready var TweenNode = $Tween
@@ -170,3 +177,21 @@ func _stop_timer_if_relevant():
 func _on_ResponsivenessTimer_timeout():
   _relese_note_if_relevant()
   _stop_timer_if_relevant()
+
+func set_color_group(_color_group: String):
+  color_group = _color_group
+  $NoteEdge.modulate = ColorUtils.get_color(_color_group)
+  var area = $ColorArea
+  for grp in area.get_groups():
+    area.remove_from_group(grp)
+  area.add_to_group(_color_group)
+
+func get_color_group():
+  return color_group
+
+func set_note_edge_index(note_index: int):
+  note_edge_index = note_index % NoteEdgeTextures.size()
+  $NoteEdge.texture = NoteEdgeTextures[note_edge_index]
+  
+func get_note_edge_index():
+  return note_edge_index
