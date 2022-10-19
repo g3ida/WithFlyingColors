@@ -131,3 +131,5 @@ texture = ExtResource( 9 )
 [connection signal="on_note_pressed" from="NotesContainer/PianoNote7" to="." method="_on_piano_note_pressed"]
 [connection signal="on_note_released" from="NotesContainer/PianoNote7" to="." method="_on_piano_note_released"]
 [connection signal="board_notes_played" from="SolfegeBoard" to="." method="_on_SolfegeBoard_board_notes_played"]
+[connection signal="expected_note_changed" from="SolfegeBoard" to="." method="_on_SolfegeBoard_expected_note_changed"]
+[connection signal="wrong_note_played" from="SolfegeBoard" to="." method="_on_SolfegeBoard_wrong_note_played"]

@@ -5,6 +5,8 @@ const NotesCursorScene = preload("res://Assets/Scenes/Piano/NotesCursor.tscn")
 const MusicPaperRectTexture = preload("res://Assets/Sprites/Piano/music-paper-rect.png")
 
 signal board_notes_played()
+signal expected_note_changed(new_expected_note)
+signal wrong_note_played()
 
 const PAGES = [
   ["do", "do", "sol", "sol", "la", "la", "sol"],
@@ -31,12 +33,16 @@ var solfegeNotesTextureGenerator = SolfegeNotesTextureGenerator.new()
 var is_flipping = false
 var current_page = 0
 var current_note_index = 0
-var current_state = BoardState.PLAYING
+var current_state = BoardState.STOPPED
 var notes_cursor = null
 var current_texture = MusicPaperRectTexture
 
 func _ready():
   _init_shader()
+  _init_state()
+
+func _start_game():
+  current_state = BoardState.PLAYING
   _init_state()
 
 func flip_next_page():
@@ -76,12 +82,10 @@ func _process(delta):
 
 func _enter_tree():
   var __ = Event.connect("piano_note_pressed", self, "_on_note_pressed")
-  __ = Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
   __ = Event.connect("checkpoint_loaded", self, "reset")
 
 func _exit_tree():
   Event.disconnect("piano_note_pressed", self, "_on_note_pressed")
-  Event.disconnect("checkpoint_reached", self, "_on_checkpoint_hit")
   Event.disconnect("checkpoint_loaded", self, "reset")
 
 func _init_state():
@@ -118,6 +122,7 @@ func _set_notes_cursor_position():
 
 func reset():
   _init_state()
+  _emit_expected_note_changed()
 
 func _on_note_pressed(note):
   if current_state != BoardState.PLAYING:
@@ -130,7 +135,20 @@ func _on_note_pressed(note):
   else: # wrong note pressed
     current_note_index = 0
     _emit_wrong_note_event()
+  
   _set_notes_cursor_position()
+  _emit_expected_note_changed()
+
+func _emit_expected_note_changed():
+  if current_state == BoardState.PLAYING:
+    emit_signal("expected_note_changed", PAGES[current_page][current_note_index])
 
 func _emit_wrong_note_event():
   Event.emit_wrong_piano_note_played()
+  emit_signal("wrong_note_played")
+
+func get_expected_note():
+  if current_state == BoardState.PLAYING:
+    return PAGES[current_page][current_note_index]
+  else:
+    return null

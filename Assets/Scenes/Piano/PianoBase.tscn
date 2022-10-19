@@ -37,12 +37,12 @@ position = Vector2( 562.5, -94 )
 shape = SubResource( 2 )
 
 [node name="FrontLeg1" type="Sprite" parent="."]
-position = Vector2( -509, 178 )
+position = Vector2( -509, 200 )
 z_index = 1
 texture = ExtResource( 2 )
 
 [node name="FrontLeg2" type="Sprite" parent="."]
-position = Vector2( 509, 178 )
+position = Vector2( 509, 200 )
 z_index = 1
 texture = ExtResource( 2 )
 
