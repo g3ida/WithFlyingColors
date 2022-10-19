@@ -17,6 +17,11 @@ shader_param/rect = null
 z_index = -1
 script = ExtResource( 1 )
 
+[node name="EmptyPaperRect" type="Sprite" parent="."]
+position = Vector2( -177, -216 )
+texture = ExtResource( 2 )
+centered = false
+
 [node name="MusicPaperRect" type="Sprite" parent="."]
 material = SubResource( 2 )
 position = Vector2( -177, -216 )

@@ -10,7 +10,7 @@ onready var lettersContainerNode = $LettersContainer
 var NotesPointerNode = null
 
 func _ready():
-  _start_game()
+  pass
 
 func _on_piano_note_pressed(note):
   var index = note.index - 1
@@ -22,11 +22,15 @@ func _on_piano_note_released(note):
 
 func _on_SolfegeBoard_board_notes_played():
   Event.emit_piano_puzzle_won()
+  _remove_pointer_node()
+
+func _remove_pointer_node():
   if NotesPointerNode != null:
     NotesPointerNode.queue_free()
+    NotesPointerNode = null
 
 func _start_game():
-  if NotesPointerNode != null:
+  if NotesPointerNode != null and NotesPointerNode.is_inside_tree():
     NotesPointerNode.queue_free()
   NotesPointerNode = _instance_notes_pointer()
   SolfegeBoardNode._start_game()
@@ -60,7 +64,7 @@ func _get_note_node(new_expected_note: String):
     return null
 
 func reset():
-  pass
+  _remove_pointer_node()
 
 func _setup_note_pointer_position():
   _update_notes_pointer_position(SolfegeBoardNode.get_expected_note())
@@ -70,3 +74,6 @@ func _enter_tree():
 
 func _exit_tree():
   Event.disconnect("checkpoint_loaded", self, "reset")
+
+func is_stopped():
+  return SolfegeBoardNode._is_stopped()

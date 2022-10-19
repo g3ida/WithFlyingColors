@@ -25,6 +25,8 @@ enum BoardState {
 }
 
 onready var MusicPaperRectNode = $MusicPaperRect
+onready var EmptyPaperRectNode = $EmptyPaperRect
+
 onready var music_paper_rect_size = Vector2(MusicPaperRectNode.texture.get_width(), MusicPaperRectNode.texture.get_height())
 onready var time = 0
 
@@ -36,6 +38,10 @@ var current_note_index = 0
 var current_state = BoardState.STOPPED
 var notes_cursor = null
 var current_texture = MusicPaperRectTexture
+
+var save_data = {
+  "current_state": current_state
+}
 
 func _ready():
   _init_shader()
@@ -83,15 +89,19 @@ func _process(delta):
 func _enter_tree():
   var __ = Event.connect("piano_note_pressed", self, "_on_note_pressed")
   __ = Event.connect("checkpoint_loaded", self, "reset")
+  __ = Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
+
 
 func _exit_tree():
   Event.disconnect("piano_note_pressed", self, "_on_note_pressed")
   Event.disconnect("checkpoint_loaded", self, "reset")
+  Event.disconnect("checkpoint_reached", self, "_on_checkpoint_hit")
 
 func _init_state():
   if current_state == BoardState.PLAYING:
     current_note_index = 0
     current_page = 0
+    MusicPaperRectNode.visible = true
     current_texture = MusicPaperRectNode.texture
     var reset_texture = solfegeNotesTextureGenerator.create_from_notes(PAGES[current_page], music_paper_rect_size)
     _set_flip_page_shader(reset_texture)
@@ -103,12 +113,14 @@ func _init_state():
     MusicPaperRectNode.add_child(notes_cursor)
     notes_cursor.set_owner(MusicPaperRectNode)
     _set_notes_cursor_position()
-  elif current_state == BoardState.FINISHED:
+  elif current_state == BoardState.FINISHED or current_state == BoardState.STOPPED:
     if notes_cursor != null:
       notes_cursor.queue_free()
       notes_cursor = null
       MusicPaperRectNode.texture = MusicPaperRectTexture
-    
+      MusicPaperRectNode.visible = false
+
+
 func _get_note_position_from_index(note_index):
   var gen = solfegeNotesTextureGenerator
   var x = gen.SOLFEGE_KEY_OFFSET + note_index * gen.NOTE_SPRITE_WIDTH
@@ -121,6 +133,7 @@ func _set_notes_cursor_position():
     notes_cursor.move_to_position(pos)
 
 func reset():
+  current_state = save_data["current_state"]
   _init_state()
   _emit_expected_note_changed()
 
@@ -152,3 +165,9 @@ func get_expected_note():
     return PAGES[current_page][current_note_index]
   else:
     return null
+
+func _on_checkpoint_hit(_checkpoint):
+  save_data["current_state"] = current_state
+
+func _is_stopped():
+  return current_state == BoardState.STOPPED
