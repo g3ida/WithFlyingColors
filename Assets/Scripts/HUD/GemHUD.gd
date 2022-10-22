@@ -2,9 +2,14 @@ tool
 extends Node2D
 
 const SlideAnimation = preload("res://Assets/Scripts/Utils/SlideAnimation.gd")
+const TextureCollected = preload("res://Assets/Sprites/HUD/gem_hud_collected.png")
+const TextureEmpty = preload("res://Assets/Sprites/HUD/gem_hud.png")
 
-export var texture_collected: Texture
-export var texture_empty: Texture
+onready var TextureRectNode = $TextureRect
+onready var TextureRectAnimationNode = $TextureRect/AnimationPlayer
+onready var BackgroundNode = $Background
+onready var BackgroundAnimationPlayerNode = $Background/AnimationPlayer
+
 export var color: String
 
 enum {EMPTY, COLLECTING, COLLECTED}
@@ -19,7 +24,10 @@ var collected_animation: SlideAnimation
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-  $TextureRect.texture = texture_empty
+  TextureRectNode.texture = TextureEmpty
+  BackgroundNode.visible = false
+  var color_index = ColorUtils.get_group_color_index(color)
+  TextureRectNode.modulate = ColorUtils.get_basic_color(color_index)
 func connect_signals():
   if not Engine.editor_hint:
     var __ = Event.connect("gem_collected", self, "_on_gem_collected")
@@ -38,6 +46,7 @@ func _on_gem_collected(col, position, frames):
     self.animation = AnimatedSprite.new()
     animation.set_sprite_frames(frames)
     animation.play()
+    animation.modulate = TextureRectNode.modulate
     add_child(animation)
     animation.set_owner(self)
     
@@ -54,8 +63,10 @@ func _on_slide_anim_ended(anim_name):
     if self.animation != null:
       self.remove_child(animation)
     if(current_state == COLLECTING): #this is normally the case unless the reset() was called
-      $TextureRect.texture = texture_collected
-      $TextureRect/AnimationPlayer.play("coin_collected_HUD")
+      TextureRectNode.texture = TextureCollected
+      TextureRectAnimationNode.play("coin_collected_HUD")
+      BackgroundNode.visible = true
+      BackgroundAnimationPlayerNode.play("coin_collected_HUD")
       current_state = COLLECTED
     collected_animation = null
     
@@ -71,9 +82,11 @@ func _process(delta):
 
 func reset():
   if save_data["state"] == EMPTY:
-    $TextureRect.texture = texture_empty
+    TextureRectNode.texture = TextureEmpty
+    BackgroundNode.visible = false
   else:
-    $TextureRect.texture = texture_collected
+    TextureRectNode.texture = TextureCollected
+    BackgroundNode.visible = true
     
 func _on_checkpoint_hit(_checkpoint):
   save_data["state"] = current_state if current_state != COLLECTING else EMPTY

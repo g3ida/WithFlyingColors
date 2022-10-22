@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Assets/Shaders/ColorSplash.tres" type="Shader" id=1]
 [ext_resource path="res://Assets/Scripts/Platforms/SimplePlatform.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Sprites/Platforms/geared-platform.png" type="Texture" id=3]
 
 [sub_resource type="ShaderMaterial" id=1]
 resource_local_to_scene = true
@@ -32,6 +33,7 @@ margin_top = -40.0
 margin_right = 40.0
 margin_bottom = 40.0
 rect_pivot_offset = Vector2( 40, 40 )
+texture = ExtResource( 3 )
 patch_margin_left = 40
 patch_margin_top = 40
 patch_margin_right = 40

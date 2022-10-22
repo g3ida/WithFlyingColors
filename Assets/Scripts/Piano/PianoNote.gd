@@ -181,7 +181,9 @@ func _on_ResponsivenessTimer_timeout():
 
 func set_color_group(_color_group: String):
   color_group = _color_group
-  $NoteEdge.modulate = ColorUtils.get_color(_color_group)
+  var color_index = ColorUtils.get_group_color_index(color_group)
+  var color = ColorUtils.get_basic_color(color_index)
+  $NoteEdge.modulate = color
   var area = $ColorArea
   for grp in area.get_groups():
     area.remove_from_group(grp)

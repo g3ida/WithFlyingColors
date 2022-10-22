@@ -25,17 +25,18 @@ func _ready():
       save_slots[i].description = "<EMPTY>"
       if disable_empty_slots:
         save_slots[i].is_disabled = true
-    save_slots[i].bg_color = ColorUtils.get_color(slots_colors[i])
+    var color_index = ColorUtils.get_group_color_index(slots_colors[i])
+    var color = ColorUtils.get_basic_color(color_index)
+    save_slots[i].bg_color = color
     save_slots[i].id = i
-    
+
   for i in range(save_slots.size()):
     if not save_slots[i].is_disabled:
       save_slots[i].has_focus = true
       break
-  
+      
   if centered_on_screen:
     rect_position = (get_viewport_rect().size - rect_size) * 0.5
-
     
 func _process(_delta):
   pass #set_process = false

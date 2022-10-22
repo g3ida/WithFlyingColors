@@ -1,14 +1,6 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Assets/Scenes/HUD/GemHUD.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Assets/Sprites/HUD/pink_gem_hud.png" type="Texture" id=2]
-[ext_resource path="res://Assets/Sprites/HUD/blue_gem_hud.png" type="Texture" id=3]
-[ext_resource path="res://Assets/Sprites/HUD/blue_gem_hud_collected.png" type="Texture" id=4]
-[ext_resource path="res://Assets/Sprites/HUD/pink_gem_hud_collected.png" type="Texture" id=5]
-[ext_resource path="res://Assets/Sprites/HUD/purple_gem_hud_collected.png" type="Texture" id=6]
-[ext_resource path="res://Assets/Sprites/HUD/purple_gem_hud.png" type="Texture" id=7]
-[ext_resource path="res://Assets/Sprites/HUD/yellow_gem_hud_collected.png" type="Texture" id=8]
-[ext_resource path="res://Assets/Sprites/HUD/yellow_gem_hud.png" type="Texture" id=9]
 [ext_resource path="res://Assets/StyleBorderHUD.tres" type="StyleBox" id=10]
 
 [node name="GemContainerHUD" type="Panel"]
@@ -23,27 +15,19 @@ __meta__ = {
 
 [node name="BlueGem" parent="." instance=ExtResource( 1 )]
 light_mask = 0
-texture_collected = ExtResource( 4 )
-texture_empty = ExtResource( 3 )
 color = "blue"
 
 [node name="PinkGem" parent="." instance=ExtResource( 1 )]
 light_mask = 0
 position = Vector2( 64, 0 )
-texture_collected = ExtResource( 5 )
-texture_empty = ExtResource( 2 )
 color = "pink"
 
 [node name="YellowGem" parent="." instance=ExtResource( 1 )]
 light_mask = 0
 position = Vector2( 128, 0 )
-texture_collected = ExtResource( 8 )
-texture_empty = ExtResource( 9 )
 color = "yellow"
 
 [node name="PurpleGem" parent="." instance=ExtResource( 1 )]
 light_mask = 0
 position = Vector2( 192, 0 )
-texture_collected = ExtResource( 6 )
-texture_empty = ExtResource( 7 )
 color = "purple"

@@ -15,14 +15,13 @@ var initial_position = Vector2()
 func _ready():
   pass
   
-func set_texture(texture: Texture):
-  spriteNode.texture = texture
-  
 func shoot(shoot_direction: Vector2):
   movement = shoot_direction * SPEED
   
 func set_color_group(group_name: String):
   ColorAreaNode.add_to_group(group_name)
+  var color_index = ColorUtils.get_group_color_index(group_name)
+  spriteNode.modulate = ColorUtils.get_basic_color(color_index)
   
 func _physics_process(delta):
   movement.y += delta * gravity

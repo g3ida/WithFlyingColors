@@ -51,7 +51,7 @@ polygon = PoolVector2Array( 0, 24, 26, -8, 17, -23, -17, -23, -26, -8 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 z_index = 101
 frames = ExtResource( 1 )
-frame = 1
+frame = 5
 playing = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="AnimatedSprite"]

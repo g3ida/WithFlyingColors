@@ -14,7 +14,9 @@ const SPEED = 3.0 * Global.WORLD_TO_SCREEN
 
 func _ready():
   SpriteNode.texture = texture
-  BackgroundNode.modulate = ColorUtils.get_color(color_group)
+  var color_index = ColorUtils.get_group_color_index(color_group)
+  var color = ColorUtils.get_basic_color(color_index)
+  BackgroundNode.modulate = color
   AreaNode.add_to_group(color_group)
   
 func _process(delta):

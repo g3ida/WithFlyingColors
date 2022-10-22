@@ -35,7 +35,8 @@ var buttons_def = [
 ]
 
 func _ready():
-  var blue = ColorUtils.get_color("blue")
+  var color_index = ColorUtils.get_group_color_index("blue")
+  var blue = ColorUtils.get_skin_basic_color(SkinLoader.DEFAULT_SKIN, color_index)
   SubMenuNode = SubMenuScene.instance()
   SubMenuNode.color = ColorUtils.darken_rgb(blue, 0.0)
   SubMenuNode.top_color = ColorUtils.darken_rgb(blue, 0.115)

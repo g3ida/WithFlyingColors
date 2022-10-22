@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Assets/Scripts/LazerBeam.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/Particles/glow_circle.png" type="Texture" id=2]
-[ext_resource path="res://Assets/Sprites/Platforms/pink_lazer.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Sprites/Platforms/lazer.png" type="Texture" id=3]
 [ext_resource path="res://Assets/Shaders/LazerBeam.gdshader" type="Shader" id=4]
 [ext_resource path="res://Assets/sfx/lazer.ogg" type="AudioStream" id=5]
 

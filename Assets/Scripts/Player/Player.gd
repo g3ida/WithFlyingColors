@@ -112,7 +112,8 @@ var current_scale_factor = 1.0 # do not edit by yourself this is used by scale_c
 
 func _ready():
   playerRotationAction = PlayerRotationAction.new(self)
-  sprite_size = $AnimatedSprite.frames.get_frame("idle", 0).get_width()
+  animatedSpriteNode.frames.set_frame("idle", 0, Global.get_player_sprite())
+  sprite_size = animatedSpriteNode.frames.get_frame("idle", 0).get_width()
   _init_sprite_animation()
   was_on_floor = is_on_floor()
   _init_faces_areas()

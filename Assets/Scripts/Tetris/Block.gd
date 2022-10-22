@@ -2,15 +2,14 @@ extends Node2D
 
 const EdgeArea = preload("res://Assets/Scenes/Tetris/EdgeArea.tscn")
 
-export var texture: Texture
 export var color_group: String
 export var i: int = 0
 export var j: int = 0
 
 signal block_destroyed
 
-onready var spriteNode = $Sprite
-onready var spriteAnimationNode = $Sprite/AnimationPlayer
+onready var spriteNode = $BlockSprite
+onready var spriteAnimationNode = $BlockSprite/AnimationPlayer
 onready var areaNode = $Area2D
 onready var areaShapeNode = $Area2D/CollisionShape2D
 
@@ -67,10 +66,9 @@ func add_to_grid(permessive_mode = true):
     add_permessiveness_bounds_if_needed()
 
 func _ready():
-  if (texture != null):
-    spriteNode.texture = texture
   if (color_group != null):
     areaNode.add_to_group(color_group)
+    spriteNode.color_group = color_group
 
 func remove_from_grid():
   if grid[i][j] == self:

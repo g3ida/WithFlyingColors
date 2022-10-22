@@ -7,15 +7,17 @@ onready var muzzleNode = $Muzzle
 onready var particlesNode = $Particles
 onready var baseNode = $Base
 
-export var color: String
-export var texture: Texture
+export var color_group: String
+
 
 func _ready():
-  beamNode.default_color = ColorUtils.get_color(color)
-  beamBgNode.default_color = ColorUtils.get_color(color)
+  var color_index = ColorUtils.get_group_color_index(color_group)
+  var color = ColorUtils.get_basic_color(color_index)
+  beamNode.default_color = color
+  beamBgNode.default_color = color
   beamBgNode.default_color.a = 0.63
   particlesNode.color = beamNode.default_color
-  baseNode.texture = texture
+  baseNode.modulate = color
 
 func cast_beam():
   var space_state = get_world_2d().direct_space_state
@@ -40,7 +42,7 @@ func _physics_process(_delta):
   if ("Face" in collider.name and collider is Area2D):
     var groups = collider.get_groups()
     if (groups and groups.size() == 1):
-      if (groups.front() == color):
+      if (groups.front() == color_group):
         pass #play some sfx maybe ?
       else:
         Event.emit_signal("player_diying", null, global_position, Global.EntityType.LAZER)

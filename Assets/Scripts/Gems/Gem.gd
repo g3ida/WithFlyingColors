@@ -2,7 +2,6 @@ class_name Gem
 extends Area2D
 
 export var group_name: String
-export var sprite_frames: SpriteFrames
 
 onready var lightNode = $Light2D
 onready var shineNode = $ShineSfx
@@ -16,8 +15,10 @@ var save_data = {
 
 func _ready():
   self.add_to_group(group_name)
-  lightNode.color = ColorUtils.get_color(group_name)
-  $AnimatedSprite.frames = sprite_frames
+  var color_index = ColorUtils.get_group_color_index(group_name)
+  var color = ColorUtils.get_basic_color(color_index)
+  lightNode.color = color
+  $AnimatedSprite.modulate = color
   
   states_store = GemStatesStore.new(
     self,

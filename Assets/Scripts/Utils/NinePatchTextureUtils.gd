@@ -1,7 +1,6 @@
-func _init():
-  pass
+class_name NinePatchTextureUtils
 
-func scale_texture(ninePatchRect: NinePatchRect, scale: Vector2):
+static func scale_texture(ninePatchRect: NinePatchRect, scale: Vector2):
   assert(scale.x >= 1 && scale.y >= 1)
   ninePatchRect.rect_scale = Vector2(1/scale.x, 1/scale.y)
   var size = ninePatchRect.rect_size
@@ -14,5 +13,5 @@ func scale_texture(ninePatchRect: NinePatchRect, scale: Vector2):
     ninePatchRect.rect_position.y - (new_size.y - size.y) / (scale.y * 2))
   ninePatchRect.rect_position = rect_pos
   
-func set_texture(ninePatchRect: NinePatchRect, texture: Texture):
+static func set_texture(ninePatchRect: NinePatchRect, texture: Texture):
   ninePatchRect.texture = texture

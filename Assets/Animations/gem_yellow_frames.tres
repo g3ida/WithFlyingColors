@@ -1,19 +1,19 @@
 [gd_resource type="SpriteFrames" load_steps=11 format=2]
 
-[ext_resource path="res://Assets/Sprites/Gems/Yellow/yellow_0.png" type="Texture" id=1]
-[ext_resource path="res://Assets/Sprites/Gems/Yellow/yellow_3.png" type="Texture" id=2]
-[ext_resource path="res://Assets/Sprites/Gems/Yellow/yellow_6.png" type="Texture" id=3]
-[ext_resource path="res://Assets/Sprites/Gems/Yellow/yellow_7.png" type="Texture" id=4]
-[ext_resource path="res://Assets/Sprites/Gems/Yellow/yellow_1.png" type="Texture" id=5]
-[ext_resource path="res://Assets/Sprites/Gems/Yellow/yellow_4.png" type="Texture" id=6]
-[ext_resource path="res://Assets/Sprites/Gems/Yellow/yellow_9.png" type="Texture" id=7]
-[ext_resource path="res://Assets/Sprites/Gems/Yellow/yellow_8.png" type="Texture" id=8]
-[ext_resource path="res://Assets/Sprites/Gems/Yellow/yellow_2.png" type="Texture" id=9]
-[ext_resource path="res://Assets/Sprites/Gems/Yellow/yellow_5.png" type="Texture" id=10]
+[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_2.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_4.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_9.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_6.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_7.png" type="Texture" id=5]
+[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_8.png" type="Texture" id=6]
+[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_0.png" type="Texture" id=7]
+[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_5.png" type="Texture" id=8]
+[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_1.png" type="Texture" id=9]
+[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_3.png" type="Texture" id=10]
 
 [resource]
 animations = [ {
-"frames": [ ExtResource( 1 ), ExtResource( 5 ), ExtResource( 9 ), ExtResource( 2 ), ExtResource( 6 ), ExtResource( 10 ), ExtResource( 3 ), ExtResource( 4 ), ExtResource( 8 ), ExtResource( 7 ) ],
+"frames": [ ExtResource( 7 ), ExtResource( 9 ), ExtResource( 1 ), ExtResource( 10 ), ExtResource( 2 ), ExtResource( 8 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ), ExtResource( 3 ) ],
 "loop": true,
 "name": "default",
 "speed": 30.0

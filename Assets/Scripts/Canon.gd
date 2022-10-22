@@ -1,8 +1,5 @@
 extends Node2D
 
-export var stand_texture: Texture
-export var canon_texture: Texture
-export var bullet_texture: Texture
 export var followNodeName: String 
 export (PackedScene) var bullet_scene
 export (NodePath) var objectToFollow
@@ -33,16 +30,20 @@ func _ready():
   add_to_group(color_group)
   standColorAreaNode.add_to_group(color_group)
   canonColorAreaNode.add_to_group(color_group)
-  satndNode.texture = stand_texture
-  canonNode.texture = canon_texture
+  _update_color()
   cooldownTimerNode.wait_time = cooldown
+
+func _update_color():
+  var color_index = ColorUtils.get_group_color_index(color_group)
+  var color = ColorUtils.get_basic_color(color_index)
+  satndNode.modulate = color
+  canonNode.modulate = color
   
 func spawn_bullet():
   var bullet = bullet_scene.instance()
   bullet.global_position = canonMuzzle.global_position
   get_parent().add_child(bullet)
   bullet.set_owner(get_parent())
-  bullet.set_texture(bullet_texture)
   bullet.set_color_group(color_group)
   return bullet
   

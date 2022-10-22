@@ -1,3 +1,4 @@
+# Deprecated. use tween instead. I was new to godot didn't know it existed :p
 class_name Animator
 
 const Interpolation = preload("res://Assets/Scripts/Utils/Interpolation/Interpolation.gd")

@@ -11,7 +11,8 @@ onready var SpriteNode = $Sprite
 onready var CollisionShapeNode = $KinematicBody2D/CollisionShape2D
 
 func _set_color():
-  var color = ColorUtils.get_color(color_group)
+  var color_index = ColorUtils.get_group_color_index(color_group)
+  var color = ColorUtils.get_basic_color(color_index)
   SpriteNode.modulate = color
 
 func _ready():

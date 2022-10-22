@@ -1,3 +1,4 @@
+# Deprecated. use built in timer instead. I was new to godot didn't know it existed :p
 var duration: float
 var timer
   

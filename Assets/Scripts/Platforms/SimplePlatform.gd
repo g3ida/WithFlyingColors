@@ -1,23 +1,31 @@
 tool
 extends StaticBody2D
 
-#imports
-const NinePatchTextureUtils = preload("res://Assets/Scripts/Utils/NinePatchTextureUtils.gd")
+const geared_texture = preload("res://Assets/Sprites/Platforms/geared-platform.png")
+const simple_texture = preload("res://Assets/Sprites/Platforms/platform.png")
 
 #exported vars
-export var texture: Texture
 export var group: String
+export var geared: bool = true
 
 #vars
 var animation_timer = 10
 var contactPosition = Vector2(0, 0)
-onready var ninePatchUtils = NinePatchTextureUtils.new() 
 
+onready var NidePatchRectNode = $NinePatchRect
+onready var AreaNode = $Area2D
 
+func _set_platform_texture():
+  if geared:
+    NinePatchTextureUtils.set_texture($NinePatchRect, geared_texture)
+  else:
+    NinePatchTextureUtils.set_texture($NinePatchRect, simple_texture)
 func _ready() -> void:
-  self.ninePatchUtils.set_texture($NinePatchRect, texture)
-  self.ninePatchUtils.scale_texture($NinePatchRect, self.scale)
-  $Area2D.add_to_group(group)
+  _set_platform_texture()
+  var color_index = ColorUtils.get_group_color_index(group)
+  NidePatchRectNode.modulate = ColorUtils.get_basic_color(color_index)
+  NinePatchTextureUtils.scale_texture(NidePatchRectNode, self.scale) 
+  AreaNode.add_to_group(group)
   
 func _enter_tree():
   connect_signals()
@@ -26,7 +34,7 @@ func _exit_tree():
   disconnect_signals()
 
 func _on_Player_landed(area, position):
-  if area == $Area2D:
+  if area == AreaNode:
     animation_timer = 0
     contactPosition = position
   
