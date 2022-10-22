@@ -24,6 +24,9 @@ static func get_skin_basic_color(skin, color_index: int):
 static func get_light_color(color_index: int):
   return get_color(String(color_index) + "-light")
 
+static func get_light2_color(color_index: int):
+  return get_color(String(color_index) + "-light2")
+
 static func get_dark_color(color_index: int):
   return get_color(String(color_index) + "-dark")
 

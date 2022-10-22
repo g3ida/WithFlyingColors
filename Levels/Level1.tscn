@@ -62,7 +62,7 @@ drag_margin_bottom = 0.05
 [node name="CameraShake" parent="Camera2D" instance=ExtResource( 30 )]
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
-position = Vector2( 980, -511 )
+position = Vector2( 606, 140 )
 collision_mask = 13
 StatesStore = ExtResource( 33 )
 

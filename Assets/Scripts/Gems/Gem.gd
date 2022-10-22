@@ -16,8 +16,8 @@ var save_data = {
 func _ready():
   self.add_to_group(group_name)
   var color_index = ColorUtils.get_group_color_index(group_name)
-  var color = ColorUtils.get_basic_color(color_index)
-  lightNode.color = color
+  var color = ColorUtils.get_light2_color(color_index)
+  lightNode.color = ColorUtils.get_basic_color(color_index)
   $AnimatedSprite.modulate = color
   
   states_store = GemStatesStore.new(
