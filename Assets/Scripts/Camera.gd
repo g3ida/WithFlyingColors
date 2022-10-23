@@ -91,6 +91,9 @@ func _on_player_jump():
 func _on_player_land():
   restore_drag_margins()
 
+func _on_player_dying(_area, _position, _entity_type):
+  restore_drag_margins()
+
 func cache_drag_margins():
   cached_drag_margin_bottom = drag_margin_bottom
   cached_drag_margin_top = drag_margin_top
@@ -114,13 +117,15 @@ func connect_signals():
   __ = Event.connect("checkpoint_loaded", self, "reset")
   __ = Event.connect("player_jumped", self, "_on_player_jump")
   __ = Event.connect("player_land", self, "_on_player_land")
+  __ = Event.connect("player_diying", self, "_on_player_dying")
 
 func disconnect_signals():
   Event.disconnect("checkpoint_reached", self, "_on_checkpoint_hit")
   Event.disconnect("checkpoint_loaded", self, "reset")
   Event.disconnect("player_jumped", self, "_on_player_jump")
   Event.disconnect("player_land", self, "_on_player_land")
-      
+  Event.disconnect("player_diying", self, "_on_player_dying")
+
 func _enter_tree():
   connect_signals()
 

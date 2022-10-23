@@ -94,9 +94,16 @@ func reset_touch_input():
 func _physics_update(_delta) -> BaseState:
   return null
 
+func _set_player_death_animation_type(dying_state, entity_type):
+  if entity_type == Global.EntityType.FALLZONE:
+    dying_state.death_animation_type = DeathAnimationType.DYING_FALL
+  else:
+    dying_state.death_animation_type = DeathAnimationType.DYING_EXPLOSION_REAL
+
 func _on_player_diying(_area, _position, entity_type) -> BaseState:
+  player.velocity = Vector2.ZERO
   var dying_state = self.states_store.get_state(PlayerStatesEnum.DYING)
-  dying_state.is_explosion = false if entity_type == Global.EntityType.FALLZONE else true
+  _set_player_death_animation_type(dying_state, entity_type)
   return dying_state
 
 func on_land() -> BaseState:
@@ -121,6 +128,7 @@ func _jump_pressed() -> bool:
   return Input.is_action_just_pressed("jump") or player.touch_jump_input != null
 
 func _handle_rotate():
+ if player.player_state.base_state != PlayerStatesEnum.DYING:
   if Input.is_action_just_pressed("rotate_left"):
     return self.states_store.get_state(PlayerStatesEnum.ROTATING_LEFT)
   if Input.is_action_just_pressed("rotate_right"):

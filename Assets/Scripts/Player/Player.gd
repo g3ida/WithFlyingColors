@@ -102,7 +102,6 @@ onready var save_data = {
   "default_corner_scale_factor": 1.0
 }
 
-
 #used to backup collision layer and collision mask of the player areas
 var _face_separators_mask_backup = []
 var _face_nodes_mask_backup = []
@@ -283,6 +282,16 @@ func hide_color_areas():
   _fill_face_nodes_backup()
   for face in faceNodes:
     face.collision_layer = 0; face.collision_mask = 0
+
+func set_collision_shapes_disabled_flag_deferred(disable: bool):
+  call_deferred("_set_collision_shapes_disabled_flag", disable)
+
+func _set_collision_shapes_disabled_flag(disable: bool):
+  for face in faceCollisionNodes:
+    face.disabled = disable
+  for face in faceCornerCollisionNodes:
+    face.disabled = disable
+  collisionShapeNode.disabled = disable
 
 func show_color_areas():
   for i in range(faceSeparatorNodes.size()):
