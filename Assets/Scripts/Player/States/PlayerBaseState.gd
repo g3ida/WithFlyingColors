@@ -101,7 +101,8 @@ func _set_player_death_animation_type(dying_state, entity_type):
     dying_state.death_animation_type = DeathAnimationType.DYING_EXPLOSION_REAL
 
 func _on_player_diying(_area, _position, entity_type) -> BaseState:
-  player.velocity = Vector2.ZERO
+  if entity_type != Global.EntityType.FALLZONE:
+    player.velocity = Vector2.ZERO
   var dying_state = self.states_store.get_state(PlayerStatesEnum.DYING)
   _set_player_death_animation_type(dying_state, entity_type)
   return dying_state

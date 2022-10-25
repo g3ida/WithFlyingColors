@@ -1,3 +1,4 @@
+# Inspired from https://github.com/hiulit/Godot-3-2D-Destructible-Objects
 extends Node2D
 
 const BLOCKS_PER_SIDE = 6
