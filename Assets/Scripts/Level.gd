@@ -12,4 +12,3 @@ func _exit_tree():
   
 func _ready():
   set_process(false)
-  Global.player.set_remote_transform(Global.camera)

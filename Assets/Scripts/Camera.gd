@@ -2,6 +2,9 @@ extends Camera2D
 
 const CAMERA_DRAG_JUMP = 0.45
 
+export var follow_path: NodePath
+
+onready var follow: Node2D = get_node(follow_path)
 onready var tweenNode = $Tween
 
 var target_zoom: float = 1.0
@@ -16,6 +19,7 @@ onready var default_save_data = {
   "drag_margin_left": Constants.DEFAULT_DRAG_MARGIN_LR,
   "drag_margin_right": Constants.DEFAULT_DRAG_MARGIN_LR,
   "drag_margin_top": Constants.DEFAULT_DRAG_MARGIN_TB,
+  "follow_path": follow_path
 }
 
 var save_data = default_save_data
@@ -51,6 +55,10 @@ func _process(_delta):
   if is_current():
     Global.camera = self
 
+func _physics_process(_delta):
+  if self.follow != null:
+    self.position = self.follow.position
+
 func _on_checkpoint_hit(_checkpoint):
   save_data = {}
   save_data["zoom_factor"] = target_zoom
@@ -62,6 +70,7 @@ func _on_checkpoint_hit(_checkpoint):
   save_data["drag_margin_left"] = cached_drag_margin_left
   save_data["drag_margin_right"] = cached_drag_margin_right
   save_data["drag_margin_top"] = cached_drag_margin_top
+  save_data["follow_path"] = follow.get_path()
 
 func reset():
   if save_data !=  null:
@@ -74,12 +83,13 @@ func reset():
     self.drag_margin_left = save_data["drag_margin_left"]
     self.drag_margin_right = save_data["drag_margin_right"]
     self.drag_margin_top = save_data["drag_margin_top"]
+    self.follow_path = save_data["follow_path"]
+    self.follow = get_node(follow_path)
 
 func save():
   if save_data != null:
     return save_data
   return default_save_data
-
 
 func _on_player_jump():
   cache_drag_margins()
@@ -137,3 +147,7 @@ func update_position(pos: Vector2):
   global_position = pos
   yield(get_tree(), "idle_frame")
   set_deferred("smoothing_enabled", true)
+
+func set_follow_node(_follow_node: Node2D):
+  self.follow = _follow_node
+  self.follow_path = _follow_node.get_path()
