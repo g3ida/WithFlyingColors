@@ -32,6 +32,7 @@ var player_state
 var player_rotation_state
 
 var can_dash = true
+var handle_input_is_disabled = false
 
 #touch input
 var touch_move_input = null
@@ -168,6 +169,7 @@ func reset():
   show_color_areas()
   switch_rotation_state(states_store.get_state(PlayerStatesEnum.IDLE))
   switch_state((states_store.get_state(PlayerStatesEnum.FALLING)))
+  handle_input_is_disabled = false
 
 func _on_checkpoint_hit(checkpoint_object: Node2D):  
   if checkpoint_object.color_group in $BottomFace.get_groups():

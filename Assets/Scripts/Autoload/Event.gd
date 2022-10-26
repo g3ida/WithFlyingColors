@@ -53,6 +53,10 @@ signal page_flipped()
 signal wrong_piano_note_played()
 signal piano_puzzle_won()
 
+#cutscene
+signal cutscene_request_start(id)
+signal cutscene_request_end(id)
+
 func emit_player_landed(area, position): emit_signal("player_landed", area, position)
 func emit_player_diying(area, position, entity_type): emit_signal("player_diying", area, position, entity_type)
 func emit_player_died(): emit_signal("player_died")
@@ -91,3 +95,5 @@ func emit_piano_note_released(note): emit_signal("piano_note_released", note)
 func emit_page_flipped(): emit_signal("page_flipped")
 func emit_wrong_piano_note_played(): emit_signal("wrong_piano_note_played")
 func emit_piano_puzzle_won(): emit_signal("piano_puzzle_won")
+func emit_cutscene_request_start(id): emit_signal("cutscene_request_start", id)
+func emit_cutscene_request_end(id): emit_signal("cutscene_request_end", id) 

@@ -1,5 +1,6 @@
-[gd_scene load_steps=26 format=2]
+[gd_scene load_steps=27 format=2]
 
+[ext_resource path="res://Assets/Scenes/CutScene/Cutscene.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/Scenes/Player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Assets/Scripts/Level.gd" type="Script" id=5]
 [ext_resource path="res://Assets/Scenes/Camera.tscn" type="PackedScene" id=6]
@@ -203,3 +204,5 @@ position = Vector2( 450, -455 )
 
 [node name="PianoScene" parent="." instance=ExtResource( 37 )]
 position = Vector2( 8861, 122 )
+
+[node name="Cutscene" parent="." instance=ExtResource( 1 )]

@@ -57,7 +57,7 @@ func _process(_delta):
 
 func _physics_process(_delta):
   if self.follow != null:
-    self.position = self.follow.position
+    self.global_position = self.follow.global_position
 
 func _on_checkpoint_hit(_checkpoint):
   save_data = {}
@@ -115,7 +115,7 @@ func restore_drag_margins():
   drag_margin_top = cached_drag_margin_top
   drag_margin_left = cached_drag_margin_left
   drag_margin_right = cached_drag_margin_right
-       
+  
 func zoom_by(factor: float):
   target_zoom = factor
   tweenNode.interpolate_property(self, "zoom", zoom, Vector2(factor, factor), 1.0)

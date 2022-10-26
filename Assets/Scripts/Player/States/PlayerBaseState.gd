@@ -52,26 +52,29 @@ func _input(event):
     player.touch_rotation_input = event
   input(event)
 
+func _dash_action_pressed():
+  return (Input.is_action_just_pressed("dash") or player.touch_dash_input) and player.can_dash and !player.handle_input_is_disabled
+
 func physics_update(delta: float) -> BaseState:
   player_moved = false
   if player.player_state != self.states_store.get_state(PlayerStatesEnum.DYING):
-    if (Input.is_action_just_pressed("dash") or player.touch_dash_input) and player.can_dash:
+    if _dash_action_pressed():
       return _on_dash()
 
-    if player.player_state != self.states_store.get_state(PlayerStatesEnum.DASHING):
-      if Input.is_action_pressed("move_right"):
-        player_moved = true
-        player.velocity.x = clamp(player.velocity.x + player.speed_unit, 0, player.speed_limit)
-      elif Input.is_action_pressed("move_left"):
-        player_moved = true
-        player.velocity.x = clamp(player.velocity.x - player.speed_unit, -player.speed_limit, -0)
+    if !player.handle_input_is_disabled:
+      if player.player_state != self.states_store.get_state(PlayerStatesEnum.DASHING):
+        if Input.is_action_pressed("move_right"):
+          player_moved = true
+          player.velocity.x = clamp(player.velocity.x + player.speed_unit, 0, player.speed_limit)
+        elif Input.is_action_pressed("move_left"):
+          player_moved = true
+          player.velocity.x = clamp(player.velocity.x - player.speed_unit, -player.speed_limit, -0)
+        elif (player.touch_move_input != null):
+          player_moved = true
+          var min_v = min(sign(player.touch_move_input.direction.x) * player.speed_limit, 0)
+          var max_v = max(sign(player.touch_move_input.direction.x) * player.speed_limit, 0)
+          player.velocity.x = clamp(player.velocity.x + player.touch_move_input.direction.x * player.speed_unit, min_v, max_v)
       
-      elif (player.touch_move_input != null):
-        player_moved = true
-        var min_v = min(sign(player.touch_move_input.direction.x) * player.speed_limit, 0)
-        var max_v = max(sign(player.touch_move_input.direction.x) * player.speed_limit, 0)
-        player.velocity.x = clamp(player.velocity.x + player.touch_move_input.direction.x * player.speed_unit, min_v, max_v)
-    
     player.velocity.y += GRAVITY * delta * FALL_FACTOR
 
   var new_state = _physics_update(delta)
@@ -126,18 +129,19 @@ func _on_jump() -> BaseState:
   return jump_state
 
 func _jump_pressed() -> bool:
+  if player.handle_input_is_disabled: return false
   return Input.is_action_just_pressed("jump") or player.touch_jump_input != null
 
 func _handle_rotate():
- if player.player_state.base_state != PlayerStatesEnum.DYING:
-  if Input.is_action_just_pressed("rotate_left"):
-    return self.states_store.get_state(PlayerStatesEnum.ROTATING_LEFT)
-  if Input.is_action_just_pressed("rotate_right"):
-    return self.states_store.get_state(PlayerStatesEnum.ROTATING_RIGHT)
-  #touch
-  if player.touch_rotation_input != null:
-    if player.touch_rotation_input.direction > 0:
-      return self.states_store.get_state(PlayerStatesEnum.ROTATING_RIGHT)
-    else:
+  if player.player_state.base_state != PlayerStatesEnum.DYING and !player.handle_input_is_disabled:
+    if Input.is_action_just_pressed("rotate_left"):
       return self.states_store.get_state(PlayerStatesEnum.ROTATING_LEFT)
+    if Input.is_action_just_pressed("rotate_right"):
+      return self.states_store.get_state(PlayerStatesEnum.ROTATING_RIGHT)
+    #touch
+    if player.touch_rotation_input != null:
+      if player.touch_rotation_input.direction > 0:
+        return self.states_store.get_state(PlayerStatesEnum.ROTATING_RIGHT)
+      else:
+        return self.states_store.get_state(PlayerStatesEnum.ROTATING_LEFT)
   return null
