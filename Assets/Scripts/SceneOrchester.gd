@@ -2,9 +2,11 @@ extends Node2D
 
 func connect_signals():
   var __ = Event.connect("player_died", self, "_on_game_over")
+  __ = Event.connect("level_cleared", self, "_on_level_cleared")
 
 func disconnect_signals():
   Event.disconnect("player_died", self, "_on_game_over")
+  Event.disconnect("level_cleared", self, "_on_level_cleared")
   
 func _enter_tree():
   connect_signals()
@@ -29,3 +31,6 @@ func _ready():
   add_child(scene_instance)
   scene_instance.set_owner(self)
   SaveGame.call_deferred("load_if_needed")
+
+func _on_level_cleared():
+  pass

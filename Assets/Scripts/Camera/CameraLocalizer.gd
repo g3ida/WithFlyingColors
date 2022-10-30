@@ -1,6 +1,7 @@
 extends Node2D
 
 enum CamLimitEnum {
+  NO_LIMITS,
   FULL_LIMIT,
   LIMIT_BOTTOM_RIGHT,
   LIMIT_BOTTOM_LEFT,
@@ -11,7 +12,11 @@ enum CamLimitEnum {
   LIMIT_ALL_BUT_TOP,
   LIMIT_ALL_BUT_LEFT,
   LIMIT_ALL_BUT_RIGHT,
-  LIMIT_ALL_BUT_BOTTOM
+  LIMIT_ALL_BUT_BOTTOM,
+  LIMIT_LEFT,
+  LIMIT_RIGHT,
+  LIMIT_TOP,
+  LIMIT_BOTTOM,
 }
 
 const X_AXIS_LIMITS = [
@@ -30,6 +35,7 @@ const Y_AXIS_LIMITS = [
 export var full_viewport_drag_margin = false
 export(CamLimitEnum) var position_clipping_mode := CamLimitEnum.FULL_LIMIT
 export var zoom = 1.0
+export(NodePath) var follow_node = null
 
 #this two variables are usefull to recalculate the positions of the applied limits
 #to match the size of the viewport
@@ -54,7 +60,10 @@ func _ready():
   setup_limiting()
 
 func setup_limiting():
-  if position_clipping_mode == CamLimitEnum.FULL_LIMIT:
+  if position_clipping_mode == CamLimitEnum.NO_LIMITS:
+    pass
+
+  elif position_clipping_mode == CamLimitEnum.FULL_LIMIT:
     if positionsNodes.size() != 2:
       push_error("position liminting FULL mode require you add two child position nodes")
     else:
@@ -93,14 +102,14 @@ func setup_limiting():
 
   elif position_clipping_mode == CamLimitEnum.LIMIT_X_AXIS:
     if positionsNodes.size() != 1:
-      push_error("position liminting LIMIT_X_AXIS mode require you add two child position nodes")
+      push_error("position liminting LIMIT_X_AXIS mode require you add ONLY one child position node")
     else:
       left = int(min(positionsNodes[0].global_position.x, positionsNodes[1].global_position.x))
       right = int(max(positionsNodes[0].global_position.x, positionsNodes[1].global_position.x))
 
   elif position_clipping_mode == CamLimitEnum.LIMIT_Y_AXIS:
     if positionsNodes.size() != 1:
-      push_error("position liminting LIMIT_Y_AXIS mode require you add two child position nodes")
+      push_error("position liminting LIMIT_Y_AXIS mode require you add ONLY one child position node")
     else:
       top = int(min(positionsNodes[0].global_position.y, positionsNodes[1].global_position.y))
       bottom = int(max(positionsNodes[0].global_position.y, positionsNodes[1].global_position.y))
@@ -136,7 +145,27 @@ func setup_limiting():
       top = int(min(positionsNodes[0].global_position.y, positionsNodes[1].global_position.y))
       bottom = int(max(positionsNodes[0].global_position.y, positionsNodes[1].global_position.y))
       left = int(min(positionsNodes[0].global_position.x, positionsNodes[1].global_position.x))
-         
+
+  elif position_clipping_mode == CamLimitEnum.LIMIT_LEFT:
+    if positionsNodes.size() != 1:
+      push_error("position liminting LIMIT_LEFT mode require you add one child position node")
+    left = positionsNodes[0].global_position.x
+  
+  elif position_clipping_mode == CamLimitEnum.LIMIT_RIGHT:
+    if positionsNodes.size() != 1:
+      push_error("position liminting LIMIT_RIGHT mode require you add one child position node")
+    right = positionsNodes[0].global_position.x
+  
+  elif position_clipping_mode == CamLimitEnum.LIMIT_TOP:
+    if positionsNodes.size() != 1:
+      push_error("position liminting LIMIT_TOP mode require you add one child position node")
+    top = positionsNodes[0].global_position.y
+  
+  elif position_clipping_mode == CamLimitEnum.LIMIT_BOTTOM:
+    if positionsNodes.size() != 1:
+      push_error("position liminting LIMIT_BOTTOM mode require you add one child position node")
+    bottom = positionsNodes[0].global_position.y
+   
 
 func _adapt_limits_to_screen_size():
   var viewport_rect = get_viewport().get_visible_rect().size
@@ -155,12 +184,24 @@ func _on_body_entred(_body):
     apply_camera_changes()
 
 func apply_camera_changes():
+  set_follow_node()
   set_camera_limits()
   set_camera_drag_margins()
   Global.camera.zoom_by(zoom)
   
+func set_follow_node():
+  if follow_node != null:
+    var node = get_node(follow_node)
+    if node != null:
+      Global.camera.set_follow_node(node)
+
 func set_camera_limits():
   _adapt_limits_to_screen_size()
+  if position_clipping_mode == CamLimitEnum.NO_LIMITS:
+    Global.camera.limit_left = Constants.DEFAULT_CAMERA_LIMIT_LEFT
+    Global.camera.limit_bottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM
+    Global.camera.limit_right = Constants.DEFAULT_CAMERA_LIMIT_RIGHT
+    Global.camera.limit_top = Constants.DEFAULT_CAMERA_LIMIT_TOP
   if position_clipping_mode == CamLimitEnum.FULL_LIMIT:
     Global.camera.limit_left = left
     Global.camera.limit_bottom = bottom
@@ -216,6 +257,14 @@ func set_camera_limits():
     Global.camera.limit_bottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM
     Global.camera.limit_right = right
     Global.camera.limit_top = top
+  elif position_clipping_mode == CamLimitEnum.LIMIT_LEFT:
+    Global.camera.limit_left = left
+  elif position_clipping_mode == CamLimitEnum.LIMIT_RIGHT:
+    Global.camera.limit_right = right
+  elif position_clipping_mode == CamLimitEnum.LIMIT_TOP:
+    Global.camera.limit_top = top
+  elif position_clipping_mode == CamLimitEnum.LIMIT_BOTTOM:
+    Global.camera.limit_bottom = bottom
     
 func set_camera_drag_margins():
   if full_viewport_drag_margin:

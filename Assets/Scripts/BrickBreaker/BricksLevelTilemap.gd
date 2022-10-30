@@ -5,7 +5,7 @@ signal level_bricks_cleared(id)
 const BrickScene = preload("res://Assets/Scenes/BrickBreaker/Brick.tscn")
 export var id = 0
 
-var color_groups = ["blue", "pink", "purple", "yellow"]
+var color_groups = Constants.COLOR_GROUPS
 var bricks_count = 0
 
 onready var parent = get_parent()

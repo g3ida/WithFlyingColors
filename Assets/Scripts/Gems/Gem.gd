@@ -84,7 +84,7 @@ func is_in_group(grp) -> bool:
     return false
   #if the gem is already collecting we don't wan't the player to die
   if current_state == states_store.collecting:
-    if grp in ["blue", "yellow", "purple", "pink"]:
+    if grp in Constants.COLOR_GROUPS:
       return true
   #return super method
   return .is_in_group(grp)

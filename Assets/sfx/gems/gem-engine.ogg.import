@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/gem-engine.ogg-a27e9a0e9983db618766d1ec52619858.oggstr"
+
+[deps]
+
+source_file="res://Assets/sfx/gems/gem-engine.ogg"
+dest_files=[ "res://.import/gem-engine.ogg-a27e9a0e9983db618766d1ec52619858.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

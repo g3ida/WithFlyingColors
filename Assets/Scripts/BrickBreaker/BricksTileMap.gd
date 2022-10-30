@@ -7,7 +7,7 @@ onready var levels = get_children()
 onready var is_level_cleared = []
 export var should_instance_bricks = true
 
-var color_groups = ["blue", "pink", "purple", "yellow"]
+var color_groups = Constants.COLOR_GROUPS
 var least_uncleared_level = 0
 
 func _ready():

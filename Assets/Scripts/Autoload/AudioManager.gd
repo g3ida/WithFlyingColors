@@ -23,6 +23,14 @@ var sfx_data: Dictionary = {
     "path": BASE_PATH + "gem.ogg",
     "volume": -15,
   },
+  "GemEngine": {
+    "path": BASE_PATH + "gems/gem-engine.ogg",
+    "volume": 8,
+  },
+  "GemPut": {
+    "path": BASE_PATH + "gems/temple_put_gem.ogg",
+    "volume": -5,
+  },
   "jump": {
     "path": BASE_PATH + "jumping.ogg",
     "volume": -5,
@@ -98,6 +106,10 @@ var sfx_data: Dictionary = {
   "rotateRight": {
     "path": BASE_PATH + "rotatex.ogg",
     "volume":  -20,
+  },
+  "shine": {
+    "path": BASE_PATH + "shine.ogg",
+    "volume": -5,
   },
   "success": {
     "path": BASE_PATH + "success.ogg",
@@ -196,6 +208,9 @@ func connect_signals():
   __ = Event.connect("page_flipped", self, "_on_page_flipped")
   __ = Event.connect("wrong_piano_note_played", self, "_on_wrong_piano_note_played")
   __ = Event.connect("piano_puzzle_won", self, "_on_piano_puzzle_won")
+  __ = Event.connect("gem_temple_triggered", self, "_on_gem_temple_triggered")
+  __ = Event.connect("gem_engine_started", self, "_on_gem_engine_started")
+  __ = Event.connect("gem_put_in_temple", self, "_on_gem_put_in_temple")
 
 func disconnect_signals():
   self.disconnect("play_sfx", self, "_sfx_play")
@@ -228,6 +243,9 @@ func disconnect_signals():
   Event.disconnect("page_flipped", self, "_on_page_flipped")
   Event.disconnect("wrong_piano_note_played", self, "_on_wrong_piano_note_played")
   Event.disconnect("piano_puzzle_won", self, "_on_piano_puzzle_won")
+  Event.disconnect("gem_temple_triggered", self, "_on_gem_temple_triggered")
+  Event.disconnect("gem_engine_started", self, "_on_gem_engine_started")
+  Event.disconnect("gem_put_in_temple", self, "_on_gem_put_in_temple")
 
 func _enter_tree():
   connect_signals()
@@ -258,6 +276,9 @@ func _on_piano_note_released(_note): pass #nothing to do
 func _on_page_flipped(): _sfx_play("pageFlip")
 func _on_wrong_piano_note_played(): _sfx_play("wrongAnswer")
 func _on_piano_puzzle_won(): _sfx_play("success")
+func _on_gem_temple_triggered(): _sfx_play("shine")
+func _on_gem_engine_started(): _sfx_play("GemEngine")
+func _on_gem_put_in_temple(): _sfx_play("GemPut")
 
 func _on_pause_menu_enter():
   _sfx_play("menuSelect")

@@ -10,7 +10,7 @@ onready var SaveSlot2Node = $HBoxContainer/SaveSlot2
 onready var SaveSlot3Node = $HBoxContainer/SaveSlot3
 onready var save_slots = [SaveSlot1Node, SaveSlot2Node, SaveSlot3Node]
 
-var slots_colors = ["blue", "pink", "yellow"]
+var slots_colors = Constants.COLOR_GROUPS
 
 var currently_selected_slot = null
 
@@ -34,7 +34,7 @@ func _ready():
     if not save_slots[i].is_disabled:
       save_slots[i].has_focus = true
       break
-      
+
   if centered_on_screen:
     rect_position = (get_viewport_rect().size - rect_size) * 0.5
     
