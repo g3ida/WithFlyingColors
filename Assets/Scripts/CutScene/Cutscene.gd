@@ -18,6 +18,7 @@ onready var CanvasNode = $CanvasLayer
 onready var TweenNode = $Tween
 onready var TopRectNode = $CanvasLayer/Control/TopRect
 onready var BottomRectNode = $CanvasLayer/Control/BottomRect
+onready var TimerNode = $Timer
 
 onready var bottom_reduce_position = BottomRectNode.rect_position.y
 onready var bottom_expand_position = BottomRectNode.rect_position.y - EXPAND_SIZE
@@ -97,10 +98,11 @@ func _show_some_node(node: Node2D, duration = 7.0, move_speed = 3.2):
     var camera_last_focus = Global.camera.follow
     var camera_last_speed = Global.camera.smoothing_speed
     Event.emit_cutscene_request_start("my_cutsecne")
-    Global.camera.follow = node
+    if node != null: Global.camera.follow = node
     Global.camera.smoothing_speed = move_speed
-    yield(get_tree().create_timer(duration*0.6),"timeout")
+    TimerNode.wait_time = duration*0.6; yield(TimerNode,"timeout")
+    #set focus back so the camera goes back to the previous node
     Global.camera.follow = camera_last_focus
-    yield(get_tree().create_timer(duration*0.4),"timeout")
+    TimerNode.wait_time = duration*0.4; yield(TimerNode,"timeout")
     Event.emit_cutscene_request_end("my_cutsecne")
     Global.camera.smoothing_speed = camera_last_speed
