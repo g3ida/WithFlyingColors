@@ -7,6 +7,7 @@ var camera: Camera2D = null
 var player: KinematicBody2D = null
 var cutscene = null
 var gem_hud = null
+var pause_menu = null
 
 var _player_sprite
 var selected_skin = SkinLoader.DEFAULT_SKIN setget set_selected_skin, get_selected_skin

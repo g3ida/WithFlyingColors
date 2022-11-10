@@ -11,7 +11,7 @@ signal keyboard_action_bound(action, key)
 
 func _ready():
   var action_list = InputMap.get_action_list(key)
-  var input_event = Settings.get_first_key_keyboard_event_from_action_list(action_list)
+  var input_event = InputUtils.get_first_key_keyboard_event_from_action_list(action_list)
   if input_event != null:
     var input_key_event = input_event as InputEventKey
     value = input_key_event.scancode

@@ -7,6 +7,7 @@ uniform float u_aspect_ratio = 1.;
 uniform float u_timer = -10.0;
 uniform vec2 u_contact_pos = vec2(0.5, 0.5);
 uniform float propagation_speed = 1.0;
+uniform float darkness = 0.78;
 
 float circleshape(vec2 position, vec2 contact_pos, float radius){
   return step(radius, length(position - contact_pos));
@@ -42,8 +43,7 @@ void fragment() {
 
 	float color_darkness = 1.0;
 	if (circle < 0.5) {
-		color_darkness = min(1.0, 0.78 + 0.06*(u_timer));
-		//color_darkness = min(0.78, 0.78 + 0.03*TIME);
+		color_darkness = min(1.0, darkness + 0.06*(u_timer));
 	}
 	vec3 circle_color  = COLOR.rgb * color_darkness;
 	vec4 col = texture(TEXTURE, UV);

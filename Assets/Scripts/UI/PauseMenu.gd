@@ -7,6 +7,7 @@ onready var buttons = [
 
 func ready():
   handle_back_event = false
+  Global.pause_menu = self
 
 func hide():
   for b in buttons:

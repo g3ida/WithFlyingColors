@@ -7,6 +7,7 @@ const simple_texture = preload("res://Assets/Sprites/Platforms/platform.png")
 #exported vars
 export var group: String
 export var geared: bool = true
+export var splash_darkness = 0.78
 
 #vars
 var animation_timer = 10
@@ -22,10 +23,11 @@ func _set_platform_texture():
     NinePatchTextureUtils.set_texture($NinePatchRect, simple_texture)
 func _ready() -> void:
   _set_platform_texture()
-  var color_index = ColorUtils.get_group_color_index(group)
-  NidePatchRectNode.modulate = ColorUtils.get_basic_color(color_index)
   NinePatchTextureUtils.scale_texture(NidePatchRectNode, self.scale) 
-  AreaNode.add_to_group(group)
+  if group != null and !group.empty():
+    var color_index = ColorUtils.get_group_color_index(group)
+    NidePatchRectNode.modulate = ColorUtils.get_basic_color(color_index)
+    AreaNode.add_to_group(group)
   
 func _enter_tree():
   connect_signals()
@@ -56,7 +58,8 @@ func _process(delta):
       shaderMaterial.set_shader_param("u_contact_pos", position_in_shader_coords)
       shaderMaterial.set_shader_param("u_timer", animation_timer)
       shaderMaterial.set_shader_param("u_aspect_ratio", resolution.y / resolution.x)
-
+      shaderMaterial.set_shader_param("darkness", splash_darkness)
+      
 func connect_signals():
   var __ = Event.connect("player_landed", self, "_on_Player_landed")
   

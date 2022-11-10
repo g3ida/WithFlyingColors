@@ -33,4 +33,4 @@ func _ready():
   SaveGame.call_deferred("load_if_needed")
 
 func _on_level_cleared():
-  pass
+  Global.pause_menu.navigate_to_screen(MenuManager.Menus.LEVEL_CLEAR_MENU)

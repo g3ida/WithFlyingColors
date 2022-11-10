@@ -100,9 +100,9 @@ func _show_some_node(node: Node2D, duration = 7.0, move_speed = 3.2):
     Event.emit_cutscene_request_start("my_cutsecne")
     if node != null: Global.camera.follow = node
     Global.camera.smoothing_speed = move_speed
-    TimerNode.wait_time = duration*0.6; yield(TimerNode,"timeout")
+    TimerNode.wait_time = duration*0.6; TimerNode.start(); yield(TimerNode,"timeout")
     #set focus back so the camera goes back to the previous node
     Global.camera.follow = camera_last_focus
-    TimerNode.wait_time = duration*0.4; yield(TimerNode,"timeout")
+    TimerNode.wait_time = duration*0.4; TimerNode.start(); yield(TimerNode,"timeout")
     Event.emit_cutscene_request_end("my_cutsecne")
     Global.camera.smoothing_speed = camera_last_speed

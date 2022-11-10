@@ -7,6 +7,7 @@ const LOAD_MENU_SCENE = "res://Assets/Screens/LoadGameMenu.tscn"
 const SAVE_MENU_SCENE = "res://Assets/Screens/SaveGameMenu.tscn"
 const START_LEVEL_MENU_SCENE = "res://Levels/TutorialLevel.tscn"
 const SCENE_ORCHESTER_SCENE = "res://Assets/Scenes/SceneOrchester.tscn"
+const LEVEL_CLEAR_SCENE = "res://Assets/Screens/LevelClearedMenu.tscn"
 
 enum Menus {
   SETTINGS_MENU,
@@ -14,6 +15,7 @@ enum Menus {
   SAVE_MENU,
   STATS_MENU,
   MAIN_MENU,
+  LEVEL_CLEAR_MENU,
   GAME,
   QUIT,
   LOAD
@@ -35,6 +37,8 @@ func get_menu_scene_path(menu):
     return MAIN_MENU_SCENE
   if menu == Menus.GAME:
     return SCENE_ORCHESTER_SCENE
+  if menu == Menus.LEVEL_CLEAR_MENU:
+    return LEVEL_CLEAR_SCENE
   return null
 
 func go_to_menu(next_menu):

@@ -73,17 +73,11 @@ func setMusicVolume(volume):
   
 func getMusicVolume():
   return music_volume
-  
-func get_first_key_keyboard_event_from_action_list(action_list: Array) -> InputEvent:
-  for el in action_list:
-    if el is InputEventKey:
-      return el
-  return null
 
 func bind_action_to_keyboard_key(action: String, scancode: int):
   # erase the current action:
   var action_list = InputMap.get_action_list(action)
-  var input_event = Settings.get_first_key_keyboard_event_from_action_list(action_list)
+  var input_event = InputUtils.get_first_key_keyboard_event_from_action_list(action_list)
   if input_event != null:
     var input_key_event = input_event as InputEventKey
     InputMap.action_erase_event(action, input_key_event)
@@ -95,7 +89,7 @@ func bind_action_to_keyboard_key(action: String, scancode: int):
 func unbind_action_key(action: String): 
   # erase the current action:
   var action_list = InputMap.get_action_list(action)
-  var input_event = Settings.get_first_key_keyboard_event_from_action_list(action_list)
+  var input_event = InputUtils.get_first_key_keyboard_event_from_action_list(action_list)
   if input_event != null:
     var input_key_event = input_event as InputEventKey
     InputMap.action_erase_event(action, input_key_event)
@@ -112,7 +106,7 @@ func are_action_keys_valid() -> bool:
   var game_actions = get_game_actions()
   for action in game_actions:
     var action_list = InputMap.get_action_list(action)
-    if get_first_key_keyboard_event_from_action_list(action_list) == null:
+    if InputUtils.get_first_key_keyboard_event_from_action_list(action_list) == null:
       return false
   return true
 
@@ -123,7 +117,7 @@ func save_game_settings():
   var game_actions = get_game_actions()
   for key in game_actions:
     var action_list = InputMap.get_action_list(key)
-    var key_value = get_first_key_keyboard_event_from_action_list(action_list)
+    var key_value = InputUtils.get_first_key_keyboard_event_from_action_list(action_list)
     if key_value != null:
       config_file.set_value("keyboard", key, key_value.scancode)
     else:
