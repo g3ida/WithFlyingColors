@@ -1,10 +1,18 @@
 extends GameMenu
 
 onready var MenuBoxNode = $MenuBox
+onready var ResetSlotDialogNode = $ResetDialogContainer
+onready var CurrentSlotLabelNode = $CurrentSlotLabel
 
 func ready():
   SaveGame.init()
-  
+
+func _ready():
+  CurrentSlotLabelNode.text = "Current slot: %d" % (SaveGame.current_slot_index + 1)
+
+func show_reset_data_dialog():
+  ResetSlotDialogNode.show_dialog()
+
 func on_menu_button_pressed(menu_button) -> bool:
   if menu_button == MenuButtons.QUIT:
     if (screen_state == MenuScreenState.ENTERED):
@@ -25,20 +33,24 @@ func on_menu_button_pressed(menu_button) -> bool:
 
 func process_play_sub_menus(_menu_button) -> bool:
   if _menu_button == MenuButtons.NEW_GAME:
-    if SaveGame.has_filled_slots:
-      navigate_to_screen(MenuManager.Menus.SAVE_MENU)
+    if SaveGame.does_slot_have_progress(SaveGame.current_slot_index):
+      ResetSlotDialogNode.show_dialog()
     else:
       navigate_to_screen(MenuManager.Menus.GAME)
-    MenuBoxNode._hide_sub_menu_if_needed()
+      MenuBoxNode._hide_sub_menu_if_needed()
     return true
   if _menu_button == MenuButtons.CONTINUE_GAME:
-    SaveGame.current_slot_index = SaveGame.get_most_recently_loaded_slot_index()
     MenuBoxNode._hide_sub_menu_if_needed()
     navigate_to_screen(MenuManager.Menus.GAME)
     return true
-  if _menu_button == MenuButtons.LOAD_GAME:
+  if _menu_button == MenuButtons.SELECT_SLOT:
     MenuBoxNode._hide_sub_menu_if_needed()
-    navigate_to_screen(MenuManager.Menus.LOAD_MENU)
+    navigate_to_screen(MenuManager.Menus.SELECT_SLOT)
     return true
   return false
 
+#signal for ResetDialog
+func _on_ResetSlotDialog_confirmed():
+  SaveGame.remove_save_slot(SaveGame.current_slot_index)
+  MenuBoxNode._hide_sub_menu_if_needed()
+  navigate_to_screen(MenuManager.Menus.GAME)

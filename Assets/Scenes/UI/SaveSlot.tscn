@@ -1,88 +1,125 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/Scripts/UI/SaveSlot.gd" type="Script" id=1]
-[ext_resource path="res://Assets/Sprites/MainMenu/empty-save-slot.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Styles/greyPanelBackground.tres" type="StyleBox" id=2]
 [ext_resource path="res://Assets/Fonts/SaveSlotFont.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Assets/Styles/Themes/SaveSlotBg.tres" type="Theme" id=4]
+[ext_resource path="res://Assets/Scenes/UI/SlotActionButtons.tscn" type="PackedScene" id=5]
 
-[node name="SaveSlot" type="Control"]
-margin_right = 633.0
-margin_bottom = 424.0
+[sub_resource type="Theme" id=6]
+Panel/styles/panel = ExtResource( 2 )
+PanelContainer/styles/panel = ExtResource( 2 )
+
+[sub_resource type="Animation" id=4]
+resource_name = "Blink"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0.784314 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=5]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
+
+[node name="SaveSlot" type="PanelContainer"]
+margin_right = 386.0
+margin_bottom = 252.0
+theme = SubResource( 6 )
 script = ExtResource( 1 )
 
-[node name="Center" type="CenterContainer" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_right = 386.0
+margin_bottom = 252.0
 
-[node name="ColorRect" type="ColorRect" parent="Center"]
-margin_left = 20.0
-margin_top = 20.0
-margin_right = 20.0
+[node name="ActionButtons" parent="HBoxContainer" instance=ExtResource( 5 )]
+margin_bottom = 252.0
+
+[node name="Hmargin" type="Control" parent="HBoxContainer"]
+margin_left = 4.0
+margin_right = 24.0
+margin_bottom = 252.0
+rect_min_size = Vector2( 20, 0 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+margin_left = 28.0
+margin_right = 332.0
+margin_bottom = 252.0
+custom_constants/separation = 8
+
+[node name="VmarginTop" type="Control" parent="HBoxContainer/VBoxContainer"]
+margin_right = 304.0
 margin_bottom = 20.0
+rect_min_size = Vector2( 0, 20 )
 
-[node name="MarginContainer" type="MarginContainer" parent="Center/ColorRect"]
-margin_right = 40.0
-margin_bottom = 40.0
+[node name="SlotIndex" type="Label" parent="HBoxContainer/VBoxContainer"]
+margin_top = 28.0
+margin_right = 304.0
+margin_bottom = 88.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 3 )
+text = "SLOT"
+uppercase = true
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Center/ColorRect/MarginContainer"]
-margin_right = 288.0
-margin_bottom = 134.0
-
-[node name="TextureContainer" type="CenterContainer" parent="Center/ColorRect/MarginContainer/VBoxContainer"]
-margin_right = 288.0
-
-[node name="TextureBackground" type="ColorRect" parent="Center/ColorRect/MarginContainer/VBoxContainer/TextureContainer"]
-margin_left = 144.0
-margin_right = 144.0
-color = Color( 0, 0, 0, 1 )
-
-[node name="TextureButton" type="TextureButton" parent="Center/ColorRect/MarginContainer/VBoxContainer/TextureContainer"]
-margin_left = 144.0
-margin_right = 144.0
-focus_mode = 0
-enabled_focus_mode = 0
-texture_normal = ExtResource( 2 )
-texture_pressed = ExtResource( 2 )
-texture_hover = ExtResource( 2 )
-expand = true
-
-[node name="TimestampContainer" type="CenterContainer" parent="Center/ColorRect/MarginContainer/VBoxContainer"]
-margin_top = 4.0
-margin_right = 288.0
-margin_bottom = 55.0
-
-[node name="Timestamp" type="Label" parent="Center/ColorRect/MarginContainer/VBoxContainer/TimestampContainer"]
-margin_left = 22.0
-margin_right = 266.0
-margin_bottom = 51.0
+[node name="Timestamp" type="Label" parent="HBoxContainer/VBoxContainer"]
+margin_top = 96.0
+margin_right = 304.0
+margin_bottom = 156.0
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_fonts/font = ExtResource( 3 )
 text = "TIMESTAMP"
+uppercase = true
 
-[node name="DescriptionContainer" type="CenterContainer" parent="Center/ColorRect/MarginContainer/VBoxContainer"]
-margin_top = 59.0
-margin_right = 288.0
-margin_bottom = 110.0
-
-[node name="Description" type="Label" parent="Center/ColorRect/MarginContainer/VBoxContainer/DescriptionContainer"]
-margin_right = 288.0
-margin_bottom = 51.0
+[node name="Description" type="Label" parent="HBoxContainer/VBoxContainer"]
+margin_top = 164.0
+margin_right = 304.0
+margin_bottom = 224.0
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_fonts/font = ExtResource( 3 )
-text = "DESCRIPTION"
+text = "Level 10"
+uppercase = true
 
-[node name="BottomLine" type="ColorRect" parent="Center/ColorRect/MarginContainer/VBoxContainer"]
-margin_top = 114.0
-margin_right = 288.0
-margin_bottom = 134.0
+[node name="VmarginBottom" type="Control" parent="HBoxContainer/VBoxContainer"]
+margin_top = 232.0
+margin_right = 304.0
+margin_bottom = 252.0
 rect_min_size = Vector2( 0, 20 )
-color = Color( 0, 0, 0, 1 )
+
+[node name="Hmargin2" type="Control" parent="HBoxContainer"]
+margin_left = 336.0
+margin_right = 386.0
+margin_bottom = 252.0
+rect_min_size = Vector2( 50, 0 )
 
 [node name="Button" type="Button" parent="."]
-modulate = Color( 1, 1, 1, 0 )
-margin_right = 12.0
-margin_bottom = 20.0
+margin_right = 386.0
+margin_bottom = 252.0
+theme = ExtResource( 4 )
 
-[node name="Tween" type="Tween" parent="."]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Blink = SubResource( 4 )
+anims/RESET = SubResource( 5 )
 
+[connection signal="clear_button_pressed" from="HBoxContainer/ActionButtons" to="." method="_on_ActionButtons_clear_button_pressed"]
+[connection signal="select_button_pressed" from="HBoxContainer/ActionButtons" to="." method="_on_ActionButtons_select_button_pressed"]
 [connection signal="mouse_entered" from="Button" to="." method="_on_Button_mouse_entered"]
 [connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]

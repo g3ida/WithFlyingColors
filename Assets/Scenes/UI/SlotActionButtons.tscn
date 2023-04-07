@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Assets/Scenes/UI/SlotButton.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Sprites/UI/load_slot.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Scripts/UI/SlotActionButtons.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Sprites/UI/trash.png" type="Texture" id=4]
+
+[node name="SlotActionButtons" type="HBoxContainer"]
+custom_constants/separation = -1
+script = ExtResource( 3 )
+
+[node name="DeleteButton" parent="." instance=ExtResource( 1 )]
+margin_bottom = 0.0
+iconTexture = ExtResource( 4 )
+focus_right_node = NodePath("../ConfirmButton")
+
+[node name="ConfirmButton" parent="." instance=ExtResource( 1 )]
+margin_left = -1.0
+margin_right = -1.0
+margin_bottom = 0.0
+node_color = "yellow"
+iconTexture = ExtResource( 2 )
+focus_left_node = NodePath("../DeleteButton")
+
+[connection signal="pressed" from="DeleteButton" to="." method="_on_DeleteButton_pressed"]
+[connection signal="pressed" from="ConfirmButton" to="." method="_on_ConfirmButton_pressed"]

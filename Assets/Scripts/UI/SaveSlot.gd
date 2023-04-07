@@ -1,43 +1,46 @@
-extends Control
+extends PanelContainer
 
-signal pressed()
+signal pressed(action)
+
+enum State {INIT, DEFAULT, FOCUS, ACTIONS_SHOWN}
 
 const MOVE_DURATION = 0.1
+const FOCUS_SHIFT = 0
+const FOCUS_OFF_BG_COLOR = Color(0.1765, 0.1765, 0.1765, 0.079)
+const FOCUS_ON_BG_COLOR = Color(0.1765, 0.1765, 0.1765, 0.196)
+const MIN_WIDTH = 1160
 
-var texture: ImageTexture = null setget set_texture, get_texture
+var texture: ImageTexture = null setget set_texture, get_texture #Was used before in the old design.
 var timestamp: int = -1 setget set_timestamp, get_timestamp
 var description: String = "" setget set_description, get_description
-var bg_color: Color = Color.white setget set_bg_color, get_bg_color
+var bg_color: Color = FOCUS_OFF_BG_COLOR setget set_bg_color, get_bg_color
 var has_focus: bool setget set_has_focus, get_has_focus
 var is_disabled: bool = false setget set_is_disabled, get_is_disabled
-var id = 0
+var id: int = 0 setget set_slot_index_label, get_slot_index_label
+var current_state = State.INIT
 
-onready var TextureButtonNode = $Center/ColorRect/MarginContainer/VBoxContainer/TextureContainer/TextureButton 
-onready var DescriptionNode = $Center/ColorRect/MarginContainer/VBoxContainer/DescriptionContainer/Description
-onready var TimestampNode = $Center/ColorRect/MarginContainer/VBoxContainer/TimestampContainer/Timestamp
-onready var ColorRectNode = $Center/ColorRect
-onready var ContainerNode = $Center/ColorRect/MarginContainer/VBoxContainer
-onready var MarginContainerNode = $Center/ColorRect/MarginContainer
-onready var TextureBackgroundNode = $Center/ColorRect/MarginContainer/VBoxContainer/TextureContainer/TextureBackground
-onready var BottomLine = $Center/ColorRect/MarginContainer/VBoxContainer/BottomLine
+onready var DescriptionNode = $HBoxContainer/VBoxContainer/Description
+onready var TimestampNode = $HBoxContainer/VBoxContainer/Timestamp
+onready var ContainerNode = $HBoxContainer
+onready var VBoxContainerNode = $HBoxContainer/VBoxContainer
+onready var SlotIndexNode = $HBoxContainer/VBoxContainer/SlotIndex
+onready var ActionButtonsNode = $HBoxContainer/ActionButtons
 onready var ButtonNode = $Button
-onready var TweenNode = $Tween
+onready var AnimationPlayerNode = $AnimationPlayer
 
-onready var pos_y = rect_position.y
+onready var pos_x = rect_position.x
 
 func _ready():
-  _set_rect_size()
   set_texture(texture)
   set_timestamp(timestamp)
   set_description(description)
+  set_slot_index_label(id)
   set_bg_color(bg_color)
+  set_state(State.DEFAULT)
+  self.rect_min_size.x = MIN_WIDTH
 
 func set_texture(value):
   texture = value
-  if TextureButtonNode != null and texture != null:
-    TextureButtonNode.texture_normal = texture
-    TextureButtonNode.texture_pressed = texture
-    TextureButtonNode.texture_hover = texture
   
 func get_texture():
   return texture
@@ -48,6 +51,14 @@ func set_description(value):
 
 func get_description():
   return description
+
+func set_slot_index_label(value):
+  id = value
+  ActionButtonsNode.slot_index = id
+  SlotIndexNode.text = "SLOT %d" % (value + 1)
+
+func get_slot_index_label():
+  return id
 
 func set_timestamp(value):
   timestamp = value
@@ -63,46 +74,24 @@ func get_timestamp():
 
 func set_bg_color(value):
   bg_color = value
-  ColorRectNode.color = value
-  BottomLine.color = ColorUtils.darken_rgb(value, 0.2)
 
 func get_bg_color():
   return bg_color
-  
-func _set_rect_size():
-  var sz = TextureButtonNode.texture_normal.get_size()
-  TextureButtonNode.rect_min_size = sz
-  TextureButtonNode.rect_size = sz
-  self.rect_min_size = sz
-  self.rect_size = sz
-  MarginContainerNode.rect_size = ContainerNode.rect_size
-  MarginContainerNode.rect_min_size = ContainerNode.rect_size
-
-  var h_margin = 3
-  MarginContainerNode.add_constant_override("margin_top", h_margin)
-  MarginContainerNode.add_constant_override("margin_left", h_margin)
-  MarginContainerNode.add_constant_override("margin_bottom", 0)
-  MarginContainerNode.add_constant_override("margin_right", h_margin)
-  
-  TextureBackgroundNode.rect_min_size = TextureButtonNode.rect_min_size + 3*Vector2(h_margin, h_margin)
-  TextureBackgroundNode.rect_size = TextureBackgroundNode.rect_min_size
-  
-  ColorRectNode.rect_size = MarginContainerNode.rect_size
-  ColorRectNode.rect_min_size = MarginContainerNode.rect_size
-  
-  ButtonNode.rect_min_size = ColorRectNode.rect_size
-  ButtonNode.rect_size = ColorRectNode.rect_size
 
 func _on_Button_pressed():
-  emit_signal("pressed")
+  if current_state == State.FOCUS:
+    set_state(State.ACTIONS_SHOWN)
+  elif current_state == State.ACTIONS_SHOWN:
+    set_state(State.FOCUS)
+    emit_signal("pressed", "focus")
   
 func _process(_delta):
   if get_has_focus():
-    setup_tween(pos_y - 60)
-    #rect_position.y = pos_y - 60
+    set_bg_color(FOCUS_ON_BG_COLOR)
+    AnimationPlayerNode.play("Blink")
   else:
-    setup_tween(pos_y)
-    #rect_position.y = pos_y
+    set_bg_color(FOCUS_OFF_BG_COLOR)
+    AnimationPlayerNode.play("RESET")
     
 func _on_Button_mouse_entered():
   ButtonNode.grab_focus()
@@ -114,7 +103,14 @@ func set_has_focus(value):
     pass
 
 func get_has_focus():
-  return ButtonNode.has_focus()
+  if ButtonNode.has_focus():
+    if current_state == State.DEFAULT:
+      set_state(State.FOCUS)
+    return true
+  else:
+    if current_state == State.ACTIONS_SHOWN and (not ActionButtonsNode.buttons_has_focus()):
+      set_state(State.DEFAULT)
+    return false
   
 func set_is_disabled(value):
   is_disabled = value
@@ -127,14 +123,63 @@ func set_is_disabled(value):
 func get_is_disabled():
   return is_disabled
 
-func setup_tween(position_y):
-  TweenNode.remove_all()
-  TweenNode.interpolate_property(
-    self,
-    "rect_position:y",
-    rect_position.y,
-    position_y,
-    MOVE_DURATION,
-    Tween.TRANS_LINEAR,
-    Tween.EASE_IN_OUT)
-  TweenNode.start()
+func set_state(new_state):
+  if new_state == current_state: return
+  if new_state == State.DEFAULT:
+    AnimationPlayerNode.play("RESET")
+    ActionButtonsNode.hide_button()
+    set_bg_color(FOCUS_OFF_BG_COLOR)
+    hide_button_node(false)
+  elif new_state == State.FOCUS:
+    AnimationPlayerNode.play("Blink")
+    set_bg_color(FOCUS_ON_BG_COLOR)
+    hide_button_node(false)
+    ActionButtonsNode.hide_button()
+  elif new_state == State.ACTIONS_SHOWN:
+    if current_state == State.DEFAULT:
+      set_state(State.FOCUS)
+    hide_button_node(true)
+    ActionButtonsNode.show_button()
+  #at the end update the current_state to be the new_state
+  current_state = new_state
+  
+func hide_button_node(hide):
+  if (hide):
+    ButtonNode.visible = false
+    ButtonNode.disabled = true
+  else:
+    ButtonNode.visible = true
+    ButtonNode.disabled = false
+
+
+func _on_ActionButtons_clear_button_pressed(_slot_index):
+  emit_signal("pressed", "delete")
+
+func _on_ActionButtons_select_button_pressed(_slot_index):
+  emit_signal("pressed", "select")
+  hide_action_buttons()
+
+func hide_action_buttons():
+  set_has_focus(true)
+  set_state(State.FOCUS)
+
+func update_meta_data():
+  var meta_data = SaveGame.get_slot_meta_data(id)
+  if meta_data != null:
+    set_timestamp(meta_data["save_time"])
+    # fixme: make this description dynamic
+    set_description("LEVEL: 10 - Progress: %d%%" % meta_data["progress"])
+  else:
+    set_timestamp(-1)
+    set_description("<EMPTY>")
+
+func set_border(state: bool):
+  if (state):
+    var greyPanelWithBorder = load("res://Assets/Styles/greyPanelWithBorder.tres")
+    remove_stylebox_override("panel")
+    add_stylebox_override("panel", greyPanelWithBorder)
+  else:
+    var greyPanelWithBorderTransparent = load("res://Assets/Styles/greyPanelWithBorderTransparent.tres")
+    remove_stylebox_override("panel")
+    add_stylebox_override("panel", greyPanelWithBorderTransparent)
+

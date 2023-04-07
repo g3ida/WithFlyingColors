@@ -3,44 +3,44 @@
 [ext_resource path="res://Assets/Scenes/UI/SaveSlot.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/Scripts/UI/SlotsContainer.gd" type="Script" id=2]
 
-[node name="SlotsContainer" type="CenterContainer"]
-margin_right = 1526.0
-margin_bottom = 270.0
+[node name="SlotsContainer" type="Control"]
 script = ExtResource( 2 )
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-margin_right = 1526.0
-margin_bottom = 270.0
+[node name="HBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 480.0
+margin_bottom = 834.0
 
 [node name="SaveSlot1" parent="HBoxContainer" instance=ExtResource( 1 )]
 margin_right = 480.0
 margin_bottom = 270.0
 rect_min_size = Vector2( 480, 270 )
 
-[node name="VSeparator2" type="VSeparator" parent="HBoxContainer"]
+[node name="VSeparator2" type="HSeparator" parent="HBoxContainer"]
 modulate = Color( 1, 1, 1, 0 )
-margin_left = 484.0
-margin_right = 519.0
-margin_bottom = 270.0
-rect_min_size = Vector2( 35, 0 )
+margin_top = 274.0
+margin_right = 480.0
+margin_bottom = 294.0
+rect_min_size = Vector2( 50, 0 )
+custom_constants/separation = 20
 
 [node name="SaveSlot2" parent="HBoxContainer" instance=ExtResource( 1 )]
-margin_left = 523.0
-margin_right = 1003.0
-margin_bottom = 270.0
+margin_top = 298.0
+margin_right = 480.0
+margin_bottom = 568.0
 rect_min_size = Vector2( 480, 270 )
 
-[node name="VSeparator" type="VSeparator" parent="HBoxContainer"]
+[node name="VSeparator" type="HSeparator" parent="HBoxContainer"]
 modulate = Color( 1, 1, 1, 0 )
-margin_left = 1007.0
-margin_right = 1042.0
-margin_bottom = 270.0
-rect_min_size = Vector2( 35, 0 )
+margin_top = 572.0
+margin_right = 480.0
+margin_bottom = 592.0
+rect_min_size = Vector2( 50, 0 )
+custom_constants/separation = 20
 
 [node name="SaveSlot3" parent="HBoxContainer" instance=ExtResource( 1 )]
-margin_left = 1046.0
-margin_right = 1526.0
-margin_bottom = 270.0
+margin_top = 596.0
+margin_right = 480.0
+margin_bottom = 866.0
 rect_min_size = Vector2( 480, 270 )
 
 [connection signal="pressed" from="HBoxContainer/SaveSlot1" to="." method="_on_SaveSlot1_pressed"]

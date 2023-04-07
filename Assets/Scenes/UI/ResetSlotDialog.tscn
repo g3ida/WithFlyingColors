@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Assets/Styles/Themes/Dialog.tres" type="Theme" id=1]
 
-[node name="FilledSlotDialog" type="ConfirmationDialog"]
+[node name="ResetSlotDialog" type="ConfirmationDialog"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -14,5 +14,5 @@ margin_bottom = 205.5
 rect_min_size = Vector2( 1500, 411 )
 theme = ExtResource( 1 )
 window_title = ""
-dialog_text = "This slot already contains a saved game. Are you sure you want to override it ?"
+dialog_text = "Are you sure you want to delete current slot?"
 dialog_autowrap = true

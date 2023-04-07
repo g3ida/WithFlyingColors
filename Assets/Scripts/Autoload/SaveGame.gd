@@ -23,7 +23,7 @@ onready var slot_meta_data = []
 onready var has_filled_slots = false
 onready var slot_last_load_date = []
 
-var current_slot_index = 0
+var current_slot_index = 0 #index of current slot
 
 # Special variables (always make them start and end with '_' to avoid potential conflicts)
 const NODE_PATH_VAR = "_node_path_"
@@ -36,10 +36,11 @@ func _generate_save_meta_data(save_slot_index):
   return {
     "image_path": get_save_slot_image_path(save_slot_index),
     "save_time": _get_unix_timestamp(),
-    "scene_path": get_tree().current_scene.get_child(0).filename
+    "scene_path": get_tree().current_scene.get_child(0).filename,
+    "progress": 0 #todo: calculate progress
   }
-
-func save(save_slot_index):
+  
+func save(save_slot_index, new_empty_slot = false):
   var file_path = get_save_slot_file_path(save_slot_index)
   var save_file = File.new()
   save_file.open(file_path, File.WRITE)
@@ -48,17 +49,18 @@ func save(save_slot_index):
   save_screenshot(save_meta_data["image_path"])
   save_file.store_line(to_json(save_meta_data))
   #save nodes
-  var save_nodes = get_tree().get_nodes_in_group("persist")
-  for node in save_nodes:
-    if node.filename.empty():
-      push_error("persistent node '%s' is not an instanced scene, skipped" % node.name)
-      continue
-    if !node.has_method("save"):
-      push_error("persistent node '%s' is missing a save() function, skipped" % node.name)
-      continue
-    var node_data = node.call("save")
-    node_data[NODE_PATH_VAR] = node.get_path()
-    save_file.store_line(to_json(node_data))
+  if not new_empty_slot:
+    var save_nodes = get_tree().get_nodes_in_group("persist")
+    for node in save_nodes:
+      if node.filename.empty():
+        push_error("persistent node '%s' is not an instanced scene, skipped" % node.name)
+        continue
+      if !node.has_method("save"):
+        push_error("persistent node '%s' is missing a save() function, skipped" % node.name)
+        continue
+      var node_data = node.call("save")
+      node_data[NODE_PATH_VAR] = node.get_path()
+      save_file.store_line(to_json(node_data))
   current_slot_index = save_slot_index
   save_file.close()
   _update_slot_load_date(save_slot_index)
@@ -89,12 +91,21 @@ func load_level(save_slot_index):
 func _ready():
   init()
   
-func init():
+func init(create_slot_if_emty = true):
+  refresh()
+  current_slot_index = get_most_recently_loaded_slot_index()
+  #remove_all_save_slots() #uncomment to reset the game then comment it back
+  set_process(false)
+  # in case no slot is filled (first time launching the game) create a slot. 
+  if create_slot_if_emty and not has_filled_slots:
+    current_slot_index = 0
+    SaveGame.save(current_slot_index, true)
+    init()
+
+func refresh():
   _init_check_filled_slots()
   _init_save_slot_meta_data()
   _init_slot_last_load_date()
-  #remove_all_save_slots() #uncomment to reset the game then comment it back
-  set_process(false)
 
 func _enter_tree():
   var __ = Event.connect("checkpoint_reached", self, "_on_checkpoint")
@@ -121,6 +132,10 @@ func get_save_slot_image_path(save_slot_index):
 
 func is_slot_filled(save_slot_index):
   return is_slot_filled_array[save_slot_index]
+
+func does_slot_have_progress(save_slot_index):
+  return is_slot_filled(save_slot_index) \
+    and get_slot_meta_data(save_slot_index)["progress"] > Global.EPSILON
 
 func _init_save_slot_meta_data():
   slot_meta_data = []
@@ -154,6 +169,9 @@ func remove_save_slot(save_slot_index):
     var dir = Directory.new()
     dir.remove(get_save_slot_file_path(save_slot_index))
     dir.remove(get_save_slot_image_path(save_slot_index))
+    # reset currently selected slot
+    if current_slot_index == save_slot_index:
+      current_slot_index = -1
     
 func remove_all_save_slots():
   for slot_idx in range(is_slot_filled_array.size()):
@@ -162,7 +180,7 @@ func remove_all_save_slots():
 func save_screenshot(file_path):
   var image = get_viewport().get_texture().get_data()
   image.flip_y()
-  image.shrink_x2()
+  image.shrink_x2() #todo: resize image to fixed size
   image.save_png(file_path)
 
 func load_image(file_path) -> ImageTexture:

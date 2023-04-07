@@ -37,7 +37,6 @@ func _ready():
   ContainerNode.margin_top = 0
   ContainerNode.margin_bottom = 0
   TopNode.modulate = top_color
-
   for b in button_nodes:
     if not b.disabled:
       b.button_grab_focus()

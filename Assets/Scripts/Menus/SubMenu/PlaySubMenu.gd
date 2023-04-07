@@ -9,7 +9,6 @@ onready var SubMenuNode = null
 
 enum ButtonConditions {
   NONE,
-  NEED_SLOTS,
   NEED_ACTIVE_SLOT # an active slot contains a game in progress not a won game
 }
 
@@ -28,9 +27,9 @@ var buttons_def = [
   },
   {
     "id": 2,
-    "text": "Load Game",
-    "button": MenuButtons.LOAD_GAME,
-    "conditions": ButtonConditions.NEED_SLOTS
+    "text": "Current Slot: %s" % (SaveGame.current_slot_index + 1),
+    "button": MenuButtons.SELECT_SLOT,
+    "conditions": ButtonConditions.NONE
   },
 ]
 
@@ -58,6 +57,5 @@ func _ready():
   rect_size = SubMenuNode.rect_size
 
 func _should_disable_button(btn):
-  return (btn["conditions"] == ButtonConditions.NEED_SLOTS\
-    or btn["conditions"] == ButtonConditions.NEED_ACTIVE_SLOT)\
-    and not SaveGame.has_filled_slots
+  if btn["conditions"] == ButtonConditions.NEED_ACTIVE_SLOT:
+    return not SaveGame.does_slot_have_progress(SaveGame.current_slot_index)

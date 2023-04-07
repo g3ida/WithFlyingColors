@@ -259,6 +259,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/Skin/SkinLoader.gd"
 }, {
+"base": "ColorRect",
+"class": "SlotButton",
+"language": "GDScript",
+"path": "res://Assets/Scripts/UI/SlotButton.gd"
+}, {
 "base": "Reference",
 "class": "SolfegeNotesTextureGenerator",
 "language": "GDScript",
@@ -355,6 +360,7 @@ _global_script_class_icons={
 "PowInterpolation": "",
 "PowerUpScript": "",
 "SkinLoader": "",
+"SlotButton": "",
 "SolfegeNotesTextureGenerator": "",
 "SwipeModule": "",
 "TetrisAI": "",

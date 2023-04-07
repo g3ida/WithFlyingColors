@@ -1,13 +1,20 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Assets/Scripts/Menus/SubMenu/PlaySubMenu.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scenes/MainMenu/SubMenu.tscn" type="PackedScene" id=3]
 
 [node name="PlaySubMenu" type="Control"]
 show_behind_parent = true
 anchor_left = 0.5
 anchor_right = 0.5
 margin_left = -318.0
-margin_right = 318.0
+margin_right = 319.0
 margin_bottom = 324.0
-rect_min_size = Vector2( 636, 324 )
+rect_min_size = Vector2( 637, 324 )
 script = ExtResource( 2 )
+
+[node name="SubMenu" parent="." instance=ExtResource( 3 )]
+margin_bottom = 912.0
+rect_min_size = Vector2( 637, 912 )
+color = Color( 0.0004995, 0.93217, 0.999501, 1 )
+top_color = Color( 0.000442058, 0.824971, 0.884558, 1 )
