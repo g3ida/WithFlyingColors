@@ -60,5 +60,6 @@ func set_game_current_selected_slot(index):
     if (index == i):
       save_slots[i].update_meta_data()
       save_slots[i].set_border(true)
+      SaveGame._update_slot_load_date(index)
     else:
       save_slots[i].set_border(false)
