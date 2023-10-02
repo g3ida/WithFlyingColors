@@ -22,6 +22,9 @@ func update_colors():
 func button_grab_focus():
   if !disabled: ButtonNode.grab_focus()
 
+func has_focus():
+  return ButtonNode.has_focus()
+
 func _on_Button_pressed():
   Event.emit_signal("menu_button_pressed", event)
 
