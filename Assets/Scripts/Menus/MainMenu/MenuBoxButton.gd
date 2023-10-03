@@ -21,7 +21,6 @@ func _ready():
   LabelNode.text = text
   LabelNode.modulate = LABEL_COLOR
 
-
 func _on_TextureButton_pressed():
   LabelNode.modulate = LABEL_COLOR_CLICK
   BlinkTimer.start()

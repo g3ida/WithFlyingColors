@@ -388,6 +388,7 @@ AudioManager="*res://Assets/Scripts/Autoload/AudioManager.gd"
 TouchInput="*res://Assets/Scripts/Autoload/TouchInput.gd"
 SaveGame="*res://Assets/Scripts/Autoload/SaveGame.gd"
 MenuManager="*res://Assets/Scripts/Autoload/MenuManager.gd"
+Levels="*res://Assets/Scripts/Autoload/Levels.gd"
 
 [display]
 

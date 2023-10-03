@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://Assets/Scenes/Level/Level.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/Scripts/CutScene/CutsceneTrigger.gd" type="Script" id=2]
@@ -10,6 +10,7 @@
 [ext_resource path="res://Assets/Tilesets/TutorialLevel.tres" type="TileSet" id=8]
 [ext_resource path="res://Assets/Scenes/Temple/GemsTemple.tscn" type="PackedScene" id=9]
 [ext_resource path="res://Assets/Sprites/Backgrounds/bg_grey.png" type="Texture" id=10]
+[ext_resource path="res://Assets/Scenes/CheckpointArea.tscn" type="PackedScene" id=11]
 [ext_resource path="res://Assets/Scripts/Platforms/PlatformTileMap.gd" type="Script" id=15]
 [ext_resource path="res://Assets/Shaders/ColorSplash.tres" type="Shader" id=16]
 
@@ -379,6 +380,10 @@ texture = ExtResource( 10 )
 centered = false
 
 [node name="Player" parent="." index="11"]
-position = Vector2( 226, 268 )
+position = Vector2( 12069, 231 )
+
+[node name="CheckpointArea" parent="." index="12" instance=ExtResource( 11 )]
+position = Vector2( 9408, 320 )
+scale = Vector2( 1, 10 )
 
 [connection signal="body_entered" from="CutsceneTrigger" to="CutsceneTrigger" method="_on_Area2D_body_entered"]

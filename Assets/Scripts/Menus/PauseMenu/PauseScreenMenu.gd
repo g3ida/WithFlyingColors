@@ -40,4 +40,8 @@ func _on_BackButton_pressed():
 func _on_ResumeButton2_pressed():
   if (is_paused):
     resume()
-  
+
+func _on_LevelSelectButton_pressed():
+  AudioManager.stop_all_sfx()
+  resume()
+  pause_menu.go_to_level_select_menu()

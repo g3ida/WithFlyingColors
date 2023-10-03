@@ -64,7 +64,7 @@ follow_path = NodePath("../Player")
 [node name="CameraShake" parent="Camera2D" instance=ExtResource( 30 )]
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
-position = Vector2( 606, 140 )
+position = Vector2( 666, 145 )
 collision_mask = 13
 StatesStore = ExtResource( 33 )
 
@@ -191,13 +191,13 @@ objectToFollow = NodePath("../Player")
 color_group = "blue"
 
 [node name="SlidingFloor2" parent="." instance=ExtResource( 35 )]
-position = Vector2( 40, -21 )
+position = Vector2( -212, -125 )
 
 [node name="SlidingFloor" parent="." instance=ExtResource( 35 )]
-position = Vector2( -178, -1 )
+position = Vector2( -430, -105 )
 
 [node name="SlidingFloor3" parent="." instance=ExtResource( 35 )]
-position = Vector2( 258, 0 )
+position = Vector2( 6, -104 )
 
 [node name="StartGameCheckpoint" parent="." instance=ExtResource( 36 )]
 position = Vector2( 450, -455 )

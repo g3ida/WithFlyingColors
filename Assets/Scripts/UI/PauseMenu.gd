@@ -2,6 +2,7 @@ extends GameMenu
 
 onready var buttons = [
   $CenterContainer/VBoxContainer/ResumeButton,
+  $CenterContainer/VBoxContainer/LevelSelectButton,
   $CenterContainer/VBoxContainer/BackButton
 ]
 
@@ -20,3 +21,6 @@ func show():
 
 func go_to_main_menu():
   navigate_to_screen(MenuManager.Menus.MAIN_MENU)
+
+func go_to_level_select_menu():
+  navigate_to_screen(MenuManager.Menus.LEVEL_SELECT_MENU)

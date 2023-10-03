@@ -94,7 +94,7 @@ func _ready():
 func init(create_slot_if_emty = true):
   refresh()
   current_slot_index = get_most_recently_loaded_slot_index()
-  #remove_all_save_slots() #uncomment to reset the game then comment it back
+  #remove_all_save_slots() # uncomment to reset the game then comment it back
   set_process(false)
   # in case no slot is filled (first time launching the game) create a slot. 
   if create_slot_if_emty and not has_filled_slots:

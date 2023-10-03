@@ -95,7 +95,7 @@ func _on_dash_ghost_timer_timeout():
 func instance_ghost():
   var ghost: Sprite = DashGhost.instance()
   ghost.scale = player.scale
-  player.get_parent().add_child(ghost)
+  player.get_parent().add_child(ghost) #todo: maybe should we set_owner for the ghost ?
   ghost.global_position = player.global_position
   ghost.texture = player.animatedSpriteNode.frames.get_frame(player.animatedSpriteNode.animation, player.animatedSpriteNode.frame)
   ghost.rotate((player.rotation))

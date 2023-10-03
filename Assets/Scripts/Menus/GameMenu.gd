@@ -3,8 +3,11 @@ extends Control
 
 enum MenuScreenState {ENTERING, ENTERED, EXITING, EXITED}
 
+const LEVEL_SCREEN_IDX = -1
+
 var screen_state: int
 var destination_screen: int
+var destination_scene_path: String
 var current_focus = null
 var handle_back_event = true
 
@@ -55,6 +58,12 @@ func navigate_to_screen(menu_screen):
       _stop_process_input()
       _exit_transition_elements()
     on_exit()
+
+func navigate_to_level_screen(level_screen_path):
+  if level_screen_path == null:
+    return
+  MenuManager.set_current_level(level_screen_path)
+  navigate_to_screen(MenuManager.Menus.GAME)
   
 func _on_menu_button_pressed(menu_button):
   if not on_menu_button_pressed(menu_button):
@@ -117,7 +126,10 @@ func _transition_element_exited():
   entered_transition_elements_count -= 1
   if entered_transition_elements_count == 0:
     screen_state = MenuScreenState.EXITED
-    MenuManager.go_to_menu(destination_screen)
+    if (destination_screen == LEVEL_SCREEN_IDX):
+      MenuManager.go_to_screen(destination_scene_path)
+    else:
+      MenuManager.go_to_menu(destination_screen)
     
 func _stop_process_input(node = self):
   for ch in node.get_children():
