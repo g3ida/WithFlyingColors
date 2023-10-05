@@ -66,6 +66,8 @@ func navigate_to_level_screen(level_screen_path):
   navigate_to_screen(MenuManager.Menus.GAME)
   
 func _on_menu_button_pressed(menu_button):
+  if screen_state != MenuScreenState.ENTERED: # do not handle events in transition states.
+    return false
   if not on_menu_button_pressed(menu_button):
     if menu_button == MenuButtons.BACK:
       navigate_to_screen(MenuManager.previous_menu)

@@ -69,7 +69,7 @@ func load_level(save_slot_index):
   var file_path = get_save_slot_file_path(save_slot_index)
   var save_game = File.new()
   if not is_slot_filled(save_slot_index):
-    push_error("FILE NOT FOUND")
+    push_error("FILE NOT FOUND") # need to recover
     return # Error! We don't have a save to load.
   save_game.open(file_path, File.READ)
   var _meta_data = parse_json(save_game.get_line()) #the metadata is ignored
