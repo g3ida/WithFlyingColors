@@ -7,7 +7,7 @@ signal brick_broken()
 export var color_group: String = "blue"
 
 onready var AreaNode = $Area2D
-onready var SpriteNode = $Sprite
+onready var SpriteNode = $BrickSpr
 onready var CollisionShapeNode = $KinematicBody2D/CollisionShape2D
 
 func _set_color():

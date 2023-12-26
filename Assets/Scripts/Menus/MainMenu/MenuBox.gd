@@ -16,14 +16,14 @@ var play_sub_menu_pos: Vector2
 enum States {MENU, SUB_MENU_ENTER, SUB_MENU, SUB_MENU_EXIT, EXIT}
 var current_state = States.MENU
 
-onready var play_button = $MenuBox/Sprite/PlayBoxButton
-onready var settings_button = $MenuBox/Sprite/SettingsBoxButton
-onready var stats_button = $MenuBox/Sprite/StatsBoxButton
-onready var quit_button = $MenuBox/Sprite/QuitBoxButton
+onready var play_button = $MenuBox/Spr/PlayBoxButton
+onready var settings_button = $MenuBox/Spr/SettingsBoxButton
+onready var stats_button = $MenuBox/Spr/StatsBoxButton
+onready var quit_button = $MenuBox/Spr/QuitBoxButton
 
 onready var MenuBoxNode = $MenuBox
 onready var PlaySubMenuNode = null
-onready var SpriteNode = $MenuBox/Sprite
+onready var SpriteNode = $MenuBox/Spr
 onready var SpriteHeight = SpriteNode.texture.get_height()
 
 var sub_menu_tweener: SceneTreeTween

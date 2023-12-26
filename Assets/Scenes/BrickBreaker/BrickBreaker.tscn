@@ -8,7 +8,7 @@
 [ext_resource path="res://Assets/Scenes/Tetris/SlidingFloor.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Assets/Scenes/BrickBreaker/DeathZone.tscn" type="PackedScene" id=8]
-[ext_resource path="res://Assets/Scenes/Camera/CameraLocalizer.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" type="PackedScene" id=9]
 
 [sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 126.25, 22.375 )

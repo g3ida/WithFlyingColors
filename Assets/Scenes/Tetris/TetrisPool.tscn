@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Assets/Tilesets/Tetrisl.tres" type="TileSet" id=1]
 [ext_resource path="res://Assets/Scripts/Tetris/TetrisPool.gd" type="Script" id=2]
-[ext_resource path="res://Assets/Scenes/Camera/CameraLocalizer.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/Scenes/Tetris/ScoreBoard.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Assets/Scenes/CheckpointArea.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Assets/Scenes/Tetris/NextPiece.tscn" type="PackedScene" id=6]

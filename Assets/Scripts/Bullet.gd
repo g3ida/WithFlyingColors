@@ -5,7 +5,7 @@ const MAX_DISTANCE = 5000.0
 const MAX_DISTANCE_SQUARED = MAX_DISTANCE * MAX_DISTANCE
 
 onready var bodyNode = $KinematicBody2D
-onready var spriteNode = $KinematicBody2D/Sprite
+onready var spriteNode = $KinematicBody2D/BulletSpr
 onready var ColorAreaNode = $KinematicBody2D/ColorArea
 
 var gravity = 1.0 * Global.WORLD_TO_SCREEN

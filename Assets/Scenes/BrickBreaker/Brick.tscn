@@ -12,8 +12,8 @@ extents = Vector2( 53.9, 17.9 )
 [node name="Brick" type="Node2D"]
 script = ExtResource( 2 )
 
-[node name="Sprite" type="Sprite" parent="."]
-modulate = Color( 0, 0.9215, 1, 1 )
+[node name="BrickSpr" type="Sprite" parent="."]
+modulate = Color( 0, 0.921569, 1, 1 )
 texture = ExtResource( 1 )
 centered = false
 

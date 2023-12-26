@@ -4,7 +4,7 @@ extends KinematicBody2D
 export var color_group: String = "blue"
 
 onready var AreaNode = $Area2D
-onready var SpriteNode = $Sprite  
+onready var SpriteNode = $BBSpr  
 onready var AreaCollisionShape = $Area2D/CollisionShape2D
 onready var IntersectionTimer = $IntersectionTimer
 

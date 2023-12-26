@@ -23,7 +23,7 @@ collision_mask = 1047
 scale = Vector2( 0.97, 0.97 )
 shape = SubResource( 2 )
 
-[node name="Sprite" type="Sprite" parent="."]
+[node name="BBSpr" type="Sprite" parent="."]
 texture = ExtResource( 1 )
 script = ExtResource( 3 )
 

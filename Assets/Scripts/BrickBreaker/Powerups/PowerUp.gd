@@ -8,7 +8,7 @@ signal on_player_hit(emitter, on_hit_script)
 
 onready var AreaNode = $Area2D
 onready var BackgroundNode = $Background
-onready var SpriteNode = $Sprite
+onready var SpriteNode = $Spr
 
 const SPEED = 3.0 * Global.WORLD_TO_SCREEN
 

@@ -29,7 +29,7 @@ export(String) var color_group setget set_color_group, get_color_group
 # a numn int from 0 to 5
 export var note_edge_index = 0 setget set_note_edge_index, get_note_edge_index
 
-onready var SpriteNode = $Sprite
+onready var SpriteNode = $NoteSpr
 onready var AreaCollisionShapeNode = $Area2D/CollisionShape2D
 onready var CollisionShapeNode = $CollisionShape2D
 onready var ResponsivenessTimerNode = $ResponsivenessTimer

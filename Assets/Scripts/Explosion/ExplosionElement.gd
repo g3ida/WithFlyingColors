@@ -7,10 +7,10 @@ func _ready():
   pass
   
 func setup_sprite(texture: Texture, vframes: int, hframes: int, current_frame: int):
-  $Sprite.texture = texture
-  $Sprite.vframes = vframes
-  $Sprite.hframes = hframes
-  $Sprite.frame = current_frame
+  $Spr.texture = texture
+  $Spr.vframes = vframes
+  $Spr.hframes = hframes
+  $Spr.frame = current_frame
 
 func set_collider_shape(shape: RectangleShape2D):
   $CollisionShape2D.shape = shape
