@@ -15,7 +15,6 @@ onready var BallsContainer = $BallsContainer
 onready var BallSpawnPosNode = $BallsContainer/BallSpawnPos
 onready var BricksSpawnPosNode = $BricksContainer/BricksSpawnPos
 onready var BricksTimerNode = $BricksContainer/LevelUpTimer
-onready var BricksMoveTweenNode = $BricksContainer/BricksMoveTween
 onready var BricksPowerUpHandler = $BricksContainer/BrickPowerUpHandler
 onready var Checkpoint = $CheckpointArea
 onready var TriggerEnterAreaNode = $TriggerEnterArea
@@ -33,6 +32,8 @@ var current_level = 0
 var save_data = {
   "state": current_state
 }
+
+var bricksMoveTweener: SceneTreeTween
 
 func spawn_ball(color = "blue"):
   var bouncing_ball = BouncingBallScene.instance()
@@ -59,6 +60,7 @@ func spawn_bricks(should_instance_bricks = true, should_translate_down = true):
   call_deferred("add_child", bricks)
   bricks.call_deferred("set_owner", self)
   if should_translate_down:
+    create_bricks_move_tweener()
     call_deferred("move_bricks_down_by", BRIKS_TRANSLATION_Y_AMOUNT, 5.0)
   return bricks
 
@@ -133,7 +135,7 @@ func play():
     current_level = 0
     BricksTileMapNode = spawn_bricks()
     Event.emit_brick_breaker_start()
-    yield(BricksMoveTweenNode, "tween_completed")
+    yield(bricksMoveTweener, "finished")
     spawn_ball()
     BricksTimerNode.start()
     var __ = BricksTileMapNode.connect("bricks_cleared", self, "_on_bricks_cleared")
@@ -148,7 +150,7 @@ func _on_bouncing_ball_removed(_ball):
 func _on_TriggerEnterArea_body_entered(body):
   if body != Global.player: return
   if current_state == BrickBreakerState.STOPPED:
-    play()
+    call_deferred("play")
     SlidingFloorSliderNode.set_looping(false)
     SlidingFloorSliderNode.stop_slider(false)
     AudioManager.music_track_manager.load_track("brickBreaker")
@@ -165,18 +167,22 @@ func _on_LevelUpTimer_timeout():
   current_level += 1
   if current_level == NUM_LEVELS:
     BricksTimerNode.stop()
+  create_bricks_move_tweener()
   move_bricks_down_by(LEVELS_Y_GAP)
   AudioManager.music_track_manager.set_pitch_scale(1 + (current_level-1) * 0.1)
   increment_balls_speed()
+  
+func create_bricks_move_tweener():
+  if bricksMoveTweener:
+    bricksMoveTweener.kill()
+  bricksMoveTweener = create_tween()
 
 func move_bricks_down_by(value: float, duration = 0.25):
-  BricksMoveTweenNode.interpolate_property(
+  var __ = bricksMoveTweener.tween_property(
     BricksTileMapNode,
     "position:y",
-    BricksTileMapNode.position.y,
     BricksTileMapNode.position.y + value,
-    duration)
-  BricksMoveTweenNode.start()
+    duration).from(BricksTileMapNode.position.y)
 
 func _on_bricks_cleared():
   if current_state == BrickBreakerState.PLAYING:
@@ -184,8 +190,9 @@ func _on_bricks_cleared():
     BricksTimerNode.stop()
     Event.emit_break_breaker_win()
     _clean_up_game()
+    create_bricks_move_tweener()
     move_bricks_down_by(LEVELS_WIN_GAP, 3.0)
-    yield(BricksMoveTweenNode, "tween_completed")
+    yield(bricksMoveTweener, "finished")
     AudioManager.music_track_manager.set_pitch_scale(1)
     SlidingDoorNode.resume_slider()
     _change_camera_view_after_win()

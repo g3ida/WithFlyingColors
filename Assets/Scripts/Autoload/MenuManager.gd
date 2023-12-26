@@ -7,7 +7,7 @@ const SELECT_SLOT_SCENE = "res://Assets/Screens/SelectSlotMenu.tscn"
 const LEVEL_SELECT_SCENE = "res://Assets/Screens/LevelSelectMenu.tscn"
 # fixme: remove this from the list: should be dynamic
 const START_LEVEL_MENU_SCENE = "res://Levels/Level1.tscn"
-#const START_LEVEL_MENU_SCENE = "res://Levels/TutorialLevel.tscn"
+# const START_LEVEL_MENU_SCENE = "res://Levels/TutorialLevel.tscn"
 const SCENE_ORCHESTER_SCENE = "res://Assets/Scenes/SceneOrchester.tscn"
 const LEVEL_CLEAR_SCENE = "res://Assets/Screens/LevelClearedMenu.tscn"
 

@@ -14,10 +14,11 @@ export var iconTexture: Texture
 export var focus_left_node: NodePath
 export var focus_right_node: NodePath
 
-onready var TweenNode = $Tween
 onready var ButtonNode = $Button
 onready var BlinkAnimationPlayerNode = $BlinkAnimationPlayer
 onready var current_state = State.HIDDEN
+
+var button_tween: SceneTreeTween
 
 func _ready():
   self.ButtonNode.rect_size.x = 0
@@ -80,18 +81,18 @@ func blink_button_if_needed():
       BlinkAnimationPlayerNode.play("RESET")
 
 func setup_tween(size_x):
-  TweenNode.remove_all()
-  TweenNode.interpolate_property(
+  if button_tween:
+    button_tween.kill()
+  button_tween = create_tween()
+  var __ = button_tween.tween_property(
     ButtonNode,
     "rect_min_size:x",
-    ButtonNode.rect_min_size.x,
-    size_x,
-    MOVE_DURATION,
-    Tween.TRANS_LINEAR,
-    Tween.EASE_IN_OUT)
-  TweenNode.start()
+    float(size_x),
+    MOVE_DURATION
+  ).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_LINEAR)
+  __ = button_tween.connect("finished", self, "_on_Tween_tween_completed", [], CONNECT_ONESHOT)
 
-func _on_Tween_tween_completed(_object, _key):
+func _on_Tween_tween_completed():
   if current_state == State.HIDING:
     current_state = State.HIDDEN
     self.visible = false

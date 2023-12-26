@@ -13,9 +13,9 @@ enum CutsceneState {
 
 var current_cutscene_id = null
 var current_state = CutsceneState.DISABLED
+var tweener: SceneTreeTween
 
 onready var CanvasNode = $CanvasLayer
-onready var TweenNode = $Tween
 onready var TopRectNode = $CanvasLayer/Control/TopRect
 onready var BottomRectNode = $CanvasLayer/Control/BottomRect
 onready var TimerNode = $Timer
@@ -56,39 +56,39 @@ func _on_cutscene_request_end(id: String):
     current_state = CutsceneState.DISABLING
     _hide_stripes()
 
+func renew_tween():
+  if tweener:
+    tweener.kill()
+  tweener = create_tween()
+  var __ = tweener.connect("finished", self, "_on_tween_completed", [], CONNECT_ONESHOT)
+
 func _show_stripes():
-  TweenNode.remove_all()
+  renew_tween()
   _start_tween(TopRectNode, EXPAND_SIZE)
   _start_bottom_tween(BottomRectNode, bottom_expand_position)
 
 func _hide_stripes():
-  TweenNode.remove_all()
+  renew_tween()
   _start_tween(TopRectNode, REDUCE_SIZE)
   _start_bottom_tween(BottomRectNode, bottom_reduce_position)
 
 func _start_tween(control_node: Control, dest_size):
-  TweenNode.interpolate_property(
+  var __ = tweener.tween_property(
     control_node,
     "rect_size:y",
-    control_node.rect_size.y,
-    dest_size,
-    DURATION,
-    Tween.TRANS_QUAD,
-    Tween.EASE_IN_OUT)
-  TweenNode.start()
+    float(dest_size),
+    DURATION
+  ).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 
 func _start_bottom_tween(control_node: Control, dest_position):
-  TweenNode.interpolate_property(
+  var __ = tweener.tween_property(
     control_node,
     "rect_position:y",
-    control_node.rect_position.y,
-    dest_position,
-    DURATION,
-    Tween.TRANS_QUAD,
-    Tween.EASE_IN_OUT)
-  TweenNode.start()
+    float(dest_position),
+    DURATION
+  ).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 
-func _on_Tween_tween_completed(_object, _key):
+func _on_tween_completed():
   if current_state == CutsceneState.DISABLING:
     current_state = CutsceneState.DISABLED
     CanvasNode.visible = false

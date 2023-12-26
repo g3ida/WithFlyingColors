@@ -78,8 +78,6 @@ position = Vector2( 594, -18 )
 [node name="LevelUpTimer" type="Timer" parent="BricksContainer"]
 wait_time = 60.0
 
-[node name="BricksMoveTween" type="Tween" parent="BricksContainer"]
-
 [node name="DeathZone" parent="." instance=ExtResource( 8 )]
 
 [node name="SlidingFloor" parent="." instance=ExtResource( 6 )]

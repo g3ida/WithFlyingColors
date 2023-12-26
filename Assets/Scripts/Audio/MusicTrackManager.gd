@@ -14,7 +14,7 @@ enum State {
   FADE_OUT
 }
 
-onready var fadeTween = $Fade
+var fade_tweener: SceneTreeTween
 
 var music_pool: Dictionary = {}
 var current_track: Track = null
@@ -147,25 +147,29 @@ func stop():
     next_track = null
   current_state = State.STOPPED
 
+func prepare_fade_tween():
+  if fade_tweener:
+    fade_tweener.kill()
+  fade_tweener = create_tween()
+  var __ = fade_tweener.connect("finished", self, "_tween_completed", [], CONNECT_ONESHOT)
+
 func fade_out():
-  fadeTween.remove_all()
+  prepare_fade_tween()
   current_state = State.FADE_OUT
   # this is useful in case we changed track during the fade in of one other track so we don't want
   # to wait the whole duration. This is usually the case when loading a checkpoint
   var duration = FADE_DURATION*(current_track.stream.volume_db - FADE_VOLUME+1.0)/(current_track.volume - FADE_VOLUME+1.0)
-  fadeTween.interpolate_property(current_track.stream, "volume_db", current_track.stream.volume_db, FADE_VOLUME, duration)
-  fadeTween.start()
+  var __ = fade_tweener.tween_property(current_track.stream, "volume_db", FADE_VOLUME, duration)
 
 func fade_in():
-  fadeTween.remove_all()
+  prepare_fade_tween()
   current_state = State.FADE_IN
   current_track.stream.play()
   current_track.stream.volume_db = FADE_VOLUME
   set_pitch_scale(1.0)
-  fadeTween.interpolate_property(current_track.stream, "volume_db", FADE_VOLUME, current_track.volume, FADE_DURATION)
-  fadeTween.start()
+  var __ = fade_tweener.tween_property(current_track.stream, "volume_db", current_track.volume, FADE_DURATION).from(FADE_VOLUME)
 
-func _tween_completed(_object, _key):
+func _tween_completed():
   if current_state == State.FADE_IN:
     current_state = State.PLAYING
   elif current_state == State.FADE_OUT:

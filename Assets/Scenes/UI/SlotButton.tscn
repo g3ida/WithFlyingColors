@@ -40,12 +40,11 @@ color = Color( 0.941176, 0.0431373, 0.0431373, 1 )
 script = ExtResource( 3 )
 
 [node name="Button" type="Button" parent="."]
+focus_mode = 0
 enabled_focus_mode = 0
 icon = ExtResource( 2 )
 flat = true
 icon_align = 1
-
-[node name="Tween" type="Tween" parent="."]
 
 [node name="BlinkAnimationPlayer" type="AnimationPlayer" parent="."]
 anims/Blink = SubResource( 2 )
@@ -53,4 +52,3 @@ anims/RESET = SubResource( 3 )
 
 [connection signal="mouse_entered" from="Button" to="." method="_on_Button_mouse_entered"]
 [connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
-[connection signal="tween_completed" from="Tween" to="." method="_on_Tween_tween_completed"]

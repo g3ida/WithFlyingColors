@@ -30,7 +30,6 @@ export(String) var color_group setget set_color_group, get_color_group
 export var note_edge_index = 0 setget set_note_edge_index, get_note_edge_index
 
 onready var SpriteNode = $Sprite
-onready var TweenNode = $Tween
 onready var AreaCollisionShapeNode = $Area2D/CollisionShape2D
 onready var CollisionShapeNode = $CollisionShape2D
 onready var ResponsivenessTimerNode = $ResponsivenessTimer
@@ -38,6 +37,7 @@ onready var ResponsivenessTimerNode = $ResponsivenessTimer
 onready var released_position = position
 onready var calculated_position = position
 
+var tweener: SceneTreeTween
 var current_state = NoteStates.RELEASED
 
 func _set_texture():
@@ -59,18 +59,19 @@ func _physics_process(_delta):
   _start_releasing_note_timer_if_relevant()
 
 func _move_to_position(dest_position):
-  TweenNode.remove_all()
   var duration = abs(calculated_position.y - dest_position.y) / PRESS_SPEED
-  TweenNode.interpolate_property(
+  if tweener:
+    tweener.kill()
+  tweener = create_tween()
+  var __ = tweener.connect("finished", self, "_on_tween_completed", [], CONNECT_ONESHOT)
+  __ = tweener.tween_property(
     self,
     "calculated_position",
-    calculated_position,
     dest_position,
-    duration,
-    Tween.TRANS_LINEAR,
-    Tween.EASE_IN_OUT,
-    0)
-  TweenNode.start()
+    duration
+  ).from(calculated_position
+  ).set_trans(Tween.TRANS_LINEAR
+  ).set_ease(Tween.EASE_IN_OUT)
 
 func _is_releasing_or_released_state():
   return current_state == NoteStates.RELEASED or current_state == NoteStates.RELEASING
@@ -107,7 +108,7 @@ func _release_note():
   current_state = NoteStates.RELEASING
   _move_to_position(released_position)
 
-func _on_Tween_tween_completed(_object, _key):
+func _on_tween_completed():
   if current_state == NoteStates.PRESSING:
     current_state = NoteStates.PRESSED
     emit_signal("on_note_pressed", self)

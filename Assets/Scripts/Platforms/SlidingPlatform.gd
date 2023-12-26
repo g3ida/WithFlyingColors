@@ -12,10 +12,12 @@ export var show_gear = true
 export var restore_delayed_stop = false #if false, in case of reaching checkpoint when a stop is delayed we consider it as being stopped
 
 onready var platform: KinematicBody2D = get_parent()
-onready var tweenNode = $Tween
 onready var gearNone = $Gear
 onready var follow: Vector2 = platform.global_position
 onready var destination: Vector2 = _parse_destination()
+
+var tweener: SceneTreeTween
+var is_tween_looping = false
 
 var delayed_stop = false
 var current_state = State.WAIT_1
@@ -41,7 +43,6 @@ func _parse_destination() -> Vector2:
   return platform.global_position
   
 func _setup():
-  tweenNode.repeat = false
   distance = (destination - follow).length()
   duration = distance / float(speed*Global.WORLD_TO_SCREEN)
   start_pos = follow
@@ -72,9 +73,14 @@ func _get_source_position():
     return start_pos
   return global_position # unkonown state
 
+func clean_tween():
+  if tweener:
+    tweener.kill()
+  tweener = create_tween()
+
 func _process_tween():
   if is_stopped: return
-  tweenNode.remove_all()
+  clean_tween()
   if current_state == State.WAIT_1:
     slide(start_pos, start_pos, wait_time, 0) #wait
   elif current_state == State.SLIDING_FORTH:
@@ -85,19 +91,24 @@ func _process_tween():
     slide(end_pos, start_pos, duration, 0) #slide back
 
 func slide(start: Vector2, end: Vector2, _duration: float, wait: float):
-  tweenNode.interpolate_property(
+  var __ = tweener.tween_property(
     self,
     "follow",
-    start,
     end,
-    _duration,
-    Tween.TRANS_LINEAR,
-    Tween.EASE_IN_OUT,
-    wait)
-  tweenNode.start()
+    _duration
+  ).set_trans(Tween.TRANS_LINEAR
+  ).set_ease(Tween.EASE_IN_OUT
+  ).set_delay(wait
+  ).from(start)
+  __ = tweener.connect("finished", self, "_on_tween_completed", [], CONNECT_ONESHOT)
   
 func set_looping(looping: bool):
-  tweenNode.repeat = looping
+  if tweener:
+    is_tween_looping = looping
+    if looping:
+      var __ = tweener.set_loops()
+    else:
+      var __ = tweener.set_loops(1)
 
 func connect_signals():
   var __ = Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")
@@ -122,13 +133,13 @@ func _on_checkpoint_hit(_checkpoint):
     save_data["delayed_stop"] = false
     save_data["position_x"] = dest.x
     save_data["position_y"] = dest.y
-    save_data["looping"] = tweenNode.repeat
+    save_data["looping"] = is_tween_looping
   else:
     save_data["state"] = current_state
     var dest = _get_source_position()
     save_data["position_x"] = dest.x
     save_data["position_y"] = dest.y
-    save_data["looping"] = tweenNode.repeat
+    save_data["looping"] = is_tween_looping
     save_data["is_stopped"] = is_stopped
     save_data["delayed_stop"] = delayed_stop
 
@@ -136,11 +147,12 @@ func save():
   return save_data
 
 func reset():
-  tweenNode.remove_all()
+  if tweener:
+    tweener.kill()
   current_state = save_data["state"]
   platform.global_position = Vector2(save_data["position_x"], save_data["position_y"])
   follow = platform.global_position
-  tweenNode.repeat = save_data["looping"]
+  set_looping(save_data["looping"])
   is_stopped = save_data["is_stopped"]
   delayed_stop = save_data["delayed_stop"]
   _process_tween()
@@ -150,7 +162,7 @@ func stop_slider(stop_directly: bool):
   if is_stopped: return
   if (stop_directly):
     self.is_stopped = true
-    tweenNode.remove_all()
+    tweener.kill()
   else:
     delayed_stop = true
   
@@ -169,7 +181,7 @@ func _get_next_state(state):
     return State.WAIT_1
   return null
 
-func _on_Tween_tween_completed(_object, _key):
+func _on_tween_completed():
   current_state = _get_next_state(current_state)
   if delayed_stop:
     delayed_stop = false

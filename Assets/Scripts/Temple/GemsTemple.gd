@@ -27,10 +27,11 @@ var current_state = States.NOT_TRIGGERED
 
 onready var GemSlotsContainerNode = $GemsContainer
 onready var GemsSlotsNodes = GemSlotsContainerNode.get_children()
-onready var TweenNode = $Tween
 onready var StartGemsAreaNode = $StartGemsArea
 onready var RotationTimerNode = $RotationTimer
 onready var BloomSpriteNode = $BloomSprite
+
+var tweener: SceneTreeTween
 
 func _ready():
   BloomSpriteNode.visible = false
@@ -140,29 +141,32 @@ func _go_to_end_phase():
 
 #tween animations
 func _rotate_gems_tween():
-  TweenNode.remove_all()
-  TweenNode.interpolate_property(
+  if tweener:
+    tweener.kill()
+  tweener = create_tween()
+  var __ = tweener.tween_property(
     self,
     "gems_angular_velocity",
-    gems_angular_velocity,
     MAX_GEM_TEMPLE_ANGULAR_VELOCITY,
-    DURATION_TO_FULL_GEM_ROTATION_SPEED,
-    Tween.TRANS_LINEAR,
-    Tween.EASE_OUT)
-  TweenNode.start()
+    DURATION_TO_FULL_GEM_ROTATION_SPEED
+  ).from(gems_angular_velocity
+  ).set_trans(Tween.TRANS_LINEAR
+  ).set_ease(Tween.EASE_OUT)
 
 func _bloom_sprite_resize_tween():
-  TweenNode.remove_all()
-  TweenNode.interpolate_property(
+  if tweener:
+    tweener.kill()
+  tweener = create_tween()
+  var __ = tweener.tween_property(
     self,
     "bloom_sprite_scale",
-    bloom_sprite_scale,
     BLOOM_SPRITE_MAX_SCALE,
-    BLOOM_SPRITE_SCALE_DURATION,
-    Tween.TRANS_LINEAR,
-    Tween.EASE_OUT)
-  TweenNode.start()
-  TweenNode.connect("tween_all_completed", self, "_on_bloom_sprite_resize_end", [], CONNECT_ONESHOT)
+    BLOOM_SPRITE_SCALE_DURATION
+  ).from(bloom_sprite_scale
+  ).set_trans(Tween.TRANS_LINEAR
+  ).set_ease(Tween.EASE_OUT)
+  
+  __ = tweener.connect("finished", self, "_on_bloom_sprite_resize_end", [], CONNECT_ONESHOT)
 
 func _on_bloom_sprite_resize_end():
   _go_to_end_phase()

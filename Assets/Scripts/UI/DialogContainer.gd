@@ -14,7 +14,6 @@ export(NodePath) var DialogNodePath
 onready var ColorRectNode = $ColorRect
 onready var GameMenuNode = get_parent() # the parent should be of type GameMenu
 onready var DialogNode = get_node(DialogNodePath)
-onready var TweenNode = $Tween
 
 onready var shown_pos_y = DialogNode.rect_position.y
 onready var hidden_pos_y = shown_pos_y - 1000
@@ -22,6 +21,7 @@ onready var hidden_pos_y = shown_pos_y - 1000
 var current_state = DialogStates.HIDDEN
 var dialog_buttons = []
 var last_focus_owner = null #last item that had focus before the dialog pop up
+var tweener: SceneTreeTween
 
 func _ready():
   pause_mode = PAUSE_MODE_PROCESS
@@ -68,16 +68,17 @@ func _input(_event):
     start_hiding_dialog()
 
 func prepare_tween(target_pos_y):
-  TweenNode.remove_all()
-  TweenNode.interpolate_property(
+  if tweener:
+    tweener.kill()
+  tweener = create_tween()
+  var __ = tweener.connect("finished", self, "_on_tween_completed", [], CONNECT_ONESHOT)
+
+  __ = tweener.tween_property(
     DialogNode,
     "rect_position:y",
-    DialogNode.rect_position.y,
     target_pos_y,
-    TWEEN_DURATION,
-    Tween.TRANS_LINEAR,
-    Tween.EASE_IN_OUT)
-  TweenNode.start()
+    TWEEN_DURATION
+  ).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
 
 func start_hiding_dialog():
   if _is_hidden_or_hiding_state():
@@ -87,7 +88,7 @@ func start_hiding_dialog():
   current_state = DialogStates.HIDING
   prepare_tween(hidden_pos_y)
 
-func _on_Tween_tween_completed(_object, _key):
+func _on_tween_completed():
   if current_state == DialogStates.HIDING:
     hide_dialog()
   elif current_state == DialogStates.SHOWING:

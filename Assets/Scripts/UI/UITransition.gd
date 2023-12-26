@@ -14,11 +14,11 @@ enum TransitionStates {
 }
 
 onready var parent = get_parent()
-onready var TweenNode = $Tween
 
 var display_position: Vector2
 var hidden_position: Vector2
 var current_state = TransitionStates.ENTER_DELAY
+var tweener: SceneTreeTween
 
 export(float) var time = 0.3
 export(float) var delay = 0.25
@@ -51,23 +51,23 @@ func _really_exit():
   start_tween(hidden_position, time)
 
 func start_tween(destination_pos, duration):
-  TweenNode.remove_all()
-  TweenNode.interpolate_property(
+  if tweener:
+    tweener.kill()
+  tweener = create_tween()
+  var __ = tweener.connect("finished", self, "_on_Tween_tween_completed", [], CONNECT_ONESHOT)
+  __ = tweener.tween_property(
     parent,
     "rect_position",
-    parent.rect_position,
     destination_pos,
-    duration,
-    Tween.TRANS_QUAD,
-    Tween.EASE_IN_OUT)
-  TweenNode.start()
+    duration
+  ).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 
 func _prepare():
   display_position = parent.rect_position
   hidden_position = parent.rect_position + hidden_relative_position
   parent.rect_position = hidden_position
 
-func _on_Tween_tween_completed(_object, _key):
+func _on_Tween_tween_completed():
   if current_state == TransitionStates.ENTER_DELAY:
     _really_enter()
     emit_signal("entered")

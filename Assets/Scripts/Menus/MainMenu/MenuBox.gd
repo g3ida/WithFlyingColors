@@ -23,9 +23,10 @@ onready var quit_button = $MenuBox/Sprite/QuitBoxButton
 
 onready var MenuBoxNode = $MenuBox
 onready var PlaySubMenuNode = null
-onready var SubMenuTween = $MenuBox/SubMenuTween
 onready var SpriteNode = $MenuBox/Sprite
 onready var SpriteHeight = SpriteNode.texture.get_height()
+
+var sub_menu_tweener: SceneTreeTween
 
 func can_respond_to_input() -> bool:
   return current_state != States.EXIT && !get_parent().is_in_transition_state()
@@ -140,19 +141,22 @@ func _display_or_hide_play_sub_menu(should_show = true):
     interpolate_sub_menu(source, destination)
 
 func interpolate_sub_menu(source: Vector2, destination: Vector2):
-  SubMenuTween.remove_all()
+  if sub_menu_tweener:
+    sub_menu_tweener.kill()
+  sub_menu_tweener = create_tween()
+  var __ = sub_menu_tweener.connect("finished", self, "_submenu_tween_completed", [], CONNECT_ONESHOT)
+
   play_sub_menu_pos = source
-  SubMenuTween.interpolate_property(
+  __ = sub_menu_tweener.tween_property(
     self,
     "play_sub_menu_pos",
-    play_sub_menu_pos,
     destination,
-    SUB_MENU_POPUP_DURATION,
-    Tween.TRANS_LINEAR,
-    Tween.EASE_IN_OUT)
-  SubMenuTween.start()
-
-func _on_SubMenuTween_tween_completed(_object, _key):
+    SUB_MENU_POPUP_DURATION
+  ).from(play_sub_menu_pos
+  ).set_trans(Tween.TRANS_LINEAR
+  ).set_ease(Tween.EASE_IN_OUT)
+  
+func _submenu_tween_completed():
   if current_state == States.SUB_MENU_ENTER:
     current_state = States.SUB_MENU
   elif current_state == States.SUB_MENU_EXIT:

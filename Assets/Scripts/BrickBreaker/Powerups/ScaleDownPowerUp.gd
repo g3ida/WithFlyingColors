@@ -3,7 +3,7 @@ extends PowerUpScript
 const TWEEN_TIME = 0.7
 const SCALE_FACTOR = 0.7
 
-onready var TweenNode = $Tween
+var tweener: SceneTreeTween
   
 func _exit_tree():
   if is_still_relevant():
@@ -11,8 +11,17 @@ func _exit_tree():
     player.scale = Vector2(1.0, 1.0)
   
 func interpolate_size(player, before, after, seconds):
-    TweenNode.interpolate_property(player, "scale", Vector2(before,before), Vector2(after,after), seconds, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-    TweenNode.start()
+  if tweener:
+    tweener.kill()
+  tweener = create_tween()
+  var __ = tweener.tween_property(
+    player,
+    "scale",
+    Vector2(after,after),
+    seconds
+    ).set_trans(Tween.TRANS_LINEAR
+    ).set_ease(Tween.EASE_IN_OUT
+    ).from(Vector2(before,before))
 
 func _ready():
   set_process(false)

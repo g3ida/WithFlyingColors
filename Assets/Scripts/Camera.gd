@@ -5,9 +5,9 @@ const CAMERA_DRAG_JUMP = 0.45
 export var follow_path: NodePath
 
 onready var follow: Node2D = get_node(follow_path)
-onready var tweenNode = $Tween
 
 var target_zoom: float = 1.0
+var zoom_tweener: SceneTreeTween
 
 onready var default_save_data = {
   "zoom_factor": 1.0,
@@ -118,9 +118,11 @@ func restore_drag_margins():
   
 func zoom_by(factor: float):
   target_zoom = factor
-  tweenNode.interpolate_property(self, "zoom", zoom, Vector2(factor, factor), 1.0)
-  tweenNode.start()
-  zoom = Vector2(factor, factor)
+  if zoom_tweener:
+    zoom_tweener.kill()
+  zoom_tweener = create_tween()
+  var __ = zoom_tweener.tween_property(self, "zoom", Vector2(factor, factor), 1.0)
+  #zoom = Vector2(factor, factor)
   
 func connect_signals():
   var __ = Event.connect("checkpoint_reached", self, "_on_checkpoint_hit")

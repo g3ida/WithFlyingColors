@@ -47,5 +47,3 @@ color = Color( 1, 1, 1, 0.533333 )
 [node name="AnimationPlayer" type="AnimationPlayer" parent="ColorRect"]
 anims/Blink = SubResource( 1 )
 anims/RESET = SubResource( 2 )
-
-[node name="Tween" type="Tween" parent="."]

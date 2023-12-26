@@ -62,8 +62,6 @@ text = "STATS"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MenuBox"]
 shape = SubResource( 1 )
 
-[node name="SubMenuTween" type="Tween" parent="MenuBox"]
-
 [node name="RightButton" type="Button" parent="."]
 margin_left = 516.0
 margin_top = -221.0
@@ -93,6 +91,5 @@ flat = true
 [connection signal="pressed" from="MenuBox/Sprite/QuitBoxButton" to="." method="_on_QuitButton_pressed"]
 [connection signal="pressed" from="MenuBox/Sprite/SettingsBoxButton" to="." method="_on_SettingsButton_pressed"]
 [connection signal="pressed" from="MenuBox/Sprite/StatsBoxButton" to="." method="_on_StatsButton_pressed"]
-[connection signal="tween_completed" from="MenuBox/SubMenuTween" to="." method="_on_SubMenuTween_tween_completed"]
 [connection signal="pressed" from="RightButton" to="." method="_on_RightButton_pressed"]
 [connection signal="pressed" from="LeftButton" to="." method="_on_LeftButton_pressed"]

@@ -5,7 +5,8 @@ const EASE = Tween.EASE_IN_OUT
 
 onready var DurationNode = $Duration
 onready var FrequencyNode = $Frequency
-onready var ShakeNode = $Shake
+
+var tweener: SceneTreeTween
 
 var amplitude
 var priority = 0
@@ -24,8 +25,17 @@ func start(_duration = 0.15, _frequency = 10.0, _amplitude = 10, _priority = 0):
 
 
 func camera_tween_interpolate(v: Vector2):
-  ShakeNode.interpolate_property(camera, "offset", camera.offset, v, FrequencyNode.wait_time, TRANS, EASE)
-  ShakeNode.start()
+  if tweener:
+    tweener.kill()
+  tweener = create_tween()
+  var __ = tweener.tween_property(
+    camera,
+    "offset",
+    v,
+    FrequencyNode.wait_time
+  ).from(camera.offset
+  ).set_trans(TRANS
+  ).set_ease(EASE)
 
 func _new_shake():
   var rand = Vector2()
