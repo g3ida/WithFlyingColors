@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/background.png-f0fabb7805d586f692cfcfa526a2eb43.stex"
+path="res://.import/ArrowBack.png-170b1693503f80db8fc320492de68360.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Sprites/MainMenu/background.png"
-dest_files=[ "res://.import/background.png-f0fabb7805d586f692cfcfa526a2eb43.stex" ]
+source_file="res://Assets/Sprites/MainMenu/ArrowBack.png"
+dest_files=[ "res://.import/ArrowBack.png-170b1693503f80db8fc320492de68360.stex" ]
 
 [params]
 

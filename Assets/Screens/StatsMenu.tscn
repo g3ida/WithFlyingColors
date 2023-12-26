@@ -2,10 +2,10 @@
 
 [ext_resource path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/Scripts/Menus/StatsMenu/StatsMenu.gd" type="Script" id=2]
-[ext_resource path="res://Assets/Sprites/MainMenu/background.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Sprites/MainMenu/MenuBkg.png" type="Texture" id=3]
 [ext_resource path="res://Assets/Scripts/Menus/MainMenu/BackButton.gd" type="Script" id=4]
 [ext_resource path="res://Assets/Styles/MenuButtonPressedStyle.tres" type="StyleBox" id=5]
-[ext_resource path="res://Assets/Sprites/MainMenu/back.png" type="Texture" id=6]
+[ext_resource path="res://Assets/Sprites/MainMenu/ArrowBack.png" type="Texture" id=6]
 [ext_resource path="res://Assets/Scenes/UI/UITransition.tscn" type="PackedScene" id=7]
 
 [sub_resource type="StyleBoxEmpty" id=1]
