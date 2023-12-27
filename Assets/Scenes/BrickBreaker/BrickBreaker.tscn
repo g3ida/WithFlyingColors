@@ -86,7 +86,7 @@ position = Vector2( 1188, 1188 )
 [node name="SlidingPlatform" parent="SlidingFloor" instance=ExtResource( 7 )]
 wait_time = 3.0
 
-[node name="Position2D" type="Position2D" parent="SlidingFloor/SlidingPlatform"]
+[node name="Pos" type="Position2D" parent="SlidingFloor/SlidingPlatform"]
 position = Vector2( 0, 1224 )
 
 [node name="TriggerEnterArea" type="Area2D" parent="."]
@@ -107,7 +107,7 @@ is_stopped = true
 one_shot = true
 one_shot_state = 1
 
-[node name="Position2D" type="Position2D" parent="SlidingDoor/SlidingPlatform"]
+[node name="Pos" type="Position2D" parent="SlidingDoor/SlidingPlatform"]
 position = Vector2( 216, 0 )
 
 [node name="ExitCameraLocalizer" parent="." instance=ExtResource( 9 )]
@@ -128,7 +128,7 @@ position = Vector2( -216, 0 )
 position = Vector2( -81, -209 )
 shape = SubResource( 3 )
 
-[node name="Position2D" type="Position2D" parent="ExitCameraLocalizer"]
+[node name="Pos" type="Position2D" parent="ExitCameraLocalizer"]
 position = Vector2( -630, 71 )
 
 [connection signal="timeout" from="BricksContainer/LevelUpTimer" to="." method="_on_LevelUpTimer_timeout"]

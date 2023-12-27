@@ -138,7 +138,7 @@ group = "blue"
 
 [node name="Node2D" parent="MovingPlatform2" instance=ExtResource( 20 )]
 
-[node name="Position2D" type="Position2D" parent="MovingPlatform2/Node2D"]
+[node name="Pos" type="Position2D" parent="MovingPlatform2/Node2D"]
 position = Vector2( 450, 0 )
 
 [node name="MovingPlatform3" parent="." instance=ExtResource( 21 )]
@@ -148,7 +148,7 @@ group = "blue"
 
 [node name="Node2D" parent="MovingPlatform3" instance=ExtResource( 20 )]
 
-[node name="Position2D" type="Position2D" parent="MovingPlatform3/Node2D"]
+[node name="Pos" type="Position2D" parent="MovingPlatform3/Node2D"]
 position = Vector2( 300, 0 )
 
 [node name="LazerBeam" parent="." instance=ExtResource( 22 )]
@@ -177,7 +177,7 @@ position_clipping_mode = 2
 position = Vector2( 279, 13 )
 shape = SubResource( 1 )
 
-[node name="Position2D" type="Position2D" parent="CameraLocalizer"]
+[node name="Pos" type="Position2D" parent="CameraLocalizer"]
 position = Vector2( -56, 186 )
 
 [node name="BrickBreaker" parent="." instance=ExtResource( 34 )]

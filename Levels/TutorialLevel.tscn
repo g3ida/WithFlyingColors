@@ -366,7 +366,7 @@ script = ExtResource( 2 )
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CutsceneTrigger" index="0"]
 shape = SubResource( 33 )
 
-[node name="Position2D" type="Position2D" parent="CutsceneTrigger" index="1"]
+[node name="Pos" type="Position2D" parent="CutsceneTrigger" index="1"]
 position = Vector2( 1563, -264 )
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="." index="10"]

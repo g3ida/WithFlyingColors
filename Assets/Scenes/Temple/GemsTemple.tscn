@@ -70,7 +70,7 @@ position = Vector2( -1440, 0 )
 position_clipping_mode = 13
 follow_node = NodePath("..")
 
-[node name="Position2D" type="Position2D" parent="CameraLocalizer"]
+[node name="Pos" type="Position2D" parent="CameraLocalizer"]
 position = Vector2( 1790, 0 )
 
 [node name="Area2D" type="Area2D" parent="CameraLocalizer"]

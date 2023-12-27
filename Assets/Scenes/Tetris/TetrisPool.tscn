@@ -72,7 +72,7 @@ position = Vector2( 36, 36 )
 [node name="SlidingPlatform" parent="SlidingFloor" instance=ExtResource( 8 )]
 wait_time = 3.0
 
-[node name="Position2D" type="Position2D" parent="SlidingFloor/SlidingPlatform"]
+[node name="Pos" type="Position2D" parent="SlidingFloor/SlidingPlatform"]
 position = Vector2( 0, 1008 )
 
 [node name="TriggerEnterArea" type="Area2D" parent="."]
