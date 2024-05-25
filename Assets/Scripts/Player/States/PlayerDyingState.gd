@@ -47,16 +47,16 @@ func _physics_update(_delta: float) -> BaseState:
 
 func _create_explosion():
   var explosion = ExplosionScene.instance()
-  explosion.connect("object_detonated", self, "_on_object_detonated", [], CONNECT_ONESHOT)
+  explosion.player = Global.player
+  explosion.playerTexture = Global.get_player_sprite()
+  explosion.connect("ObjectDetonated", self, "_on_object_detonated", [], CONNECT_ONESHOT)
   explosion.connect("ready", self, "_explosion_is_ready", [explosion], CONNECT_ONESHOT)
   Global.player.add_child(explosion)
   explosion.set_owner(Global.player)
 
 func _explosion_is_ready(explosion):
-  explosion.player = Global.player
-  explosion.player_texture = Global.get_player_sprite()
-  explosion.setup()
-  explosion.fire_explosion()
+  explosion.Setup()
+  explosion.FireExplosion()
 
 func _on_object_detonated(explosion):
   explosion.queue_free()
