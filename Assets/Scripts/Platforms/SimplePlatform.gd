@@ -16,14 +16,19 @@ var contactPosition = Vector2(0, 0)
 onready var NidePatchRectNode = $NinePatchRect
 onready var AreaNode = $Area2D
 
+var NinePatchTextureUtils = load("res://Assets/Scripts/Utils/NinePatchTextureUtils.cs")
+var ninePatchTextureUtils
+
 func _set_platform_texture():
   if geared:
-    NinePatchTextureUtils.set_texture($NinePatchRect, geared_texture)
+    ninePatchTextureUtils.SetTexture($NinePatchRect, geared_texture)
   else:
-    NinePatchTextureUtils.set_texture($NinePatchRect, simple_texture)
+    ninePatchTextureUtils.SetTexture($NinePatchRect, simple_texture)
+
 func _ready() -> void:
+  ninePatchTextureUtils = NinePatchTextureUtils.new()
   _set_platform_texture()
-  NinePatchTextureUtils.scale_texture(NidePatchRectNode, self.scale) 
+  ninePatchTextureUtils.ScaleTexture(NidePatchRectNode, self.scale) 
   if group != null and !group.empty():
     var color_index = ColorUtils.get_group_color_index(group)
     NidePatchRectNode.modulate = ColorUtils.get_basic_color(color_index)

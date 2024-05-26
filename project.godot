@@ -9,11 +9,6 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Reference",
-"class": "Animator",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Utils/Animator.gd"
-}, {
 "base": "Area2D",
 "class": "BaseFace",
 "language": "GDScript",
@@ -160,11 +155,6 @@ _global_script_classes=[ {
 "path": "res://Assets/Scripts/Menus/MenuButtons.gd"
 }, {
 "base": "Reference",
-"class": "NinePatchTextureUtils",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Utils/NinePatchTextureUtils.gd"
-}, {
-"base": "Reference",
 "class": "NodeOcillator",
 "language": "GDScript",
 "path": "res://Assets/Scripts/Utils/NodeOcillator.gd"
@@ -244,11 +234,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/Player/States/PlayerStatesStore.gd"
 }, {
-"base": "",
-"class": "PowInterpolation",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Utils/Interpolation/Pow.gd"
-}, {
 "base": "Node2D",
 "class": "PowerUpScript",
 "language": "GDScript",
@@ -310,7 +295,6 @@ _global_script_classes=[ {
 "path": "res://SwipeModule/_SwipeEventCore.gd"
 } ]
 _global_script_class_icons={
-"Animator": "",
 "BaseFace": "",
 "BaseState": "",
 "BaseStatesStore": "",
@@ -340,7 +324,6 @@ _global_script_class_icons={
 "InputTouchRotate": "",
 "InputUtils": "",
 "MenuButtons": "",
-"NinePatchTextureUtils": "",
 "NodeOcillator": "",
 "Player": "",
 "PlayerBaseState": "",
@@ -357,7 +340,6 @@ _global_script_class_icons={
 "PlayerStandingState": "",
 "PlayerStatesEnum": "",
 "PlayerStatesStore": "",
-"PowInterpolation": "",
 "PowerUpScript": "",
 "SkinLoader": "",
 "SlotButton": "",

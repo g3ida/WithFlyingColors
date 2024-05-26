@@ -2,9 +2,9 @@ class_name Player
 extends KinematicBody2D
 
 const PlayerRotationAction = preload("res://Assets/Scripts/Player/PlayerRotationAction.gd")
-const TransoformAnimation = preload("res://Assets/Scripts/Utils/TransformAnimation.gd")
-const ElasticIn = preload("res://Assets/Scripts/Utils/Interpolation/ElasticIn.gd")
-const ElasticOut = preload("res://Assets/Scripts/Utils/Interpolation/ElasticOut.gd")
+var TransoformAnimation = load("res://Assets/Scripts/Utils/TransformAnimation.cs")
+var ElasticIn = load("res://Assets/Scripts/Utils/Interpolation/ElasticIn.cs")
+var ElasticOut = load("res://Assets/Scripts/Utils/Interpolation/ElasticOut.cs")
 
 const SQUEEZE_ANIM_DURATION = 0.17
 const SCALE_ANIM_DURATION = 0.17
@@ -20,9 +20,9 @@ export(Script) var StatesStore
 var velocity = Vector2(0, 0)
 var playerRotationAction: PlayerRotationAction
 
-var scale_animation: TransoformAnimation
-var idle_animation: TransoformAnimation
-var current_animation: TransoformAnimation
+var scale_animation #: TransoformAnimation
+var idle_animation #: TransoformAnimation
+var current_animation #: TransoformAnimation
 
 var sprite_size: int
 var was_on_floor: bool = true

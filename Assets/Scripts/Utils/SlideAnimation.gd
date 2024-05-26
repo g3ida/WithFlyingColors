@@ -28,4 +28,4 @@ func update(delta):
     notify()
     
 func notify():
-  Event.emit_signal("slide_animation_ended", animation_name)
+  Event.emit_slide_animation_ended(animation_name)

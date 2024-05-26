@@ -10,9 +10,6 @@ var states_store: BaseStatesStore
 var base_state
 var player_moved = false
 
-const TransoformAnimation = preload("res://Assets/Scripts/Utils/TransformAnimation.gd")
-const ElasticOut = preload("res://Assets/Scripts/Utils/Interpolation/ElasticOut.gd")
-
 const GRAVITY = 9.8 * Global.WORLD_TO_SCREEN
 const FALL_FACTOR = 2.5
 
@@ -81,7 +78,7 @@ func physics_update(delta: float) -> BaseState:
   
   player.velocity = player.move_and_slide(player.velocity, Vector2.UP)
   player.velocity.x = lerp(player.velocity.x, 0, 0.25)
-  player.current_animation.step(player, animated_sprite, delta)
+  player.current_animation.Step(player, animated_sprite, delta)
 
   if (new_state):
     return new_state
@@ -112,8 +109,8 @@ func _on_player_diying(_area, _position, entity_type) -> BaseState:
 
 func on_land() -> BaseState:
   player.current_animation = player.scale_animation
-  if not player.current_animation.isRunning():
-    player.current_animation.start()
+  if not player.current_animation.IsRunning():
+    player.current_animation.Start()
   return null
 
 func _on_dash() -> BaseState:
