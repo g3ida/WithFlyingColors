@@ -1,8 +1,5 @@
 extends CanvasLayer
 
-const CountdownTimer = preload("res://Assets/Scripts/Utils/CountdownTimer.gd")
-
-
 onready var darker_shader := $DarkerShader/ColorRect
 onready var simple_blur := $SimpleBlur/ColorRect
 onready var darker_shader_animation_player := $DarkerShader/ColorRect/AnimationPlayer

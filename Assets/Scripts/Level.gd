@@ -6,11 +6,11 @@ onready var CutsceneNode = $Cutscene
 
 func _enter_tree():
   if track != null:
-    AudioManager.music_track_manager.load_track(track)
-    AudioManager.music_track_manager.play_track(track)
+    AudioManager.music_track_manager.LoadTrack(track)
+    AudioManager.music_track_manager.PlayTrack(track)
 
 func _exit_tree():
-  AudioManager.music_track_manager.stop()
+  AudioManager.music_track_manager.Stop()
   
 func _ready():
   set_process(false)

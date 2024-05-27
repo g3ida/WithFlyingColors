@@ -183,7 +183,7 @@ public class Event : Node
 
     public void EmitCheckpointLoaded() =>_gdInstance.EmitSignal(nameof(checkpoint_loaded));
 
-    public void EmitMenuButtonPressed(string menuButton) =>_gdInstance.EmitSignal(nameof(menu_button_pressed), menuButton);
+    public void EmitMenuButtonPressed(MenuButtons menuButton) =>_gdInstance.EmitSignal(nameof(menu_button_pressed), menuButton);
 
     public void EmitMenuBoxRotated() =>_gdInstance.EmitSignal(nameof(menu_box_rotated));
 

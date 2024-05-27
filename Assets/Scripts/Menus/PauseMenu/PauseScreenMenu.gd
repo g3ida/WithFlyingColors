@@ -16,7 +16,7 @@ func _process(_delta):
 
 func resume():
     AudioManager.resume_all_sfx()
-    AudioManager.music_track_manager.set_pause_menu_effect(false)
+    AudioManager.music_track_manager.SetPauseMenuEffect(false)
     screen_shaders.disable_pause_shader()
     pause_menu.hide()
     is_paused = false
@@ -25,7 +25,7 @@ func resume():
       
 func pause():
   AudioManager.pause_all_sfx() 
-  AudioManager.music_track_manager.set_pause_menu_effect(true)
+  AudioManager.music_track_manager.SetPauseMenuEffect(true)
   screen_shaders.activate_pause_shader()
   pause_menu.show()
   is_paused = true

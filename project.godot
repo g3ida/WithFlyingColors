@@ -154,11 +154,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/Menus/MenuButtons.gd"
 }, {
-"base": "Reference",
-"class": "NodeOcillator",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Utils/NodeOcillator.gd"
-}, {
 "base": "KinematicBody2D",
 "class": "Player",
 "language": "GDScript",
@@ -319,7 +314,6 @@ _global_script_class_icons={
 "InputTouchRotate": "",
 "InputUtils": "",
 "MenuButtons": "",
-"NodeOcillator": "",
 "Player": "",
 "PlayerBaseState": "",
 "PlayerDashingState": "",
@@ -359,14 +353,15 @@ config/icon="res://icon.png"
 
 Global="*res://Assets/Scripts/Autoload/Global.gd"
 Event="*res://Assets/Scripts/Autoload/Event.gd"
+GlobalCS="*res://Assets/Scripts/Autoload/Global.cs"
+EventCS="*res://Assets/Scripts/Autoload/Event.cs"
 Settings="*res://Assets/Scripts/Autoload/Settings.gd"
 AudioManager="*res://Assets/Scripts/Autoload/AudioManager.gd"
 TouchInput="*res://Assets/Scripts/Autoload/TouchInput.gd"
 SaveGame="*res://Assets/Scripts/Autoload/SaveGame.gd"
 MenuManager="*res://Assets/Scripts/Autoload/MenuManager.gd"
 Levels="*res://Assets/Scripts/Autoload/Levels.gd"
-GlobalCS="*res://Assets/Scripts/Autoload/Global.cs"
-EventCS="*res://Assets/Scripts/Autoload/Event.cs"
+MenuManagerCS="*res://Assets/Scripts/Autoload/MenuManager.cs"
 
 [display]
 

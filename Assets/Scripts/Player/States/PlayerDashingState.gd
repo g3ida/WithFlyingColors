@@ -2,21 +2,21 @@ class_name PlayerDashingState
 extends PlayerBaseState
 
 const DashGhost = preload("res://Assets/Scenes/Player/DashGhost.tscn")
-const CountdownTimer = preload("res://Assets/Scripts/Utils/CountdownTimer.gd")
+const CountdownTimer = preload("res://Assets/Scripts/Utils/CountdownTimer.cs")
 const DASH_DURATION = 0.17
 const PERMISSIVENESS = 0.05
 
 const DASH_SPEED = 20 * Constants.WORLD_TO_SCREEN
 const DASH_GHOST_INSTANCE_DELAY = 0.04
 
-var dash_timer: CountdownTimer
-var permissiveness_timer: CountdownTimer
+var dash_timer: CountdownTimer = CountdownTimer.new()
+var permissiveness_timer: CountdownTimer = CountdownTimer.new()
 var direction = null
 var dash_done = false
 
 func _init(dependencies: PlayerDependencies).(dependencies):
-  dash_timer = CountdownTimer.new(DASH_DURATION, false)
-  permissiveness_timer = CountdownTimer.new(PERMISSIVENESS, false)
+  dash_timer.Set(DASH_DURATION, false)
+  permissiveness_timer.Set(PERMISSIVENESS, false)
   self.base_state = PlayerStatesEnum.DASHING
   player.dashGhostTimerNode.wait_time = DASH_GHOST_INSTANCE_DELAY
   var __ = player.dashGhostTimerNode.connect("timeout", self, "_on_dash_ghost_timer_timeout")
@@ -24,14 +24,14 @@ func _init(dependencies: PlayerDependencies).(dependencies):
 
 func enter():
   if direction == null:
-    permissiveness_timer.reset()
+    permissiveness_timer.Reset()
     set_dash_diretion()
     dash_done = false
   else: # in case of touch input we already have dash direction
     dash_done = true
-    permissiveness_timer.stop()
+    permissiveness_timer.Stop()
 
-  dash_timer.reset()
+  dash_timer.Reset()
   player.can_dash = false
   Global.camera.get_node("CameraShake").start()  
   instance_ghost()
@@ -40,8 +40,8 @@ func enter():
 func exit():
   if dash_done:
     player.velocity.x = 0
-  dash_timer.stop()
-  permissiveness_timer.stop()
+  dash_timer.Stop()
+  permissiveness_timer.Stop()
   player.dashGhostTimerNode.stop()
   direction = null
 
@@ -50,10 +50,10 @@ func physics_update(delta: float) -> BaseState:
   return .physics_update(delta)
 
 func _physics_update(_delta: float) -> BaseState:
-  if !dash_done and !permissiveness_timer.is_running():
+  if !dash_done and !permissiveness_timer.IsRunning():
     set_dash_diretion()
     if direction.length_squared() < 0.01:
-      dash_timer.stop()
+      dash_timer.Stop()
     else:
       dash_done = true
       Event.emit_signal("player_dash", direction)
@@ -64,13 +64,13 @@ func _physics_update(_delta: float) -> BaseState:
     if abs(direction.y) > 0.01:
       player.velocity.y = DASH_SPEED * direction.y
 
-  if !dash_timer.is_running():
+  if !dash_timer.IsRunning():
     return self.states_store.get_state(PlayerStatesEnum.FALLING)
   else:
     player.velocity.y = 0
     
-  dash_timer.step(_delta)
-  permissiveness_timer.step(_delta)
+  dash_timer.Step(_delta)
+  permissiveness_timer.Step(_delta)
 
   return null
 

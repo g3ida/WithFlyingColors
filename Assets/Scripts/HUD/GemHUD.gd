@@ -1,7 +1,7 @@
 tool
 extends Node2D
 
-const SlideAnimation = preload("res://Assets/Scripts/Utils/SlideAnimation.gd")
+const SlideAnimation = preload("res://Assets/Scripts/Utils/SlideAnimation.cs")
 const TextureCollected = preload("res://Assets/Sprites/HUD/gem_hud_collected.png")
 const TextureEmpty = preload("res://Assets/Sprites/HUD/gem_hud.png")
 
@@ -51,7 +51,8 @@ func _on_gem_collected(col, position, frames):
     animation.set_owner(self)
     
     animation.global_position = position
-    collected_animation = SlideAnimation.new(
+    collected_animation = SlideAnimation.new()
+    collected_animation.Set(
       "gem_slide",
       animation,
       Vector2(20, 20),
@@ -78,7 +79,7 @@ func _exit_tree():
   
 func _process(delta):
   if collected_animation != null:
-    collected_animation.update(delta)
+    collected_animation.Update(delta)
 
 func reset():
   if save_data["state"] == EMPTY:

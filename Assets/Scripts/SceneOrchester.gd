@@ -13,7 +13,7 @@ func _enter_tree():
 
 func _exit_tree():
   disconnect_signals()
-  AudioManager.music_track_manager.stop()
+  AudioManager.music_track_manager.Stop()
 
 func _on_game_over():
   Event.emit_signal("checkpoint_loaded")

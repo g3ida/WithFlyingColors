@@ -102,7 +102,7 @@ func save():
 func reset():
   current_state = save_data["state"]
   if current_state == BrickBreakerState.INIT_PLAYING:
-    AudioManager.music_track_manager.set_pitch_scale(1)
+    AudioManager.music_track_manager.SetPitchScale(1)
     play()
   elif current_state == BrickBreakerState.WIN:
     if BricksTileMapNode == null:
@@ -153,8 +153,8 @@ func _on_TriggerEnterArea_body_entered(body):
     call_deferred("play")
     SlidingFloorSliderNode.set_looping(false)
     SlidingFloorSliderNode.stop_slider(false)
-    AudioManager.music_track_manager.load_track("brickBreaker")
-    AudioManager.music_track_manager.play_track("brickBreaker")
+    AudioManager.music_track_manager.LoadTrack("brickBreaker")
+    AudioManager.music_track_manager.PlayTrack("brickBreaker")
   
   if current_state == BrickBreakerState.WIN:
     _change_camera_view_after_win()
@@ -169,7 +169,7 @@ func _on_LevelUpTimer_timeout():
     BricksTimerNode.stop()
   create_bricks_move_tweener()
   move_bricks_down_by(LEVELS_Y_GAP)
-  AudioManager.music_track_manager.set_pitch_scale(1 + (current_level-1) * 0.1)
+  AudioManager.music_track_manager.SetPitchScale(1 + (current_level-1) * 0.1)
   increment_balls_speed()
   
 func create_bricks_move_tweener():
@@ -193,7 +193,7 @@ func _on_bricks_cleared():
     create_bricks_move_tweener()
     move_bricks_down_by(LEVELS_WIN_GAP, 3.0)
     yield(bricksMoveTweener, "finished")
-    AudioManager.music_track_manager.set_pitch_scale(1)
+    AudioManager.music_track_manager.SetPitchScale(1)
     SlidingDoorNode.resume_slider()
     _change_camera_view_after_win()
     Helpers.trigger_functional_checkoint()

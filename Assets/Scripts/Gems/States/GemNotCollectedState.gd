@@ -1,7 +1,9 @@
 class_name GemNotCollectedState
 extends GemBaseState
+
+const NodeOscillator = preload("res://Assets/Scripts/Utils/NodeOscillator.cs")
   
-var ocillator: NodeOcillator
+var ocillator: NodeOscillator 
 
 const AMPLITUDE: float = 4.0
 const ANIMATION_DURATION: float = 4.0
@@ -17,7 +19,8 @@ func _init(
   collision_shape: CollisionPolygon2D,
   shine_sfx: AudioStreamPlayer2D,
   states_store: BaseStatesStore).(node, light, animated_sprite, animation_player, collision_shape, shine_sfx, states_store):
-    self.ocillator = NodeOcillator.new(self.node, AMPLITUDE, ANIMATION_DURATION)
+    self.ocillator = NodeOscillator.new()
+    self.ocillator.Set(self.node, AMPLITUDE, ANIMATION_DURATION)
 
 func enter():
   self.animation_player.play("RESET")
@@ -25,8 +28,8 @@ func enter():
     
 func physics_update(delta: float) -> BaseState:
   self.light.position = self.animated_sprite.position
-  ocillator.update(delta)
-  self.light.energy = 1 + SHINE_VARIANCE * sin(2 * PI * ocillator.timer / ANIMATION_DURATION)
+  ocillator.Update(delta)
+  self.light.energy = 1 + SHINE_VARIANCE * sin(2 * PI * ocillator.Timer / ANIMATION_DURATION)
   self.light.rotate(ROTATION_SPEED)
   return null
   

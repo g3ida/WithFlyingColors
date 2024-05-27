@@ -221,7 +221,7 @@ func update_scorebaord():
     scoreBoardNode.set_level(level)
     var speed = min(level, Constants.TETRIS_MAX_LEVELS)
     shapeWaitTimerNode.wait_time = Constants.TETRIS_SPEEDS[speed]
-    AudioManager.music_track_manager.set_pitch_scale(1 + (speed-1) * 0.1)
+    AudioManager.music_track_manager.SetPitchScale(1 + (speed-1) * 0.1)
     if (level > 1):
       var level_up_node = level_up.instance()
       add_child(level_up_node)
@@ -246,8 +246,8 @@ func _on_TriggerEnterArea_body_entered(_body):
   SlidingFloorSliderNode.stop_slider(false)
   is_vergin = false
   
-  AudioManager.music_track_manager.load_track("tetris")
-  AudioManager.music_track_manager.play_track("tetris")
+  AudioManager.music_track_manager.LoadTrack("tetris")
+  AudioManager.music_track_manager.PlayTrack("tetris")
   
   if (TriggerEnterAreaNode != null):
     TriggerEnterAreaNode.queue_free()
