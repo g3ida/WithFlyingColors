@@ -25,4 +25,10 @@ const PI4 = PI * 0.25
 const PI6 = PI * 0.166667
 const PI8 = PI * 0.125
 
+const WORLD_TO_SCREEN = 100
+const EPSILON2: float = 0.0001
+
 const COLOR_GROUPS = ["blue", "pink", "purple", "yellow"]
+
+
+enum EntityType {PLATFORM, FALLZONE, LAZER, BULLET, BALL, BRICK_BREAKER}

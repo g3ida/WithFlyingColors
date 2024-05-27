@@ -10,6 +10,10 @@ public class TransformAnimation : Node
     private float timer = 0.0f;
     private bool started = false;
 
+    public TransformAnimation() {
+        // FIXME: This constructor should be removed after c# migration
+    }
+
     public TransformAnimation(float _animationDuration, Interpolation _interpolation, float _offsetY)
     {
         animationDuration = _animationDuration;

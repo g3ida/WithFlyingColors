@@ -1,6 +1,6 @@
 extends Node2D
 
-const SPEED = 10.0 * Global.WORLD_TO_SCREEN
+const SPEED = 10.0 * Constants.WORLD_TO_SCREEN
 const MAX_DISTANCE = 5000.0
 const MAX_DISTANCE_SQUARED = MAX_DISTANCE * MAX_DISTANCE
 
@@ -8,7 +8,7 @@ onready var bodyNode = $KinematicBody2D
 onready var spriteNode = $KinematicBody2D/BulletSpr
 onready var ColorAreaNode = $KinematicBody2D/ColorArea
 
-var gravity = 1.0 * Global.WORLD_TO_SCREEN
+var gravity = 1.0 * Constants.WORLD_TO_SCREEN
 var movement = Vector2()
 var initial_position = Vector2()
 
@@ -35,4 +35,4 @@ func _on_ColorArea_body_entered(_body):
 
 func _on_ColorArea_body_shape_entered(_body_rid, body, body_shape_index, _local_shape_index):
   if body != Global.player: return
-  body.on_fast_area_colliding_with_player_shape(body_shape_index, ColorAreaNode, Global.EntityType.BULLET)
+  body.on_fast_area_colliding_with_player_shape(body_shape_index, ColorAreaNode, Constants.EntityType.BULLET)

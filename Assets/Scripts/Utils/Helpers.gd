@@ -9,7 +9,7 @@ static func intersects(circlePos: Vector2, circleRadius: float, rectPos: Vector2
       
   if (circle_dist.x > (rect.x/2.0 + circleRadius)): return false
   if (circle_dist.y > (rect.y/2.0 + circleRadius)): return false
-      
+  
   if (circle_dist.x <= (rect.x/2.0)): return true; 
   if (circle_dist.y <= (rect.y/2.0)): return true;
       
@@ -21,3 +21,9 @@ static func array_contains_scene_type(array, scene):
     if scene is el:
       return true
   return false
+
+#the opposite is physical checkoint by using checkpointArea.tscn
+static func trigger_functional_checkoint():
+  var checkpoint = CheckpointArea.new()
+  checkpoint.color_group = "blue"
+  checkpoint._on_CheckpointArea_body_entered(Global.player)

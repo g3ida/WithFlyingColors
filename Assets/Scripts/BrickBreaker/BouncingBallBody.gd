@@ -254,4 +254,4 @@ func increment_speed():
 
 func _on_Area2D_body_shape_entered(_body_rid:RID, body:Node, body_shape_index:int, _local_shape_index:int):
   if body != Global.player: return
-  body.on_fast_area_colliding_with_player_shape(body_shape_index, AreaNode, Global.EntityType.BALL)
+  body.on_fast_area_colliding_with_player_shape(body_shape_index, AreaNode, Constants.EntityType.BALL)

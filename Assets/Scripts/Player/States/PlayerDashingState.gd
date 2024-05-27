@@ -6,7 +6,7 @@ const CountdownTimer = preload("res://Assets/Scripts/Utils/CountdownTimer.gd")
 const DASH_DURATION = 0.17
 const PERMISSIVENESS = 0.05
 
-const DASH_SPEED = 20 * Global.WORLD_TO_SCREEN
+const DASH_SPEED = 20 * Constants.WORLD_TO_SCREEN
 const DASH_GHOST_INSTANCE_DELAY = 0.04
 
 var dash_timer: CountdownTimer

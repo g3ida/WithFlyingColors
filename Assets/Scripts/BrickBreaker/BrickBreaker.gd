@@ -145,7 +145,7 @@ func play():
 func _on_bouncing_ball_removed(_ball):
   num_balls -= 1
   if num_balls <= 0:
-    Event.emit_signal("player_diying", DeathZoneNode, _ball.global_position, Global.EntityType.BRICK_BREAKER)  
+    Event.emit_signal("player_diying", DeathZoneNode, _ball.global_position, Constants.EntityType.BRICK_BREAKER)  
 
 func _on_TriggerEnterArea_body_entered(body):
   if body != Global.player: return
@@ -196,7 +196,7 @@ func _on_bricks_cleared():
     AudioManager.music_track_manager.set_pitch_scale(1)
     SlidingDoorNode.resume_slider()
     _change_camera_view_after_win()
-    Global.trigger_functional_checkoint()
+    Helpers.trigger_functional_checkoint()
 
 func _clean_up_game():
   remove_balls()

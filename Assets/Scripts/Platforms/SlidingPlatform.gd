@@ -44,7 +44,7 @@ func _parse_destination() -> Vector2:
   
 func _setup():
   distance = (destination - follow).length()
-  duration = distance / float(speed*Global.WORLD_TO_SCREEN)
+  duration = distance / float(speed*Constants.WORLD_TO_SCREEN)
   start_pos = follow
   end_pos = destination
   if !show_gear: gearNone.visible = false

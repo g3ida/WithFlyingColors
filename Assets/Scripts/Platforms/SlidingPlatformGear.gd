@@ -15,9 +15,9 @@ func _physics_process(_delta):
   last_position = current_positon
   
   var direction = 0
-  if delta_position.x > Global.EPSILON or delta_position.y > Global.EPSILON:
+  if delta_position.x > Constants.EPSILON2 or delta_position.y > Constants.EPSILON2:
     direction = 1
-  elif delta_position.x < -Global.EPSILON or delta_position.y < -Global.EPSILON:
+  elif delta_position.x < -Constants.EPSILON2 or delta_position.y < -Constants.EPSILON2:
     direction = -1
   
   rotate(rotation_speed * delta_position.length() * direction)

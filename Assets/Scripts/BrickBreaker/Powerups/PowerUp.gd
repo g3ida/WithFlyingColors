@@ -10,7 +10,7 @@ onready var AreaNode = $Area2D
 onready var BackgroundNode = $Background
 onready var SpriteNode = $Spr
 
-const SPEED = 3.0 * Global.WORLD_TO_SCREEN
+const SPEED = 3.0 * Constants.WORLD_TO_SCREEN
 
 func _ready():
   SpriteNode.texture = texture

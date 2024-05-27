@@ -52,12 +52,12 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "ColorUtils",
 "language": "GDScript",
-"path": "res://Assets/Scripts/Utils/Colors.gd"
+"path": "res://Assets/Scripts/Utils/Colors_old.gd"
 }, {
 "base": "Reference",
 "class": "Constants",
 "language": "GDScript",
-"path": "res://Assets/Scripts/Utils/Constants.gd"
+"path": "res://Assets/Scripts/Utils/Constants_old.gd"
 }, {
 "base": "Reference",
 "class": "DeathAnimationType",
@@ -107,7 +107,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "HSLColor",
 "language": "GDScript",
-"path": "res://Assets/Scripts/Utils/HSLColor.gd"
+"path": "res://Assets/Scripts/Utils/HSLColor_old.gd"
 }, {
 "base": "Reference",
 "class": "Helpers",
@@ -117,7 +117,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "ImageUtils",
 "language": "GDScript",
-"path": "res://Assets/Scripts/Utils/ImageUtils.gd"
+"path": "res://Assets/Scripts/Utils/ImageUtils_old.gd"
 }, {
 "base": "InputEventAction",
 "class": "InputEventSwipe",
@@ -217,7 +217,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "PlayerSpriteGenerator",
 "language": "GDScript",
-"path": "res://Assets/Scripts/Player/PlayerSpriteGenerator.gd"
+"path": "res://Assets/Scripts/Player/PlayerSpriteGenerator_old.gd"
 }, {
 "base": "PlayerBaseState",
 "class": "PlayerStandingState",
@@ -242,17 +242,12 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "SkinLoader",
 "language": "GDScript",
-"path": "res://Assets/Scripts/Skin/SkinLoader.gd"
+"path": "res://Assets/Scripts/Skin/SkinLoader_old.gd"
 }, {
 "base": "ColorRect",
 "class": "SlotButton",
 "language": "GDScript",
 "path": "res://Assets/Scripts/UI/SlotButton.gd"
-}, {
-"base": "Reference",
-"class": "SolfegeNotesTextureGenerator",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Piano/SolfegeNotesTextureGenerator.gd"
 }, {
 "base": "_SwipeEventCore",
 "class": "SwipeModule",
@@ -343,7 +338,6 @@ _global_script_class_icons={
 "PowerUpScript": "",
 "SkinLoader": "",
 "SlotButton": "",
-"SolfegeNotesTextureGenerator": "",
 "SwipeModule": "",
 "TetrisAI": "",
 "Tetromino": "",
@@ -371,6 +365,8 @@ TouchInput="*res://Assets/Scripts/Autoload/TouchInput.gd"
 SaveGame="*res://Assets/Scripts/Autoload/SaveGame.gd"
 MenuManager="*res://Assets/Scripts/Autoload/MenuManager.gd"
 Levels="*res://Assets/Scripts/Autoload/Levels.gd"
+GlobalCS="*res://Assets/Scripts/Autoload/Global.cs"
+EventCS="*res://Assets/Scripts/Autoload/Event.cs"
 
 [display]
 

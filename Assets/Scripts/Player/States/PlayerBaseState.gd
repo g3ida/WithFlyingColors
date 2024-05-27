@@ -10,7 +10,7 @@ var states_store: BaseStatesStore
 var base_state
 var player_moved = false
 
-const GRAVITY = 9.8 * Global.WORLD_TO_SCREEN
+const GRAVITY = 9.8 * Constants.WORLD_TO_SCREEN
 const FALL_FACTOR = 2.5
 
 func _init(dependencies: PlayerDependencies).():
@@ -95,13 +95,13 @@ func _physics_update(_delta) -> BaseState:
   return null
 
 func _set_player_death_animation_type(dying_state, entity_type):
-  if entity_type == Global.EntityType.FALLZONE:
+  if entity_type == Constants.EntityType.FALLZONE:
     dying_state.death_animation_type = DeathAnimationType.DYING_FALL
   else:
     dying_state.death_animation_type = DeathAnimationType.DYING_EXPLOSION_REAL
 
 func _on_player_diying(_area, _position, entity_type) -> BaseState:
-  if entity_type != Global.EntityType.FALLZONE:
+  if entity_type != Constants.EntityType.FALLZONE:
     player.velocity = Vector2.ZERO
   var dying_state = self.states_store.get_state(PlayerStatesEnum.DYING)
   _set_player_death_animation_type(dying_state, entity_type)

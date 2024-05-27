@@ -10,8 +10,8 @@ const SQUEEZE_ANIM_DURATION = 0.17
 const SCALE_ANIM_DURATION = 0.17
 
 # max player speed
-const SPEED = 3.5 * Global.WORLD_TO_SCREEN
-const SPEED_UNIT = 0.7 * Global.WORLD_TO_SCREEN
+const SPEED = 3.5 * Constants.WORLD_TO_SCREEN
+const SPEED_UNIT = 0.7 * Constants.WORLD_TO_SCREEN
 var speed_limit = SPEED
 var speed_unit = SPEED_UNIT
 
@@ -301,3 +301,10 @@ func show_color_areas():
   for i in range(faceNodes.size()):
     faceNodes[i].collision_layer = _face_nodes_mask_backup[i]["layer"]
     faceNodes[i].collision_mask = _face_nodes_mask_backup[i]["mask"]
+
+# Methods added to convert PianoNote to c#
+func is_jumping_state() -> bool:
+  return player_state.base_state == PlayerStatesEnum.JUMPING
+
+func is_falling() -> bool:
+  return  velocity.y >= -Constants.EPSILON

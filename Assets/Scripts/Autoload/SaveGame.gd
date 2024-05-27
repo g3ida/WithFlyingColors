@@ -135,7 +135,7 @@ func is_slot_filled(save_slot_index):
 
 func does_slot_have_progress(save_slot_index):
   return is_slot_filled(save_slot_index) \
-    and get_slot_meta_data(save_slot_index)["progress"] > Global.EPSILON
+    and get_slot_meta_data(save_slot_index)["progress"] > Constants.EPSILON2
 
 func _init_save_slot_meta_data():
   slot_meta_data = []

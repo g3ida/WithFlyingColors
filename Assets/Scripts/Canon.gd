@@ -22,7 +22,7 @@ var can_shoot: bool = true
 const ANGULAR_VELOCITY = 0.5
 const VIEW_LIMIT_1 = 179.0 * PI / 180.0
 const VIEW_LIMIT_2 = 1.0 * PI / 180.0
-const DISTANCE_LIMIT = 6.0 * Global.WORLD_TO_SCREEN
+const DISTANCE_LIMIT = 6.0 * Constants.WORLD_TO_SCREEN
 const SHOOT_PRECISION = 2.0 * PI / 180.0 
 
 func _ready():
