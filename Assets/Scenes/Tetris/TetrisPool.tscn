@@ -1,12 +1,11 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Assets/Tilesets/Tetrisl.tres" type="TileSet" id=1]
-[ext_resource path="res://Assets/Scripts/Tetris/TetrisPool.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scripts/Tetris/TetrisPool.cs" type="Script" id=2]
 [ext_resource path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/Scenes/Tetris/ScoreBoard.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Assets/Scenes/CheckpointArea.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Assets/Scenes/Tetris/NextPiece.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Assets/Scenes/Tetris/Z_Block.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" type="PackedScene" id=8]
 [ext_resource path="res://Assets/Scenes/Tetris/SlidingFloor.tscn" type="PackedScene" id=9]
 
@@ -41,7 +40,6 @@ position = Vector2( 431.333, -575.333 )
 
 [node name="NextPiece" parent="." instance=ExtResource( 6 )]
 position = Vector2( 683.333, -860.667 )
-next_piece = ExtResource( 7 )
 
 [node name="CameraLocalizer" parent="." instance=ExtResource( 3 )]
 position = Vector2( 34.667, -21 )

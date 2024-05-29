@@ -169,16 +169,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://SwipeModule/SwipeModule.gd"
 }, {
-"base": "Reference",
-"class": "TetrisAI",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Tetris/TetrisAI.gd"
-}, {
-"base": "Node2D",
-"class": "Tetromino",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Tetris/Tetromino.gd"
-}, {
 "base": "InputEventAction",
 "class": "ThrowedFooter",
 "language": "GDScript",
@@ -237,8 +227,6 @@ _global_script_class_icons={
 "SkinLoader": "",
 "SlotButton": "",
 "SwipeModule": "",
-"TetrisAI": "",
-"Tetromino": "",
 "ThrowedFooter": "res://SwipeModule/SwipeEventCore.png",
 "ThrowedHeader": "res://SwipeModule/SwipeEventCore.png",
 "UISelectDriver": "",
@@ -266,6 +254,7 @@ SaveGame="*res://Assets/Scripts/Autoload/SaveGame.gd"
 MenuManager="*res://Assets/Scripts/Autoload/MenuManager.gd"
 Levels="*res://Assets/Scripts/Autoload/Levels.gd"
 MenuManagerCS="*res://Assets/Scripts/Autoload/MenuManager.cs"
+AudioManagerCS="*res://Assets/Scripts/Autoload/AudioManager.cs"
 
 [display]
 

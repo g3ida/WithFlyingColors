@@ -161,8 +161,8 @@ private void PrepareChildrenNodes()
         {
             { "position_x", GlobalPosition.x },
             { "position_y", GlobalPosition.y },
-            { "angle", 0.0 },
-            { "default_corner_scale_factor", 1.0 }
+            { "angle", 0.0f },
+            { "default_corner_scale_factor", 1.0f }
         };
     }
 
@@ -226,7 +226,7 @@ private void PrepareChildrenNodes()
         was_on_floor = IsOnFloor();
     }
 
-    public Dictionary<string, object> Save()
+    public Dictionary<string, object> save()
     {
         return save_data;
     }
@@ -237,6 +237,7 @@ private void PrepareChildrenNodes()
         animatedSpriteNode.Playing = false;
         GlobalPosition = new Vector2((float)save_data["position_x"], (float)save_data["position_y"]);
         velocity = Vector2.Zero;
+        GD.Print(save_data["angle"]);
         var angle_rot = (float)save_data["angle"];
         Rotate(angle_rot - Rotation);
         CurrentDefaultCornerScaleFactor = (float)save_data["default_corner_scale_factor"];
@@ -250,15 +251,15 @@ private void PrepareChildrenNodes()
     {
         if (checkpoint_object.GetGroups().Contains(bottomFaceNode.GetGroups()[0]))
         {
-            save_data["angle"] = 0.0;
+            save_data["angle"] = 0f;
         }
         else if (checkpoint_object.GetGroups().Contains(leftFaceNode.GetGroups()[0]))
         {
-            save_data["angle"] = -Mathf.Pi / 2;
+            save_data["angle"] = -Mathf.Pi / 2f;
         }
         else if (checkpoint_object.GetGroups().Contains(rightFaceNode.GetGroups()[0]))
         {
-            save_data["angle"] = Mathf.Pi / 2;
+            save_data["angle"] = Mathf.Pi / 2f;
         }
         else if (checkpoint_object.GetGroups().Contains(topFaceNode.GetGroups()[0]))
         {

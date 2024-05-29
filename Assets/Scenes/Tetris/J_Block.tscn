@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://Assets/Scripts/Tetris/J_Block.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Scripts/Tetris/J_Block.cs" type="Script" id=1]
 [ext_resource path="res://Assets/Scenes/Tetris/Block.tscn" type="PackedScene" id=4]
 
 [node name="J_Block" type="Node2D"]
@@ -9,7 +9,7 @@ script = ExtResource( 1 )
 [node name="Block0" parent="." instance=ExtResource( 4 )]
 position = Vector2( 72, 0 )
 color_group = "pink"
-i = 1
+I = 1
 
 [node name="Block1" parent="." instance=ExtResource( 4 )]
 color_group = "pink"
@@ -17,10 +17,10 @@ color_group = "pink"
 [node name="Block2" parent="." instance=ExtResource( 4 )]
 position = Vector2( -72, 0 )
 color_group = "pink"
-i = -1
+I = -1
 
 [node name="Block3" parent="." instance=ExtResource( 4 )]
 position = Vector2( -72, -72 )
 color_group = "pink"
-i = -1
-j = -1
+I = -1
+J = -1

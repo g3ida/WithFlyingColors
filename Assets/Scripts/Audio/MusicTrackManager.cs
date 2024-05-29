@@ -160,26 +160,11 @@ public class MusicTrackManager : Node2D
             Bus = BUS_NAME,
             VolumeDb = volume
         };
-        SetLooping(audio_player.Stream);
+        Helpers.SetLooping(audio_player.Stream, true);
 
         music_pool[name] = new Track(name, audio_player, volume);
         AddChild(audio_player);
         audio_player.Owner = this;
-    }
-
-    private void SetLooping(AudioStream stream) {
-        if (stream is AudioStreamOGGVorbis oggStream)
-        {
-            oggStream.Loop = true;
-        }
-        else if (stream is AudioStreamMP3 mp3Stream)
-        {
-            mp3Stream.Loop = true;
-        }
-        else if (stream is AudioStreamSample sampleStream)
-        {
-            sampleStream.LoopMode = AudioStreamSample.LoopModeEnum.Forward;
-        }
     }
 
     public void RemoveTrack(string name)

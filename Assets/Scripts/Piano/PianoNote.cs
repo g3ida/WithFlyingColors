@@ -228,11 +228,9 @@ public class PianoNote : KinematicBody2D
 
     private bool IsPlayerStandingOrFalling()
     {
-        // FIXME remove dynamic type after player class migration to c#
         var player = Global.Instance().Player;
-       
-        bool isJumping  = Convert.ToBoolean(player.Call("is_jumping_state"));
-        bool isFalling  = Convert.ToBoolean(player.Call("is_falling"));
+        bool isJumping  = Convert.ToBoolean(player.IsJumpingState());
+        bool isFalling  = Convert.ToBoolean(player.IsFalling());
         return !isJumping && isFalling;
     }
 

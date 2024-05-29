@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/Scripts/Level.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Scenes/CutScene/Cutscene.tscn" type="PackedScene" id=2]
@@ -8,7 +8,6 @@
 [ext_resource path="res://Assets/Scenes/PauseScreen.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Assets/Scripts/HUD/HUD.gd" type="Script" id=7]
 [ext_resource path="res://Assets/Scenes/HUD/GemsHUDContainer.tscn" type="PackedScene" id=8]
-[ext_resource path="res://Assets/Scripts/Player/States/PlayerStatesStore.gd" type="Script" id=9]
 
 [node name="Level" type="Node2D"]
 script = ExtResource( 1 )
@@ -32,4 +31,3 @@ anchor_left = 0.5
 anchor_right = 0.5
 
 [node name="Player" parent="." instance=ExtResource( 3 )]
-StatesStore = ExtResource( 9 )
