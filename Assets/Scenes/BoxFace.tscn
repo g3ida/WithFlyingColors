@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://Assets/Scripts/Player/box_face.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Scripts/Player/BoxFace.cs" type="Script" id=1]
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 46.501, 2.125 )

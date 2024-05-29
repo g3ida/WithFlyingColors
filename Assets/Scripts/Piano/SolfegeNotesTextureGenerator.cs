@@ -8,17 +8,17 @@ public class SolfegeNotesTextureGenerator : Node
     public const int NOTE_SPRITE_WIDTH = 39;
     public static readonly Color BACKGROUND_COLOR = new Color("fdfbe7");
 
-    public static readonly Texture SOLFEGE_TEXTURE = (Texture)GD.Load("res://Assets/Sprites/Piano/sheet/key-sol.png");
+    public static readonly Texture SOLFEGE_TEXTURE = GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/key-sol.png");
 
     private static readonly Dictionary<string, Texture> NOTES_TEXTURES = new Dictionary<string, Texture>
     {
-        { "do", (Texture)GD.Load("res://Assets/Sprites/Piano/sheet/do.png") },
-        { "re", (Texture)GD.Load("res://Assets/Sprites/Piano/sheet/re.png") },
-        { "mi", (Texture)GD.Load("res://Assets/Sprites/Piano/sheet/mi.png") },
-        { "fa", (Texture)GD.Load("res://Assets/Sprites/Piano/sheet/fa.png") },
-        { "sol", (Texture)GD.Load("res://Assets/Sprites/Piano/sheet/sol.png") },
-        { "la", (Texture)GD.Load("res://Assets/Sprites/Piano/sheet/la.png") },
-        { "si", (Texture)GD.Load("res://Assets/Sprites/Piano/sheet/si.png") }
+        { "do", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/do.png") },
+        { "re", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/re.png") },
+        { "mi", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/mi.png") },
+        { "fa", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/fa.png") },
+        { "sol", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/sol.png") },
+        { "la", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/la.png") },
+        { "si", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/si.png") }
     };
 
     public override void _Ready()

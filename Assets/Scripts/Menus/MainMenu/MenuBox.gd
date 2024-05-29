@@ -1,7 +1,7 @@
 extends Control
 
 const PlaySubMenuScene = preload("res://Assets/Scenes/MainMenu/PlaySubMenu.tscn")
-const PlayerRotationAction = preload("res://Assets/Scripts/Player/PlayerRotationAction.gd")
+const PlayerRotationAction = preload("res://Assets/Scripts/Player/PlayerRotationAction.cs")
 
 const SUB_MENU_POPUP_DURATION = 0.2
 
@@ -41,7 +41,8 @@ func _enter_tree():
     active_index = 1
 
 func _ready():
-  box_rotation = PlayerRotationAction.new($MenuBox)
+  box_rotation = PlayerRotationAction.new()
+  box_rotation.Set($MenuBox)
   buttons = [
     play_button,
     settings_button,
@@ -57,7 +58,7 @@ func update_position_y(y: float):
   self.rect_position.y = y
 
 func _physics_process(delta):
-  box_rotation.step(delta)
+  box_rotation.Step(delta)
 
   if PlaySubMenuNode != null:
     PlaySubMenuNode.set_position(play_sub_menu_pos)
@@ -76,7 +77,7 @@ func _hide_sub_menu_if_needed():
 
 func _on_RightButton_pressed():
   _hide_sub_menu_if_needed()
-  if box_rotation.execute(1, Constants.PI2, 0.1, false):
+  if box_rotation.Execute(1, Constants.PI2, 0.1, false, true, true):
     buttons[active_index].disabled = true
     active_index = (active_index - 1) % buttons.size()
     buttons[active_index].disabled = false
@@ -84,7 +85,7 @@ func _on_RightButton_pressed():
   
 func _on_LeftButton_pressed():
   _hide_sub_menu_if_needed()
-  if box_rotation.execute(-1, Constants.PI2, 0.1, false):
+  if box_rotation.Execute(-1, Constants.PI2, 0.1, false, true, true):
     buttons[active_index].disabled = true
     active_index = (active_index + 1) % buttons.size()
     buttons[active_index].disabled = false

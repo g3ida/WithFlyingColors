@@ -23,8 +23,8 @@ public class Global : Node2D
       set { _gdInstance.Set("camera", value); }
     }
     
-    public KinematicBody2D Player {
-      get { return (KinematicBody2D)_gdInstance.Get("player"); }
+    public Player Player {
+      get { return (Player)_gdInstance.Get("player"); }
       set { _gdInstance.Set("player", value); }
     }
 
@@ -41,10 +41,11 @@ public class Global : Node2D
       set { _gdInstance.Set("pauseMenu", value); }
     }
 
-    private Texture _playerSprite {
-      get { return (Texture)_gdInstance.Get("_playerSprite"); }
-      set { _gdInstance.Set("_playerSprite", value); }
-    }
+    private Texture _playerSprite;
+    // {
+    //   get { return (Texture)_gdInstance.Get("_playerSprite"); }
+    //   set { _gdInstance.Set("_playerSprite", value); }
+    // }
     
     private Dictionary<string, string[]> selectedSkin = SkinLoader.DEFAULT_SKIN;
 

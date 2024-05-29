@@ -43,8 +43,7 @@ func _physics_process(delta):
   switch_state(state)
 
 func _on_Gem_area_entered(area: Area2D): 
-  var player_state = Global.player.player_state.base_state
-  if player_state == PlayerStatesEnum.DYING or current_state != states_store.not_collected:
+  if Global.player.IsDying() or current_state != states_store.not_collected:
     return
   var state = current_state.on_collision_with_body(area)
   switch_state(state)
@@ -79,8 +78,7 @@ func reset():
 
 func is_in_group(grp) -> bool:
   #if the player is dying we don't want to collect it
-  var player_state = Global.player.player_state.base_state
-  if player_state == PlayerStatesEnum.DYING:
+  if Global.player.IsDying():
     return false
   #if the gem is already collecting we don't wan't the player to die
   if current_state == states_store.collecting:

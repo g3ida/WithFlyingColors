@@ -68,7 +68,7 @@ func _create_temple_gem(color_group: String, delay: float, _position: Vector2, _
 
 func _process(_delta):
   if current_state == States.WALK_PHASE:
-    Global.player.velocity.x = Global.player.SPEED
+    Global.player.SetMaxSpeed()
   elif current_state == States.ROTATION_PHASE:
     _process_rotate_gems(_delta)
   elif current_state == States.BLOOM_PHASE:

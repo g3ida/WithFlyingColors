@@ -1,36 +1,27 @@
-// using Godot;
-// using System;
+using Godot;
+using System;
 
-// public class PlayerRotatingIdleState : PlayerBaseState
-// {
-//     private PlayerRotationAction playerRotation;
+public class PlayerRotatingIdleState : PlayerBaseStateCS
+{
+    private PlayerRotationAction playerRotation;
 
-//     public PlayerRotatingIdleState(PlayerDependencies dependencies)
-//     {
-//         playerRotation = dependencies.PlayerRotationAction;
-//         BaseState = PlayerStatesEnum.Idle;
-//     }
+    public PlayerRotatingIdleState() : base() {
+        baseState = PlayerStatesEnum.IDLE;
+    }
 
-//     public override void Enter()
-//     {
-//         // Add any enter logic here
-//     }
+    protected override void _Enter(Player player)
+    {
+      playerRotation = player.playerRotationAction;
+    }
 
-//     public override void Exit()
-//     {
-//         // Add any exit logic here
-//     }
+    protected override void _Exit(Player player)
+    {
+        // Add any exit logic here
+    }
 
-//     public override BaseState PhysicsUpdate(float delta)
-//     {
-//         playerRotation.Step(delta);
-//         return HandleRotate();
-//     }
-
-//     private BaseState HandleRotate()
-//     {
-//         // Implement the logic to handle rotation and return the appropriate state
-//         // For now, just return this to match the structure of the original GDScript
-//         return this;
-//     }
-// }
+    public override BaseStateCS<Player> PhysicsUpdate(Player player, float delta)
+    {
+        playerRotation.Step(delta);
+        return HandleRotate(player);
+    }
+}

@@ -9,11 +9,6 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Area2D",
-"class": "BaseFace",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/BaseFace.gd"
-}, {
 "base": "Reference",
 "class": "BaseState",
 "language": "GDScript",
@@ -58,11 +53,6 @@ _global_script_classes=[ {
 "class": "Constants",
 "language": "GDScript",
 "path": "res://Assets/Scripts/Utils/Constants_old.gd"
-}, {
-"base": "Reference",
-"class": "DeathAnimationType",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/DeathAnimationType.gd"
 }, {
 "base": "Control",
 "class": "GameMenu",
@@ -154,80 +144,10 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/Menus/MenuButtons.gd"
 }, {
-"base": "KinematicBody2D",
-"class": "Player",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/Player.gd"
-}, {
-"base": "BaseState",
-"class": "PlayerBaseState",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/PlayerBaseState.gd"
-}, {
-"base": "PlayerBaseState",
-"class": "PlayerDashingState",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/PlayerDashingState.gd"
-}, {
-"base": "Reference",
-"class": "PlayerDependencies",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/PlayerDependencies.gd"
-}, {
-"base": "PlayerBaseState",
-"class": "PlayerDyingState",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/PlayerDyingState.gd"
-}, {
-"base": "PlayerBaseState",
-"class": "PlayerFallingState",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/PlayerFallingState.gd"
-}, {
-"base": "PlayerBaseState",
-"class": "PlayerJumpingState",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/PlayerJumpingState.gd"
-}, {
-"base": "PlayerBaseState",
-"class": "PlayerRotatingIdleState",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/RotationStates/PlayerRotatingIdleState.gd"
-}, {
-"base": "PlayerBaseState",
-"class": "PlayerRotatingState",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/RotationStates/PlayerRotatingState.gd"
-}, {
-"base": "Reference",
-"class": "PlayerRotationAction",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/PlayerRotationAction.gd"
-}, {
-"base": "PlayerBaseState",
-"class": "PlayerSlipperingState",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/PlayerSlipperingState.gd"
-}, {
 "base": "Reference",
 "class": "PlayerSpriteGenerator",
 "language": "GDScript",
 "path": "res://Assets/Scripts/Player/PlayerSpriteGenerator_old.gd"
-}, {
-"base": "PlayerBaseState",
-"class": "PlayerStandingState",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/PlayerStandingState.gd"
-}, {
-"base": "Reference",
-"class": "PlayerStatesEnum",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/PlayerStatesEnum.gd"
-}, {
-"base": "BaseStatesStore",
-"class": "PlayerStatesStore",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/States/PlayerStatesStore.gd"
 }, {
 "base": "Node2D",
 "class": "PowerUpScript",
@@ -285,7 +205,6 @@ _global_script_classes=[ {
 "path": "res://SwipeModule/_SwipeEventCore.gd"
 } ]
 _global_script_class_icons={
-"BaseFace": "",
 "BaseState": "",
 "BaseStatesStore": "",
 "BouncingBall": "",
@@ -295,7 +214,6 @@ _global_script_class_icons={
 "CheckpointArea": "",
 "ColorUtils": "",
 "Constants": "",
-"DeathAnimationType": "",
 "GameMenu": "",
 "Gem": "",
 "GemBaseState": "",
@@ -314,21 +232,7 @@ _global_script_class_icons={
 "InputTouchRotate": "",
 "InputUtils": "",
 "MenuButtons": "",
-"Player": "",
-"PlayerBaseState": "",
-"PlayerDashingState": "",
-"PlayerDependencies": "",
-"PlayerDyingState": "",
-"PlayerFallingState": "",
-"PlayerJumpingState": "",
-"PlayerRotatingIdleState": "",
-"PlayerRotatingState": "",
-"PlayerRotationAction": "",
-"PlayerSlipperingState": "",
 "PlayerSpriteGenerator": "",
-"PlayerStandingState": "",
-"PlayerStatesEnum": "",
-"PlayerStatesStore": "",
 "PowerUpScript": "",
 "SkinLoader": "",
 "SlotButton": "",
@@ -357,7 +261,7 @@ GlobalCS="*res://Assets/Scripts/Autoload/Global.cs"
 EventCS="*res://Assets/Scripts/Autoload/Event.cs"
 Settings="*res://Assets/Scripts/Autoload/Settings.gd"
 AudioManager="*res://Assets/Scripts/Autoload/AudioManager.gd"
-TouchInput="*res://Assets/Scripts/Autoload/TouchInput.gd"
+TouchInput="res://Assets/Scripts/Autoload/TouchInput.gd"
 SaveGame="*res://Assets/Scripts/Autoload/SaveGame.gd"
 MenuManager="*res://Assets/Scripts/Autoload/MenuManager.gd"
 Levels="*res://Assets/Scripts/Autoload/Levels.gd"

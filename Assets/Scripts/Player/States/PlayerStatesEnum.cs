@@ -1,5 +1,4 @@
-class_name PlayerStatesEnum
-enum {
+public enum PlayerStatesEnum {
   STANDING,
   JUMPING,
   FALLING,

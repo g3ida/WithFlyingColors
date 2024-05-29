@@ -17,13 +17,13 @@ public class PianoNote : KinematicBody2D
     [Signal]
     public delegate void on_note_released(PianoNote note);
 
-    private static readonly Texture PairTexture = (Texture)GD.Load("res://Assets/Sprites/Piano/note_1.png");
-    private static readonly Texture OddTexture = (Texture)GD.Load("res://Assets/Sprites/Piano/note_2.png");
+    private static readonly Texture PairTexture = GD.Load<Texture>("res://Assets/Sprites/Piano/note_1.png");
+    private static readonly Texture OddTexture = GD.Load<Texture>("res://Assets/Sprites/Piano/note_2.png");
 
     private static readonly Texture[] NoteEdgeTextures = {
-        (Texture)GD.Load("res://Assets/Sprites/Piano/note_edge.png"),
-        (Texture)GD.Load("res://Assets/Sprites/Piano/note_edge2.png"),
-        (Texture)GD.Load("res://Assets/Sprites/Piano/note_edge3.png"),
+        GD.Load<Texture>("res://Assets/Sprites/Piano/note_edge.png"),
+        GD.Load<Texture>("res://Assets/Sprites/Piano/note_edge2.png"),
+        GD.Load<Texture>("res://Assets/Sprites/Piano/note_edge3.png"),
     };
 
     private static readonly Vector2 PRESS_OFFSET = new Vector2(0, 25);

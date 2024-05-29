@@ -5,7 +5,7 @@ using Godot;
 public class SolfegeBoard : Node2D
 {
     private const float DURATION = 0.8f;
-    private PackedScene NotesCursorScene = GD.Load<PackedScene>("res://Assets/Scenes/Piano/NotesCursor.tscn");
+    private PackedScene NotesCursorScene = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Piano/NotesCursor.tscn");
     private Texture MusicPaperRectTexture = GD.Load<Texture>("res://Assets/Sprites/Piano/music-paper-rect.png");
 
     [Signal]

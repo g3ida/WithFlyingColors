@@ -1,7 +1,7 @@
 [gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Assets/Animations/player_frames.tres" type="SpriteFrames" id=1]
-[ext_resource path="res://Assets/Scripts/Player/Player.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scripts/Player/Player.cs" type="Script" id=2]
 [ext_resource path="res://Assets/Scenes/BoxFace.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/Scenes/FaceSeparator.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Assets/Scenes/Player/FaceCollisionShape.tscn" type="PackedScene" id=5]

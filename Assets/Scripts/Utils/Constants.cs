@@ -31,5 +31,5 @@ public static class Constants {
 
     public static readonly string[] COLOR_GROUPS = { "blue", "pink", "purple", "yellow" };
 
-    enum EntityType {PLATFORM, FALLZONE, LAZER, BULLET, BALL, BRICK_BREAKER}
+    public enum EntityType {PLATFORM, FALLZONE, LAZER, BULLET, BALL, BRICK_BREAKER}
 }

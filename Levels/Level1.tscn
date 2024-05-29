@@ -64,7 +64,7 @@ follow_path = NodePath("../Player")
 [node name="CameraShake" parent="Camera2D" instance=ExtResource( 30 )]
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
-position = Vector2( 666, 145 )
+position = Vector2( 4889, 452 )
 collision_mask = 13
 StatesStore = ExtResource( 33 )
 

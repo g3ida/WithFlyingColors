@@ -152,7 +152,7 @@ public class MusicTrackManager : Node2D
     {
         if (music_pool.ContainsKey(name)) return;
 
-        var stream = (AudioStream)GD.Load(path);
+        var stream = GD.Load<AudioStream>(path);
         var audio_player = new AudioStreamPlayer
         {
             Stream = stream,
@@ -294,7 +294,8 @@ public class MusicTrackManager : Node2D
         save_data["scale"] = pitch_scale;
     }
 
-    public void Reset()
+    // FIXME: rename to Reset after C# migration
+    public void reset()
     {
         var track = save_data["track"] as string;
         if (track != null && current_track != null && track != current_track.Name)
@@ -314,11 +315,11 @@ public class MusicTrackManager : Node2D
     public override void _EnterTree()
     {
         Event.GdInstance().Connect("checkpoint_reached", this, nameof(OnCheckpointHit));
-        Event.GdInstance().Connect("checkpoint_loaded", this, nameof(Reset));
+        Event.GdInstance().Connect("checkpoint_loaded", this, nameof(reset));
     }
 
     public override void _ExitTree() {
         Event.GdInstance().Disconnect("checkpoint_reached", this, nameof(OnCheckpointHit));
-        Event.GdInstance().Disconnect("checkpoint_loaded", this, nameof(Reset));
+        Event.GdInstance().Disconnect("checkpoint_loaded", this, nameof(reset));
     }
 }

@@ -27,7 +27,7 @@ public class Event : Node
     public delegate void player_landed(Node area, Vector2 position);
 
     [Signal]
-    public delegate void player_diying(Node area, Vector2 position, string entity_type);
+    public delegate void player_diying(Node area, Vector2 position, Constants.EntityType entity_type);
 
     [Signal]
     public delegate void player_died();
@@ -36,7 +36,7 @@ public class Event : Node
     public delegate void player_jumped();
 
     [Signal]
-    public delegate void player_rotate(Vector2 dir);
+    public delegate void player_rotate(int dir);
 
     [Signal]
     public delegate void player_land();
@@ -157,7 +157,7 @@ public class Event : Node
         
     public void EmitPlayerLanded(Node area, Vector2 position) =>_gdInstance.EmitSignal(nameof(player_landed), area, position);
 
-    public void EmitPlayerDiying(Node area, Vector2 position, string entityType) =>_gdInstance.EmitSignal(nameof(player_diying), area, position, entityType);
+    public void EmitPlayerDiying(Node area, Vector2 position, Constants.EntityType entityType) =>_gdInstance.EmitSignal(nameof(player_diying), area, position, entityType);
 
     public void EmitPlayerDied() =>_gdInstance.EmitSignal(nameof(player_died));
 
@@ -165,7 +165,7 @@ public class Event : Node
 
     public void EmitPlayerJumped() =>_gdInstance.EmitSignal(nameof(player_jumped));
 
-    public void EmitPlayerRotate(Vector2 dir) =>_gdInstance.EmitSignal(nameof(player_rotate), dir);
+    public void EmitPlayerRotate(int dir) =>_gdInstance.EmitSignal(nameof(player_rotate), dir);
 
     public void EmitPlayerLand() =>_gdInstance.EmitSignal(nameof(player_land));
 

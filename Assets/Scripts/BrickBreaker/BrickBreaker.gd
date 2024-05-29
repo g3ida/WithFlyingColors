@@ -140,7 +140,7 @@ func play():
     BricksTimerNode.start()
     var __ = BricksTileMapNode.connect("bricks_cleared", self, "_on_bricks_cleared")
     __ = BricksTileMapNode.connect("level_cleared", self, "_on_level_cleared")
-    Global.player.current_default_corner_scale_factor = FACE_SEPARATOR_SCALE_FACTOR
+    Global.player.CurrentDefaultCornerScaleFactor = FACE_SEPARATOR_SCALE_FACTOR
 
 func _on_bouncing_ball_removed(_ball):
   num_balls -= 1

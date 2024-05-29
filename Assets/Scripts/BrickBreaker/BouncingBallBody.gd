@@ -70,7 +70,7 @@ func is_side_collision(collision: KinematicCollision2D):
 func relative_collision_ratio_to_side():
   var scale_y = Global.player.scale.y
   var ppos = Global.player.global_position
-  var dims = Global.player.get_collision_shape_size()
+  var dims = Global.player.GetCollisionShapeSize()
   var ratio = (ppos.y+dims.y*scale_y*0.5 - global_position.y) / dims.y * scale_y
   return clamp(ratio, 0.0, 1.0)
 
@@ -190,7 +190,7 @@ func _is_player_pushing_a_flying_ball():
 func _is_ball_under_player():
   var player = Global.player
   var pp = player.global_position
-  var s = player.get_collision_shape_size() * player.scale
+  var s = player.GetCollisionShapeSize() * player.scale
   var hs = s * 0.5
   var bp = global_position
   return ((pp.y+hs.y) < bp.y) and (bp.x > (pp.x-hs.x) and bp.x < (pp.x+hs.x))
@@ -198,15 +198,15 @@ func _is_ball_under_player():
 func _is_ball_over_the_player():
   var player = Global.player
   var pp = player.global_position
-  var s = player.get_collision_shape_size() * player.scale
+  var s = player.GetCollisionShapeSize() * player.scale
   var hs = s * 0.5
   var bp = global_position
   return ((pp.y-hs.y) > bp.y) and (bp.x > (pp.x-hs.x) and bp.x < (pp.x+hs.x))
   
 func _is_colliding_with_player():
   var player = Global.player
-  var player_size = player.get_collision_shape_size() * player.scale
-  var is_idle = player.player_rotation_state.base_state == PlayerStatesEnum.IDLE
+  var player_size = player.GetCollisionShapeSize() * player.scale
+  var is_idle = player.IsRotationIdle()
   return is_idle and Helpers.intersects(
     global_position,
     AreaCollisionShape.shape.radius*scale.x + 10.0, # adding some offset for collision
@@ -219,7 +219,7 @@ func _velocity_post_process(res_inf: CollisionResolutionInfo):
   velocity = velocity.normalized() * speed
 
 func is_probably_a_brick(area, groups):
-  var is_box_face = Global.player.contains_node(area)
+  var is_box_face = Global.player.ContainsNode(area)
   return !is_box_face and groups.size() > 0
 
 func rnd_angle(value: float) -> float:
@@ -254,4 +254,4 @@ func increment_speed():
 
 func _on_Area2D_body_shape_entered(_body_rid:RID, body:Node, body_shape_index:int, _local_shape_index:int):
   if body != Global.player: return
-  body.on_fast_area_colliding_with_player_shape(body_shape_index, AreaNode, Constants.EntityType.BALL)
+  body.OnFastAreaCollidingWithPlayerShape(body_shape_index, AreaNode, Constants.EntityType.BALL)

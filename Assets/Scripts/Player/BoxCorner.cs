@@ -1,0 +1,51 @@
+using Godot;
+using System;
+
+public class BoxCorner : BaseFace
+{
+    public float edgeLength;
+
+    public override void _Ready()
+    {
+        collisionShapeNode = GetNode<CollisionShape2D>("CollisionShape2D");
+        edgeLength = (collisionShapeNode.Shape as RectangleShape2D).Extents.x;
+    }
+
+    public void _on_area_entered(Area2D area)
+    {
+        if (area.IsInGroup("fallzone"))
+        {
+            Event.Instance().EmitPlayerDiying(null, GlobalPosition, Constants.EntityType.FALLZONE);
+            return;
+        }
+
+        var groups = GetGroups();
+        if (!CheckGroup(area, groups))
+        {
+            Event.Instance().EmitPlayerDiying(area, GlobalPosition, Constants.EntityType.PLATFORM);
+        }
+        // FIXME: correct this after c# migration
+        else if (area.HasMethod("_on_Gem_area_entered"))
+        //else if (area is Gem gem)
+        {
+            area.Call("_on_Gem_area_entered", this);
+            //gem.OnGemAreaEntered(this);
+        }
+        else if (!Global.Instance().Player.IsStanding())
+        {
+            Event.Instance().EmitPlayerLanded(area, GlobalPosition);
+        }
+    }
+
+    private bool CheckGroup(Area2D area, Godot.Collections.Array groups)
+    {
+        foreach (string group in groups)
+        {
+            if (area.IsInGroup(group))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+}
