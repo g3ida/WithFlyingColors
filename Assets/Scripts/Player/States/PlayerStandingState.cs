@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerStandingState : PlayerBaseStateCS
+public class PlayerStandingState : PlayerBaseState
 {
     private const float RAYCAST_LENGTH = 10.0f;
     private const float RAYCAST_Y_OFFSET = -3.0f; // https://godotengine.org/qa/63336/raycast2d-doesnt-collide-with-tilemap

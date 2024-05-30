@@ -380,7 +380,7 @@ texture = ExtResource( 10 )
 centered = false
 
 [node name="Player" parent="." index="11"]
-position = Vector2( 12069, 231 )
+position = Vector2( 564, -213 )
 
 [node name="CheckpointArea" parent="." index="12" instance=ExtResource( 11 )]
 position = Vector2( 9408, 320 )

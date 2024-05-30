@@ -123,7 +123,7 @@ public class GemHUD : Node2D
 
     public void reset()
     {
-        if ((State)(int)save_data["state"] == State.EMPTY)
+        if ((State)Helpers.ParseSaveDataInt(save_data, "state") == State.EMPTY)
         {
             textureRectNode.Texture = textureEmpty;
             backgroundNode.Visible = false;

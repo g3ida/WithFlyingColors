@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerDyingState : PlayerBaseStateCS
+public class PlayerDyingState : PlayerBaseState
 {
     private static readonly PackedScene ExplosionScene = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Explosion/Explosion.tscn");
 

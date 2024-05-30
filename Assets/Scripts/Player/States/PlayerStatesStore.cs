@@ -33,7 +33,6 @@ public class PlayerStatesStore : BaseStatesStore<Player, PlayerStatesEnum>
         idleState = new PlayerRotatingIdleState();
 
         slipperingState = new PlayerSlipperingState();
-
     }
 
     public override BaseState<Player> GetState(PlayerStatesEnum state)

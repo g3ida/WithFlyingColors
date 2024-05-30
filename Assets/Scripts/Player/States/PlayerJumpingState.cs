@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerJumpingState : PlayerBaseStateCS
+public class PlayerJumpingState : PlayerBaseState
 {    
     private const float TIME_UNTIL_FULL_JUMP_IS_CONSIDERED = 0.15f;
     private const float PERMISSIVENESS = 0.09f;

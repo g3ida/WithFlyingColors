@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerFallingState : PlayerBaseStateCS
+public class PlayerFallingState : PlayerBaseState
 {
     private CountdownTimer permissivenessTimer = new CountdownTimer();
     public bool wasOnFloor = false;

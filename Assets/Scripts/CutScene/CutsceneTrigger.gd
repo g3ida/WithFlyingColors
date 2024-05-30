@@ -13,4 +13,4 @@ func _ready():
 func _on_Area2D_body_entered(body):
   if !triggered and body == Global.player and follow_child != null:
     triggered = true
-    Global.cutscene._show_some_node(follow_child, 3.0, 3.2)
+    Global.cutscene.ShowSomeNode(follow_child, 3.0, 3.2)

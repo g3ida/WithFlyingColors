@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerRotatingState : PlayerBaseStateCS
+public class PlayerRotatingState : PlayerBaseState
 {
     private int rotationDirection;
     private PlayerRotationAction playerRotation;

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerSlipperingState : PlayerBaseStateCS
+public class PlayerSlipperingState : PlayerBaseState
 {
     public int direction = 1;
     private PlayerRotationAction playerRotation;
@@ -20,11 +20,11 @@ public class PlayerSlipperingState : PlayerBaseStateCS
     public PlayerSlipperingState() : base()
     {
         this.baseState = PlayerStatesEnum.SLIPPERING;
-        playerRotation = new PlayerRotationAction();
     }
 
     protected override void _Enter(Player player)
     {
+        playerRotation = player.playerRotationAction;
         player.animatedSpriteNode.Play("idle");
         player.animatedSpriteNode.Playing = false;
         skipExitRotation = false;

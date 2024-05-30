@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerDashingState : PlayerBaseStateCS
+public class PlayerDashingState : PlayerBaseState
 {
     private static readonly PackedScene DashGhost = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Player/DashGhost.tscn");
     private const float DASH_DURATION = 0.17f;

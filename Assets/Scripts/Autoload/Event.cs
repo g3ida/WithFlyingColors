@@ -138,10 +138,10 @@ public class Event : Node
     public delegate void piano_puzzle_won();
 
     [Signal]
-    public delegate void cutscene_request_start(int id);
+    public delegate void cutscene_request_start(string id);
 
     [Signal]
-    public delegate void cutscene_request_end(int id);
+    public delegate void cutscene_request_end(string id);
 
     [Signal]
     public delegate void gem_temple_triggered();
@@ -231,9 +231,9 @@ public class Event : Node
 
     public void EmitPianoPuzzleWon() =>_gdInstance.EmitSignal(nameof(piano_puzzle_won));
 
-    public void EmitCutsceneRequestStart(int id) =>_gdInstance.EmitSignal(nameof(cutscene_request_start), id);
+    public void EmitCutsceneRequestStart(string id) =>_gdInstance.EmitSignal(nameof(cutscene_request_start), id);
 
-    public void EmitCutsceneRequestEnd(int id) =>_gdInstance.EmitSignal(nameof(cutscene_request_end), id);
+    public void EmitCutsceneRequestEnd(string id) =>_gdInstance.EmitSignal(nameof(cutscene_request_end), id);
 
     public void EmitGemTempleTriggered() =>_gdInstance.EmitSignal(nameof(gem_temple_triggered));
 

@@ -26,7 +26,7 @@ public class Gem : Area2D
 
     public AnimationPlayer AnimationPlayerNode;
 
-    private Dictionary<string, object> save_data = new Dictionary<string, object> { { "state", null } };
+    private Godot.Collections.Dictionary<string, object> save_data = new Godot.Collections.Dictionary<string, object> { { "state", null } };
 
     public override void _Ready()
     {
@@ -111,14 +111,14 @@ public class Gem : Area2D
         save_data["state"] = (int)StatesStore.GetStateEnum(savedState);
     }
 
-    public Dictionary<string, object> save()
+    public Godot.Collections.Dictionary<string, object> save()
     {
         return save_data;
     }
 
     public void reset()
     {
-        var state = (GemStatesEnum)(int)save_data["state"];
+        var state = (GemStatesEnum)Helpers.ParseSaveDataInt(save_data, "state");
         SwitchState((GemBaseState)StatesStore.GetState(state));
     }
 

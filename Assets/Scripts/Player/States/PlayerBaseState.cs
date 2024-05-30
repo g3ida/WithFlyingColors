@@ -1,14 +1,14 @@
 using Godot;
 using System;
 
-public class PlayerBaseStateCS : BaseState<Player>
+public class PlayerBaseState : BaseState<Player>
 {
     public PlayerStatesEnum baseState;
 
     const float GRAVITY = 9.8f * Constants.WORLD_TO_SCREEN;
     const float FALL_FACTOR = 2.5f;
 
-    public PlayerBaseStateCS() {}
+    public PlayerBaseState() {}
 
     public bool playerMoved = false;
 
@@ -131,7 +131,7 @@ public class PlayerBaseStateCS : BaseState<Player>
         }
     }
 
-    public PlayerBaseStateCS OnPlayerDying(Player player, Node area, Vector2 position, Constants.EntityType entityType)
+    public PlayerBaseState OnPlayerDying(Player player, Node area, Vector2 position, Constants.EntityType entityType)
     {
         if (entityType != Constants.EntityType.FALLZONE)
         {
@@ -143,7 +143,7 @@ public class PlayerBaseStateCS : BaseState<Player>
         return dyingState;
     }
 
-    public PlayerBaseStateCS OnLand(Player player)
+    public PlayerBaseState OnLand(Player player)
     {
         player.current_animation = player.scale_animation;
         if (!player.current_animation.IsRunning())

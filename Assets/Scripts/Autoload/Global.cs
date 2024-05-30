@@ -18,8 +18,8 @@ public class Global : Node2D
       return _instance;
     }
 
-    public Camera2D Camera {
-      get { return (Camera2D)_gdInstance.Get("camera"); }
+    public GameCamera Camera {
+      get { return (GameCamera)_gdInstance.Get("camera"); }
       set { _gdInstance.Set("camera", value); }
     }
     
@@ -28,12 +28,12 @@ public class Global : Node2D
       set { _gdInstance.Set("player", value); }
     }
 
-    public Node Cutscene {
-      get { return (Node)_gdInstance.Get("cutscene"); }
+    public Cutscene Cutscene {
+      get { return (Cutscene)_gdInstance.Get("cutscene"); }
       set { _gdInstance.Set("cutscene", value); }
     }
-    public Node GemHUD {
-      get { return (Node)_gdInstance.Get("gem_hud"); }
+    public GemsHUDContainer GemHUD {
+      get { return (GemsHUDContainer)_gdInstance.Get("gem_hud"); }
       set { _gdInstance.Set("gem_hud", value); }
     }
     public Node PauseMenu {

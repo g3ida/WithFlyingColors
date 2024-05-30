@@ -23,8 +23,8 @@ public class Player : KinematicBody2D
     private bool was_on_floor = true;
 
     public PlayerStatesStore states_store;
-    public PlayerBaseStateCS player_state;
-    public PlayerBaseStateCS player_rotation_state;
+    public PlayerBaseState player_state;
+    public PlayerBaseState player_rotation_state;
 
     public bool can_dash = true;
     public bool handle_input_is_disabled = false;
@@ -212,10 +212,10 @@ private void PrepareChildrenNodes()
 
     public override void _PhysicsProcess(float delta)
     {
-        var next_state = (PlayerBaseStateCS)player_rotation_state.PhysicsUpdate(this, delta);
+        var next_state = (PlayerBaseState)player_rotation_state.PhysicsUpdate(this, delta);
         SwitchRotationState(next_state);
 
-        var next_player_state = (PlayerBaseStateCS)player_state.PhysicsUpdate(this, delta);
+        var next_player_state = (PlayerBaseState)player_state.PhysicsUpdate(this, delta);
         SwitchState(next_player_state);
 
         if (IsJustHitTheFloor())
@@ -241,8 +241,8 @@ private void PrepareChildrenNodes()
         Rotate(angle_rot - Rotation);
         CurrentDefaultCornerScaleFactor = (float)save_data["default_corner_scale_factor"];
         ShowColorAreas();
-        SwitchRotationState((PlayerBaseStateCS)states_store.GetState(PlayerStatesEnum.IDLE));
-        SwitchState((PlayerBaseStateCS)states_store.GetState(PlayerStatesEnum.FALLING));
+        SwitchRotationState((PlayerBaseState)states_store.GetState(PlayerStatesEnum.IDLE));
+        SwitchState((PlayerBaseState)states_store.GetState(PlayerStatesEnum.FALLING));
         handle_input_is_disabled = false;
     }
 
@@ -316,7 +316,7 @@ private void PrepareChildrenNodes()
         SwitchState(next_player_state);
     }
 
-    private void SwitchState(PlayerBaseStateCS new_state)
+    private void SwitchState(PlayerBaseState new_state)
     {
         if (new_state != null)
         {
@@ -326,7 +326,7 @@ private void PrepareChildrenNodes()
         }
     }
 
-    private void SwitchRotationState(PlayerBaseStateCS new_state)
+    private void SwitchRotationState(PlayerBaseState new_state)
     {
         if (new_state != null)
         {

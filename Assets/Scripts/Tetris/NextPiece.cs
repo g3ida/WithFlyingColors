@@ -33,18 +33,19 @@ public class NextPiece : Node
     // Used to center piece in container
     private Vector2 GetPieceBounds(Tetromino piece)
     {
-        int minI = 3;
-        int minJ = 3;
-        int maxI = -3;
-        int maxJ = -3;
+        float minI = 3f;
+        float minJ = 3f;
+        float maxI = -3f;
+        float maxJ = -3f;
         foreach (Node ch in piece.GetChildren())
         {
             Block block = (Block)ch;
-            minI = Math.Min(block.I, minI);
-            minJ = Math.Min(block.J, minJ);
-            maxI = Math.Max(block.I, maxI);
-            maxJ = Math.Max(block.J, maxJ);
+            minI = Mathf.Min(block.I, minI);
+            minJ = Mathf.Min(block.J, minJ);
+            maxI = Mathf.Max(block.I, maxI);
+            maxJ = Mathf.Max(block.J, maxJ);
         }
-        return new Vector2(minI, minJ) + new Vector2(maxI - minI + 1, maxJ - minJ + 1) * 0.5f * Constants.TETRIS_BLOCK_SIZE;
+        // FIXME: Why did I had to chnage this from +1f to -1f (C# migration) ?
+        return new Vector2(minI, minJ) + new Vector2(maxI- minI - 1f, maxJ - minJ - 1f) * 0.5f * Constants.TETRIS_BLOCK_SIZE;
     }
 }
