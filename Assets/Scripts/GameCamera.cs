@@ -145,7 +145,7 @@ public class GameCamera : Camera2D
         DragMarginRight = cachedDragMarginRight;
     }
 
-    private void zoom_by(float factor)
+    public void zoom_by(float factor)
     {
         targetZoom = factor;
         if (zoomTweener != null)

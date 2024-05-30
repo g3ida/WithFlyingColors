@@ -14,10 +14,10 @@ public static class Constants {
 
     public const float DEFAULT_DRAG_MARGIN_LR = 0.27f;
     public const float DEFAULT_DRAG_MARGIN_TB = 0.05f;
-    public const float DEFAULT_CAMERA_LIMIT_LEFT = -100000;
-    public const float DEFAULT_CAMERA_LIMIT_RIGHT = 100000;
-    public const float DEFAULT_CAMERA_LIMIT_TOP = -100000;
-    public const float DEFAULT_CAMERA_LIMIT_BOTTOM = 100000;
+    public const int DEFAULT_CAMERA_LIMIT_LEFT = -100000;
+    public const int DEFAULT_CAMERA_LIMIT_RIGHT = 100000;
+    public const int DEFAULT_CAMERA_LIMIT_TOP = -100000;
+    public const int DEFAULT_CAMERA_LIMIT_BOTTOM = 100000;
 
     public const float DEGREES_TO_RAD = Mathf.Pi / 180.0f;
     public const float RAD_TO_DEGREES = 180.0f / Mathf.Pi;
