@@ -237,7 +237,6 @@ private void PrepareChildrenNodes()
         animatedSpriteNode.Playing = false;
         GlobalPosition = new Vector2((float)save_data["position_x"], (float)save_data["position_y"]);
         velocity = Vector2.Zero;
-        GD.Print(save_data["angle"]);
         var angle_rot = (float)save_data["angle"];
         Rotate(angle_rot - Rotation);
         CurrentDefaultCornerScaleFactor = (float)save_data["default_corner_scale_factor"];
@@ -360,7 +359,7 @@ private void PrepareChildrenNodes()
         var edge = faceSeparatorNodes[0].edgeLength;
         var face = faceNodes[0].edgeLength;
         var total_length = 2 * edge + face;
-        var reverse_factor = (total_length - 2 * edge * factor) / face;
+        var reverse_factor = (total_length - 2f * edge * factor) / face;
         ScaleFaceSeparatorsBy(factor);
         ScaleFacesBy(reverse_factor);
     }

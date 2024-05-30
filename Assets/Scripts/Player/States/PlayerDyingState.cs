@@ -36,7 +36,7 @@ public class PlayerDyingState : PlayerBaseStateCS
         {
             Event.Instance().EmitPlayerFall();
             player.fallTimerNode.Start();
-            player.fallTimerNode.Connect("timeout", this, nameof(OnFallTimeout));
+            player.fallTimerNode.Connect("timeout", this, nameof(OnFallTimeout), null, (uint)ConnectFlags.Oneshot);
         }
     }
 
@@ -47,18 +47,17 @@ public class PlayerDyingState : PlayerBaseStateCS
         Event.Instance().EmitPlayerDied();
     }
 
-    private void OnFallTimeout(Player player)
+    private void OnFallTimeout()
     {
-        player.fallTimerNode.Disconnect("timeout", this, nameof(OnFallTimeout));
         Event.Instance().EmitPlayerDied();
     }
 
-    protected override BaseStateCS<Player> _PhysicsUpdate(Player player, float delta)
+    protected override BaseState<Player> _PhysicsUpdate(Player player, float delta)
     {
         return base._PhysicsUpdate(player, delta);
     }
 
-    public BaseStateCS<Player> OnPlayerDying(Node area, Vector2 position, int entityType)
+    public BaseState<Player> OnPlayerDying(Node area, Vector2 position, int entityType)
     {
         return null;
     }

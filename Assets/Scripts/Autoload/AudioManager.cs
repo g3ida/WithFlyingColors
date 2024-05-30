@@ -98,7 +98,6 @@ public class AudioManager : Node
 
     private void ConnectSignals()
     {
-        GD.Print(Event.Instance()?.ToString());
         Connect(nameof(PlaySfx), this, nameof(_OnPlaySfx));
         Event.GdInstance().Connect("player_jumped", this, nameof(_OnPlayerJumped));
         Event.GdInstance().Connect("player_rotate", this, nameof(_OnPlayerRotate));

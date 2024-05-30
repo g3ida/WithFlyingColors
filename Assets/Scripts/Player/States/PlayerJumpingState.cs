@@ -39,12 +39,12 @@ public class PlayerJumpingState : PlayerBaseStateCS
         touchJumpPower = 1.0f;
     }
 
-    public override BaseStateCS<Player> PhysicsUpdate(Player player, float delta)
+    public override BaseState<Player> PhysicsUpdate(Player player, float delta)
     {
         return base.PhysicsUpdate(player, delta);
     }
 
-    protected override BaseStateCS<Player> _PhysicsUpdate(Player player, float delta)
+    protected override BaseState<Player> _PhysicsUpdate(Player player, float delta)
     {
         if (entred)
         {

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerStatesStore : BaseStatesStoreCS<Player>
+public class PlayerStatesStore : BaseStatesStore<Player, PlayerStatesEnum>
 {
     // Player states
     public PlayerStandingState standingState;
@@ -36,7 +36,7 @@ public class PlayerStatesStore : BaseStatesStoreCS<Player>
 
     }
 
-    public override BaseStateCS<Player> GetState(PlayerStatesEnum state)
+    public override BaseState<Player> GetState(PlayerStatesEnum state)
     {
         switch (state)
         {

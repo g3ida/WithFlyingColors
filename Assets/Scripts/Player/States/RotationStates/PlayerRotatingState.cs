@@ -23,7 +23,7 @@ public class PlayerRotatingState : PlayerBaseStateCS
         Event.Instance().EmitPlayerRotate(rotationDirection);
     }
 
-    public override BaseStateCS<Player> PhysicsUpdate(Player player, float delta)
+    public override BaseState<Player> PhysicsUpdate(Player player, float delta)
     {
         playerRotation.Step(delta);
         if (playerRotation.canRotate)
@@ -33,7 +33,7 @@ public class PlayerRotatingState : PlayerBaseStateCS
         return HandleRotate(player);
     }
 
-    public BaseStateCS<Player> on_animation_finished(string animName)
+    public BaseState<Player> on_animation_finished(string animName)
     {
         return null;
     }

@@ -24,12 +24,12 @@ public class PlayerStandingState : PlayerBaseStateCS
     {
     }
 
-    public override BaseStateCS<Player> PhysicsUpdate(Player player, float delta)
+    public override BaseState<Player> PhysicsUpdate(Player player, float delta)
     {
         return base.PhysicsUpdate(player, delta);
     }
 
-    protected override BaseStateCS<Player> _PhysicsUpdate(Player player, float delta)
+    protected override BaseState<Player> _PhysicsUpdate(Player player, float delta)
     {
         if (JumpPressed(player) && player.IsOnFloor())
         {
@@ -52,7 +52,7 @@ public class PlayerStandingState : PlayerBaseStateCS
         return null;
     }
 
-    private BaseStateCS<Player> RaycastFloor(Player player)
+    private BaseState<Player> RaycastFloor(Player player)
     {
         var spaceState = player.GetWorld2d().DirectSpaceState;
         var playerHalfSize = player.GetCollisionShapeSize() * 0.5f * player.Scale;

@@ -139,15 +139,10 @@ public class TetrisPool : Node2D
         var best = ai.Best(grid, currentTetromino);
         var pos = (int)best["position"];
         var rot = (int)best["rotation"];
-
-        GD.Print("Best: position ", best["position"], " rotation :", best["rotation"]);
-
-
         shape = (Tetromino)currentTetromino.Instance();
         shape.SetGrid(grid);
         shape.MoveBy(pos, Constants.TETRIS_SPAWN_J);
         AddChild(shape);
-        GD.Print("POS: ", shape.Position);
         shape.Owner = this;
         for (int i = 0; i < rot; i++)
         {

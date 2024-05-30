@@ -28,20 +28,20 @@ public class Global : Node2D
       set { _gdInstance.Set("player", value); }
     }
 
-    private Node cutscene {
+    public Node Cutscene {
       get { return (Node)_gdInstance.Get("cutscene"); }
       set { _gdInstance.Set("cutscene", value); }
     }
-    private Node gemHud {
-      get { return (Node)_gdInstance.Get("gemHud"); }
-      set { _gdInstance.Set("gemHud", value); }
+    public Node GemHUD {
+      get { return (Node)_gdInstance.Get("gem_hud"); }
+      set { _gdInstance.Set("gem_hud", value); }
     }
-    private Node pauseMenu {
-      get { return (Node)_gdInstance.Get("pauseMenu"); }
-      set { _gdInstance.Set("pauseMenu", value); }
+    public Node PauseMenu {
+      get { return (Node)_gdInstance.Get("pause_menu"); }
+      set { _gdInstance.Set("pause_menu", value); }
     }
 
-    private Texture _playerSprite;
+    public Texture _playerSprite;
     // {
     //   get { return (Texture)_gdInstance.Get("_playerSprite"); }
     //   set { _gdInstance.Set("_playerSprite", value); }

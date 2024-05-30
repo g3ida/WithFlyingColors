@@ -7,6 +7,7 @@ public class BoxFace : BaseFace
 
     public override void _Ready()
     {
+        base._Ready();
         collisionShapeNode = GetNode<CollisionShape2D>("CollisionShape2D");
         edgeLength = (collisionShapeNode.Shape as RectangleShape2D).Extents.x;
     }
@@ -17,8 +18,8 @@ public class BoxFace : BaseFace
         Scale = new Vector2(scaleFactor, scaleFactor);
 
         Position = new Vector2(
-            positionX + extents.y * (scaleFactor - 1.0f) * Math.Sign(Position.y) * Mathf.Sin(Rotation),
-            positionY - extents.y * (scaleFactor - 1.0f) * Math.Sign(Position.y) * Mathf.Cos(Rotation)
+            positionX + extents.y * (scaleFactor - 1.0f) * Helpers.SignOf(Position.y) * Mathf.Sin(Rotation),
+            positionY - extents.y * (scaleFactor - 1.0f) * Helpers.SignOf(Position.y) * Mathf.Cos(Rotation)
         );
     }
 
@@ -33,16 +34,17 @@ public class BoxFace : BaseFace
             return;
         }
 
-        if (!area.IsInGroup((string)groups[0]))
+        if (area is Gem gem)
+        {
+            if (!gem.IsInGroup((string)groups[0])) {
+                Event.Instance().EmitPlayerDiying(area, GlobalPosition, Constants.EntityType.PLATFORM);
+            } else {
+                gem._on_Gem_area_entered(this);
+            }
+        }
+        else if (!area.IsInGroup((string)groups[0]))
         {
             Event.Instance().EmitPlayerDiying(area, GlobalPosition, Constants.EntityType.PLATFORM);
-        }
-        // FIXME: correct this after c# migration
-        else if (area.HasMethod("_on_Gem_area_entered"))
-        //else if (area is Gem gem)
-        {
-            area.Call("_on_Gem_area_entered", this);
-            //gem.OnGemAreaEntered(this);
         }
         else if (!Global.Instance().Player.IsStanding())
         {

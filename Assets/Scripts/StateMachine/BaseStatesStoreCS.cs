@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public abstract class BaseStatesStoreCS<T> : Node
+public abstract class BaseStatesStore<T, U> : Node
 {
-    public abstract BaseStateCS<T> GetState(PlayerStatesEnum state);
+    public abstract BaseState<T> GetState(U state);
 }

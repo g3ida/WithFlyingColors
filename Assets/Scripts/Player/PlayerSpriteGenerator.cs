@@ -96,6 +96,7 @@ public class PlayerSpriteGenerator : Node
     {
         var imageTexture = new ImageTexture();
         var image = MergeIntoSingleImage();
+        // FIXME: flag filter is 4 ?? could be a bug introduced after c# migration ?
         imageTexture.CreateFromImage(image, (uint)Texture.FlagsEnum.Filter); // Flag 5 corresponds to the FILTER flag, as FLAG_REPEAT is not needed
         return imageTexture;
     }

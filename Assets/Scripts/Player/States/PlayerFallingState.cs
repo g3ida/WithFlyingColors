@@ -29,7 +29,7 @@ public class PlayerFallingState : PlayerBaseStateCS
         player.jumpParticlesNode.Emitting = false;
     }
 
-    protected override BaseStateCS<Player> _PhysicsUpdate(Player player, float delta)
+    protected override BaseState<Player> _PhysicsUpdate(Player player, float delta)
     {
         if (player.IsOnFloor())
         {
@@ -44,7 +44,7 @@ public class PlayerFallingState : PlayerBaseStateCS
         return null;
     }
 
-    public BaseStateCS<Player> OnAnimationFinished(string animName)
+    public BaseState<Player> OnAnimationFinished(string animName)
     {
         return null;
     }

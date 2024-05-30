@@ -7,6 +7,7 @@ public class BoxCorner : BaseFace
 
     public override void _Ready()
     {
+        base._Ready();
         collisionShapeNode = GetNode<CollisionShape2D>("CollisionShape2D");
         edgeLength = (collisionShapeNode.Shape as RectangleShape2D).Extents.x;
     }
@@ -22,14 +23,12 @@ public class BoxCorner : BaseFace
         var groups = GetGroups();
         if (!CheckGroup(area, groups))
         {
-            Event.Instance().EmitPlayerDiying(area, GlobalPosition, Constants.EntityType.PLATFORM);
+           Event.Instance().EmitPlayerDiying(area, GlobalPosition, Constants.EntityType.PLATFORM);
         }
-        // FIXME: correct this after c# migration
-        else if (area.HasMethod("_on_Gem_area_entered"))
-        //else if (area is Gem gem)
+        else
+        if (area is Gem gem)
         {
-            area.Call("_on_Gem_area_entered", this);
-            //gem.OnGemAreaEntered(this);
+            gem._on_Gem_area_entered(this);
         }
         else if (!Global.Instance().Player.IsStanding())
         {
@@ -39,11 +38,22 @@ public class BoxCorner : BaseFace
 
     private bool CheckGroup(Area2D area, Godot.Collections.Array groups)
     {
-        foreach (string group in groups)
-        {
-            if (area.IsInGroup(group))
+        // FIXME: remove reddundant code
+        if (area is Gem gem) {
+            foreach (string group in groups)
             {
-                return true;
+                if (gem.IsInGroup(group))
+                {
+                    return true;
+                }
+            }
+        } else {
+            foreach (string group in groups)
+            {
+                if (area.IsInGroup(group))
+                {
+                    return true;
+                }
             }
         }
         return false;

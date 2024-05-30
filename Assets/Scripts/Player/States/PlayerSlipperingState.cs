@@ -48,12 +48,12 @@ public class PlayerSlipperingState : PlayerBaseStateCS
         playerRotation.Execute(-direction, Constants.PI2, exitRotationSpeed, true, false, false);
     }
 
-    public override BaseStateCS<Player> PhysicsUpdate(Player player, float delta)
+    public override BaseState<Player> PhysicsUpdate(Player player, float delta)
     {
         return base.PhysicsUpdate(player, delta);
     }
 
-    protected override BaseStateCS<Player> _PhysicsUpdate(Player player, float delta)
+    protected override BaseState<Player> _PhysicsUpdate(Player player, float delta)
     {
         if (JumpPressed(player) && player.IsOnFloor())
         {
@@ -119,7 +119,7 @@ public class PlayerSlipperingState : PlayerBaseStateCS
         return result.Count != 0;
     }
 
-    private BaseStateCS<Player> HandleGroundIsNear(Player player)
+    private BaseState<Player> HandleGroundIsNear(Player player)
     {
         if (CheckIfGroundIsNear(player))
         {

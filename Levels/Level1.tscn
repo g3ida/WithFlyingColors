@@ -9,7 +9,6 @@
 [ext_resource path="res://Assets/Scenes/Gem.tscn" type="PackedScene" id=10]
 [ext_resource path="res://Assets/Sprites/Backgrounds/bg_grey.png" type="Texture" id=11]
 [ext_resource path="res://Assets/Scenes/HUD/GemsHUDContainer.tscn" type="PackedScene" id=16]
-[ext_resource path="res://Assets/Scripts/HUD/HUD.gd" type="Script" id=17]
 [ext_resource path="res://Assets/Scenes/Checkpoint.tscn" type="PackedScene" id=18]
 [ext_resource path="res://Assets/Scenes/PauseScreen.tscn" type="PackedScene" id=19]
 [ext_resource path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" type="PackedScene" id=20]
@@ -20,7 +19,6 @@
 [ext_resource path="res://Assets/Scenes/Cam/CameraShake.tscn" type="PackedScene" id=30]
 [ext_resource path="res://Assets/Scenes/Tetris/TetrisPool.tscn" type="PackedScene" id=31]
 [ext_resource path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" type="PackedScene" id=32]
-[ext_resource path="res://Assets/Scripts/Player/States/PlayerStatesStore.gd" type="Script" id=33]
 [ext_resource path="res://Assets/Scenes/BrickBreaker/BrickBreaker.tscn" type="PackedScene" id=34]
 [ext_resource path="res://Assets/Scenes/Tetris/SlidingFloor.tscn" type="PackedScene" id=35]
 [ext_resource path="res://Assets/Scenes/CheckpointArea.tscn" type="PackedScene" id=36]
@@ -66,7 +64,6 @@ follow_path = NodePath("../Player")
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( 4889, 452 )
 collision_mask = 13
-StatesStore = ExtResource( 33 )
 
 [node name="PinkPlatform" parent="." instance=ExtResource( 7 )]
 position = Vector2( 323, 85 )
@@ -118,7 +115,6 @@ group_name = "purple"
 [node name="HUD" type="CanvasLayer" parent="."]
 offset = Vector2( 0, 15 )
 transform = Transform2D( 1, 0, 0, 1, 0, 15 )
-script = ExtResource( 17 )
 
 [node name="GemContainerHUD" parent="HUD" instance=ExtResource( 16 )]
 anchor_left = 0.5

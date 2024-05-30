@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerBaseStateCS : BaseStateCS<Player>
+public class PlayerBaseStateCS : BaseState<Player>
 {
     public PlayerStatesEnum baseState;
 
@@ -57,7 +57,7 @@ public class PlayerBaseStateCS : BaseStateCS<Player>
         return (Input.IsActionJustPressed("dash") || player.touch_dash_input != null) && player.can_dash && !player.handle_input_is_disabled;
     }
 
-    public override BaseStateCS<Player> PhysicsUpdate(Player player, float delta)
+    public override BaseState<Player> PhysicsUpdate(Player player, float delta)
     {
         if (player.player_state != player.states_store.GetState(PlayerStatesEnum.DYING))
         {
@@ -117,7 +117,7 @@ public class PlayerBaseStateCS : BaseStateCS<Player>
         player.touch_rotation_input = null;
     }
 
-    protected virtual BaseStateCS<Player> _PhysicsUpdate(Player player, float delta) { return null; }
+    protected virtual BaseState<Player> _PhysicsUpdate(Player player, float delta) { return null; }
 
     protected void SetPlayerDeathAnimationType(PlayerDyingState dyingState, Constants.EntityType entityType)
     {
@@ -153,7 +153,7 @@ public class PlayerBaseStateCS : BaseStateCS<Player>
         return null;
     }
 
-    protected BaseStateCS<Player> OnDash(Player player)
+    protected BaseState<Player> OnDash(Player player)
     {
         var dashingState = (PlayerDashingState)player.states_store.GetState(PlayerStatesEnum.DASHING);
         if (player.touch_dash_input != null)
@@ -163,7 +163,7 @@ public class PlayerBaseStateCS : BaseStateCS<Player>
         return dashingState;
     }
 
-    protected BaseStateCS<Player> OnJump(Player player)
+    protected BaseState<Player> OnJump(Player player)
     {
         var jumpState = player.states_store.GetState(PlayerStatesEnum.JUMPING);
         if (player.touch_jump_input != null)
@@ -180,7 +180,7 @@ public class PlayerBaseStateCS : BaseStateCS<Player>
         return Input.IsActionJustPressed("jump") || player.touch_jump_input != null;
     }
 
-    protected BaseStateCS<Player> HandleRotate(Player player)
+    protected BaseState<Player> HandleRotate(Player player)
     {
         if (player.player_state.baseState != PlayerStatesEnum.DYING && !player.handle_input_is_disabled)
         {

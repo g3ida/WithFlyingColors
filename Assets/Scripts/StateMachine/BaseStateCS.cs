@@ -1,9 +1,13 @@
 using Godot;
 
-public abstract class BaseStateCS<T> : Node
+public abstract class BaseState<T> : Node
 {
-    public BaseStateCS()
+    public BaseState()
     {
+    }
+
+    public virtual void Init(T o) {
+        
     }
 
     public virtual void Enter(T o)
@@ -18,5 +22,5 @@ public abstract class BaseStateCS<T> : Node
     {
     }
 
-    public abstract BaseStateCS<T> PhysicsUpdate(T o, float delta);
+    public abstract BaseState<T> PhysicsUpdate(T o, float delta);
 }

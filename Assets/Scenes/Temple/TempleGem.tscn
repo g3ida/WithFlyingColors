@@ -8,7 +8,7 @@
 script = ExtResource( 2 )
 
 [node name="GemAnimatedSprite" parent="." instance=ExtResource( 1 )]
-frame = 7
+frame = 8
 
 [node name="Light2D" type="Light2D" parent="."]
 visible = false

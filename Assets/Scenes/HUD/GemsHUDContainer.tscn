@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Assets/Scenes/HUD/GemHUD.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Assets/Scripts/HUD/GemsHUDContainer.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scripts/HUD/GemsHUDContainer.cs" type="Script" id=2]
 [ext_resource path="res://Assets/StyleBorderHUD.tres" type="StyleBox" id=10]
 
 [node name="GemContainerHUD" type="Panel"]
@@ -17,19 +17,19 @@ __meta__ = {
 
 [node name="BlueGem" parent="." instance=ExtResource( 1 )]
 light_mask = 0
-color = "blue"
+Color = "blue"
 
 [node name="PinkGem" parent="." instance=ExtResource( 1 )]
 light_mask = 0
 position = Vector2( 64, 0 )
-color = "pink"
+Color = "pink"
 
 [node name="YellowGem" parent="." instance=ExtResource( 1 )]
 light_mask = 0
 position = Vector2( 128, 0 )
-color = "yellow"
+Color = "yellow"
 
 [node name="PurpleGem" parent="." instance=ExtResource( 1 )]
 light_mask = 0
 position = Vector2( 192, 0 )
-color = "purple"
+Color = "purple"

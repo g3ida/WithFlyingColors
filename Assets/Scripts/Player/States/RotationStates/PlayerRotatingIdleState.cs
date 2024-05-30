@@ -19,7 +19,7 @@ public class PlayerRotatingIdleState : PlayerBaseStateCS
         // Add any exit logic here
     }
 
-    public override BaseStateCS<Player> PhysicsUpdate(Player player, float delta)
+    public override BaseState<Player> PhysicsUpdate(Player player, float delta)
     {
         playerRotation.Step(delta);
         return HandleRotate(player);

@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://Assets/Scripts/HUD/GemHUD.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Scripts/HUD/GemHUD.cs" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/HUD/gem_hud.png" type="Texture" id=2]
 [ext_resource path="res://Assets/Sprites/HUD/gem_hud_bg.png" type="Texture" id=3]
 
@@ -237,8 +237,6 @@ tracks/1/keys = {
 [node name="GemHUD" type="Node2D" groups=["persist"]]
 z_index = 100
 script = ExtResource( 1 )
-texture_collected = null
-texture_empty = null
 
 [node name="Background" type="TextureRect" parent="."]
 visible = false
@@ -252,6 +250,7 @@ anims/RESET = SubResource( 3 )
 anims/coin_collected_HUD = SubResource( 4 )
 
 [node name="TextureRect" type="TextureRect" parent="."]
+modulate = Color( 0, 0.921569, 1, 1 )
 margin_right = 40.0
 margin_bottom = 40.0
 texture = ExtResource( 2 )

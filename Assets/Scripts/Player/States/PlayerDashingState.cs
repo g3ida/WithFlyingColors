@@ -56,7 +56,7 @@ public class PlayerDashingState : PlayerBaseStateCS
         direction = Vector2.Zero;
     }
 
-    protected override BaseStateCS<Player> _PhysicsUpdate(Player player, float delta)
+    protected override BaseState<Player> _PhysicsUpdate(Player player, float delta)
     {
         if (!dashDone && !permissivenessTimer.IsRunning())
         {

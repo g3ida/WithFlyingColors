@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Assets/Animations/gem_yellow_frames.tres" type="SpriteFrames" id=1]
-[ext_resource path="res://Assets/Scripts/Gems/Gem.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scripts/Gems/Gem.cs" type="Script" id=2]
 [ext_resource path="res://Assets/Sprites/Lightmaps/shine_light.png" type="Texture" id=3]
 [ext_resource path="res://Assets/sfx/shine.ogg" type="AudioStream" id=4]
 
@@ -51,7 +51,7 @@ polygon = PoolVector2Array( 0, 24, 26, -8, 17, -23, -17, -23, -26, -8 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 z_index = 101
 frames = ExtResource( 1 )
-frame = 5
+frame = 2
 playing = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="AnimatedSprite"]
