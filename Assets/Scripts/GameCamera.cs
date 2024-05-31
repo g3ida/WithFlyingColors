@@ -83,7 +83,6 @@ public class GameCamera : Camera2D
     {
         if (save_data != null)
         {
-            GD.Print(save_data);
             zoom_by((float)save_data["zoom_factor"]);
 
             LimitBottom = Helpers.ParseSaveDataInt(save_data, "bottom_limit");

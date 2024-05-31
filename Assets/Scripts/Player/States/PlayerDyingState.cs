@@ -70,10 +70,10 @@ public class PlayerDyingState : PlayerBaseState
 
     private void CreateExplosion(Player player)
     {
-        var explosion = (Node)ExplosionScene.Instance();
-        explosion.Set("player", player);
-        explosion.Set("playerTexture", Global.Instance().GetPlayerSprite());
-        explosion.Connect("ObjectDetonated", this, nameof(OnObjectDetonated), flags: (uint)ConnectFlags.Oneshot);
+        var explosion = ExplosionScene.Instance<Explosion>();
+        explosion.player = player;
+        explosion.playerTexture = Global.Instance().GetPlayerSprite();
+        explosion.Connect(nameof(Explosion.ObjectDetonated), this, nameof(OnObjectDetonated), flags: (uint)ConnectFlags.Oneshot);
         explosion.Connect("ready", this, nameof(OnExplosionReady), new Godot.Collections.Array { explosion }, (uint)ConnectFlags.Oneshot);
         player.AddChild(explosion);
         explosion.Owner = player;

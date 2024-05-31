@@ -150,7 +150,7 @@ public class SolfegeBoard : Node2D
                 notesCursor.QueueFree();
                 notesCursor = null;
             }
-            notesCursor = (NotesCursor)NotesCursorScene.Instance();
+            notesCursor = NotesCursorScene.Instance<NotesCursor>();
             MusicPaperRectNode.AddChild(notesCursor);
             notesCursor.Owner = MusicPaperRectNode;
             _SetNotesCursorPosition();

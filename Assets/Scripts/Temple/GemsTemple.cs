@@ -81,7 +81,7 @@ public class GemsTemple : Node2D
 
     private Node2D CreateTempleGem(string colorGroup, float delay, Vector2 position, Vector2 destination, int easeType)
     {
-        var templeGem = (TempleGem)TempleGemScene.Instance();
+        var templeGem = TempleGemScene.Instance<TempleGem>();
         GemSlotsContainerNode.AddChild(templeGem);
         templeGem.Owner = GemSlotsContainerNode;
         templeGem.GlobalPosition = position;

@@ -80,10 +80,10 @@ public static class Helpers
         }
     }
 
-    // public static void TriggerFunctionalCheckpoint()
-    // {
-    //     var checkpoint = (CheckpointArea)ResourceLoader.Load<PackedScene>("res://path_to_your_CheckpointArea_scene.tscn").Instance();
-    //     checkpoint.ColorGroup = "blue";
-    //     checkpoint.OnCheckpointAreaBodyEntered(Global.Player);
-    // }
+    public static void TriggerFunctionalCheckpoint()
+    {
+        var checkpoint = new CheckpointArea();
+        checkpoint.ColorGroup = "blue";
+        checkpoint._OnCheckpointAreaBodyEntered(Global.Instance().Player);
+    }
 }

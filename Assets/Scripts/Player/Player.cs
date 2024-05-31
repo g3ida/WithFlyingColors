@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 public class Player : KinematicBody2D
 {
-    private const float SQUEEZE_ANIM_DURATION = 0.17f;
-    private const float SCALE_ANIM_DURATION = 0.17f;
+    public const float SQUEEZE_ANIM_DURATION = 0.17f;
+    public const float SCALE_ANIM_DURATION = 0.17f;
 
-    private const float SPEED = 3.5f * Constants.WORLD_TO_SCREEN;
-    private const float SPEED_UNIT = 0.7f * Constants.WORLD_TO_SCREEN;
+    public const float SPEED = 3.5f * Constants.WORLD_TO_SCREEN;
+    public const float SPEED_UNIT = 0.7f * Constants.WORLD_TO_SCREEN;
     public float speed_limit = SPEED;
     public float speed_unit = SPEED_UNIT;
 

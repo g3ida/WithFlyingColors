@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://Assets/Scripts/BrickBreaker/Powerups/ProtectionArea.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Scripts/BrickBreaker/Powerups/ProtectionArea.cs" type="Script" id=1]
 [ext_resource path="res://Assets/Shaders/LazerBeam.gdshader" type="Shader" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]

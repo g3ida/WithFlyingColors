@@ -69,6 +69,7 @@ public class ColorUtils : Node
 
     public static Color GetSkinColor(Dictionary<string, string[]> skin, string colorName)
     {
+        // ie: 0-basic, 1-dark2, 2-light, 3-background
         var colorComponent = colorName.Split("-");
         if (colorComponent.Length != 2)
         {
@@ -100,7 +101,7 @@ public class ColorUtils : Node
         return new HSLColor(H, S, L);
     }
 
-    public static Color DarkenRgb(Color color, float lShiftPercentage)
+    public static Color DarkenRGB(Color color, float lShiftPercentage)
     {
         return RgbToHsl(color).MakeDarker(-lShiftPercentage).ToRgb();
     }

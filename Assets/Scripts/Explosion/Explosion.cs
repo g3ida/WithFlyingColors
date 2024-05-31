@@ -49,7 +49,7 @@ public class Explosion : Node2D
     private readonly bool _isRandomizeSeed = false;
     private ExplosionInfo _explosionInfo = null;
 
-    private KinematicBody2D player;
+    public KinematicBody2D player;
 
     public override void _Ready() {
         player = GetParent<KinematicBody2D>();
@@ -63,7 +63,7 @@ public class Explosion : Node2D
     }
 
     private Node2D InstanceExplosionElement(int n) {
-        var explosionElement = (ExplosionElement)ExplosionElementScene.Instance();
+        var explosionElement = ExplosionElementScene.Instance<ExplosionElement>();
         explosionElement.Name = Name + "_block_" + n;
         var shape = new RectangleShape2D
         {

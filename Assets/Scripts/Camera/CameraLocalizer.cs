@@ -5,44 +5,24 @@ using System.Linq;
 
 public class CameraLocalizer : Node2D
 {
-    public enum CamLimitEnum
+    private static readonly CameraLimit[] X_AXIS_LIMITS = 
     {
-        NO_LIMITS,
-        FULL_LIMIT,
-        LIMIT_BOTTOM_RIGHT,
-        LIMIT_BOTTOM_LEFT,
-        LIMIT_TOP_RIGHT,
-        LIMIT_TOP_LEFT,
-        LIMIT_X_AXIS,
-        LIMIT_Y_AXIS,
-        LIMIT_ALL_BUT_TOP,
-        LIMIT_ALL_BUT_LEFT,
-        LIMIT_ALL_BUT_RIGHT,
-        LIMIT_ALL_BUT_BOTTOM,
-        LIMIT_LEFT,
-        LIMIT_RIGHT,
-        LIMIT_TOP,
-        LIMIT_BOTTOM
-    }
-
-    private static readonly CamLimitEnum[] X_AXIS_LIMITS = 
-    {
-        CamLimitEnum.FULL_LIMIT,
-        CamLimitEnum.LIMIT_X_AXIS,
-        CamLimitEnum.LIMIT_ALL_BUT_TOP,
-        CamLimitEnum.LIMIT_ALL_BUT_BOTTOM
+        CameraLimit.FULL_LIMIT,
+        CameraLimit.LIMIT_X_AXIS,
+        CameraLimit.LIMIT_ALL_BUT_TOP,
+        CameraLimit.LIMIT_ALL_BUT_BOTTOM
     };
 
-    private static readonly CamLimitEnum[] Y_AXIS_LIMITS = 
+    private static readonly CameraLimit[] Y_AXIS_LIMITS = 
     {
-        CamLimitEnum.FULL_LIMIT,
-        CamLimitEnum.LIMIT_Y_AXIS,
-        CamLimitEnum.LIMIT_ALL_BUT_LEFT,
-        CamLimitEnum.LIMIT_ALL_BUT_RIGHT
+        CameraLimit.FULL_LIMIT,
+        CameraLimit.LIMIT_Y_AXIS,
+        CameraLimit.LIMIT_ALL_BUT_LEFT,
+        CameraLimit.LIMIT_ALL_BUT_RIGHT
     };
 
     [Export] public bool full_viewport_drag_margin = false;
-    [Export] public CamLimitEnum position_clipping_mode = CamLimitEnum.FULL_LIMIT;
+    [Export] public CameraLimit position_clipping_mode = CameraLimit.FULL_LIMIT;
     [Export] public float zoom = 1.0f;
     [Export] public NodePath follow_node = null;
     [Export] public bool limit_x_axis_to_view_size = false;
@@ -77,9 +57,9 @@ public class CameraLocalizer : Node2D
     {
         switch (position_clipping_mode)
         {
-            case CamLimitEnum.NO_LIMITS:
+            case CameraLimit.NO_LIMITS:
                 break;
-            case CamLimitEnum.FULL_LIMIT:
+            case CameraLimit.FULL_LIMIT:
                 if (positionsNodes.Count != 2)
                 {
                     GD.PushError("Position limiting FULL mode requires you to add two child position nodes");
@@ -92,7 +72,7 @@ public class CameraLocalizer : Node2D
                     right = (int)Mathf.Max(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
                 }
                 break;
-            case CamLimitEnum.LIMIT_BOTTOM_RIGHT:
+            case CameraLimit.LIMIT_BOTTOM_RIGHT:
                 if (positionsNodes.Count != 1)
                 {
                     GD.PushError("Position limiting LIMIT_BOTTOM_RIGHT mode requires you to add ONLY one child position node");
@@ -103,7 +83,7 @@ public class CameraLocalizer : Node2D
                     right = (int)positionsNodes[0].GlobalPosition.x;
                 }
                 break;
-            case CamLimitEnum.LIMIT_BOTTOM_LEFT:
+            case CameraLimit.LIMIT_BOTTOM_LEFT:
                 if (positionsNodes.Count != 1)
                 {
                     GD.PushError("Position limiting LIMIT_BOTTOM_LEFT mode requires you to add ONLY one child position node");
@@ -114,7 +94,7 @@ public class CameraLocalizer : Node2D
                     left = (int)positionsNodes[0].GlobalPosition.x;
                 }
                 break;
-            case CamLimitEnum.LIMIT_TOP_RIGHT:
+            case CameraLimit.LIMIT_TOP_RIGHT:
                 if (positionsNodes.Count != 1)
                 {
                     GD.PushError("Position limiting LIMIT_TOP_RIGHT mode requires you to add ONLY one child position node");
@@ -125,7 +105,7 @@ public class CameraLocalizer : Node2D
                     right = (int)positionsNodes[0].GlobalPosition.x;
                 }
                 break;
-            case CamLimitEnum.LIMIT_TOP_LEFT:
+            case CameraLimit.LIMIT_TOP_LEFT:
                 if (positionsNodes.Count != 1)
                 {
                     GD.PushError("Position limiting LIMIT_TOP_LEFT mode requires you to add ONLY one child position node");
@@ -136,7 +116,7 @@ public class CameraLocalizer : Node2D
                     left = (int)positionsNodes[0].GlobalPosition.x;
                 }
                 break;
-            case CamLimitEnum.LIMIT_X_AXIS:
+            case CameraLimit.LIMIT_X_AXIS:
                 if (positionsNodes.Count != 1)
                 {
                     GD.PushError("Position limiting LIMIT_X_AXIS mode requires you to add ONLY one child position node");
@@ -147,7 +127,7 @@ public class CameraLocalizer : Node2D
                     right = (int)Math.Max(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
                 }
                 break;
-            case CamLimitEnum.LIMIT_Y_AXIS:
+            case CameraLimit.LIMIT_Y_AXIS:
                 if (positionsNodes.Count != 1)
                 {
                     GD.PushError("Position limiting LIMIT_Y_AXIS mode requires you to add ONLY one child position node");
@@ -158,7 +138,7 @@ public class CameraLocalizer : Node2D
                     bottom = (int)Math.Max(positionsNodes[0].GlobalPosition.y, positionsNodes[1].GlobalPosition.y);
                 }
                 break;
-            case CamLimitEnum.LIMIT_ALL_BUT_TOP:
+            case CameraLimit.LIMIT_ALL_BUT_TOP:
                 if (positionsNodes.Count != 2)
                 {
                     GD.PushError("Position limiting ALL BUT TOP mode requires you to add two child position nodes");
@@ -170,7 +150,7 @@ public class CameraLocalizer : Node2D
                     right = (int)Math.Max(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
                 }
                 break;
-            case CamLimitEnum.LIMIT_ALL_BUT_BOTTOM:
+            case CameraLimit.LIMIT_ALL_BUT_BOTTOM:
                 if (positionsNodes.Count != 2)
                 {
                     GD.PushError("Position limiting ALL BUT BOTTOM mode requires you to add two child position nodes");
@@ -182,7 +162,7 @@ public class CameraLocalizer : Node2D
                     right = (int)Math.Max(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
                 }
                 break;
-            case CamLimitEnum.LIMIT_ALL_BUT_LEFT:
+            case CameraLimit.LIMIT_ALL_BUT_LEFT:
                 if (positionsNodes.Count != 2)
                 {
                     GD.PushError("Position limiting ALL BUT LEFT mode requires you to add two child position nodes");
@@ -194,7 +174,7 @@ public class CameraLocalizer : Node2D
                     right = (int)Math.Max(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
                 }
                 break;
-            case CamLimitEnum.LIMIT_ALL_BUT_RIGHT:
+            case CameraLimit.LIMIT_ALL_BUT_RIGHT:
                 if (positionsNodes.Count != 2)
                 {
                     GD.PushError("Position limiting ALL BUT RIGHT mode requires you to add two child position nodes");
@@ -206,7 +186,7 @@ public class CameraLocalizer : Node2D
                     left = (int)Math.Min(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
                 }
                 break;
-            case CamLimitEnum.LIMIT_LEFT:
+            case CameraLimit.LIMIT_LEFT:
                 if (positionsNodes.Count != 1)
                 {
                     GD.PushError("Position limiting LIMIT_LEFT mode requires you to add one child position node");
@@ -216,7 +196,7 @@ public class CameraLocalizer : Node2D
                     left = (int)positionsNodes[0].GlobalPosition.x;
                 }
                 break;
-            case CamLimitEnum.LIMIT_RIGHT:
+            case CameraLimit.LIMIT_RIGHT:
                 if (positionsNodes.Count != 1)
                 {
                     GD.PushError("Position limiting LIMIT_RIGHT mode requires you to add one child position node");
@@ -226,7 +206,7 @@ public class CameraLocalizer : Node2D
                     right = (int)positionsNodes[0].GlobalPosition.x;
                 }
                 break;
-            case CamLimitEnum.LIMIT_TOP:
+            case CameraLimit.LIMIT_TOP:
                 if (positionsNodes.Count != 1)
                 {
                     GD.PushError("Position limiting LIMIT_TOP mode requires you to add one child position node");
@@ -236,7 +216,7 @@ public class CameraLocalizer : Node2D
                     top = (int)positionsNodes[0].GlobalPosition.y;
                 }
                 break;
-            case CamLimitEnum.LIMIT_BOTTOM:
+            case CameraLimit.LIMIT_BOTTOM:
                 if (positionsNodes.Count != 1)
                 {
                     GD.PushError("Position limiting LIMIT_BOTTOM mode requires you to add one child position node");
@@ -277,7 +257,7 @@ public class CameraLocalizer : Node2D
         }
     }
 
-    private void ApplyCameraChanges()
+    public void ApplyCameraChanges()
     {
         SetFollowNode();
         SetCameraLimits();
@@ -297,94 +277,94 @@ public class CameraLocalizer : Node2D
         }
     }
 
-    private void SetCameraLimits()
+    public void SetCameraLimits()
     {
         _AdaptLimitsToScreenSize();
 
         switch (position_clipping_mode)
         {
-            case CamLimitEnum.NO_LIMITS:
+            case CameraLimit.NO_LIMITS:
                 Global.Instance().Camera.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
                 Global.Instance().Camera.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
                 Global.Instance().Camera.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
                 Global.Instance().Camera.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
                 break;
-            case CamLimitEnum.FULL_LIMIT:
+            case CameraLimit.FULL_LIMIT:
                 Global.Instance().Camera.LimitLeft = left;
                 Global.Instance().Camera.LimitBottom = bottom;
                 Global.Instance().Camera.LimitRight = right;
                 Global.Instance().Camera.LimitTop = top;
                 break;
-            case CamLimitEnum.LIMIT_BOTTOM_RIGHT:
+            case CameraLimit.LIMIT_BOTTOM_RIGHT:
                 Global.Instance().Camera.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
                 Global.Instance().Camera.LimitBottom = bottom;
                 Global.Instance().Camera.LimitRight = right;
                 Global.Instance().Camera.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
                 break;
-            case CamLimitEnum.LIMIT_BOTTOM_LEFT:
+            case CameraLimit.LIMIT_BOTTOM_LEFT:
                 Global.Instance().Camera.LimitLeft = left;
                 Global.Instance().Camera.LimitBottom = bottom;
                 Global.Instance().Camera.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
                 Global.Instance().Camera.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
                 break;
-            case CamLimitEnum.LIMIT_TOP_RIGHT:
+            case CameraLimit.LIMIT_TOP_RIGHT:
                 Global.Instance().Camera.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
                 Global.Instance().Camera.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
                 Global.Instance().Camera.LimitRight = right;
                 Global.Instance().Camera.LimitTop = top;
                 break;
-            case CamLimitEnum.LIMIT_TOP_LEFT:
+            case CameraLimit.LIMIT_TOP_LEFT:
                 Global.Instance().Camera.LimitLeft = left;
                 Global.Instance().Camera.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
                 Global.Instance().Camera.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
                 Global.Instance().Camera.LimitTop = top;
                 break;
-            case CamLimitEnum.LIMIT_X_AXIS:
+            case CameraLimit.LIMIT_X_AXIS:
                 Global.Instance().Camera.LimitLeft = left;
                 Global.Instance().Camera.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
                 Global.Instance().Camera.LimitRight = right;
                 Global.Instance().Camera.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
                 break;
-            case CamLimitEnum.LIMIT_Y_AXIS:
+            case CameraLimit.LIMIT_Y_AXIS:
                 Global.Instance().Camera.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
                 Global.Instance().Camera.LimitBottom = bottom;
                 Global.Instance().Camera.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
                 Global.Instance().Camera.LimitTop = top;
                 break;
-            case CamLimitEnum.LIMIT_ALL_BUT_TOP:
+            case CameraLimit.LIMIT_ALL_BUT_TOP:
                 Global.Instance().Camera.LimitLeft = left;
                 Global.Instance().Camera.LimitBottom = bottom;
                 Global.Instance().Camera.LimitRight = right;
                 Global.Instance().Camera.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
                 break;
-            case CamLimitEnum.LIMIT_ALL_BUT_LEFT:
+            case CameraLimit.LIMIT_ALL_BUT_LEFT:
                 Global.Instance().Camera.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
                 Global.Instance().Camera.LimitBottom = bottom;
                 Global.Instance().Camera.LimitRight = right;
                 Global.Instance().Camera.LimitTop = top;
                 break;
-            case CamLimitEnum.LIMIT_ALL_BUT_RIGHT:
+            case CameraLimit.LIMIT_ALL_BUT_RIGHT:
                 Global.Instance().Camera.LimitLeft = left;
                 Global.Instance().Camera.LimitBottom = bottom;
                 Global.Instance().Camera.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
                 Global.Instance().Camera.LimitTop = top;
                 break;
-            case CamLimitEnum.LIMIT_ALL_BUT_BOTTOM:
+            case CameraLimit.LIMIT_ALL_BUT_BOTTOM:
                 Global.Instance().Camera.LimitLeft = left;
                 Global.Instance().Camera.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
                 Global.Instance().Camera.LimitRight = right;
                 Global.Instance().Camera.LimitTop = top;
                 break;
-            case CamLimitEnum.LIMIT_LEFT:
+            case CameraLimit.LIMIT_LEFT:
                 Global.Instance().Camera.LimitLeft = left;
                 break;
-            case CamLimitEnum.LIMIT_RIGHT:
+            case CameraLimit.LIMIT_RIGHT:
                 Global.Instance().Camera.LimitRight = right;
                 break;
-            case CamLimitEnum.LIMIT_TOP:
+            case CameraLimit.LIMIT_TOP:
                 Global.Instance().Camera.LimitTop = top;
                 break;
-            case CamLimitEnum.LIMIT_BOTTOM:
+            case CameraLimit.LIMIT_BOTTOM:
                 Global.Instance().Camera.LimitBottom = bottom;
                 break;
         }

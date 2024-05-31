@@ -10,31 +10,6 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Reference",
-"class": "BaseState",
-"language": "GDScript",
-"path": "res://Assets/Scripts/StateMachine/BaseState.gd"
-}, {
-"base": "Reference",
-"class": "BaseStatesStore",
-"language": "GDScript",
-"path": "res://Assets/Scripts/StateMachine/BaseStatesStore.gd"
-}, {
-"base": "KinematicBody2D",
-"class": "BouncingBall",
-"language": "GDScript",
-"path": "res://Assets/Scripts/BrickBreaker/BouncingBallBody.gd"
-}, {
-"base": "Node2D",
-"class": "Brick",
-"language": "GDScript",
-"path": "res://Assets/Scripts/BrickBreaker/Brick.gd"
-}, {
-"base": "Reference",
-"class": "BrickBreakerState",
-"language": "GDScript",
-"path": "res://Assets/Scripts/BrickBreaker/BrickBreakerState.gd"
-}, {
-"base": "Reference",
 "class": "CamLimitEnum",
 "language": "GDScript",
 "path": "res://Assets/Scripts/Camera/CamLimitEnum.gd"
@@ -119,11 +94,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/Player/PlayerSpriteGenerator_old.gd"
 }, {
-"base": "Node2D",
-"class": "PowerUpScript",
-"language": "GDScript",
-"path": "res://Assets/Scripts/BrickBreaker/Powerups/PowerUpScript.gd"
-}, {
 "base": "Reference",
 "class": "SkinLoader",
 "language": "GDScript",
@@ -165,11 +135,6 @@ _global_script_classes=[ {
 "path": "res://SwipeModule/_SwipeEventCore.gd"
 } ]
 _global_script_class_icons={
-"BaseState": "",
-"BaseStatesStore": "",
-"BouncingBall": "",
-"Brick": "",
-"BrickBreakerState": "",
 "CamLimitEnum": "",
 "CheckpointArea": "",
 "ColorUtils": "",
@@ -187,7 +152,6 @@ _global_script_class_icons={
 "InputUtils": "",
 "MenuButtons": "",
 "PlayerSpriteGenerator": "",
-"PowerUpScript": "",
 "SkinLoader": "",
 "SlotButton": "",
 "SwipeModule": "",
