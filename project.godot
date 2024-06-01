@@ -14,11 +14,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/Camera/CamLimitEnum.gd"
 }, {
-"base": "Area2D",
-"class": "CheckpointArea",
-"language": "GDScript",
-"path": "res://Assets/Scripts/CheckpointArea.gd"
-}, {
 "base": "Reference",
 "class": "ColorUtils",
 "language": "GDScript",
@@ -43,11 +38,6 @@ _global_script_classes=[ {
 "class": "HSLColor",
 "language": "GDScript",
 "path": "res://Assets/Scripts/Utils/HSLColor_old.gd"
-}, {
-"base": "Reference",
-"class": "Helpers",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Utils/Helpers.gd"
 }, {
 "base": "Reference",
 "class": "ImageUtils",
@@ -136,13 +126,11 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "CamLimitEnum": "",
-"CheckpointArea": "",
 "ColorUtils": "",
 "Constants": "",
 "GameMenu": "",
 "GitAPI": "",
 "HSLColor": "",
-"Helpers": "",
 "ImageUtils": "",
 "InputEventSwipe": "res://SwipeModule/SwipeEventCore.png",
 "InputTouchDash": "",
@@ -183,6 +171,7 @@ MenuManager="*res://Assets/Scripts/Autoload/MenuManager.gd"
 Levels="*res://Assets/Scripts/Autoload/Levels.gd"
 MenuManagerCS="*res://Assets/Scripts/Autoload/MenuManager.cs"
 AudioManagerCS="*res://Assets/Scripts/Autoload/AudioManager.cs"
+SaveGameCS="*res://Assets/Scripts/Autoload/SaveGame.cs"
 
 [display]
 

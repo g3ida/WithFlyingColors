@@ -1,8 +1,9 @@
 using Godot;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
-public class GameCamera : Camera2D
+public class GameCamera : Camera2D, IPersistant
 {
     public const float CAMERA_DRAG_JUMP = 0.45f;
 
@@ -12,9 +13,9 @@ public class GameCamera : Camera2D
     public float targetZoom = 1.0f;
     private SceneTreeTween zoomTweener;
 
-    private Godot.Collections.Dictionary<string, object> defaultSaveData;
+    private Dictionary<string, object> defaultSaveData;
 
-    private Godot.Collections.Dictionary<string, object> save_data;
+    private Dictionary<string, object> save_data;
     
     // Used for tuning camera
     private float cachedDragMarginTop;
@@ -24,7 +25,7 @@ public class GameCamera : Camera2D
 
     public override void _Ready()
     {
-        defaultSaveData = new Godot.Collections.Dictionary<string, object>()
+        defaultSaveData = new Dictionary<string, object>()
         {
             {"zoom_factor", 1.0f},
             {"bottom_limit", 10000},
@@ -39,7 +40,7 @@ public class GameCamera : Camera2D
         };
 
         follow = GetNode<Node2D>(follow_path);
-        save_data = new Godot.Collections.Dictionary<string, object>(defaultSaveData);
+        save_data = new Dictionary<string, object>(defaultSaveData);
         if (Current)
         {
             Global.Instance().Camera = this;
@@ -66,7 +67,7 @@ public class GameCamera : Camera2D
     private void _OnCheckpointHit(object checkpoint)
     {
         // FIXME: better save data as json after migration
-        save_data = new Godot.Collections.Dictionary<string, object>();
+        save_data = new Dictionary<string, object>();
         save_data["zoom_factor"] = targetZoom;
         save_data["bottom_limit"] = LimitBottom;
         save_data["top_limit"] = LimitTop;
@@ -76,14 +77,14 @@ public class GameCamera : Camera2D
         save_data["drag_margin_left"] = cachedDragMarginLeft;
         save_data["drag_margin_right"] = cachedDragMarginRight;
         save_data["drag_margin_top"] = cachedDragMarginTop;
-        save_data["follow_path"] = follow.GetPath();
+        save_data["follow_path"] = follow.GetPath().ToString();
     }
 
     public void reset()
     {
         if (save_data != null)
         {
-            zoom_by((float)save_data["zoom_factor"]);
+            zoom_by(Convert.ToSingle(save_data["zoom_factor"]));
 
             LimitBottom = Helpers.ParseSaveDataInt(save_data, "bottom_limit");
             LimitTop = Helpers.ParseSaveDataInt(save_data, "top_limit");
@@ -91,18 +92,18 @@ public class GameCamera : Camera2D
             LimitRight = Helpers.ParseSaveDataInt(save_data, "right_limit");
 
 
-            DragMarginBottom = (float)save_data["drag_margin_bottom"];
-            DragMarginLeft = (float)save_data["drag_margin_left"];
-            DragMarginRight = (float)save_data["drag_margin_right"];
-            DragMarginTop = (float)save_data["drag_margin_top"];
+            DragMarginBottom = Helpers.ParseSaveDataFloat(save_data, "drag_margin_bottom");
+            DragMarginLeft = Helpers.ParseSaveDataFloat(save_data, "drag_margin_left");
+            DragMarginRight = Helpers.ParseSaveDataFloat(save_data, "drag_margin_right");
+            DragMarginTop = Helpers.ParseSaveDataFloat(save_data, "drag_margin_top");
             follow_path = Helpers.ParseSaveDataNodePath(save_data, "follow_path");
             follow = GetNode<Node2D>(follow_path);
         }
     }
 
-    public Godot.Collections.Dictionary<string, object> save()
+    public Dictionary<string, object> save()
     {
-        return save_data != null ? save_data : new Godot.Collections.Dictionary<string, object>(defaultSaveData);
+        return save_data != null ? save_data : new Dictionary<string, object>(defaultSaveData);
     }
 
     private void _OnPlayerJump()
@@ -219,5 +220,11 @@ public class GameCamera : Camera2D
     {
         DragMarginRight = value;
         cachedDragMarginRight = value;
+    }
+
+    public void load(Dictionary<string, object> save_data)
+    {
+        this.save_data = save_data;
+        reset();
     }
 }

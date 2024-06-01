@@ -16,12 +16,12 @@ public class MenuManager : Node2D
       return _instance;
     }
 
-    private const string SETTINGS_MENU_SCENE = "res://Assets/Screens/SettingsMenu.tscn";
-    private const string STATS_MENU_SCENE = "res://Assets/Screens/StatsMenu.tscn";
-    private const string MAIN_MENU_SCENE = "res://Assets/Screens/MainMenu.tscn";
-    private const string SELECT_SLOT_SCENE = "res://Assets/Screens/SelectSlotMenu.tscn";
-    private const string LEVEL_SELECT_SCENE = "res://Assets/Screens/LevelSelectMenu.tscn";
-    private const string START_LEVEL_MENU_SCENE = "res://Levels/Level1.tscn";
+    public const string SETTINGS_MENU_SCENE = "res://Assets/Screens/SettingsMenu.tscn";
+    public const string STATS_MENU_SCENE = "res://Assets/Screens/StatsMenu.tscn";
+    public const string MAIN_MENU_SCENE = "res://Assets/Screens/MainMenu.tscn";
+    public const string SELECT_SLOT_SCENE = "res://Assets/Screens/SelectSlotMenu.tscn";
+    public const string LEVEL_SELECT_SCENE = "res://Assets/Screens/LevelSelectMenu.tscn";
+    public const string START_LEVEL_MENU_SCENE = "res://Levels/Level1.tscn";
     // private const string START_LEVEL_MENU_SCENE = "res://Levels/TutorialLevel.tscn";
     private const string SCENE_ORCHESTER_SCENE = "res://Assets/Scenes/SceneOrchester.tscn";
     private const string LEVEL_CLEAR_SCENE = "res://Assets/Screens/LevelClearedMenu.tscn";
@@ -47,7 +47,7 @@ public class MenuManager : Node2D
         get { return previousMenu; }
     }
 
-    private string levelScenePath = "";
+    public string levelScenePath = "";
 
     private string GetMenuScenePath(Menus menu)
     {

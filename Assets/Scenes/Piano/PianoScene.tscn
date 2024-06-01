@@ -15,6 +15,7 @@ script = ExtResource( 2 )
 [node name="CheckpointArea" parent="." instance=ExtResource( 3 )]
 position = Vector2( -769, -285 )
 scale = Vector2( 1, 20 )
+color_group = "blue"
 
 [node name="TriggerArea" type="Area2D" parent="."]
 position = Vector2( -568, -248 )

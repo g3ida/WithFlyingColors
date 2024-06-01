@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class BrickBreaker : Node2D
+public partial class BrickBreaker : Node2D, IPersistant
 {
     private const float FACE_SEPARATOR_SCALE_FACTOR = 3.5f;
     private const int NUM_LEVELS = 2;
@@ -33,7 +33,7 @@ public partial class BrickBreaker : Node2D
     private int num_balls = 0;
     private int current_level = 0;
 
-    private Godot.Collections.Dictionary<string, object> save_data = new Godot.Collections.Dictionary<string, object>
+    private Dictionary<string, object> save_data = new Dictionary<string, object>
     {
         {"state", (int)BrickBreakerState.STOPPED}
     };
@@ -145,7 +145,7 @@ public partial class BrickBreaker : Node2D
         num_balls = 0;
     }
 
-    private Godot.Collections.Dictionary<string, object> save()
+    public Dictionary<string, object> save()
     {
         return save_data;
     }
@@ -328,5 +328,11 @@ public partial class BrickBreaker : Node2D
                 _on_LevelUpTimer_timeout();
             }
         }
+    }
+
+    public void load(Dictionary<string, object> save_data)
+    {
+        this.save_data = save_data;
+        this.reset();
     }
 }

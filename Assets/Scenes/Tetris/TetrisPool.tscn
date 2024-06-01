@@ -63,6 +63,7 @@ shape = SubResource( 2 )
 [node name="CheckpointArea" parent="." instance=ExtResource( 5 )]
 position = Vector2( 36.6667, -74 )
 scale = Vector2( 10, 3 )
+color_group = "blue"
 
 [node name="SlidingFloor" parent="." instance=ExtResource( 9 )]
 position = Vector2( 36, 36 )

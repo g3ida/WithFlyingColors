@@ -1,4 +1,5 @@
 using Godot;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -35,7 +36,7 @@ public static class SkinLoader
             string jsonData = file.GetLine();
             file.Close();
 
-            var data = new Godot.Collections.Dictionary<string, object>(JSON.Parse(jsonData).Result as Godot.Collections.Dictionary);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonData);
             if (HasAllKeys(data))
             {
                 return ConvertToDictionary(data);
@@ -44,7 +45,7 @@ public static class SkinLoader
         return null;
     }
 
-    private static bool HasAllKeys(Godot.Collections.Dictionary<string, object> data)
+    private static bool HasAllKeys(Dictionary<string, object> data)
     {
         foreach (string key in KEYS)
         {
@@ -56,7 +57,7 @@ public static class SkinLoader
         return true;
     }
 
-    private static Dictionary<string, List<string>> ConvertToDictionary(Godot.Collections.Dictionary<string, object> data)
+    private static Dictionary<string, List<string>> ConvertToDictionary(Dictionary<string, object> data)
     {
         var result = new Dictionary<string, List<string>>();
         foreach (var key in data.Keys)

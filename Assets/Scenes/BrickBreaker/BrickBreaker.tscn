@@ -67,6 +67,7 @@ shape = SubResource( 4 )
 [node name="CheckpointArea" parent="." instance=ExtResource( 4 )]
 position = Vector2( 1198, 1080 )
 scale = Vector2( 10, 3 )
+color_group = "blue"
 
 [node name="BricksContainer" type="Node2D" parent="."]
 

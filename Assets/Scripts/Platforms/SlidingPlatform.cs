@@ -1,7 +1,8 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
-public class SlidingPlatform : Node2D
+public class SlidingPlatform : Node2D, IPersistant
 {
     public enum State
     {
@@ -36,7 +37,7 @@ public class SlidingPlatform : Node2D
     private Vector2 _startPos;
     private Vector2 _endPos;
 
-    private Godot.Collections.Dictionary<string, object> save_data = new Godot.Collections.Dictionary<string, object>
+    private Dictionary<string, object> save_data = new Dictionary<string, object>
     {
         { "state", (int)State.WAIT_1 },
         { "position_x", 0f },
@@ -186,7 +187,7 @@ public class SlidingPlatform : Node2D
         }
     }
 
-    public Godot.Collections.Dictionary<string, object> save()
+    public Dictionary<string, object> save()
     {
         return save_data;
     }
@@ -195,7 +196,7 @@ public class SlidingPlatform : Node2D
     {
         _tweener?.Kill();
         _currentState = (State)Helpers.ParseSaveDataInt(save_data, "state");
-        _platform.GlobalPosition = new Vector2((float)save_data["position_x"], (float)save_data["position_y"]);
+        _platform.GlobalPosition = new Vector2(Convert.ToSingle(save_data["position_x"]), Convert.ToSingle(save_data["position_y"]));
         _follow = _platform.GlobalPosition;
         SetLooping((bool)save_data["looping"]);
         is_stopped = (bool)save_data["is_stopped"];
@@ -277,5 +278,11 @@ public class SlidingPlatform : Node2D
             default:
               return GlobalPosition;
         };
+    }
+
+    public void load(Dictionary<string, object> save_data)
+    {
+        this.save_data = save_data;
+        reset();
     }
 }

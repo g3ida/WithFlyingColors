@@ -1,8 +1,9 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 [Tool]
-public class GemHUD : Node2D
+public class GemHUD : Node2D, IPersistant
 {
     private const string TextureCollectedPath = "res://Assets/Sprites/HUD/gem_hud_collected.png";
     private const string TextureEmptyPath = "res://Assets/Sprites/HUD/gem_hud.png";
@@ -21,7 +22,7 @@ public class GemHUD : Node2D
     public enum State { EMPTY, COLLECTING, COLLECTED }
     public State currentState = State.EMPTY;
 
-    public Godot.Collections.Dictionary<string, object> save_data = new Godot.Collections.Dictionary<string, object>
+    public Dictionary<string, object> save_data = new Dictionary<string, object>
     {
         { "state", State.EMPTY }
     };
@@ -140,8 +141,14 @@ public class GemHUD : Node2D
         save_data["state"] = (int)(currentState != State.COLLECTING ? currentState : State.EMPTY);
     }
 
-    public Godot.Collections.Dictionary<string, object> save()
+    public Dictionary<string, object> save()
     {
         return save_data;
+    }
+
+    public void load(Dictionary<string, object> save_data)
+    {
+        this.save_data = save_data;
+        reset();
     }
 }

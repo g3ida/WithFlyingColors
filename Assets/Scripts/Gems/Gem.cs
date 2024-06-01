@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Gem : Area2D
+public class Gem : Area2D, IPersistant
 {
     [Export]
     public string group_name;
@@ -26,7 +26,7 @@ public class Gem : Area2D
 
     public AnimationPlayer AnimationPlayerNode;
 
-    private Godot.Collections.Dictionary<string, object> save_data = new Godot.Collections.Dictionary<string, object> { { "state", null } };
+    private Dictionary<string, object> save_data = new Dictionary<string, object> { { "state", null } };
 
     public override void _Ready()
     {
@@ -111,7 +111,7 @@ public class Gem : Area2D
         save_data["state"] = (int)StatesStore.GetStateEnum(savedState);
     }
 
-    public Godot.Collections.Dictionary<string, object> save()
+    public Dictionary<string, object> save()
     {
         return save_data;
     }
@@ -139,5 +139,11 @@ public class Gem : Area2D
         }
         // return super method
         return base.IsInGroup(grp);
+    }
+
+    public void load(Dictionary<string, object> save_data)
+    {
+        this.save_data = save_data;
+        reset();
     }
 }

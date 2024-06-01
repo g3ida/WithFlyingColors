@@ -62,28 +62,25 @@ public static class Helpers
 
     // FIXME please find a better logic for saving data. this is due to inconsistancies
     // for godot and c#
-    public static int ParseSaveDataInt(Godot.Collections.Dictionary<string, object> save_data, string key)
+    public static int ParseSaveDataInt(Dictionary<string, object> save_data, string key)
     {
-        try {
-            return (int)save_data[key];
-        } catch (Exception) {
-            return (int)(float)save_data[key];
-        }
+        return Convert.ToInt32(save_data[key]);
     }
 
-    public static NodePath ParseSaveDataNodePath(Godot.Collections.Dictionary<string, object> save_data, string key)
+    public static float ParseSaveDataFloat(Dictionary<string, object> save_data, string key)
     {
-        try {
-            return (NodePath)save_data[key];
-        } catch (Exception) {
-            return (NodePath)(string)save_data[key];
-        }
+        return Convert.ToSingle(save_data[key]);
+    }
+
+    public static NodePath ParseSaveDataNodePath(Dictionary<string, object> save_data, string key)
+    {
+        return (NodePath)Convert.ToString(save_data[key]);
     }
 
     public static void TriggerFunctionalCheckpoint()
     {
         var checkpoint = new CheckpointArea();
-        checkpoint.ColorGroup = "blue";
-        checkpoint._OnCheckpointAreaBodyEntered(Global.Instance().Player);
+        checkpoint.color_group = "blue";
+        checkpoint._on_CheckpointArea_body_entered(Global.Instance().Player);
     }
 }

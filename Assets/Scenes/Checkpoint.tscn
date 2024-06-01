@@ -3,7 +3,7 @@
 [ext_resource path="res://Assets/Sprites/Checkpoint/checkopint.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Sprites/Checkpoint/checkdot.png" type="Texture" id=2]
 [ext_resource path="res://Assets/Sprites/Checkpoint/checkpoint_liftter.png" type="Texture" id=3]
-[ext_resource path="res://Assets/Scripts/Checkpoint.gd" type="Script" id=4]
+[ext_resource path="res://Assets/Scripts/Checkpoint.cs" type="Script" id=4]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 7, 64 )

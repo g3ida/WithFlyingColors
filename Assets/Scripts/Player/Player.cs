@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class Player : KinematicBody2D
+public class Player : KinematicBody2D, IPersistant
 {
     public const float SQUEEZE_ANIM_DURATION = 0.17f;
     public const float SCALE_ANIM_DURATION = 0.17f;
@@ -235,36 +235,36 @@ private void PrepareChildrenNodes()
     {
         animatedSpriteNode.Play("idle");
         animatedSpriteNode.Playing = false;
-        GlobalPosition = new Vector2((float)save_data["position_x"], (float)save_data["position_y"]);
+        GlobalPosition = new Vector2(Convert.ToSingle(save_data["position_x"]), Convert.ToSingle(save_data["position_y"]));
         velocity = Vector2.Zero;
-        var angle_rot = (float)save_data["angle"];
+        var angle_rot = Convert.ToSingle(save_data["angle"]);
         Rotate(angle_rot - Rotation);
-        CurrentDefaultCornerScaleFactor = (float)save_data["default_corner_scale_factor"];
+        CurrentDefaultCornerScaleFactor = Convert.ToSingle(save_data["default_corner_scale_factor"]);
         ShowColorAreas();
         SwitchRotationState((PlayerBaseState)states_store.GetState(PlayerStatesEnum.IDLE));
         SwitchState((PlayerBaseState)states_store.GetState(PlayerStatesEnum.FALLING));
         handle_input_is_disabled = false;
     }
 
-    private void OnCheckpointHit(Node2D checkpoint_object)
+    private void OnCheckpointHit(CheckpointArea checkpoint_object)
     {
-        if (checkpoint_object.GetGroups().Contains(bottomFaceNode.GetGroups()[0]))
+        if (bottomFaceNode.GetGroups().Contains(checkpoint_object.color_group))
         {
             save_data["angle"] = 0f;
         }
-        else if (checkpoint_object.GetGroups().Contains(leftFaceNode.GetGroups()[0]))
+        else if (leftFaceNode.GetGroups().Contains(checkpoint_object.color_group))
         {
             save_data["angle"] = -Mathf.Pi / 2f;
         }
-        else if (checkpoint_object.GetGroups().Contains(rightFaceNode.GetGroups()[0]))
+        else if (rightFaceNode.GetGroups().Contains(checkpoint_object.color_group))
         {
             save_data["angle"] = Mathf.Pi / 2f;
         }
-        else if (checkpoint_object.GetGroups().Contains(topFaceNode.GetGroups()[0]))
+        else if (topFaceNode.GetGroups().Contains(checkpoint_object.color_group))
         {
             save_data["angle"] = Mathf.Pi;
         }
-
+        
         if (checkpoint_object.IsInsideTree())
         {
             save_data["position_x"] = checkpoint_object.GlobalPosition.x;
@@ -497,5 +497,11 @@ private void PrepareChildrenNodes()
 
     public void SetMaxSpeed() {
         velocity.x = SPEED;
+    }
+
+    public void load(Dictionary<string, object> save_data)
+    {
+        this.save_data = save_data;
+        reset();
     }
 }

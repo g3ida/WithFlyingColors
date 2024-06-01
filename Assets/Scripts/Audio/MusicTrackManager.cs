@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class MusicTrackManager : Node2D
+public class MusicTrackManager : Node2D, IPersistant
 {
     public class Track
     {
@@ -306,5 +306,11 @@ public class MusicTrackManager : Node2D
     public override void _ExitTree() {
         Event.GdInstance().Disconnect("checkpoint_reached", this, nameof(OnCheckpointHit));
         Event.GdInstance().Disconnect("checkpoint_loaded", this, nameof(reset));
+    }
+
+    public void load(Dictionary<string, object> save_data)
+    {
+        this.save_data = save_data;
+        reset();
     }
 }
