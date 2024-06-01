@@ -179,7 +179,6 @@ public class SaveGame : Node2D
                 }
 
                 var nodeData = persistant.save();
-                GD.Print($"Saving {node.GetPath()}");
                 nodeData[NODE_PATH_VAR] = node.GetPath().ToString();
                 saveFile.StoreLine(JsonConvert.SerializeObject(nodeData));
             }

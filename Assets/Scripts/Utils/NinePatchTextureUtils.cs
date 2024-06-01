@@ -1,9 +1,9 @@
 using Godot;
 using System.Diagnostics;
 
-public class NinePatchTextureUtils : Node
+public static class NinePatchTextureUtils
 {
-    public /*static*/ void ScaleTexture(NinePatchRect ninePatchRect, Vector2 scale)
+    public static void ScaleTexture(NinePatchRect ninePatchRect, Vector2 scale)
     {
         Debug.Assert(scale.x >= 1 && scale.y >= 1);
         ninePatchRect.RectScale = new Vector2(1 / scale.x, 1 / scale.y);
@@ -18,7 +18,7 @@ public class NinePatchTextureUtils : Node
         ninePatchRect.RectPosition = rectPos;
     }
 
-    public /*static*/ void SetTexture(NinePatchRect ninePatchRect, Texture texture)
+    public static void SetTexture(NinePatchRect ninePatchRect, Texture texture)
     {
         ninePatchRect.Texture = texture;
     }

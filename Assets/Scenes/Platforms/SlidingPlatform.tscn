@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Assets/Sprites/Platforms/gear.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Scripts/Platforms/SlidingPlatform.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Scripts/Platforms/SlidingPlatformGear.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Scripts/Platforms/SlidingPlatformGear.cs" type="Script" id=3]
 
 [node name="SlidingPlatform" type="Node2D" groups=["persist"]]
 script = ExtResource( 2 )

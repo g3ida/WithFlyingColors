@@ -45,11 +45,6 @@ _global_script_classes=[ {
 "path": "res://Assets/Scripts/Utils/ImageUtils_old.gd"
 }, {
 "base": "InputEventAction",
-"class": "InputEventSwipe",
-"language": "GDScript",
-"path": "res://SwipeModule/InputEventSwipe.gd"
-}, {
-"base": "InputEventAction",
 "class": "InputTouchDash",
 "language": "GDScript",
 "path": "res://Assets/Scripts/Touch/InputTouchDash.gd"
@@ -94,21 +89,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/UI/SlotButton.gd"
 }, {
-"base": "_SwipeEventCore",
-"class": "SwipeModule",
-"language": "GDScript",
-"path": "res://SwipeModule/SwipeModule.gd"
-}, {
-"base": "InputEventAction",
-"class": "ThrowedFooter",
-"language": "GDScript",
-"path": "res://SwipeModule/ThrowedFooter.gd"
-}, {
-"base": "InputEventAction",
-"class": "ThrowedHeader",
-"language": "GDScript",
-"path": "res://SwipeModule/ThrowedHeader.gd"
-}, {
 "base": "Node",
 "class": "UISelectDriver",
 "language": "GDScript",
@@ -118,11 +98,6 @@ _global_script_classes=[ {
 "class": "UITransition",
 "language": "GDScript",
 "path": "res://Assets/Scripts/UI/UITransition.gd"
-}, {
-"base": "Node",
-"class": "_SwipeEventCore",
-"language": "GDScript",
-"path": "res://SwipeModule/_SwipeEventCore.gd"
 } ]
 _global_script_class_icons={
 "CamLimitEnum": "",
@@ -132,7 +107,6 @@ _global_script_class_icons={
 "GitAPI": "",
 "HSLColor": "",
 "ImageUtils": "",
-"InputEventSwipe": "res://SwipeModule/SwipeEventCore.png",
 "InputTouchDash": "",
 "InputTouchJump": "",
 "InputTouchMove": "",
@@ -142,12 +116,8 @@ _global_script_class_icons={
 "PlayerSpriteGenerator": "",
 "SkinLoader": "",
 "SlotButton": "",
-"SwipeModule": "",
-"ThrowedFooter": "res://SwipeModule/SwipeEventCore.png",
-"ThrowedHeader": "res://SwipeModule/SwipeEventCore.png",
 "UISelectDriver": "",
-"UITransition": "",
-"_SwipeEventCore": "res://SwipeModule/SwipeEventCore.png"
+"UITransition": ""
 }
 
 [application]
@@ -165,7 +135,6 @@ GlobalCS="*res://Assets/Scripts/Autoload/Global.cs"
 EventCS="*res://Assets/Scripts/Autoload/Event.cs"
 Settings="*res://Assets/Scripts/Autoload/Settings.gd"
 AudioManager="*res://Assets/Scripts/Autoload/AudioManager.gd"
-TouchInput="res://Assets/Scripts/Autoload/TouchInput.gd"
 SaveGame="*res://Assets/Scripts/Autoload/SaveGame.gd"
 MenuManager="*res://Assets/Scripts/Autoload/MenuManager.gd"
 Levels="*res://Assets/Scripts/Autoload/Levels.gd"
@@ -184,6 +153,10 @@ window/stretch/aspect="keep_height"
 [gdnative]
 
 singletons=[ "res://addons/godot-git-plugin/git_api.gdnlib" ]
+
+[global]
+
+"emulate touch"=false
 
 [gui]
 

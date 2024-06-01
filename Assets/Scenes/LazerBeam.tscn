@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://Assets/Scripts/LazerBeam.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Scripts/LazerBeam.cs" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/Particles/glow_circle.png" type="Texture" id=2]
 [ext_resource path="res://Assets/Sprites/Platforms/lazer.png" type="Texture" id=3]
 [ext_resource path="res://Assets/Shaders/LazerBeam.gdshader" type="Shader" id=4]
@@ -33,6 +33,7 @@ __meta__ = {
 }
 
 [node name="Base" type="Sprite" parent="."]
+modulate = Color( 0, 0.921569, 1, 1 )
 position = Vector2( 12.5, 0 )
 rotation = 1.5708
 texture = ExtResource( 3 )
@@ -43,12 +44,14 @@ material = SubResource( 4 )
 position = Vector2( 0.3, 0 )
 points = PoolVector2Array( 0, 0, 67, 0 )
 width = 6.0
+default_color = Color( 0, 0.921569, 1, 1 )
 
 [node name="Line2Dbackground" type="Line2D" parent="."]
 show_behind_parent = true
 position = Vector2( 0.3, 0 )
 points = PoolVector2Array( 0, 0, 67, 0 )
 width = 6.0
+default_color = Color( 0, 0.921569, 1, 0.63 )
 
 [node name="Muzzle" type="Position2D" parent="."]
 position = Vector2( 0.3, 0 )
@@ -61,6 +64,7 @@ gravity = Vector2( 0, 0 )
 initial_velocity = 60.0
 scale_amount = 0.7
 scale_amount_curve = SubResource( 1 )
+color = Color( 0, 0.921569, 1, 1 )
 color_ramp = SubResource( 2 )
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]

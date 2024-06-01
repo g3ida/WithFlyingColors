@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://Assets/Scripts/Platforms/Platform.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Scripts/Platforms/Platform.cs" type="Script" id=1]
 [ext_resource path="res://Assets/Shaders/ColorSplash.tres" type="Shader" id=2]
 [ext_resource path="res://Assets/Sprites/Platforms/geared-platform.png" type="Texture" id=3]
 
