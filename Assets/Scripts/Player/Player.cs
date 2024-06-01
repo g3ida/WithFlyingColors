@@ -29,12 +29,6 @@ public class Player : KinematicBody2D, IPersistant
     public bool can_dash = true;
     public bool handle_input_is_disabled = false;
 
-    // Touch input
-    public InputTouchMove touch_move_input = null;
-    public InputTouchJump touch_jump_input = null;
-    public InputTouchDash touch_dash_input = null;
-    public InputTouchRotate touch_rotation_input = null;
-
 
     public CPUParticles2D jumpParticlesNode;
     public Timer fallTimerNode;
