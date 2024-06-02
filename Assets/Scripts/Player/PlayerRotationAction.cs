@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerRotationAction : Node
+public class PlayerRotationAction: Godot.Object
 {
     private const float DEFAULT_ROTATION_DURATION = 0.1f;
     private CountdownTimer rotationTimer = new CountdownTimer();
@@ -19,10 +19,10 @@ public class PlayerRotationAction : Node
         // FIXME remove this constructor after c# migration
     }
 
-    public void Set(Node2D _body)
+    public void Set(KinematicBody2D _body)
     {
         rotationTimer.Set(DEFAULT_ROTATION_DURATION, false);
-        body = _body as KinematicBody2D;
+        body = _body;
     }
 
     public void Step(float delta)

@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Assets/Fonts/HeavyEquipment.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Assets/Sprites/MainMenu/button-click-mask.png" type="BitMap" id=2]
-[ext_resource path="res://Assets/Scripts/Menus/MainMenu/MenuBoxButton.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Scripts/Menus/MainMenu/MenuBoxButton.cs" type="Script" id=3]
 
 [sub_resource type="DynamicFont" id=1]
 size = 155
@@ -19,12 +19,9 @@ use_top_left = true
 
 [node name="Label" type="Label" parent="CenterLabel"]
 modulate = Color( 0.27451, 0.27451, 0.27451, 0.588235 )
-margin_left = -144.0
 margin_top = -78.0
-margin_right = 144.0
 margin_bottom = 78.0
 custom_fonts/font = SubResource( 1 )
-text = "PLAY"
 
 [node name="CenterTexture" type="CenterContainer" parent="."]
 margin_right = 40.0

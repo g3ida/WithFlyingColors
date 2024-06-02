@@ -26,7 +26,7 @@ public class SaveGame : Node2D
     private List<Dictionary<string, object>> slotMetaData = new List<Dictionary<string, object>>();
     private List<long?> slotLastLoadDate = new List<long?>();
     private bool hasFilledSlots = false;
-    private int currentSlotIndex = 0;
+    public int currentSlotIndex = 0;
 
     private const string NODE_PATH_VAR = "_node_path_";
     private const string SAVE_DATE_VAR = "_save_date_";
@@ -65,7 +65,7 @@ public class SaveGame : Node2D
         DisconnectSignals();
     }
 
-    private void Init(bool createSlotIfEmpty = true)
+    public void Init(bool createSlotIfEmpty = true)
     {
         Refresh();
         currentSlotIndex = GetMostRecentlyLoadedSlotIndex();
@@ -249,7 +249,7 @@ public class SaveGame : Node2D
         return isSlotFilledArray[saveSlotIndex];
     }
 
-    private bool DoesSlotHaveProgress(int saveSlotIndex)
+    public bool DoesSlotHaveProgress(int saveSlotIndex)
     {
         return IsSlotFilled(saveSlotIndex) && Convert.ToSingle(slotMetaData[saveSlotIndex]["progress"]) > Constants.EPSILON2;
     }
@@ -280,7 +280,7 @@ public class SaveGame : Node2D
         return false;
     }
 
-    private void RemoveSaveSlot(int saveSlotIndex)
+    public void RemoveSaveSlot(int saveSlotIndex)
     {
         if (IsSlotFilled(saveSlotIndex))
         {

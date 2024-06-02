@@ -27,7 +27,7 @@ func on_menu_button_pressed(menu_button) -> bool:
     navigate_to_screen(MenuManager.Menus.SETTINGS_MENU)
     return true
   elif menu_button == MenuButtons.BACK:
-    MenuBoxNode._hide_sub_menu_if_needed()
+    MenuBoxNode._HideSubMenuIfNeeded()
     return true
   return process_play_sub_menus(menu_button)
 
@@ -37,14 +37,14 @@ func process_play_sub_menus(_menu_button) -> bool:
       ResetSlotDialogNode.show_dialog()
     else:
       navigate_to_screen(MenuManager.Menus.GAME)
-      MenuBoxNode._hide_sub_menu_if_needed()
+      MenuBoxNode._HideSubMenuIfNeeded()
     return true
   if _menu_button == MenuButtons.CONTINUE_GAME:
-    MenuBoxNode._hide_sub_menu_if_needed()
+    MenuBoxNode._HideSubMenuIfNeeded()
     navigate_to_screen(MenuManager.Menus.GAME)
     return true
   if _menu_button == MenuButtons.SELECT_SLOT:
-    MenuBoxNode._hide_sub_menu_if_needed()
+    MenuBoxNode._HideSubMenuIfNeeded()
     navigate_to_screen(MenuManager.Menus.SELECT_SLOT)
     return true
   return false
@@ -52,5 +52,5 @@ func process_play_sub_menus(_menu_button) -> bool:
 #signal for ResetDialog
 func _on_ResetSlotDialog_confirmed():
   SaveGame.remove_save_slot(SaveGame.current_slot_index)
-  MenuBoxNode._hide_sub_menu_if_needed()
+  MenuBoxNode._HideSubMenuIfNeeded()
   navigate_to_screen(MenuManager.Menus.GAME)

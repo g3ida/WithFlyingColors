@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://Assets/Scripts/Menus/SubMenu/SubMenu.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Scripts/Menus/SubMenu/SubMenu.cs" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/MainMenu/sub-menu-top.png" type="Texture" id=2]
 
 [node name="SubMenu" type="Control"]
@@ -17,7 +17,7 @@ rect_min_size = Vector2( 637, 30 )
 custom_constants/separation = 0
 
 [node name="Top" type="TextureRect" parent="VBoxContainer"]
-modulate = Color( 0, 0, 0, 1 )
+modulate = Color( 0, 0, 0, 0 )
 margin_right = 637.0
 margin_bottom = 30.0
 rect_min_size = Vector2( 637, 30 )

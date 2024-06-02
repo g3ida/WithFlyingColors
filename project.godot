@@ -10,11 +10,6 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Reference",
-"class": "CamLimitEnum",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Camera/CamLimitEnum.gd"
-}, {
-"base": "Reference",
 "class": "ColorUtils",
 "language": "GDScript",
 "path": "res://Assets/Scripts/Utils/Colors_old.gd"
@@ -80,7 +75,6 @@ _global_script_classes=[ {
 "path": "res://Assets/Scripts/UI/UITransition.gd"
 } ]
 _global_script_class_icons={
-"CamLimitEnum": "",
 "ColorUtils": "",
 "Constants": "",
 "GameMenu": "",

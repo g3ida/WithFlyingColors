@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://Assets/Scripts/Menus/SubMenu/PlaySubMenu.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scripts/Menus/SubMenu/PlaySubMenu.cs" type="Script" id=1]
 [ext_resource path="res://Assets/Scenes/MainMenu/SubMenu.tscn" type="PackedScene" id=3]
 
 [node name="PlaySubMenu" type="Control"]
@@ -11,7 +11,7 @@ margin_left = -318.0
 margin_right = 319.0
 margin_bottom = 324.0
 rect_min_size = Vector2( 637, 324 )
-script = ExtResource( 2 )
+script = ExtResource( 1 )
 
 [node name="SubMenu" parent="." instance=ExtResource( 3 )]
 margin_bottom = 912.0

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class MusicTrackManager : Node2D, IPersistant
 {
-    public class Track
+    public class Track: Godot.Object
     {
         public string Name { get; }
         public AudioStreamPlayer Stream { get; }

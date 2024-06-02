@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 
-public class ExplosionInfo
+public class ExplosionInfo: Godot.Object
 {
     public Node2D BlocksContainer { get; set; }
     public bool CanDetonate { get; set; }
