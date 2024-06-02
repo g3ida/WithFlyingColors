@@ -135,12 +135,12 @@ public class MenuBox : Control
         _ProcessButtonPress(MenuButtons.QUIT);
     }
 
-    public void _on_SettingsButton_Pressed()
+    public void _on_SettingsButton_pressed()
     {
         _ProcessButtonPress(MenuButtons.SETTINGS);
     }
 
-    public void _on_StatsButton_Pressed()
+    public void _on_StatsButton_pressed()
     {
         _ProcessButtonPress(MenuButtons.STATS);
     }
@@ -168,11 +168,11 @@ public class MenuBox : Control
         }
         else if (buttons[activeIndex] == settingsButton)
         {
-            _on_SettingsButton_Pressed();
+            _on_SettingsButton_pressed();
         }
         else if (buttons[activeIndex] == statsButton)
         {
-            _on_StatsButton_Pressed();
+            _on_StatsButton_pressed();
         }
     }
 
