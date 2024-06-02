@@ -3,8 +3,6 @@ using System;
 
 public class MenuBox : Control
 {
-    private PackedScene PlaySubMenuScene = (PackedScene)GD.Load("res://Assets/Scenes/MainMenu/PlaySubMenu.tscn");
-
     private const float SUB_MENU_POPUP_DURATION = 0.2f;
 
     private PlayerRotationAction boxRotation;
@@ -182,6 +180,7 @@ public class MenuBox : Control
     {
         if (PlaySubMenuNode == null)
         {
+            PackedScene PlaySubMenuScene = GD.Load<PackedScene>("res://Assets/Scenes/MainMenu/PlaySubMenu.tscn");
             PlaySubMenuNode = (Control)PlaySubMenuScene.Instance();
             MenuBoxNode.AddChild(PlaySubMenuNode);
             PlaySubMenuNode.Owner = MenuBoxNode;

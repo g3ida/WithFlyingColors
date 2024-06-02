@@ -14,7 +14,7 @@ public class MenuBoxButton : Control
     private string _text;
     [Export] public string text
     {
-        get => LabelNode.Text;
+        get => _text;
         set
         {
             _text = value;
