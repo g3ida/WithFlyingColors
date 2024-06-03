@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class AudioSettingsUI : Control
+public class AudioSettingsUI : Control, IUITab
 {
     private UISliderButton SfxSliderNode;
     private UISliderButton MusicSliderNode;
@@ -40,7 +40,7 @@ public class AudioSettingsUI : Control
         Event.Instance().EmitMusicVolumeChanged(value);
     }
 
-    private void on_gain_focus()
+    public void on_gain_focus()
     {
         SfxSliderNode.GrabFocus();
     }

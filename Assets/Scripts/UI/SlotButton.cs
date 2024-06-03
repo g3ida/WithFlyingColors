@@ -65,7 +65,6 @@ public class SlotButton : ColorRect
 
     public void ShowButton()
     {
-        GD.Print("ShowButton ", _currentState);
         if (_currentState == State.HIDING || _currentState == State.HIDDEN)
         {
             Visible = true;
@@ -144,7 +143,6 @@ public class SlotButton : ColorRect
 
     private void OnTweenCompleted()
     {
-        GD.Print("OnTweenCompleted", _currentState, RectMinSize.x, RectSize.x);
         if (_currentState == State.HIDING)
         {
             _currentState = State.HIDDEN;

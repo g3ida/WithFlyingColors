@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class GameSettingsUI : Control
+public class GameSettingsUI : Control, IUITab
 {
     private CheckBox vsyncCheckbox;
     private CheckBox fscreenCheckbox;
@@ -102,7 +102,7 @@ public class GameSettingsUI : Control
         GameSettings.Instance().WindowSize = (Vector2)resolutionSelect.selected_value;
     }
 
-    private void on_gain_focus()
+    public void on_gain_focus()
     {
         if (resolutionSelect.Visible)
         {

@@ -42,7 +42,6 @@ public class UITransition : Control
     // API: enter(), exit()
     public void Enter()
     {
-        GD.Print("enter");
         EnterDelay();
     }
 

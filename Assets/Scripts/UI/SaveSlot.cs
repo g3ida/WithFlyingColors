@@ -125,7 +125,6 @@ public class SaveSlot : PanelContainer
 
     private void _on_Button_pressed()
     {
-        GD.Print("Button pressed", _currentState);
         if (_currentState == State.FOCUS)
         {
             SetState(State.ACTIONS_SHOWN);

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/KeyBindingController.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/KeyBindingController.cs" type="Script" id=1]
 [ext_resource path="res://Assets/Scenes/UI/KeybindingButton.tscn" type="PackedScene" id=4]
 
 [node name="Control" type="Control"]
@@ -133,6 +133,8 @@ key = "pause"
 [connection signal="on_action_bound_signal" from="." to="GridContainer/RightBtn" method="_on_Control_on_action_bound_signal"]
 [connection signal="on_action_bound_signal" from="." to="GridContainer/RotLeftBtn" method="_on_Control_on_action_bound_signal"]
 [connection signal="on_action_bound_signal" from="." to="GridContainer/RotRightBtn" method="_on_Control_on_action_bound_signal"]
+[connection signal="on_action_bound_signal" from="." to="GridContainer/DashBtn" method="_on_Control_on_action_bound_signal"]
+[connection signal="on_action_bound_signal" from="." to="GridContainer/DownBtn" method="_on_Control_on_action_bound_signal"]
 [connection signal="on_action_bound_signal" from="." to="GridContainer/KeyBindingButton" method="_on_Control_on_action_bound_signal"]
 [connection signal="keyboard_action_bound" from="GridContainer/JumpBtn" to="." method="_on_keyboard_input_action_bound"]
 [connection signal="keyboard_action_bound" from="GridContainer/LeftBtn" to="." method="_on_keyboard_input_action_bound"]

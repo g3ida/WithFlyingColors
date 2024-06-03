@@ -89,7 +89,7 @@ public class Event : Node
     public delegate void Screen_size_changed(Vector2 value);
 
     [Signal]
-    public delegate void on_action_bound(string action, string key);
+    public delegate void on_action_bound(string action, int key);
 
     [Signal]
     public delegate void tab_changed();
@@ -203,7 +203,7 @@ public class Event : Node
 
     public void EmitMusicVolumeChanged(float volume) =>_gdInstance.EmitSignal(nameof(music_volume_changed), volume);
 
-    public void EmitOnActionBound(string action, string key) =>_gdInstance.EmitSignal(nameof(on_action_bound), action, key);
+    public void EmitOnActionBound(string action, int key) =>_gdInstance.EmitSignal(nameof(on_action_bound), action, key);
 
     public void EmitTabChanged() =>_gdInstance.EmitSignal(nameof(tab_changed));
 

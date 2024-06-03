@@ -89,7 +89,7 @@ public class GameSettings : Node2D
         return GetVolumeFromDb(volumeDb);
     }
 
-    private void BindActionToKeyboardKey(string action, int scancode)
+    public void BindActionToKeyboardKey(string action, int scancode)
     {
         // Erase the current action:
         var actionList = InputMap.GetActionList(action).Cast<InputEvent>();
@@ -108,7 +108,7 @@ public class GameSettings : Node2D
         InputMap.ActionAddEvent(action, newKey);
     }
 
-    private void UnbindActionKey(string action)
+    public void UnbindActionKey(string action)
     {
         // Erase the current action:
         var actionList = InputMap.GetActionList(action).Cast<InputEvent>();

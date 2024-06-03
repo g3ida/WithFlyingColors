@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/KeyBindingButton.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/KeyBindingButton.cs" type="Script" id=1]
 
 [sub_resource type="StyleBoxFlat" id=10]
 bg_color = Color( 1, 1, 1, 0 )

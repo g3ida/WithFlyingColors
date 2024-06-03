@@ -31,7 +31,6 @@ public class SlotActionButtons : HBoxContainer
 
     public void ShowButton()
     {
-        GD.Print("ShowButton", ShouldShowDeleteButton(), ShouldShowSelectButton());
         if (ShouldShowDeleteButton())
         {
             _deleteButtonNode.ShowButton();
@@ -75,13 +74,11 @@ public class SlotActionButtons : HBoxContainer
 
     private bool ShouldShowDeleteButton()
     {
-        GD.Print("ShouldShowDeleteButton ", SlotIndex, " ", SaveGame.Instance().currentSlotIndex);
         return SaveGame.Instance().IsSlotFilled(SlotIndex);
     }
 
     private bool ShouldShowSelectButton()
     {
-        GD.Print("ShouldShowSelectButton ", SlotIndex, " ", SaveGame.Instance().currentSlotIndex);
         return SaveGame.Instance().currentSlotIndex != SlotIndex;
     }
 
