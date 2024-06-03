@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Assets/Styles/Themes/MenuTheme.tres" type="Theme" id=1]
-[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/AudioSettingsUI.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/AudioSettingsUI.cs" type="Script" id=2]
 [ext_resource path="res://Assets/Scenes/UI/UISliderButton.tscn" type="PackedScene" id=3]
 
 [node name="AudioSettings" type="Control"]

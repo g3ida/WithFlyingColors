@@ -244,7 +244,7 @@ public class SaveGame : Node2D
         return SAVE_IMAGE_SLOTS[saveSlotIndex];
     }
 
-    private bool IsSlotFilled(int saveSlotIndex)
+    public bool IsSlotFilled(int saveSlotIndex)
     {
         return isSlotFilledArray[saveSlotIndex];
     }
@@ -327,7 +327,7 @@ public class SaveGame : Node2D
         return null;
     }
 
-    private ImageTexture LoadSlotImage(int saveSlotIndex)
+    public ImageTexture LoadSlotImage(int saveSlotIndex)
     {
         if (IsSlotFilled(saveSlotIndex))
         {
@@ -406,7 +406,7 @@ public class SaveGame : Node2D
         return false;
     }
 
-    private void UpdateSlotLoadDate(int slotIndex)
+    public void UpdateSlotLoadDate(int slotIndex)
     {
         slotLastLoadDate[slotIndex] = (long)GetUnixTimestamp();
         _SaveGameInfo();

@@ -10,19 +10,19 @@ onready var current_slot_on_focus = SaveGame.current_slot_index
 var delete_tmp_id = 0 #used to save the currently deleting slot
 
 func _ready():
-  SlotsContainer.set_game_current_selected_slot(SaveGame.current_slot_index)
+  SlotsContainer.SetGameCurrentSelectedSlot(SaveGame.current_slot_index)
   set_selected_slot_label()
 
 func _on_BackButton_pressed():
   if SaveGame.current_slot_index == -1:
     Event.emit_menu_button_pressed(MenuButtons.SHOW_DIALOG)
-    #NoSelectedSlotDialogContainer.show_dialog()
+    #NoSelectedSlotDialogContainer.ShowDialog()
   else:
     Event.emit_menu_button_pressed(MenuButtons.BACK)
    
 func on_menu_button_pressed(_menu_button) -> bool:
   if _menu_button == MenuButtons.SHOW_DIALOG:
-    NoSelectedSlotDialogContainer.show_dialog()
+    NoSelectedSlotDialogContainer.ShowDialog()
     return true
   elif _menu_button == MenuButtons.DELETE_SLOT:
     return true
@@ -36,15 +36,16 @@ func update_slots_y_pos(pos_y):
   $SlotsContainer.rect_position.y = pos_y
 
 func _on_SlotsContainer_slot_pressed(id, action):
+  print("Slot pressed: ", id, action)
   current_slot_on_focus = id
   if action == "select":
     SaveGame.current_slot_index = id
     _on_confirm_slot_button_selected(id)
-    SlotsContainer.set_game_current_selected_slot(id)
+    SlotsContainer.SetGameCurrentSelectedSlot(id)
     Event.emit_menu_button_pressed(MenuButtons.SELECT_SLOT)
   elif action == "delete":
     delete_tmp_id = id
-    ResetDialogContainerNode.show_dialog()
+    ResetDialogContainerNode.ShowDialog()
     Event.emit_menu_button_pressed(MenuButtons.DELETE_SLOT)
   elif action == "focus":
     pass
@@ -60,8 +61,8 @@ func _on_confirm_slot_button_selected(_slot_index):
 func _on_ResetSlotDialog_confirmed():
   SaveGame.remove_save_slot(current_slot_on_focus)
   SaveGame.refresh()
-  SlotsContainer.update_slot(delete_tmp_id, true)
-  SlotsContainer.set_game_current_selected_slot(SaveGame.current_slot_index)
+  SlotsContainer.UpdateSlot(delete_tmp_id, true)
+  SlotsContainer.SetGameCurrentSelectedSlot(SaveGame.current_slot_index)
   set_selected_slot_label()
 
 func set_selected_slot_label():

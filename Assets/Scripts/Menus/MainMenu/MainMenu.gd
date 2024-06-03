@@ -11,7 +11,7 @@ func _ready():
   CurrentSlotLabelNode.text = "Current slot: %d" % (SaveGame.current_slot_index + 1)
 
 func show_reset_data_dialog():
-  ResetSlotDialogNode.show_dialog()
+  ResetSlotDialogNode.ShowDialog()
 
 func on_menu_button_pressed(menu_button) -> bool:
   if menu_button == MenuButtons.QUIT:
@@ -34,7 +34,7 @@ func on_menu_button_pressed(menu_button) -> bool:
 func process_play_sub_menus(_menu_button) -> bool:
   if _menu_button == MenuButtons.NEW_GAME:
     if SaveGame.does_slot_have_progress(SaveGame.current_slot_index):
-      ResetSlotDialogNode.show_dialog()
+      ResetSlotDialogNode.ShowDialog()
     else:
       navigate_to_screen(MenuManager.Menus.GAME)
       MenuBoxNode._HideSubMenuIfNeeded()

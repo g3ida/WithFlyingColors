@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Assets/Sprites/UI/ui_left.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Sprites/UI/ui_right.png" type="Texture" id=2]
-[ext_resource path="res://Assets/Scripts/UI/UISelect.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Scripts/UI/UISelect.cs" type="Script" id=3]
 
 [sub_resource type="StyleBoxFlat" id=4]
 bg_color = Color( 0, 0, 0, 0.176471 )

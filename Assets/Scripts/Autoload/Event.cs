@@ -77,14 +77,16 @@ public class Event : Node
     [Signal]
     public delegate void menu_button_pressed(string menu_button);
 
+
+    // Settings signals
     [Signal]
-    public delegate void fullscreen_toggled(bool value);
+    public delegate void Fullscreen_toggled(bool value);
 
     [Signal]
-    public delegate void vsync_toggled(bool value);
+    public delegate void Vsync_toggled(bool value);
 
     [Signal]
-    public delegate void screen_size_changed(int value);
+    public delegate void Screen_size_changed(Vector2 value);
 
     [Signal]
     public delegate void on_action_bound(string action, string key);
@@ -191,11 +193,11 @@ public class Event : Node
 
     public void EmitPauseMenuExit() =>_gdInstance.EmitSignal(nameof(pause_menu_exit));
 
-    public void EmitFullscreenToggled(bool fullscreen) =>_gdInstance.EmitSignal(nameof(fullscreen_toggled), fullscreen);
+    public void EmitFullscreenToggled(bool fullscreen) =>_gdInstance.EmitSignal(nameof(Fullscreen_toggled), fullscreen);
 
-    public void EmitVsyncToggled(bool vsync) =>_gdInstance.EmitSignal(nameof(vsync_toggled), vsync);
+    public void EmitVsyncToggled(bool vsync) =>_gdInstance.EmitSignal(nameof(Vsync_toggled), vsync);
 
-    public void EmitScreenSizeChanged(int size) =>_gdInstance.EmitSignal(nameof(screen_size_changed), size);
+    public void EmitScreenSizeChanged(Vector2 size) =>_gdInstance.EmitSignal(nameof(Screen_size_changed), size);
 
     public void EmitSfxVolumeChanged(float volume) =>_gdInstance.EmitSignal(nameof(sfx_volume_changed), volume);
 

@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public class UITransition : Control
 {
@@ -32,7 +31,7 @@ public class UITransition : Control
     public float delay = 0.25f;
 
     [Export]
-    public Vector2 hiddenRelativePosition = Vector2.Zero;
+    public Vector2 hidden_relative_position = Vector2.Zero;
 
     public override void _Ready()
     {
@@ -43,6 +42,7 @@ public class UITransition : Control
     // API: enter(), exit()
     public void Enter()
     {
+        GD.Print("enter");
         EnterDelay();
     }
 
@@ -88,7 +88,7 @@ public class UITransition : Control
     private void _prepare()
     {
         displayPosition = parent.RectPosition;
-        hiddenPosition = parent.RectPosition + hiddenRelativePosition;
+        hiddenPosition = parent.RectPosition + hidden_relative_position;
         parent.RectPosition = hiddenPosition;
     }
 

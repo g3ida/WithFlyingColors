@@ -59,16 +59,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Assets/Scripts/Skin/SkinLoader_old.gd"
 }, {
-"base": "ColorRect",
-"class": "SlotButton",
-"language": "GDScript",
-"path": "res://Assets/Scripts/UI/SlotButton.gd"
-}, {
-"base": "Node",
-"class": "UISelectDriver",
-"language": "GDScript",
-"path": "res://Assets/Scripts/UI/UISelectDriver.gd"
-}, {
 "base": "Control",
 "class": "UITransition",
 "language": "GDScript",
@@ -85,8 +75,6 @@ _global_script_class_icons={
 "MenuButtons": "",
 "PlayerSpriteGenerator": "",
 "SkinLoader": "",
-"SlotButton": "",
-"UISelectDriver": "",
 "UITransition": ""
 }
 
@@ -111,6 +99,7 @@ Levels="*res://Assets/Scripts/Autoload/Levels.gd"
 MenuManagerCS="*res://Assets/Scripts/Autoload/MenuManager.cs"
 AudioManagerCS="*res://Assets/Scripts/Autoload/AudioManager.cs"
 SaveGameCS="*res://Assets/Scripts/Autoload/SaveGame.cs"
+GameSettings="*res://Assets/Scripts/Autoload/GameSettings.cs"
 
 [display]
 

@@ -12,7 +12,7 @@ func _input(_event):
     
 func on_menu_button_pressed(_menu_button) -> bool:
   if _menu_button == MenuButtons.SHOW_DIALOG:
-    DialogContainerNode.show_dialog()
+    DialogContainerNode.ShowDialog()
     return true
   elif _menu_button == MenuButtons.BACK:
     if is_valid_state():
