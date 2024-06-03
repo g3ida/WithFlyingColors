@@ -48,16 +48,16 @@ public class SaveGame : Node2D
 
     public override void _EnterTree()
     {
-        //Event.GdInstance().Connect("checkpoint_reached", this, nameof(OnCheckpoint));
+        //Event.Instance().Connect("checkpoint_reached", this, nameof(OnCheckpoint));
         //ConnectSignals();
     }
 
     public void ConnectSignals() {
-        Event.GdInstance().Connect("checkpoint_reached", this, nameof(OnCheckpoint));
+        Event.Instance().Connect("checkpoint_reached", this, nameof(OnCheckpoint));
     }
 
     public void DisconnectSignals() {
-        Event.GdInstance().Disconnect("checkpoint_reached", this, nameof(OnCheckpoint));
+        Event.Instance().Disconnect("checkpoint_reached", this, nameof(OnCheckpoint));
     }
 
     public override void _ExitTree()

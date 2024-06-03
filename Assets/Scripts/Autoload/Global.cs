@@ -4,12 +4,10 @@ using System.Collections.Generic;
 
 public class Global : Node2D
 {
-    private static Node _gdInstance = null;
     private static Global _instance = null;
 
     public override void _Ready() {
       base._Ready();
-      _gdInstance = GetTree().Root.GetNode("Global");
       _instance = GetTree().Root.GetNode<Global>("GlobalCS");
       SetProcess(false);
     }
@@ -18,34 +16,16 @@ public class Global : Node2D
       return _instance;
     }
 
-    public GameCamera Camera {
-      get { return (GameCamera)_gdInstance.Get("camera"); }
-      set { _gdInstance.Set("camera", value); }
-    }
+    public GameCamera Camera;
     
-    public Player Player {
-      get { return (Player)_gdInstance.Get("player"); }
-      set { _gdInstance.Set("player", value); }
-    }
+    public Player Player;
 
-    public Cutscene Cutscene {
-      get { return (Cutscene)_gdInstance.Get("cutscene"); }
-      set { _gdInstance.Set("cutscene", value); }
-    }
-    public GemsHUDContainer GemHUD {
-      get { return (GemsHUDContainer)_gdInstance.Get("gem_hud"); }
-      set { _gdInstance.Set("gem_hud", value); }
-    }
-    public PauseMenu PauseMenu {
-      get { return (PauseMenu)_gdInstance.Get("pause_menu"); }
-      set { _gdInstance.Set("pause_menu", value); }
-    }
+    public Cutscene Cutscene;
+    public GemsHUDContainer GemHUD;
+
+    public PauseMenu PauseMenu;
 
     public Texture _playerSprite;
-    // {
-    //   get { return (Texture)_gdInstance.Get("_playerSprite"); }
-    //   set { _gdInstance.Set("_playerSprite", value); }
-    // }
     
     private Dictionary<string, string[]> selectedSkin = SkinLoader.DEFAULT_SKIN;
 

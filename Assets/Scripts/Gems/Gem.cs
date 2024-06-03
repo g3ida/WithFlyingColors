@@ -85,14 +85,14 @@ public class Gem : Area2D, IPersistant
 
     private void ConnectSignals()
     {
-        Event.GdInstance().Connect("checkpoint_reached", this, nameof(_OnCheckpointHit));
-        Event.GdInstance().Connect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Connect("checkpoint_reached", this, nameof(_OnCheckpointHit));
+        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
     }
 
     private void DisconnectSignals()
     {
-        Event.GdInstance().Disconnect("checkpoint_reached", this, nameof(_OnCheckpointHit));
-        Event.GdInstance().Disconnect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Disconnect("checkpoint_reached", this, nameof(_OnCheckpointHit));
+        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
     }
 
     public override void _EnterTree()

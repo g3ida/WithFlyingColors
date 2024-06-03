@@ -182,7 +182,6 @@ public class MusicTrackManager : Node2D, IPersistant
     public void PlayTrack(string name)
     {
         if (!music_pool.ContainsKey(name)) return;
-
         var track = music_pool[name];
         if (current_state == State.STOPPED)
         {
@@ -299,13 +298,14 @@ public class MusicTrackManager : Node2D, IPersistant
 
     public override void _EnterTree()
     {
-        Event.GdInstance().Connect("checkpoint_reached", this, nameof(OnCheckpointHit));
-        Event.GdInstance().Connect("checkpoint_loaded", this, nameof(reset));
+        // AddToGroup("persist");
+        Event.Instance().Connect("checkpoint_reached", this, nameof(OnCheckpointHit));
+        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
     }
 
     public override void _ExitTree() {
-        Event.GdInstance().Disconnect("checkpoint_reached", this, nameof(OnCheckpointHit));
-        Event.GdInstance().Disconnect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Disconnect("checkpoint_reached", this, nameof(OnCheckpointHit));
+        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
     }
 
     public void load(Dictionary<string, object> save_data)

@@ -9,11 +9,11 @@
 [ext_resource path="res://Assets/Scenes/MainMenu/GameSettingsUI.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Assets/Styles/Themes/MenuTheme.tres" type="Theme" id=8]
 [ext_resource path="res://Assets/Scenes/MainMenu/ControllerSettingsUI.tscn" type="PackedScene" id=9]
-[ext_resource path="res://Assets/Scripts/UI/TabLogic.gd" type="Script" id=10]
 [ext_resource path="res://Assets/Scenes/UI/DialogContainer.tscn" type="PackedScene" id=11]
 [ext_resource path="res://Assets/Styles/Themes/Dialog.tres" type="Theme" id=12]
 [ext_resource path="res://Assets/Scenes/UI/UITransition.tscn" type="PackedScene" id=13]
 [ext_resource path="res://Assets/Scenes/MainMenu/AudioSettingsUI.tscn" type="PackedScene" id=14]
+[ext_resource path="res://Assets/Scripts/UI/TabLogic.cs" type="Script" id=15]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -84,7 +84,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 80.0
 focus_neighbour_right = NodePath("../Controller")
-script = ExtResource( 10 )
+script = ExtResource( 15 )
 
 [node name="SettingsUI" parent="TabContainer/Display" instance=ExtResource( 7 )]
 margin_left = 20.0
@@ -101,7 +101,7 @@ margin_top = 90.0
 margin_right = -20.0
 margin_bottom = -10.0
 focus_neighbour_left = NodePath("../Display")
-script = ExtResource( 10 )
+script = ExtResource( 15 )
 
 [node name="ControllerSettings" parent="TabContainer/Controller" instance=ExtResource( 9 )]
 margin_left = 20.0
@@ -117,7 +117,7 @@ margin_left = 20.0
 margin_top = 90.0
 margin_right = -20.0
 margin_bottom = 10.0
-script = ExtResource( 10 )
+script = ExtResource( 15 )
 
 [node name="AudioSettings" parent="TabContainer/Audio" instance=ExtResource( 14 )]
 margin_left = 20.0

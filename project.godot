@@ -9,67 +9,13 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Reference",
-"class": "ColorUtils",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Utils/Colors_old.gd"
-}, {
-"base": "Reference",
-"class": "Constants",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Utils/Constants_old.gd"
-}, {
-"base": "Control",
-"class": "GameMenu",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Menus/GameMenu.gd"
-}, {
 "base": "",
 "class": "GitAPI",
 "language": "NativeScript",
 "path": "res://addons/godot-git-plugin/git_api.gdns"
-}, {
-"base": "Reference",
-"class": "HSLColor",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Utils/HSLColor_old.gd"
-}, {
-"base": "Reference",
-"class": "ImageUtils",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Utils/ImageUtils_old.gd"
-}, {
-"base": "Reference",
-"class": "InputUtils",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Utils/InputUtils.gd"
-}, {
-"base": "Reference",
-"class": "MenuButtons",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Menus/MenuButtons.gd"
-}, {
-"base": "Reference",
-"class": "PlayerSpriteGenerator",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Player/PlayerSpriteGenerator_old.gd"
-}, {
-"base": "Reference",
-"class": "SkinLoader",
-"language": "GDScript",
-"path": "res://Assets/Scripts/Skin/SkinLoader_old.gd"
 } ]
 _global_script_class_icons={
-"ColorUtils": "",
-"Constants": "",
-"GameMenu": "",
-"GitAPI": "",
-"HSLColor": "",
-"ImageUtils": "",
-"InputUtils": "",
-"MenuButtons": "",
-"PlayerSpriteGenerator": "",
-"SkinLoader": ""
+"GitAPI": ""
 }
 
 [application]
@@ -81,14 +27,8 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Global="*res://Assets/Scripts/Autoload/Global.gd"
-Event="*res://Assets/Scripts/Autoload/Event.gd"
 GlobalCS="*res://Assets/Scripts/Autoload/Global.cs"
 EventCS="*res://Assets/Scripts/Autoload/Event.cs"
-AudioManager="*res://Assets/Scripts/Autoload/AudioManager.gd"
-SaveGame="*res://Assets/Scripts/Autoload/SaveGame.gd"
-MenuManager="*res://Assets/Scripts/Autoload/MenuManager.gd"
-Levels="*res://Assets/Scripts/Autoload/Levels.gd"
 MenuManagerCS="*res://Assets/Scripts/Autoload/MenuManager.cs"
 AudioManagerCS="*res://Assets/Scripts/Autoload/AudioManager.cs"
 SaveGameCS="*res://Assets/Scripts/Autoload/SaveGame.cs"

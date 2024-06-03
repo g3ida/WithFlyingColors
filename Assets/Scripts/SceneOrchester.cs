@@ -40,19 +40,19 @@ public class SceneOrchester : Node2D
 
     private void ConnectSignals()
     {
-        Event.GdInstance().Connect("player_died", this, nameof(OnGameOver));
-        Event.GdInstance().Connect("level_cleared", this, nameof(OnLevelCleared));
+        Event.Instance().Connect("player_died", this, nameof(OnGameOver));
+        Event.Instance().Connect("level_cleared", this, nameof(OnLevelCleared));
     }
 
     private void DisconnectSignals()
     {
-        Event.GdInstance().Disconnect("player_died", this, nameof(OnGameOver));
-        Event.GdInstance().Disconnect("level_cleared", this, nameof(OnLevelCleared));
+        Event.Instance().Disconnect("player_died", this, nameof(OnGameOver));
+        Event.Instance().Disconnect("level_cleared", this, nameof(OnLevelCleared));
     }
 
     private void OnGameOver()
     {
-        Event.GdInstance().EmitSignal("checkpoint_loaded");
+        Event.Instance().EmitSignal("checkpoint_loaded");
     }
 
     private void SetupSceneGame(PackedScene sceneResource, bool tryLoad)

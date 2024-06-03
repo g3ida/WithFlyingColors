@@ -122,16 +122,16 @@ public class SolfegeBoard : Node2D
 
     public override void _EnterTree()
     {
-        Event.GdInstance().Connect("piano_note_pressed", this, "_OnNotePressed");
-        Event.GdInstance().Connect("checkpoint_loaded", this, "Reset");
-        Event.GdInstance().Connect("checkpoint_reached", this, "_OnCheckpointHit");
+        Event.Instance().Connect("piano_note_pressed", this, "_OnNotePressed");
+        Event.Instance().Connect("checkpoint_loaded", this, "Reset");
+        Event.Instance().Connect("checkpoint_reached", this, "_OnCheckpointHit");
     }
 
     public override void _ExitTree()
     {
-        Event.GdInstance().Disconnect("piano_note_pressed", this, "_OnNotePressed");
-        Event.GdInstance().Disconnect("checkpoint_loaded", this, "Reset");
-        Event.GdInstance().Disconnect("checkpoint_reached", this, "_OnCheckpointHit");
+        Event.Instance().Disconnect("piano_note_pressed", this, "_OnNotePressed");
+        Event.Instance().Disconnect("checkpoint_loaded", this, "Reset");
+        Event.Instance().Disconnect("checkpoint_reached", this, "_OnCheckpointHit");
     }
 
     private void _InitState()

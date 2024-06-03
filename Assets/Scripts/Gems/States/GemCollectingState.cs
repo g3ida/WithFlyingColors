@@ -25,7 +25,7 @@ public class GemCollectingState : GemBaseState
     {
         if (animName == "gem_collected_animation")
         {
-            Event.GdInstance().EmitSignal(
+            Event.Instance().EmitSignal(
                 "gem_collected",
                 gem.group_name,
                 gem.AnimatedSpriteNode.GetGlobalTransformWithCanvas().origin,

@@ -158,20 +158,20 @@ public class GameCamera : Camera2D, IPersistant
 
     private void ConnectSignals()
     {
-        Event.GdInstance().Connect("checkpoint_reached", this, nameof(_OnCheckpointHit));
-        Event.GdInstance().Connect("checkpoint_loaded", this, nameof(reset));
-        Event.GdInstance().Connect("player_jumped", this, nameof(_OnPlayerJump));
-        Event.GdInstance().Connect("player_land", this, nameof(_OnPlayerLand));
-        Event.GdInstance().Connect("player_diying", this, nameof(_OnPlayerDying));
+        Event.Instance().Connect("checkpoint_reached", this, nameof(_OnCheckpointHit));
+        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Connect("player_jumped", this, nameof(_OnPlayerJump));
+        Event.Instance().Connect("player_land", this, nameof(_OnPlayerLand));
+        Event.Instance().Connect("player_diying", this, nameof(_OnPlayerDying));
     }
 
     private void DisconnectSignals()
     {
-        Event.GdInstance().Disconnect("checkpoint_reached", this, nameof(_OnCheckpointHit));
-        Event.GdInstance().Disconnect("checkpoint_loaded", this, nameof(reset));
-        Event.GdInstance().Disconnect("player_jumped", this, nameof(_OnPlayerJump));
-        Event.GdInstance().Disconnect("player_land", this, nameof(_OnPlayerLand));
-        Event.GdInstance().Disconnect("player_diying", this, nameof(_OnPlayerDying));
+        Event.Instance().Disconnect("checkpoint_reached", this, nameof(_OnCheckpointHit));
+        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Disconnect("player_jumped", this, nameof(_OnPlayerJump));
+        Event.Instance().Disconnect("player_land", this, nameof(_OnPlayerLand));
+        Event.Instance().Disconnect("player_diying", this, nameof(_OnPlayerDying));
     }
 
     public override void _EnterTree()

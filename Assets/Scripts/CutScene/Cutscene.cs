@@ -42,14 +42,14 @@ public class Cutscene : Node2D
 
     public override void _EnterTree()
     {
-        Event.GdInstance().Connect("cutscene_request_start", this, nameof(OnCutsceneRequestStart));
-        Event.GdInstance().Connect("cutscene_request_end", this, nameof(OnCutsceneRequestEnd));
+        Event.Instance().Connect("cutscene_request_start", this, nameof(OnCutsceneRequestStart));
+        Event.Instance().Connect("cutscene_request_end", this, nameof(OnCutsceneRequestEnd));
     }
 
     public override void _ExitTree()
     {
-        Event.GdInstance().Disconnect("cutscene_request_start", this, nameof(OnCutsceneRequestStart));
-        Event.GdInstance().Disconnect("cutscene_request_end", this, nameof(OnCutsceneRequestEnd));
+        Event.Instance().Disconnect("cutscene_request_start", this, nameof(OnCutsceneRequestStart));
+        Event.Instance().Disconnect("cutscene_request_end", this, nameof(OnCutsceneRequestEnd));
     }
 
     public bool IsBusy()

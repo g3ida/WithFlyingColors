@@ -129,12 +129,12 @@ public class GameMenu : Control
 
     private void ConnectSignals()
     {
-        Event.GdInstance().Connect("menu_button_pressed", this, nameof(_OnMenuButtonPressed));
+        Event.Instance().Connect("menu_button_pressed", this, nameof(_OnMenuButtonPressed));
     }
 
     private void DisconnectSignals()
     {
-        Event.GdInstance().Disconnect("menu_button_pressed", this, nameof(_OnMenuButtonPressed));
+        Event.Instance().Disconnect("menu_button_pressed", this, nameof(_OnMenuButtonPressed));
     }
 
     private void ParseTransitionElements()

@@ -50,9 +50,9 @@ public class GemHUD : Node2D, IPersistant
     {
         if (!Engine.EditorHint)
         {
-            Event.GdInstance().Connect("gem_collected", this, nameof(OnGemCollected));
-            Event.GdInstance().Connect("checkpoint_reached", this, nameof(OnCheckpointHit));
-            Event.GdInstance().Connect("checkpoint_loaded", this, nameof(reset));
+            Event.Instance().Connect("gem_collected", this, nameof(OnGemCollected));
+            Event.Instance().Connect("checkpoint_reached", this, nameof(OnCheckpointHit));
+            Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
         }
     }
 
@@ -60,9 +60,9 @@ public class GemHUD : Node2D, IPersistant
     {
         if (!Engine.EditorHint)
         {
-            Event.GdInstance().Disconnect("gem_collected", this, nameof(OnGemCollected));
-            Event.GdInstance().Disconnect("checkpoint_reached", this, nameof(OnCheckpointHit));
-            Event.GdInstance().Disconnect("checkpoint_loaded", this, nameof(reset));
+            Event.Instance().Disconnect("gem_collected", this, nameof(OnGemCollected));
+            Event.Instance().Disconnect("checkpoint_reached", this, nameof(OnCheckpointHit));
+            Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
         }
     }
 
@@ -81,7 +81,7 @@ public class GemHUD : Node2D, IPersistant
             animation.GlobalPosition = position;
             collectedAnimation = new SlideAnimation();
             collectedAnimation.Set("gem_slide", animation, new Vector2(20, 20), 1);
-            Event.GdInstance().Connect("slide_animation_ended", this, nameof(OnSlideAnimEnded), flags: (uint)ConnectFlags.Oneshot);
+            Event.Instance().Connect("slide_animation_ended", this, nameof(OnSlideAnimEnded), flags: (uint)ConnectFlags.Oneshot);
         }
     }
 

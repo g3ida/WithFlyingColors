@@ -353,16 +353,16 @@ public class TetrisPool : Node2D
 
     private void ConnectSignals()
     {
-        Event.GdInstance().Connect("player_diying", this, nameof(_on_player_diying));
-        Event.GdInstance().Connect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Connect("player_diying", this, nameof(_on_player_diying));
+        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
         //Connect(nameof(lines_removed), this, nameof(_on_TetrixPool_lines_removed));
         //Connect(nameof(game_over), this, nameof(_on_TetrixPool_game_over));
     }
 
     private void DisconnectSignals()
     {
-        Event.GdInstance().Disconnect("player_diying", this, nameof(_on_player_diying));
-        Event.GdInstance().Disconnect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Disconnect("player_diying", this, nameof(_on_player_diying));
+        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
         //Disconnect(nameof(lines_removed), this, nameof(_on_TetrixPool_lines_removed));
         //Disconnect(nameof(game_over), this, nameof(_on_TetrixPool_game_over));
     }

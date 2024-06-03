@@ -43,14 +43,14 @@ public class BrickPowerUpHandler : Node2D
 
     private void ConnectSignals()
     {
-        Event.GdInstance().Connect("brick_broken", this, nameof(OnBrickBroken));
-        Event.GdInstance().Connect("checkpoint_loaded", this, nameof(Reset));
+        Event.Instance().Connect("brick_broken", this, nameof(OnBrickBroken));
+        Event.Instance().Connect("checkpoint_loaded", this, nameof(Reset));
     }
 
     private void DisconnectSignals()
     {
-        Event.GdInstance().Disconnect("brick_broken", this, nameof(OnBrickBroken));
-        Event.GdInstance().Disconnect("checkpoint_loaded", this, nameof(Reset));
+        Event.Instance().Disconnect("brick_broken", this, nameof(OnBrickBroken));
+        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(Reset));
     }
 
     public void Reset()

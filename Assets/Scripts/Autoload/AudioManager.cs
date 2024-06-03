@@ -62,6 +62,7 @@ public class AudioManager : Node
         MusicTrackManager.Owner = this;
         ///
         ConnectSignals();
+        FillSfxPool();
     }
 
     private void FillSfxPool()
@@ -99,81 +100,81 @@ public class AudioManager : Node
     private void ConnectSignals()
     {
         Connect(nameof(PlaySfx), this, nameof(_OnPlaySfx));
-        Event.GdInstance().Connect("player_jumped", this, nameof(_OnPlayerJumped));
-        Event.GdInstance().Connect("player_rotate", this, nameof(_OnPlayerRotate));
-        Event.GdInstance().Connect("player_land", this, nameof(_OnPlayerLand));
-        Event.GdInstance().Connect("gem_collected", this, nameof(_OnGemCollected));
-        Event.GdInstance().Connect("Fullscreen_toggled", this, nameof(_OnButtonToggle));
-        Event.GdInstance().Connect("Vsync_toggled", this, nameof(_OnButtonToggle));
-        Event.GdInstance().Connect("Screen_size_changed", this, nameof(_OnButtonToggle));
-        Event.GdInstance().Connect("on_action_bound", this, nameof(_OnKeyBound));
-        Event.GdInstance().Connect("tab_changed", this, nameof(_OnTabChanged));
-        Event.GdInstance().Connect("focus_changed", this, nameof(_OnFocusChanged));
-        Event.GdInstance().Connect("menu_box_rotated", this, nameof(_OnMenuBoxRotated));
-        Event.GdInstance().Connect("keyboard_action_biding", this, nameof(_OnKeyboardActionBinding));
-        Event.GdInstance().Connect("player_explode", this, nameof(_OnPlayerExplode));
-        Event.GdInstance().Connect("pause_menu_enter", this, nameof(_OnPauseMenuEnter));
-        Event.GdInstance().Connect("pause_menu_exit", this, nameof(_OnPauseMenuExit));
-        Event.GdInstance().Connect("player_fall", this, nameof(_OnPlayerFalling));
-        Event.GdInstance().Connect("tetris_lines_removed", this, nameof(_OnTetrisLinesRemoved));
-        Event.GdInstance().Connect("picked_powerup", this, nameof(_OnPickedPowerup));
-        Event.GdInstance().Connect("brick_broken", this, nameof(_OnBrickBroken));
-        Event.GdInstance().Connect("break_breaker_win", this, nameof(_OnWinMiniGame));
-        Event.GdInstance().Connect("brick_breaker_start", this, nameof(_OnBrickBreakerStart));
-        Event.GdInstance().Connect("menu_button_pressed", this, nameof(_OnMenuButtonPressed));
-        Event.GdInstance().Connect("sfx_volume_changed", this, nameof(_OnButtonToggle));
-        Event.GdInstance().Connect("music_volume_changed", this, nameof(_OnButtonToggle));
-        Event.GdInstance().Connect("piano_note_pressed", this, nameof(_OnPianoNotePressed));
-        Event.GdInstance().Connect("piano_note_released", this, nameof(_OnPianoNoteReleased));
-        Event.GdInstance().Connect("page_flipped", this, nameof(_OnPageFlipped));
-        Event.GdInstance().Connect("wrong_piano_note_played", this, nameof(_OnWrongPianoNotePlayed));
-        Event.GdInstance().Connect("piano_puzzle_won", this, nameof(_OnPianoPuzzleWon));
-        Event.GdInstance().Connect("gem_temple_triggered", this, nameof(_OnGemTempleTriggered));
-        Event.GdInstance().Connect("gem_engine_started", this, nameof(_OnGemEngineStarted));
-        Event.GdInstance().Connect("gem_put_in_temple", this, nameof(_OnGemPutInTemple));
+        Event.Instance().Connect(nameof(Event.player_jumped), this, nameof(_OnPlayerJumped));
+        Event.Instance().Connect("player_rotate", this, nameof(_OnPlayerRotate));
+        Event.Instance().Connect("player_land", this, nameof(_OnPlayerLand));
+        Event.Instance().Connect("gem_collected", this, nameof(_OnGemCollected));
+        Event.Instance().Connect("Fullscreen_toggled", this, nameof(_OnButtonToggle));
+        Event.Instance().Connect("Vsync_toggled", this, nameof(_OnButtonToggle));
+        Event.Instance().Connect("Screen_size_changed", this, nameof(_OnButtonToggle));
+        Event.Instance().Connect("on_action_bound", this, nameof(_OnKeyBound));
+        Event.Instance().Connect("tab_changed", this, nameof(_OnTabChanged));
+        Event.Instance().Connect("focus_changed", this, nameof(_OnFocusChanged));
+        Event.Instance().Connect("menu_box_rotated", this, nameof(_OnMenuBoxRotated));
+        Event.Instance().Connect("keyboard_action_biding", this, nameof(_OnKeyboardActionBinding));
+        Event.Instance().Connect("player_explode", this, nameof(_OnPlayerExplode));
+        Event.Instance().Connect("pause_menu_enter", this, nameof(_OnPauseMenuEnter));
+        Event.Instance().Connect("pause_menu_exit", this, nameof(_OnPauseMenuExit));
+        Event.Instance().Connect("player_fall", this, nameof(_OnPlayerFalling));
+        Event.Instance().Connect("tetris_lines_removed", this, nameof(_OnTetrisLinesRemoved));
+        Event.Instance().Connect("picked_powerup", this, nameof(_OnPickedPowerup));
+        Event.Instance().Connect("brick_broken", this, nameof(_OnBrickBroken));
+        Event.Instance().Connect("break_breaker_win", this, nameof(_OnWinMiniGame));
+        Event.Instance().Connect("brick_breaker_start", this, nameof(_OnBrickBreakerStart));
+        Event.Instance().Connect("menu_button_pressed", this, nameof(_OnMenuButtonPressed));
+        Event.Instance().Connect("sfx_volume_changed", this, nameof(_OnButtonToggle));
+        Event.Instance().Connect("music_volume_changed", this, nameof(_OnButtonToggle));
+        Event.Instance().Connect("piano_note_pressed", this, nameof(_OnPianoNotePressed));
+        Event.Instance().Connect("piano_note_released", this, nameof(_OnPianoNoteReleased));
+        Event.Instance().Connect("page_flipped", this, nameof(_OnPageFlipped));
+        Event.Instance().Connect("wrong_piano_note_played", this, nameof(_OnWrongPianoNotePlayed));
+        Event.Instance().Connect("piano_puzzle_won", this, nameof(_OnPianoPuzzleWon));
+        Event.Instance().Connect("gem_temple_triggered", this, nameof(_OnGemTempleTriggered));
+        Event.Instance().Connect("gem_engine_started", this, nameof(_OnGemEngineStarted));
+        Event.Instance().Connect("gem_put_in_temple", this, nameof(_OnGemPutInTemple));
     }
 
     private void DisconnectSignals()
     {
         Disconnect(nameof(PlaySfx), this, nameof(_OnPlaySfx));
-        Event.GdInstance().Disconnect("player_jumped", this, nameof(_OnPlayerJumped));
-        Event.GdInstance().Disconnect("player_rotate", this, nameof(_OnPlayerRotate));
-        Event.GdInstance().Disconnect("player_land", this, nameof(_OnPlayerLand));
-        Event.GdInstance().Disconnect("gem_collected", this, nameof(_OnGemCollected));
-        Event.GdInstance().Disconnect("Fullscreen_toggled", this, nameof(_OnButtonToggle));
-        Event.GdInstance().Disconnect("Vsync_toggled", this, nameof(_OnButtonToggle));
-        Event.GdInstance().Disconnect("Screen_size_changed", this, nameof(_OnButtonToggle));
-        Event.GdInstance().Disconnect("on_action_bound", this, nameof(_OnKeyBound));
-        Event.GdInstance().Disconnect("tab_changed", this, nameof(_OnTabChanged));
-        Event.GdInstance().Disconnect("focus_changed", this, nameof(_OnFocusChanged));
-        Event.GdInstance().Disconnect("menu_box_rotated", this, nameof(_OnMenuBoxRotated));
-        Event.GdInstance().Disconnect("keyboard_action_biding", this, nameof(_OnKeyboardActionBinding));
-        Event.GdInstance().Disconnect("player_explode", this, nameof(_OnPlayerExplode));
-        Event.GdInstance().Disconnect("pause_menu_enter", this, nameof(_OnPauseMenuEnter));
-        Event.GdInstance().Disconnect("pause_menu_exit", this, nameof(_OnPauseMenuExit));
-        Event.GdInstance().Disconnect("player_fall", this, nameof(_OnPlayerFalling));
-        Event.GdInstance().Disconnect("tetris_lines_removed", this, nameof(_OnTetrisLinesRemoved));
-        Event.GdInstance().Disconnect("picked_powerup", this, nameof(_OnPickedPowerup));
-        Event.GdInstance().Disconnect("brick_broken", this, nameof(_OnBrickBroken));
-        Event.GdInstance().Disconnect("break_breaker_win", this, nameof(_OnWinMiniGame));
-        Event.GdInstance().Disconnect("brick_breaker_start", this, nameof(_OnBrickBreakerStart));
-        Event.GdInstance().Disconnect("menu_button_pressed", this, nameof(_OnMenuButtonPressed));
-        Event.GdInstance().Disconnect("sfx_volume_changed", this, nameof(_OnButtonToggle));
-        Event.GdInstance().Disconnect("music_volume_changed", this, nameof(_OnButtonToggle));
-        Event.GdInstance().Disconnect("piano_note_pressed", this, nameof(_OnPianoNotePressed));
-        Event.GdInstance().Disconnect("piano_note_released", this, nameof(_OnPianoNoteReleased));
-        Event.GdInstance().Disconnect("page_flipped", this, nameof(_OnPageFlipped));
-        Event.GdInstance().Disconnect("wrong_piano_note_played", this, nameof(_OnWrongPianoNotePlayed));
-        Event.GdInstance().Disconnect("piano_puzzle_won", this, nameof(_OnPianoPuzzleWon));
-        Event.GdInstance().Disconnect("gem_temple_triggered", this, nameof(_OnGemTempleTriggered));
-        Event.GdInstance().Disconnect("gem_engine_started", this, nameof(_OnGemEngineStarted));
-        Event.GdInstance().Disconnect("gem_put_in_temple", this, nameof(_OnGemPutInTemple));
+        Event.Instance().Disconnect("player_jumped", this, nameof(_OnPlayerJumped));
+        Event.Instance().Disconnect("player_rotate", this, nameof(_OnPlayerRotate));
+        Event.Instance().Disconnect("player_land", this, nameof(_OnPlayerLand));
+        Event.Instance().Disconnect("gem_collected", this, nameof(_OnGemCollected));
+        Event.Instance().Disconnect("Fullscreen_toggled", this, nameof(_OnButtonToggle));
+        Event.Instance().Disconnect("Vsync_toggled", this, nameof(_OnButtonToggle));
+        Event.Instance().Disconnect("Screen_size_changed", this, nameof(_OnButtonToggle));
+        Event.Instance().Disconnect("on_action_bound", this, nameof(_OnKeyBound));
+        Event.Instance().Disconnect("tab_changed", this, nameof(_OnTabChanged));
+        Event.Instance().Disconnect("focus_changed", this, nameof(_OnFocusChanged));
+        Event.Instance().Disconnect("menu_box_rotated", this, nameof(_OnMenuBoxRotated));
+        Event.Instance().Disconnect("keyboard_action_biding", this, nameof(_OnKeyboardActionBinding));
+        Event.Instance().Disconnect("player_explode", this, nameof(_OnPlayerExplode));
+        Event.Instance().Disconnect("pause_menu_enter", this, nameof(_OnPauseMenuEnter));
+        Event.Instance().Disconnect("pause_menu_exit", this, nameof(_OnPauseMenuExit));
+        Event.Instance().Disconnect("player_fall", this, nameof(_OnPlayerFalling));
+        Event.Instance().Disconnect("tetris_lines_removed", this, nameof(_OnTetrisLinesRemoved));
+        Event.Instance().Disconnect("picked_powerup", this, nameof(_OnPickedPowerup));
+        Event.Instance().Disconnect("brick_broken", this, nameof(_OnBrickBroken));
+        Event.Instance().Disconnect("break_breaker_win", this, nameof(_OnWinMiniGame));
+        Event.Instance().Disconnect("brick_breaker_start", this, nameof(_OnBrickBreakerStart));
+        Event.Instance().Disconnect("menu_button_pressed", this, nameof(_OnMenuButtonPressed));
+        Event.Instance().Disconnect("sfx_volume_changed", this, nameof(_OnButtonToggle));
+        Event.Instance().Disconnect("music_volume_changed", this, nameof(_OnButtonToggle));
+        Event.Instance().Disconnect("piano_note_pressed", this, nameof(_OnPianoNotePressed));
+        Event.Instance().Disconnect("piano_note_released", this, nameof(_OnPianoNoteReleased));
+        Event.Instance().Disconnect("page_flipped", this, nameof(_OnPageFlipped));
+        Event.Instance().Disconnect("wrong_piano_note_played", this, nameof(_OnWrongPianoNotePlayed));
+        Event.Instance().Disconnect("piano_puzzle_won", this, nameof(_OnPianoPuzzleWon));
+        Event.Instance().Disconnect("gem_temple_triggered", this, nameof(_OnGemTempleTriggered));
+        Event.Instance().Disconnect("gem_engine_started", this, nameof(_OnGemEngineStarted));
+        Event.Instance().Disconnect("gem_put_in_temple", this, nameof(_OnGemPutInTemple));
     }
 
     public override void _EnterTree()
     {
         base._EnterTree();
-        //ConnectSignals();
+        // ConnectSignals();
     }
 
     public override void _ExitTree()

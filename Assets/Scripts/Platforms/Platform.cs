@@ -100,11 +100,11 @@ public class Platform : KinematicBody2D
 
     private void ConnectSignals()
     {
-        Event.GdInstance().Connect("player_landed", this, nameof(OnPlayerLanded));
+        Event.Instance().Connect("player_landed", this, nameof(OnPlayerLanded));
     }
 
     private void DisconnectSignals()
     {
-        Event.GdInstance().Disconnect("player_landed", this, nameof(OnPlayerLanded));
+        Event.Instance().Disconnect("player_landed", this, nameof(OnPlayerLanded));
     }
 }

@@ -270,16 +270,16 @@ private void PrepareChildrenNodes()
 
     private void ConnectSignals()
     {
-        Event.GdInstance().Connect("player_diying", this, nameof(OnPlayerDiying));
-        Event.GdInstance().Connect("checkpoint_reached", this, nameof(OnCheckpointHit));
-        Event.GdInstance().Connect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Connect("player_diying", this, nameof(OnPlayerDiying));
+        Event.Instance().Connect("checkpoint_reached", this, nameof(OnCheckpointHit));
+        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
     }
 
     private void DisconnectSignals()
     {
-        Event.GdInstance().Disconnect("player_diying", this, nameof(OnPlayerDiying));
-        Event.GdInstance().Disconnect("checkpoint_reached", this, nameof(OnCheckpointHit));
-        Event.GdInstance().Disconnect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Disconnect("player_diying", this, nameof(OnPlayerDiying));
+        Event.Instance().Disconnect("checkpoint_reached", this, nameof(OnCheckpointHit));
+        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
     }
 
     public override void _EnterTree()

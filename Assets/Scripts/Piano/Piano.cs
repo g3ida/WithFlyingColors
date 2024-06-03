@@ -119,12 +119,12 @@ public class Piano : Node2D
     // FIXME logic after migration should change
     public override void _EnterTree()
     {
-        Event.GdInstance().Connect("checkpoint_loaded", this, "Reset");
+        Event.Instance().Connect("checkpoint_loaded", this, "Reset");
     }
 
     public override void _ExitTree()
     {
-        Event.GdInstance().Disconnect("checkpoint_loaded", this, "Reset");
+        Event.Instance().Disconnect("checkpoint_loaded", this, "Reset");
     }
 
     public bool IsStopped()

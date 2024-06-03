@@ -98,18 +98,18 @@ public partial class BrickBreaker : Node2D, IPersistant
 
     private void ConnectSignals()
     {
-        Event.GdInstance().Connect("checkpoint_reached", this, nameof(_OnCheckpointHit));
-        Event.GdInstance().Connect("checkpoint_loaded", this, nameof(reset));
-        Event.GdInstance().Connect("player_diying", this, nameof(_OnPlayerDying));
-        Event.GdInstance().Connect("bouncing_ball_removed", this, nameof(_OnBouncingBallRemoved));
+        Event.Instance().Connect("checkpoint_reached", this, nameof(_OnCheckpointHit));
+        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Connect("player_diying", this, nameof(_OnPlayerDying));
+        Event.Instance().Connect("bouncing_ball_removed", this, nameof(_OnBouncingBallRemoved));
     }
 
     private void DisconnectSignals()
     {
-        Event.GdInstance().Disconnect("checkpoint_reached", this, nameof(_OnCheckpointHit));
-        Event.GdInstance().Disconnect("checkpoint_loaded", this, nameof(reset));
-        Event.GdInstance().Disconnect("player_diying", this, nameof(_OnPlayerDying));
-        Event.GdInstance().Disconnect("bouncing_ball_removed", this, nameof(_OnBouncingBallRemoved));
+        Event.Instance().Disconnect("checkpoint_reached", this, nameof(_OnCheckpointHit));
+        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Disconnect("player_diying", this, nameof(_OnPlayerDying));
+        Event.Instance().Disconnect("bouncing_ball_removed", this, nameof(_OnBouncingBallRemoved));
     }
 
     public override void _EnterTree()
