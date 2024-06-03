@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class Levels: Godot.Object
 {
-    private static readonly List<Level> LEVELS = new List<Level>
+    public static readonly List<Level> LEVELS = new List<Level>
     {
         new Level { Id = 1, Name = "Tutorial", Scene = "res://Levels/TutorialLevel.tscn" },
         new Level { Id = 2, Name = "Dark Games", Scene = "res://Levels/Level1.tscn" },

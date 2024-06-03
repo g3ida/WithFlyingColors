@@ -81,7 +81,7 @@ public class SaveGame : Node2D
         }
     }
 
-    private void Refresh()
+    public void Refresh()
     {
         InitCheckFilledSlots();
         InitSaveSlotMetaData();
@@ -151,7 +151,7 @@ public class SaveGame : Node2D
         };
     }
 
-    private void Save(int saveSlotIndex, bool newEmptySlot = false)
+    public void Save(int saveSlotIndex, bool newEmptySlot = false)
     {
         var filePath = GetSaveSlotFilePath(saveSlotIndex);
         var saveFile = new File();

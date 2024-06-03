@@ -58,11 +58,6 @@ _global_script_classes=[ {
 "class": "SkinLoader",
 "language": "GDScript",
 "path": "res://Assets/Scripts/Skin/SkinLoader_old.gd"
-}, {
-"base": "Control",
-"class": "UITransition",
-"language": "GDScript",
-"path": "res://Assets/Scripts/UI/UITransition.gd"
 } ]
 _global_script_class_icons={
 "ColorUtils": "",
@@ -74,8 +69,7 @@ _global_script_class_icons={
 "InputUtils": "",
 "MenuButtons": "",
 "PlayerSpriteGenerator": "",
-"SkinLoader": "",
-"UITransition": ""
+"SkinLoader": ""
 }
 
 [application]
@@ -91,7 +85,6 @@ Global="*res://Assets/Scripts/Autoload/Global.gd"
 Event="*res://Assets/Scripts/Autoload/Event.gd"
 GlobalCS="*res://Assets/Scripts/Autoload/Global.cs"
 EventCS="*res://Assets/Scripts/Autoload/Event.cs"
-Settings="*res://Assets/Scripts/Autoload/Settings.gd"
 AudioManager="*res://Assets/Scripts/Autoload/AudioManager.gd"
 SaveGame="*res://Assets/Scripts/Autoload/SaveGame.gd"
 MenuManager="*res://Assets/Scripts/Autoload/MenuManager.gd"

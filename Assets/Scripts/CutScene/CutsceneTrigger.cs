@@ -18,7 +18,7 @@ public class CutsceneTrigger : Area2D
         }
     }
 
-    private void _OnArea2DBodyEntered(Node body)
+    private void _on_Area2D_body_entered(Node body)
     {
         if (!triggered && body == Global.Instance().Player && followChild != null)
         {
@@ -29,11 +29,11 @@ public class CutsceneTrigger : Area2D
 
     public override void _EnterTree()
     {
-        Connect("body_entered", this, nameof(_OnArea2DBodyEntered));
+        // Connect("body_entered", this, nameof(_on_Area2D_body_entered));
     }
 
     public override void _ExitTree()
     {
-        Disconnect("body_entered", this, nameof(_OnArea2DBodyEntered));
+        // Disconnect("body_entered", this, nameof(_on_Area2D_body_entered));
     }
 }

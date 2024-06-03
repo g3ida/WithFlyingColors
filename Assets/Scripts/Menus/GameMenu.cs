@@ -12,13 +12,11 @@ public class GameMenu : Control
         EXITED
     }
 
-    private const int LEVEL_SCREEN_IDX = -1;
-
     protected MenuScreenState screenState;
     private MenuManager.Menus destination_screen;
     private string destination_scene_path;
     private Node current_focus = null;
-    private bool handle_back_event = true;
+    public bool HandleBackEvent = true;
 
     private List<UITransition> transition_elements = new List<UITransition>();
     private int entered_transition_elements_count = 0;
@@ -71,7 +69,7 @@ public class GameMenu : Control
             GetTree().SetInputAsHandled();
         }
 
-        if (handle_back_event && (Input.IsActionJustPressed("ui_cancel") || Input.IsActionJustPressed("ui_home")))
+        if (HandleBackEvent && (Input.IsActionJustPressed("ui_cancel") || Input.IsActionJustPressed("ui_home")))
         {
             Event.Instance().EmitMenuButtonPressed(MenuButtons.BACK);
         }
@@ -108,13 +106,13 @@ public class GameMenu : Control
     {
         if (screenState != MenuScreenState.ENTERED) return;
 
-        if (!OnMenuButtonPressed(menu_button) && menu_button == MenuButtons.BACK)
+        if (!on_menu_button_pressed(menu_button) && menu_button == MenuButtons.BACK)
         {
             NavigateToScreen(MenuManager.Instance().PreviousMenu);
         }
     }
 
-    public virtual bool OnMenuButtonPressed(MenuButtons menu_button)
+    public virtual bool on_menu_button_pressed(MenuButtons menu_button)
     {
         return false;
     }
@@ -182,7 +180,7 @@ public class GameMenu : Control
         }
     }
 
-    private bool IsInTransitionState()
+    public bool IsInTransitionState()
     {
         return screenState != MenuScreenState.ENTERED;
     }
@@ -207,14 +205,7 @@ public class GameMenu : Control
         if (entered_transition_elements_count == 0)
         {
             screenState = MenuScreenState.EXITED;
-            // if (destination_screen == LEVEL_SCREEN_IDX)
-            // {
-            //     MenuManager.Instance().GoToScreen(destination_scene_path);
-            // }
-            // else
-            // {
-                MenuManager.Instance().GoToMenu(destination_screen);
-            // }
+            MenuManager.Instance().GoToMenu(destination_screen);
         }
     }
 

@@ -130,7 +130,7 @@ public class MenuBox : Control
         }
     }
 
-    public void _on_QuitButton_Pressed()
+    public void _on_QuitButton_pressed()
     {
         _ProcessButtonPress(MenuButtons.QUIT);
     }
@@ -164,7 +164,7 @@ public class MenuBox : Control
         }
         else if (buttons[activeIndex] == quitButton)
         {
-            _on_QuitButton_Pressed();
+            _on_QuitButton_pressed();
         }
         else if (buttons[activeIndex] == settingsButton)
         {
@@ -241,7 +241,7 @@ public class MenuBox : Control
     private bool CanRespondToInput()
     {
         // FIXME make a better check after c# migration
-        var isInTransition = (bool)GetParent().Call("is_in_transition_state");
+        var isInTransition = GetParent<GameMenu>().IsInTransitionState();
         return currentState != States.EXIT && !isInTransition;
     }
 }

@@ -9,6 +9,7 @@ public class MainMenu : GameMenu
 
     public override void _Ready()
     {
+        base._Ready();
         menuBoxNode = GetNode<MenuBox>("MenuBox");
         resetSlotDialogNode = GetNode<DialogContainer>("ResetDialogContainer");
         currentSlotLabelNode = GetNode<Label>("CurrentSlotLabel");
@@ -23,7 +24,7 @@ public class MainMenu : GameMenu
         resetSlotDialogNode.ShowDialog();
     }
 
-    public override bool OnMenuButtonPressed(MenuButtons menuButton)
+    public override bool on_menu_button_pressed(MenuButtons menuButton)
     {
         switch (menuButton)
         {
@@ -77,7 +78,7 @@ public class MainMenu : GameMenu
         }
     }
 
-    private void OnResetSlotDialogConfirmed()
+    private void _on_ResetSlotDialog_confirmed()
     {
         SaveGame.Instance().RemoveSaveSlot(SaveGame.Instance().currentSlotIndex);
         menuBoxNode._HideSubMenuIfNeeded();

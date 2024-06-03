@@ -68,7 +68,6 @@ public class SlotsContainer : Control
 
     private void _on_SaveSlot1_pressed(string action)
     {
-        GD.Print("Slot 1 pressed");
         EmitSignal(nameof(slot_pressed), 0, action);
     }
 

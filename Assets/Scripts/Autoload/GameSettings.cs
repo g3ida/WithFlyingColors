@@ -120,13 +120,13 @@ public class GameSettings : Node2D
         }
     }
 
-    private List<InputEvent> GetGameActions()
+    private List<string> GetGameActions()
     {
-        var actions = InputMap.GetActions().Cast<InputEvent>();
-        var gameActions = new List<InputEvent>();
+        var actions = InputMap.GetActions().Cast<string>();
+        var gameActions = new List<string>();
         foreach (var action in actions)
         {
-            if (action.AsText().Find("ui_") == -1)
+            if (action.Find("ui_") == -1)
             {
                 gameActions.Add(action);
             }
@@ -134,12 +134,12 @@ public class GameSettings : Node2D
         return gameActions;
     }
 
-    private bool AreActionKeysValid()
+    public bool AreActionKeysValid()
     {
         var gameActions = GetGameActions();
         foreach (var action in gameActions)
         {
-            var actionList = InputMap.GetActionList(action.AsText()).Cast<InputEvent>();
+            var actionList = InputMap.GetActionList(action).Cast<InputEvent>();
             if (InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList) == null)
             {
                 return false;
@@ -148,15 +148,15 @@ public class GameSettings : Node2D
         return true;
     }
 
-    private void SaveGameSettings()
+    public void SaveGameSettings()
     {
         // Save game actions:
         var configFile = new ConfigFile();
 
         var gameActions = GetGameActions();
-        foreach (InputEvent action in gameActions)
+        foreach (var action in gameActions)
         {
-            var key = action.AsText();
+            var key = action;
             var actionList = InputMap.GetActionList(key).Cast<InputEvent>();
             var keyValue = InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList);
             if (keyValue != null)

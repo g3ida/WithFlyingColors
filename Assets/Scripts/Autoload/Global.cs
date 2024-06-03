@@ -36,8 +36,8 @@ public class Global : Node2D
       get { return (GemsHUDContainer)_gdInstance.Get("gem_hud"); }
       set { _gdInstance.Set("gem_hud", value); }
     }
-    public Node PauseMenu {
-      get { return (Node)_gdInstance.Get("pause_menu"); }
+    public PauseMenu PauseMenu {
+      get { return (PauseMenu)_gdInstance.Get("pause_menu"); }
       set { _gdInstance.Set("pause_menu", value); }
     }
 

@@ -8,10 +8,15 @@ public class Event : Node
     private static Node _gdInstance = null;
     private static Event _instance = null;
 
+    public override void _EnterTree()
+    {
+        base._EnterTree();
+        _gdInstance = GetTree().Root.GetNode<Node>("Event");
+        _instance = GetTree().Root.GetNode<Event>("EventCS");
+    } 
+
     public override void _Ready() {
       base._Ready();
-      _gdInstance = GetTree().Root.GetNode<Node>("Event");
-      _instance = GetTree().Root.GetNode<Event>("EventCS");
       SetProcess(false);
     }
 

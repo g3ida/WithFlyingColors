@@ -27,7 +27,6 @@ shader_param/darkness = 0.78
 [node name="Level" instance=ExtResource( 1 )]
 
 [node name="Camera2D" parent="." index="1"]
-current = false
 limit_left = -350
 limit_top = -1000
 limit_right = 24800

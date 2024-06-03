@@ -70,6 +70,6 @@ public class SceneOrchester : Node2D
     private void OnLevelCleared()
     {
         // FIXME: uncomment this line after implementing PauseMneu in c#
-        // Global.Instance().PauseMenu.NavigateToScreen(MenuManager.Menus.LEVEL_CLEAR_MENU);
+        Global.Instance().PauseMenu.NavigateToScreen(MenuManager.Menus.LEVEL_CLEAR_MENU);
     }
 }
