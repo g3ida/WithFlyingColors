@@ -30,12 +30,12 @@ public class MenuBox : Control
         currentState = States.MENU;
         if (MenuManager.Instance().PreviousMenu == MenuManager.Menus.STATS_MENU)
         {
-            SpriteNode.Rotate(-Mathf.Pi);
+            MenuBoxNode.Rotate(-Mathf.Pi);
             activeIndex = 2;
         }
         else if (MenuManager.Instance().PreviousMenu == MenuManager.Menus.SETTINGS_MENU)
         {
-            SpriteNode.Rotate(-Mathf.Pi / 2);
+            MenuBoxNode.Rotate(-Mathf.Pi / 2);
             activeIndex = 1;
         }
     }
@@ -56,13 +56,18 @@ public class MenuBox : Control
 
         buttons = new MenuBoxButton[] { playButton, settingsButton, statsButton, quitButton };
 
-        foreach (var b in buttons)
-        {
-            b.disabled = true;
-        }
-        buttons[activeIndex].disabled = false;
 
         SetPreviousMenu();
+        SetButtonsEnabled(false);
+        buttons[activeIndex].disabled = false;
+    }
+
+    private void SetButtonsEnabled(bool enabled)
+    {
+        foreach (var b in buttons)
+        {
+            b.disabled = !enabled;
+        }
     }
 
     public override void _PhysicsProcess(float delta)
