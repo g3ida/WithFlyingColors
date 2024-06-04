@@ -1,6 +1,5 @@
 using Godot;
-using Newtonsoft.Json;
-using System;
+using System.Text.Json;
 using System.Collections.Generic;
 
 public static class SkinLoader
@@ -35,7 +34,7 @@ public static class SkinLoader
             string jsonData = file.GetLine();
             file.Close();
 
-            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonData);
+            var data = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonData);
             if (HasAllKeys(data))
             {
                 return ConvertToDictionary(data);
