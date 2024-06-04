@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerBaseState : BaseState<Player>
+public partial class PlayerBaseState : BaseState<Player>
 {
     public PlayerStatesEnum baseState;
 
@@ -26,13 +26,13 @@ public class PlayerBaseState : BaseState<Player>
     protected virtual void _Enter(Player player) { }
     protected virtual void _Exit(Player player) { }
 
-    public sealed override void _Input(Player player, InputEvent @event)
+    public sealed override void _Input(Player player, InputEvent ev)
     {
-        input(player, @event);
+        input(player, ev);
     }
 
     // FIXME: rename to uppercase after c# migration so I don't clash with input class.
-    protected virtual void input(Player player, InputEvent @event) { }
+    protected virtual void input(Player player, InputEvent ev) { }
 
     protected bool DashActionPressed(Player player)
     {
@@ -55,23 +55,26 @@ public class PlayerBaseState : BaseState<Player>
                     if (Input.IsActionPressed("move_right"))
                     {
                         playerMoved = true;
-                        player.velocity.x = Mathf.Clamp(player.velocity.x + player.speed_unit, 0, player.speed_limit);
+                        player.velocity.X = Mathf.Clamp(player.velocity.X + player.speed_unit, 0, player.speed_limit);
                     }
                     else if (Input.IsActionPressed("move_left"))
                     {
                         playerMoved = true;
-                        player.velocity.x = Mathf.Clamp(player.velocity.x - player.speed_unit, -player.speed_limit, 0);
+                        player.velocity.X = Mathf.Clamp(player.velocity.X - player.speed_unit, -player.speed_limit, 0);
                     }
                 }
             }
 
-            player.velocity.y += GRAVITY * delta * FALL_FACTOR;
+            player.velocity.Y += GRAVITY * delta * FALL_FACTOR;
         }
 
         var newState = _PhysicsUpdate(player, delta);
 
-        player.velocity = player.MoveAndSlide(player.velocity, Vector2.Up);
-        player.velocity.x = Mathf.Lerp(player.velocity.x, 0, 0.25f);
+        // FIXME: cleanup this logic after c# migration
+        player.Velocity = player.velocity; // set the velocity to the player
+        player.MoveAndSlide();
+        player.velocity = player.Velocity; // get the velocity forom player
+        player.velocity.X = Mathf.Lerp(player.velocity.X, 0, 0.25f);
         player.current_animation.Step(player, player.animatedSpriteNode, delta);
 
         if (newState != null)

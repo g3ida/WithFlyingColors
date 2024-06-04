@@ -2,12 +2,13 @@
 
 importer="bitmap"
 type="BitMap"
-path="res://.import/button-click-mask.png-030d6452ad75125cbb9072b06e22d042.res"
+uid="uid://ejc50sxuiwg0"
+path="res://.godot/imported/button-click-mask.png-030d6452ad75125cbb9072b06e22d042.res"
 
 [deps]
 
 source_file="res://Assets/Sprites/MainMenu/button-click-mask.png"
-dest_files=[ "res://.import/button-click-mask.png-030d6452ad75125cbb9072b06e22d042.res" ]
+dest_files=["res://.godot/imported/button-click-mask.png-030d6452ad75125cbb9072b06e22d042.res"]
 
 [params]
 

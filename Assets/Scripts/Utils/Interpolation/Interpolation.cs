@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public abstract class Interpolation : Node // node inheritance is useleless
+public abstract partial class Interpolation : Node // node inheritance is useleless
 {
     public Interpolation()
     {

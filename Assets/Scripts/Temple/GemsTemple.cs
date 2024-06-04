@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-public class GemsTemple : Node2D
+public partial class GemsTemple : Node2D
 {
     // Constants
     private PackedScene TempleGemScene = GD.Load<PackedScene>("res://Assets/Scenes/Temple/TempleGem.tscn");
@@ -32,12 +32,12 @@ public class GemsTemple : Node2D
 
     // Nodes
     private Node2D GemSlotsContainerNode;
-    private Godot.Collections.Array GemsSlotsNodes;
+    private Godot.Collections.Array<Node> GemsSlotsNodes;
     private Area2D StartGemsAreaNode;
     private Timer RotationTimerNode;
-    private Sprite BloomSpriteNode;
+    private Sprite2D BloomSpriteNode;
 
-    private SceneTreeTween tweener;
+    private Tween tweener;
 
     public override void _Ready()
     {
@@ -45,7 +45,7 @@ public class GemsTemple : Node2D
         GemsSlotsNodes = GemSlotsContainerNode.GetChildren();
         StartGemsAreaNode = GetNode<Area2D>("StartGemsArea");
         RotationTimerNode = GetNode<Timer>("RotationTimer");
-        BloomSpriteNode = GetNode<Sprite>("BloomSprite");
+        BloomSpriteNode = GetNode<Sprite2D>("BloomSprite");
 
         BloomSpriteNode.Visible = false;
     }
@@ -81,18 +81,18 @@ public class GemsTemple : Node2D
 
     private Node2D CreateTempleGem(string colorGroup, float delay, Vector2 position, Vector2 destination, int easeType)
     {
-        var templeGem = TempleGemScene.Instance<TempleGem>();
+        var templeGem = TempleGemScene.Instantiate<TempleGem>();
         GemSlotsContainerNode.AddChild(templeGem);
         templeGem.Owner = GemSlotsContainerNode;
         templeGem.GlobalPosition = position;
         templeGem.SetColorGroup(colorGroup);
         var waitTime = delay;
         templeGem.MoveToPosition(destination, waitTime, easeType);
-        templeGem.Connect(nameof(TempleGem.MoveCompleted), this, nameof(OnGemCollected), null, (uint)ConnectFlags.Oneshot);
+        templeGem.Connect(nameof(TempleGem.MoveCompletedEventHandler), new Callable(this, nameof(OnGemCollected)), (uint)ConnectFlags.OneShot);
         return templeGem;
     }
 
-    public override void _Process(float delta)
+    public override void _Process(double delta)
     {
         switch (currentState)
         {
@@ -100,7 +100,7 @@ public class GemsTemple : Node2D
                 Global.Instance().Player.SetMaxSpeed();
                 break;
             case States.ROTATION_PHASE:
-                ProcessRotateGems(delta);
+                ProcessRotateGems((float)delta);
                 break;
             case States.BLOOM_PHASE:
                 BloomSpriteNode.Scale = new Vector2(bloomSpriteScale, bloomSpriteScale);
@@ -176,7 +176,7 @@ public class GemsTemple : Node2D
     private void GoToWalkPhase()
     {
         currentState = States.WALK_PHASE;
-        Global.Instance().Player.velocity = new Vector2(0, Global.Instance().Player.velocity.y);
+        Global.Instance().Player.velocity = new Vector2(0, Global.Instance().Player.velocity.Y);
         Event.Instance().EmitGemTempleTriggered();
         Global.Instance().Cutscene.ShowSomeNode(Global.Instance().Player, 10.0f, 3.2f);
     }
@@ -192,7 +192,7 @@ public class GemsTemple : Node2D
     private void GoToCollectPhase()
     {
         currentState = States.COLLECT_PHASE;
-        Global.Instance().Player.velocity = new Vector2(0, Global.Instance().Player.velocity.y);
+        Global.Instance().Player.velocity = new Vector2(0, Global.Instance().Player.velocity.Y);
         if (!CreateTempleGems())
         {
             OnGemCollected(null);
@@ -236,7 +236,7 @@ public class GemsTemple : Node2D
             .From(bloomSpriteScale)
             .SetTrans(Tween.TransitionType.Linear)
             .SetEase(Tween.EaseType.Out);
-        tweener.Connect("finished", this, nameof(OnBloomSpriteResizeEnd), null, (uint)ConnectFlags.Oneshot);
+        tweener.Connect("finished", new Callable(this, nameof(OnBloomSpriteResizeEnd)), (uint)ConnectFlags.OneShot);
     }
 
     private void OnBloomSpriteResizeEnd()

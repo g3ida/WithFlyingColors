@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class Global : Node2D
+public partial class Global : Node2D
 {
     private static Global _instance = null;
 
@@ -25,11 +25,11 @@ public class Global : Node2D
 
     public PauseMenu PauseMenu;
 
-    public Texture _playerSprite;
+    public Texture2D _playerSprite;
     
     private Dictionary<string, string[]> selectedSkin = SkinLoader.DEFAULT_SKIN;
 
-    public Texture GetPlayerSprite()
+    public Texture2D GetPlayerSprite()
     {
         if (_playerSprite == null)
         {

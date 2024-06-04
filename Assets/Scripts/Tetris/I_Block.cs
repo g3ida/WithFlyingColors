@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class I_Block : Tetromino
+public partial class I_Block : Tetromino
 {
 
     public I_Block() {

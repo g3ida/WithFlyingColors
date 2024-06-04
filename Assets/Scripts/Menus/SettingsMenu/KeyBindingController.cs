@@ -1,10 +1,10 @@
 using Godot;
 using System;
 
-public class KeyBindingController : Control, IUITab
+public partial class KeyBindingController : Control, IUITab
 {
     [Signal]
-    public delegate void on_action_bound_signal(string action, int key);
+    public delegate void on_action_bound_signalEventHandler(string action, int key);
 
     private Button jumpBtn;
 
@@ -22,7 +22,7 @@ public class KeyBindingController : Control, IUITab
         else
         {
             GameSettings.Instance().BindActionToKeyboardKey(action, key);
-            EmitSignal(nameof(on_action_bound_signal), action, key);
+            EmitSignal(nameof(on_action_bound_signalEventHandler), action, key);
             Event.Instance().EmitOnActionBound(action, key);
         }
     }

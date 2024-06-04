@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class BrickPowerUpHandler : Node2D, IPowerUpHandler
+public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler
 {
     private const float COLDDOWN = 1.5f;
     private const int ITEM_INV_PROBA = 4;
@@ -43,14 +43,14 @@ public class BrickPowerUpHandler : Node2D, IPowerUpHandler
 
     private void ConnectSignals()
     {
-        Event.Instance().Connect("brick_broken", this, nameof(OnBrickBroken));
-        Event.Instance().Connect("checkpoint_loaded", this, nameof(Reset));
+        Event.Instance().Connect("brick_broken", new Callable(this, nameof(OnBrickBroken)));
+        Event.Instance().Connect("checkpoint_loaded", new Callable(this, nameof(Reset)));
     }
 
     private void DisconnectSignals()
     {
-        Event.Instance().Disconnect("brick_broken", this, nameof(OnBrickBroken));
-        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(Reset));
+        Event.Instance().Disconnect("brick_broken", new Callable(this, nameof(OnBrickBroken)));
+        Event.Instance().Disconnect("checkpoint_loaded", new Callable(this, nameof(Reset)));
     }
 
     public void Reset()
@@ -100,12 +100,12 @@ public class BrickPowerUpHandler : Node2D, IPowerUpHandler
 
     private void CreatePowerup(PackedScene powerupNode, string color, Vector2 position)
     {
-        var powerup = (Node2D)powerupNode.Instance();
+        var powerup = powerupNode.Instantiate<Node2D>();
         powerup.Set("color_group", color);
         powerup.Position = position - Position;
         fallingPowerUpsContainer.CallDeferred("add_child", powerup);
         powerup.CallDeferred("set_owner", fallingPowerUpsContainer);
-        powerup.Connect("on_player_hit", this, nameof(OnPlayerHit));
+        powerup.Connect("on_player_hit", new Callable(this, nameof(OnPlayerHit)));
         colddownTimer.Start();
     }
 
@@ -123,9 +123,11 @@ public class BrickPowerUpHandler : Node2D, IPowerUpHandler
 
     private bool CheckIfCanAddPowerup(PackedScene hitNode)
     {
-        foreach (var el in activePowerupNodes)
+        foreach (var powerUp in activePowerupNodes)
         {
-            if (!el.IsIncremental && el.Filename == hitNode.ResourcePath)
+            
+            if (!powerUp.IsIncremental 
+                && powerUp.SceneFilePath == hitNode.ResourcePath)
             {
                 return false;
             }
@@ -157,12 +159,12 @@ public class BrickPowerUpHandler : Node2D, IPowerUpHandler
         RemoveIrrelevantPowerups();
         if (CheckIfCanAddPowerup(hitNode))
         {
-            var hit = hitNode.Instance<PowerUpScript>();
+            var hit = hitNode.Instantiate<PowerUpScript>();
             activePowerupNodes.Add(hit);
             hit.SetBrickBreakerNode(brickBreakerNode);
             CallDeferred("add_child", hit);
         }
-        powerup?.Disconnect("on_player_hit", this, nameof(OnPlayerHit));
+        powerup?.Disconnect("on_player_hit", new Callable(this, nameof(OnPlayerHit)));
         Event.Instance().EmitPickedPowerup();
     }
 
@@ -176,7 +178,7 @@ public class BrickPowerUpHandler : Node2D, IPowerUpHandler
         DisconnectSignals();
     }
 
-    public override void _Process(float delta)
+    public override void _Process(double delta)
     {
         SetProcess(false);
     }

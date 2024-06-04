@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class GemCollectedState : GemBaseState
+public partial class GemCollectedState : GemBaseState
 {
     public GemCollectedState() : base()
     {

@@ -2,7 +2,7 @@ using Godot;
 using System;
 
 [Tool]
-public class TitleLabel : Label
+public partial class TitleLabel : Label
 {
     [Export]
     public string content { get; set; } = "";
@@ -15,7 +15,7 @@ public class TitleLabel : Label
 
     public void UpdatePositionX(float value)
     {
-        RectPosition = new Vector2(value, RectPosition.y);
+        Position = new Vector2(value, Position.Y);
     }
 
     public override void _Ready()
@@ -24,12 +24,12 @@ public class TitleLabel : Label
         GetNode<Label>("Shadow").Text = content;
         SetProcess(false);
 
-        var scale = GetMinimumSize().x / GetNode<Control>("Underline").RectSize.x;
-        GetNode<Control>("Underline").RectScale = new Vector2(scale, GetNode<Control>("Underline").RectScale.y);
+        var scale = GetMinimumSize().X / GetNode<Control>("Underline").Size.X;
+        GetNode<Control>("Underline").Scale = new Vector2(scale, GetNode<Control>("Underline").Scale.Y);
         GetNode<Control>("Underline").Modulate = underline_color;
 
-        var shadowScale = GetMinimumSize().x / GetNode<Control>("UnderlineShadow").RectSize.x;
-        GetNode<Control>("UnderlineShadow").RectScale = new Vector2(shadowScale, GetNode<Control>("UnderlineShadow").RectScale.y);
+        var shadowScale = GetMinimumSize().X / GetNode<Control>("UnderlineShadow").Size.X;
+        GetNode<Control>("UnderlineShadow").Scale = new Vector2(shadowScale, GetNode<Control>("UnderlineShadow").Scale.Y);
         GetNode<Control>("UnderlineShadow").Modulate = underline_shadow_color;
     }
 }

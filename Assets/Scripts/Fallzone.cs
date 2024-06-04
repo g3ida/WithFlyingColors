@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class Fallzone : Area2D
+public partial class Fallzone : Area2D
 {
     private void _on_FallzoneArea_area_entered(Area2D area)
     {

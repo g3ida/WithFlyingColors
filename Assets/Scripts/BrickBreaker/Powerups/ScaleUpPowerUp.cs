@@ -1,12 +1,12 @@
 using Godot;
 using System;
 
-public class ScaleUpPowerUp : PowerUpScript
+public partial class ScaleUpPowerUp : PowerUpScript
 {
     private const float TWEEN_TIME = 0.7f;
     private const float SCALE_FACTOR = 1.3f;
 
-    private SceneTreeTween tweener;
+    private Tween tweener;
 
     public override void _ExitTree()
     {
@@ -35,12 +35,12 @@ public class ScaleUpPowerUp : PowerUpScript
     {
         SetProcess(false);
         Player player = Global.Instance().Player;
-        InterpolateSize(player, player.Scale.x, SCALE_FACTOR, TWEEN_TIME);
+        InterpolateSize(player, player.Scale.X, SCALE_FACTOR, TWEEN_TIME);
     }
 
     public override bool IsStillRelevant()
     {
         Player player = Global.Instance().Player;
-        return Mathf.Abs(player.Scale.x - SCALE_FACTOR) < Constants.EPSILON;
+        return Mathf.Abs(player.Scale.X - SCALE_FACTOR) < Constants.EPSILON;
     }
 }

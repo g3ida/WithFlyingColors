@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class BoxFace : BaseFace
+public partial class BoxFace : BaseFace
 {
     public float edgeLength;
 
@@ -9,7 +9,7 @@ public class BoxFace : BaseFace
     {
         base._Ready();
         collisionShapeNode = GetNode<CollisionShape2D>("CollisionShape2D");
-        edgeLength = (collisionShapeNode.Shape as RectangleShape2D).Extents.x;
+        edgeLength = (collisionShapeNode.Shape as RectangleShape2D).Size.X;
     }
 
     public override void ScaleBy(float factor)
@@ -18,8 +18,8 @@ public class BoxFace : BaseFace
         Scale = new Vector2(scaleFactor, scaleFactor);
 
         Position = new Vector2(
-            positionX + extents.y * (scaleFactor - 1.0f) * Helpers.SignOf(Position.y) * Mathf.Sin(Rotation),
-            positionY - extents.y * (scaleFactor - 1.0f) * Helpers.SignOf(Position.y) * Mathf.Cos(Rotation)
+            positionX + extents.Y * (scaleFactor - 1.0f) * Helpers.SignOf(Position.Y) * Mathf.Sin(Rotation),
+            positionY - extents.Y * (scaleFactor - 1.0f) * Helpers.SignOf(Position.Y) * Mathf.Cos(Rotation)
         );
     }
 

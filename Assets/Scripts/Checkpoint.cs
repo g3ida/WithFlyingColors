@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 // deprecated
-public class Checkpoint : Area2D, IPersistant
+public partial class Checkpoint : Area2D, IPersistant
 {
     [Export]
     public string color_group { get; set; }
@@ -31,7 +31,7 @@ public class Checkpoint : Area2D, IPersistant
         }
     }
 
-    private void _on_Checkpoint_body_shape_entered(RID bodyRid, Node body, int bodyShapeIndex, int localShapeIndex)
+    private void _on_Checkpoint_body_shape_entered(Rid bodyRid, Node body, int bodyShapeIndex, int localShapeIndex)
     {
         if (!_isChecked)
         {

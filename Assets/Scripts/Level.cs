@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class Level : Node2D
+public partial class Level : Node2D
 {
     [Export]
     public string Track { get; set; }

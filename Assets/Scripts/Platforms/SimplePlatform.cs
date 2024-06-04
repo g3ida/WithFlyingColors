@@ -2,10 +2,10 @@ using Godot;
 using System;
 
 [Tool]
-public class SimplePlatform : StaticBody2D
+public partial class SimplePlatform : StaticBody2D
 {
-    private static readonly Texture GearedTexture = (Texture)GD.Load("res://Assets/Sprites/Platforms/geared-platform.png");
-    private static readonly Texture SimpleTexture = (Texture)GD.Load("res://Assets/Sprites/Platforms/platform.png");
+    private static readonly Texture2D GearedTexture = (Texture2D)GD.Load("res://Assets/Sprites/Platforms/geared-platform.png");
+    private static readonly Texture2D SimpleTexture = (Texture2D)GD.Load("res://Assets/Sprites/Platforms/platform.png");
 
     [Export]
     public string group { get; set; }
@@ -64,31 +64,34 @@ public class SimplePlatform : StaticBody2D
         }
     }
 
-    public override void _Process(float delta)
+    public override void _Process(double delta)
     {
-        if (Engine.EditorHint)
+        if (Engine.IsEditorHint())
             return;
 
-        animationTimer += delta;
+        animationTimer += (float)delta;
 
         if (ninePatchRectNode.Material is ShaderMaterial shaderMaterial)
         {
-            Vector2 resolution = GetViewport().GetSizeOverride();
+            // FIXME: Migration 4.0 - Viewport
+            //Vector2 resolution = GetViewport().GetSize2dOverride();
+            Vector2 resolution = new Vector2(1, 1);
+
             Camera2D cam = Global.Instance().Camera;
 
             if (cam != null)
             {
-                Vector2 camPos = cam.GetCameraScreenCenter();
+                Vector2 camPos = cam.GetScreenCenterPosition();
                 Vector2 currentPos = new Vector2(
-                    contactPosition.x + (resolution.x / 2) - camPos.x,
-                    contactPosition.y + (resolution.y / 2) - camPos.y);
-                Vector2 pos = new Vector2(currentPos.x / resolution.x, currentPos.y / resolution.y);
-                Vector2 positionInShaderCoords = new Vector2(pos.x, 1 - pos.y);
+                    contactPosition.X + (resolution.X / 2) - camPos.X,
+                    contactPosition.Y + (resolution.Y / 2) - camPos.Y);
+                Vector2 pos = new Vector2(currentPos.X / resolution.X, currentPos.Y / resolution.Y);
+                Vector2 positionInShaderCoords = new Vector2(pos.X, 1 - pos.Y);
 
-                shaderMaterial.SetShaderParam("u_contact_pos", positionInShaderCoords);
-                shaderMaterial.SetShaderParam("u_timer", animationTimer);
-                shaderMaterial.SetShaderParam("u_aspect_ratio", resolution.y / resolution.x);
-                shaderMaterial.SetShaderParam("darkness", splash_darkness);
+                shaderMaterial.SetShaderParameter("u_contact_pos", positionInShaderCoords);
+                shaderMaterial.SetShaderParameter("u_timer", animationTimer);
+                shaderMaterial.SetShaderParameter("u_aspect_ratio", resolution.Y / resolution.X);
+                shaderMaterial.SetShaderParameter("darkness", splash_darkness);
             }
         }
     }
@@ -107,11 +110,11 @@ public class SimplePlatform : StaticBody2D
 
     private void ConnectSignals()
     {
-        Event.Instance().Connect("player_landed", this, nameof(OnPlayerLanded));
+        Event.Instance().Connect("player_landed", new Callable(this, nameof(OnPlayerLanded)));
     }
 
     private void DisconnectSignals()
     {
-        Event.Instance().Disconnect("player_landed", this, nameof(OnPlayerLanded));
+        Event.Instance().Disconnect("player_landed", new Callable(this, nameof(OnPlayerLanded)));
     }
 }

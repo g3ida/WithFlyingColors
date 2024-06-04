@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class O_Block : Tetromino
+public partial class O_Block : Tetromino
 {
     public O_Block() {
         rotationMap = new List<List<Vector2>>()

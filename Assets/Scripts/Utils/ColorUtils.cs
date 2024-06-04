@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class ColorUtils : Node
+public partial class ColorUtils : Node
 {
     public static readonly string[] COLORS = { "blue", "pink", "yellow", "purple" };
     public static readonly Color DARK_GREY = new Color(0.4f, 0.4f, 0.4f, 1f);
@@ -57,7 +57,7 @@ public class ColorUtils : Node
 
     private static Dictionary<string, string[]> GetCurrentSkin()
     {
-        if (Engine.EditorHint)
+        if (Engine.IsEditorHint())
         {
             return SkinLoader.DEFAULT_SKIN;
         }
@@ -88,9 +88,9 @@ public class ColorUtils : Node
 
     public static HSLColor RgbToHsl(Color color)
     {
-        float R = color.r * 255.0f;
-        float G = color.g * 255.0f;
-        float B = color.b * 255.0f;
+        float R = color.R * 255.0f;
+        float G = color.G * 255.0f;
+        float B = color.B * 255.0f;
         float M = Math.Max(Math.Max(R, G), B);
         float m = Math.Min(Math.Min(R, G), B);
         float d = (M - m) / 255.0f;

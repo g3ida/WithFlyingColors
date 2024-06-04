@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class LevelUp : Node2D
+public partial class LevelUp : Node2D
 {
     private AnimationPlayer animationNode;
     private AnimationPlayer labelAnimationNode;

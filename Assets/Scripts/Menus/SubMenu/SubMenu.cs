@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 [Tool]
-public class SubMenu : Control
+public partial class SubMenu : Control
 {
-    private PackedScene SubMenuItemScene = (PackedScene)GD.Load("res://Assets/Scenes/MainMenu/SubMenuItem.tscn");
+    [Export] public Color color;
+    [Export] public Color top_color;
 
     public List<string> buttons = new List<string>();
     public List<int> buttons_ids = new List<int>();
     public List<MenuButtons> buttons_events = new List<MenuButtons>();
     public List<bool> buttons_disabled = new List<bool>();
 
-    [Export] public Color color;
-    [Export] public Color top_color;
+    private PackedScene SubMenuItemScene = (PackedScene)GD.Load("res://Assets/Scenes/MainMenu/SubMenuItem.tscn");
 
     private VBoxContainer ContainerNode;
     private Control TopNode;
@@ -42,8 +42,8 @@ public class SubMenu : Control
 
     private void InitContainer()
     {
-        ContainerNode.MarginTop = 0;
-        ContainerNode.MarginBottom = 0;
+        ContainerNode.OffsetTop = 0;
+        ContainerNode.OffsetBottom = 0;
         TopNode.Modulate = top_color;
     }
 
@@ -51,17 +51,17 @@ public class SubMenu : Control
     {
         for (int i = 0; i < buttons.Count; i++)
         {
-            var item = (SubMenuItem)SubMenuItemScene.Instance();
+            var item = SubMenuItemScene.Instantiate<SubMenuItem>();
             item.color = color;
             item.text = buttons[i];
             item.id = buttons_ids[i];
-            item.@event = buttons_events[i];
+            item.ev = buttons_events[i];
             item.disabled = buttons_disabled[i];
             ContainerNode.AddChild(item);
             ButtonNodes.Add(item);
             item.Owner = ContainerNode;
-            RectSize = new Vector2(RectSize.x, RectSize.y + item.RectSize.y);
-            RectMinSize = new Vector2(RectMinSize.x, RectMinSize.y + item.RectMinSize.y);
+            Size = new Vector2(Size.X, Size.Y + item.Size.Y);
+            CustomMinimumSize = new Vector2(CustomMinimumSize.X, CustomMinimumSize.Y + item.CustomMinimumSize.Y);
         }
     }
 
@@ -95,8 +95,8 @@ public class SubMenu : Control
 
             current.FocusNext = next.GetPath();
             next.FocusPrevious = current.GetPath();
-            current.FocusNeighbourBottom = next.GetPath();
-            next.FocusNeighbourTop = current.GetPath();
+            current.FocusNeighborBottom = next.GetPath();
+            next.FocusNeighborTop = current.GetPath();
         }
     }
 

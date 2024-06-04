@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-public class LevelSelectMenu : GameMenu
+public partial class LevelSelectMenu : GameMenu
 {
     private const int X_POS = 1000;
     private const int Y_POS = 200;
@@ -33,7 +33,7 @@ public class LevelSelectMenu : GameMenu
 
     private SceneCard AddSceneCard(Levels.Level level)
     {
-        var sceneNode = SceneCardScene.Instance<SceneCard>();
+        var sceneNode = SceneCardScene.Instantiate<SceneCard>();
         LevelsContainer.AddChild(sceneNode);
         var id = level.Id;
         sceneNode.Owner = LevelsContainer;

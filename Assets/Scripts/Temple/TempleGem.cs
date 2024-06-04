@@ -1,6 +1,6 @@
 using Godot;
 
-public class TempleGem : Node2D
+public partial class TempleGem : Node2D
 {
     // Enum for states
     public enum State
@@ -15,7 +15,7 @@ public class TempleGem : Node2D
 
     // Signal
     [Signal]
-    public delegate void MoveCompleted(Node2D self);
+    public delegate void MoveCompletedEventHandler(Node2D self);
 
     // FIXME: implement set get for this field
     // Variables
@@ -23,14 +23,14 @@ public class TempleGem : Node2D
     public string color_group { get; private set; }
 
     private State currentState = State.IDLE;
-    private SceneTreeTween tweener;
+    private Tween tweener;
 
     // Nodes
-    private Light2D lightNode;
+    private PointLight2D lightNode;
 
     public override void _Ready()
     {
-        lightNode = GetNode<Light2D>("Light2D");
+        lightNode = GetNode<PointLight2D>("PointLight2D");
         lightNode.Visible = false;
     }
 
@@ -38,7 +38,7 @@ public class TempleGem : Node2D
     {
         color_group = colorGroup;
         var colorIndex = ColorUtils.GetGroupColorIndex(colorGroup);
-        GetNode<AnimatedSprite>("GemAnimatedSprite").Modulate = ColorUtils.GetBasicColor(colorIndex);
+        GetNode<AnimatedSprite2D>("GemAnimatedSprite").Modulate = ColorUtils.GetBasicColor(colorIndex);
         lightNode.Color = ColorUtils.GetDarkColor(colorIndex);
     }
 
@@ -60,14 +60,14 @@ public class TempleGem : Node2D
     {
         tweener?.Kill();
         tweener = CreateTween();
-        tweener.Connect("finished", this, nameof(OnTweenCompleted), null, (uint)ConnectFlags.Oneshot);
+        tweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), (uint)ConnectFlags.OneShot);
         tweener.SetParallel(true);
-        tweener.TweenProperty(this, "global_position:x", position.x, DURATION)
+        tweener.TweenProperty(this, "global_position:x", position.X, DURATION)
                .SetTrans(Tween.TransitionType.Linear)
                .SetEase((Tween.EaseType)easeType)
                .SetDelay(waitTime);
 
-        tweener.TweenProperty(this, "global_position:y", position.y, DURATION)
+        tweener.TweenProperty(this, "global_position:y", position.Y, DURATION)
                .SetTrans(Tween.TransitionType.Circ)
                .SetEase((Tween.EaseType)easeType)
                .SetDelay(waitTime);
@@ -78,7 +78,7 @@ public class TempleGem : Node2D
         if (currentState == State.MOVING)
         {
             currentState = State.MOVED;
-            EmitSignal(nameof(MoveCompleted), this);
+            EmitSignal(nameof(MoveCompletedEventHandler), this);
             lightNode.Visible = true;
         }
     }

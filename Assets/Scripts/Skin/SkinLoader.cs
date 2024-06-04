@@ -29,10 +29,9 @@ public static class SkinLoader
 
     public static Dictionary<string, List<string>> LoadSkin(string fileName)
     {
-        var file = new File();
-        if (file.FileExists(fileName))
+        if (FileAccess.FileExists(fileName))
         {
-            file.Open(fileName, File.ModeFlags.Read);
+            var file = FileAccess.Open(fileName, FileAccess.ModeFlags.Read);
             string jsonData = file.GetLine();
             file.Close();
 

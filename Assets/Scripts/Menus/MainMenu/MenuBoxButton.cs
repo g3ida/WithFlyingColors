@@ -1,14 +1,14 @@
 using System.Runtime.InteropServices;
 using Godot;
 
-public class MenuBoxButton : Control
+public partial class MenuBoxButton : Control
 {
     private static readonly Color LABEL_COLOR = new Color("96464646");
     private static readonly Color LABEL_COLOR_HOVER = new Color("dc464646");
     private static readonly Color LABEL_COLOR_CLICK = new Color("f0464646");
     private static readonly Color LABEL_COLOR_DISABLED = new Color("46464646");
 
-    [Signal] public delegate void pressed();
+    [Signal] public delegate void pressedEventHandler();
 
 
     private string _text;
@@ -58,7 +58,7 @@ public class MenuBoxButton : Control
     {
         LabelNode.Modulate = LABEL_COLOR_CLICK;
         BlinkTimer.Start();
-        EmitSignal(nameof(pressed));
+        EmitSignal(nameof(pressedEventHandler));
     }
 
     private void _on_TextureButton_mouse_entered()

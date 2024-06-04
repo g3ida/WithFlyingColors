@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 
 [Tool]
-public class GemHUD : Node2D, IPersistant
+public partial class GemHUD : Node2D, IPersistant
 {
     private const string TextureCollectedPath = "res://Assets/Sprites/HUD/gem_hud_collected.png";
     private const string TextureEmptyPath = "res://Assets/Sprites/HUD/gem_hud.png";
 
-    private Texture textureCollected;
-    private Texture textureEmpty;
+    private Texture2D textureCollected;
+    private Texture2D textureEmpty;
 
     private TextureRect textureRectNode;
     private AnimationPlayer textureRectAnimationNode;
@@ -27,7 +27,7 @@ public class GemHUD : Node2D, IPersistant
         { "state", State.EMPTY }
     };
 
-    private AnimatedSprite animation;
+    private AnimatedSprite2D animation;
     private SlideAnimation collectedAnimation;
 
     public override void _Ready()
@@ -37,8 +37,8 @@ public class GemHUD : Node2D, IPersistant
         backgroundNode = GetNode<TextureRect>("Background");
         backgroundAnimationPlayerNode = GetNode<AnimationPlayer>("Background/AnimationPlayer");
 
-        textureCollected = GD.Load<Texture>(TextureCollectedPath);
-        textureEmpty = GD.Load<Texture>(TextureEmptyPath);
+        textureCollected = GD.Load<Texture2D>(TextureCollectedPath);
+        textureEmpty = GD.Load<Texture2D>(TextureEmptyPath);
 
         textureRectNode.Texture = textureEmpty;
         backgroundNode.Visible = false;
@@ -48,21 +48,21 @@ public class GemHUD : Node2D, IPersistant
 
     private void ConnectSignals()
     {
-        if (!Engine.EditorHint)
+        if (!Engine.IsEditorHint())
         {
-            Event.Instance().Connect("gem_collected", this, nameof(OnGemCollected));
-            Event.Instance().Connect("checkpoint_reached", this, nameof(OnCheckpointHit));
-            Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
+            Event.Instance().Connect("gem_collected", new Callable(this, nameof(OnGemCollected)));
+            Event.Instance().Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
+            Event.Instance().Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
         }
     }
 
     private void DisconnectSignals()
     {
-        if (!Engine.EditorHint)
+        if (!Engine.IsEditorHint())
         {
-            Event.Instance().Disconnect("gem_collected", this, nameof(OnGemCollected));
-            Event.Instance().Disconnect("checkpoint_reached", this, nameof(OnCheckpointHit));
-            Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
+            Event.Instance().Disconnect("gem_collected", new Callable(this, nameof(OnGemCollected)));
+            Event.Instance().Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
+            Event.Instance().Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
         }
     }
 
@@ -71,8 +71,8 @@ public class GemHUD : Node2D, IPersistant
         if (this.Color == col)
         {
             currentState = State.COLLECTING;
-            animation = new AnimatedSprite();
-            animation.Frames = frames;
+            animation = new AnimatedSprite2D();
+            animation.SpriteFrames = frames;
             animation.Play();
             animation.Modulate = textureRectNode.Modulate;
             AddChild(animation);
@@ -81,7 +81,7 @@ public class GemHUD : Node2D, IPersistant
             animation.GlobalPosition = position;
             collectedAnimation = new SlideAnimation();
             collectedAnimation.Set("gem_slide", animation, new Vector2(20, 20), 1);
-            Event.Instance().Connect("slide_animation_ended", this, nameof(OnSlideAnimEnded), flags: (uint)ConnectFlags.Oneshot);
+            Event.Instance().Connect("slide_animation_ended", new Callable(this, nameof(OnSlideAnimEnded)), flags: (uint)ConnectFlags.OneShot);
         }
     }
 
@@ -117,9 +117,9 @@ public class GemHUD : Node2D, IPersistant
         DisconnectSignals();
     }
 
-    public override void _Process(float delta)
+    public override void _Process(double delta)
     {
-        collectedAnimation?.Update(delta);
+        collectedAnimation?.Update((float)delta);
     }
 
     public void reset()

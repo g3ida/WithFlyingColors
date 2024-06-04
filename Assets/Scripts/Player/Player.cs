@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class Player : KinematicBody2D, IPersistant
+public partial class Player : CharacterBody2D, IPersistant
 {
     public const float SQUEEZE_ANIM_DURATION = 0.17f;
     public const float SCALE_ANIM_DURATION = 0.17f;
@@ -30,7 +30,7 @@ public class Player : KinematicBody2D, IPersistant
     public bool handle_input_is_disabled = false;
 
 
-    public CPUParticles2D jumpParticlesNode;
+    public CpuParticles2D jumpParticlesNode;
     public Timer fallTimerNode;
 
     private BoxCorner faceSparatorBR_node;
@@ -54,7 +54,7 @@ public class Player : KinematicBody2D, IPersistant
     public CollisionShape2D FaceCollisionShapeBR_node;
 
     private CollisionShape2D collisionShapeNode;
-    public AnimatedSprite animatedSpriteNode;
+    public AnimatedSprite2D animatedSpriteNode;
     public Timer dashGhostTimerNode;
 
     private List<BoxCorner> faceSeparatorNodes;
@@ -77,8 +77,8 @@ public class Player : KinematicBody2D, IPersistant
 
 private void PrepareChildrenNodes()
     {
-        lightOccluder = GetNode<LightOccluder2D>("AnimatedSprite/LightOccluder2D");
-        jumpParticlesNode = GetNode<CPUParticles2D>("JumpParticles");
+        lightOccluder = GetNode<LightOccluder2D>("AnimatedSprite2D/LightOccluder2D");
+        jumpParticlesNode = GetNode<CpuParticles2D>("JumpParticles");
         fallTimerNode = GetNode<Timer>("FallTimer");
 
         faceSparatorBR_node = GetNode<BoxCorner>("FaceSeparatorBR");
@@ -102,7 +102,7 @@ private void PrepareChildrenNodes()
         FaceCollisionShapeBR_node = GetNode<CollisionShape2D>("FaceCollisionShapeBR");
 
         collisionShapeNode = GetNode<CollisionShape2D>("CollisionShape2D");
-        animatedSpriteNode = GetNode<AnimatedSprite>("AnimatedSprite");
+        animatedSpriteNode = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         dashGhostTimerNode = GetNode<Timer>("DashGhostTimer");
 
         faceSeparatorNodes = new List<BoxCorner>
@@ -144,8 +144,8 @@ private void PrepareChildrenNodes()
         PrepareChildrenNodes();
         playerRotationAction = new PlayerRotationAction();
         playerRotationAction.Set(this);
-        animatedSpriteNode.Frames.SetFrame("idle", 0, Global.Instance().GetPlayerSprite());
-        sprite_size = animatedSpriteNode.Frames.GetFrame("idle", 0).GetWidth();
+        animatedSpriteNode.SpriteFrames.SetFrame("idle", 0, Global.Instance().GetPlayerSprite());
+        sprite_size = animatedSpriteNode.SpriteFrames.GetFrameTexture("idle", 0).GetWidth();
         InitSpriteAnimation();
         was_on_floor = IsOnFloor();
         InitFacesAreas();
@@ -153,8 +153,8 @@ private void PrepareChildrenNodes()
 
         save_data = new Dictionary<string, object>
         {
-            { "position_x", GlobalPosition.x },
-            { "position_y", GlobalPosition.y },
+            { "position_x", GlobalPosition.X },
+            { "position_y", GlobalPosition.Y },
             { "angle", 0.0f },
             { "default_corner_scale_factor", 1.0f }
         };
@@ -198,18 +198,18 @@ private void PrepareChildrenNodes()
         FillFaceSeparatorsBackup();
     }
 
-    public override void _Input(InputEvent @event)
+    public override void _Input(InputEvent ev)
     {
-        player_state._Input(@event);
-        player_rotation_state._Input(@event);
+        player_state._Input(ev);
+        player_rotation_state._Input(ev);
     }
 
-    public override void _PhysicsProcess(float delta)
+    public override void _PhysicsProcess(double delta)
     {
-        var next_state = (PlayerBaseState)player_rotation_state.PhysicsUpdate(this, delta);
+        var next_state = (PlayerBaseState)player_rotation_state.PhysicsUpdate(this, (float)delta);
         SwitchRotationState(next_state);
 
-        var next_player_state = (PlayerBaseState)player_state.PhysicsUpdate(this, delta);
+        var next_player_state = (PlayerBaseState)player_state.PhysicsUpdate(this, (float)delta);
         SwitchState(next_player_state);
 
         if (IsJustHitTheFloor())
@@ -228,7 +228,7 @@ private void PrepareChildrenNodes()
     public void reset()
     {
         animatedSpriteNode.Play("idle");
-        animatedSpriteNode.Playing = false;
+        animatedSpriteNode.Stop();
         GlobalPosition = new Vector2(Convert.ToSingle(save_data["position_x"]), Convert.ToSingle(save_data["position_y"]));
         velocity = Vector2.Zero;
         var angle_rot = Convert.ToSingle(save_data["angle"]);
@@ -261,8 +261,8 @@ private void PrepareChildrenNodes()
         
         if (checkpoint_object.IsInsideTree())
         {
-            save_data["position_x"] = checkpoint_object.GlobalPosition.x;
-            save_data["position_y"] = checkpoint_object.GlobalPosition.y;
+            save_data["position_x"] = checkpoint_object.GlobalPosition.X;
+            save_data["position_y"] = checkpoint_object.GlobalPosition.Y;
         }
 
         save_data["default_corner_scale_factor"] = CurrentDefaultCornerScaleFactor;
@@ -270,16 +270,16 @@ private void PrepareChildrenNodes()
 
     private void ConnectSignals()
     {
-        Event.Instance().Connect("player_diying", this, nameof(OnPlayerDiying));
-        Event.Instance().Connect("checkpoint_reached", this, nameof(OnCheckpointHit));
-        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Connect("player_diying", new Callable(this, nameof(OnPlayerDiying)));
+        Event.Instance().Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
+        Event.Instance().Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
     }
 
     private void DisconnectSignals()
     {
-        Event.Instance().Disconnect("player_diying", this, nameof(OnPlayerDiying));
-        Event.Instance().Disconnect("checkpoint_reached", this, nameof(OnCheckpointHit));
-        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Disconnect("player_diying", new Callable(this, nameof(OnPlayerDiying)));
+        Event.Instance().Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
+        Event.Instance().Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
     }
 
     public override void _EnterTree()
@@ -293,9 +293,9 @@ private void PrepareChildrenNodes()
         DisconnectSignals();
     }
 
-    private void OnPlayerDiying(Node area, Vector2 position, Constants.EntityType entity_type)
+    private void OnPlayerDiying(Node area, Vector2 position, int entity_type)
     {
-        var next_state = (player_state).OnPlayerDying(this, area, position, entity_type);
+        var next_state = (player_state).OnPlayerDying(this, area, position, (Constants.EntityType)entity_type);
         SwitchState(next_state);
     }
 
@@ -360,8 +360,8 @@ private void PrepareChildrenNodes()
 
     public Vector2 GetCollisionShapeSize()
     {
-        var extra_w = (FaceCollisionShapeL_node.Shape as RectangleShape2D).Extents.x;
-        return ((collisionShapeNode.Shape as RectangleShape2D).Extents + 2.0f * new Vector2(extra_w, extra_w)) * 2.0f;
+        var extra_w = (FaceCollisionShapeL_node.Shape as RectangleShape2D).Size.X;
+        return ((collisionShapeNode.Shape as RectangleShape2D).Size + 2.0f * new Vector2(extra_w, extra_w)) * 2.0f;
     }
 
     public bool ContainsNode(Node node)
@@ -473,7 +473,7 @@ private void PrepareChildrenNodes()
 
     public bool IsFalling()
     {
-        return velocity.y >= -Constants.EPSILON;
+        return velocity.Y >= -Constants.EPSILON;
     }
 
     public bool IsRotationIdle() {
@@ -490,7 +490,7 @@ private void PrepareChildrenNodes()
     }
 
     public void SetMaxSpeed() {
-        velocity.x = SPEED;
+        velocity.X = SPEED;
     }
 
     public void load(Dictionary<string, object> save_data)

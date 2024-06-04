@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
-public class GameCamera : Camera2D, IPersistant
+public partial class GameCamera : Camera2D, IPersistant
 {
     public const float CAMERA_DRAG_JUMP = 0.45f;
 
@@ -11,7 +11,7 @@ public class GameCamera : Camera2D, IPersistant
 
     public Node2D follow;
     public float targetZoom = 1.0f;
-    private SceneTreeTween zoomTweener;
+    private Tween zoomTweener;
 
     private Dictionary<string, object> defaultSaveData;
 
@@ -41,22 +41,22 @@ public class GameCamera : Camera2D, IPersistant
 
         follow = GetNode<Node2D>(follow_path);
         save_data = new Dictionary<string, object>(defaultSaveData);
-        if (Current)
+        if (IsCurrent())
         {
             Global.Instance().Camera = this;
         }
         CacheDragMargins();
     }
 
-    public override void _Process(float delta)
+    public override void _Process(double delta)
     {
-        if (Current)
+        if (IsCurrent())
         {
             Global.Instance().Camera = this;
         }
     }
 
-    public override void _PhysicsProcess(float delta)
+    public override void _PhysicsProcess(double delta)
     {
         if (follow != null)
         {
@@ -92,10 +92,10 @@ public class GameCamera : Camera2D, IPersistant
             LimitRight = Helpers.ParseSaveDataInt(save_data, "right_limit");
 
 
-            DragMarginBottom = Helpers.ParseSaveDataFloat(save_data, "drag_margin_bottom");
-            DragMarginLeft = Helpers.ParseSaveDataFloat(save_data, "drag_margin_left");
-            DragMarginRight = Helpers.ParseSaveDataFloat(save_data, "drag_margin_right");
-            DragMarginTop = Helpers.ParseSaveDataFloat(save_data, "drag_margin_top");
+            DragBottomMargin = Helpers.ParseSaveDataFloat(save_data, "drag_margin_bottom");
+            DragLeftMargin = Helpers.ParseSaveDataFloat(save_data, "drag_margin_left");
+            DragRightMargin = Helpers.ParseSaveDataFloat(save_data, "drag_margin_right");
+            DragTopMargin = Helpers.ParseSaveDataFloat(save_data, "drag_margin_top");
             follow_path = Helpers.ParseSaveDataNodePath(save_data, "follow_path");
             follow = GetNode<Node2D>(follow_path);
         }
@@ -109,13 +109,13 @@ public class GameCamera : Camera2D, IPersistant
     private void _OnPlayerJump()
     {
         CacheDragMargins();
-        if (DragMarginBottom < CAMERA_DRAG_JUMP)
+        if (DragBottomMargin < CAMERA_DRAG_JUMP)
         {
-            DragMarginBottom = CAMERA_DRAG_JUMP;
+            DragBottomMargin = CAMERA_DRAG_JUMP;
         }
-        if (DragMarginTop < CAMERA_DRAG_JUMP)
+        if (DragTopMargin < CAMERA_DRAG_JUMP)
         {
-            DragMarginTop = CAMERA_DRAG_JUMP;
+            DragTopMargin = CAMERA_DRAG_JUMP;
         }
     }
 
@@ -124,25 +124,25 @@ public class GameCamera : Camera2D, IPersistant
         RestoreDragMargins();
     }
 
-    private void _OnPlayerDying(object area, Vector2 position, string entityType)
+    private void _OnPlayerDying(object area, Vector2 position, int entityType)
     {
         RestoreDragMargins();
     }
 
     private void CacheDragMargins()
     {
-        cachedDragMarginBottom = DragMarginBottom;
-        cachedDragMarginTop = DragMarginTop;
-        cachedDragMarginLeft = DragMarginLeft;
-        cachedDragMarginRight = DragMarginRight;
+        cachedDragMarginBottom = DragBottomMargin;
+        cachedDragMarginTop = DragTopMargin;
+        cachedDragMarginLeft = DragLeftMargin;
+        cachedDragMarginRight = DragRightMargin;
     }
 
     private void RestoreDragMargins()
     {
-        DragMarginBottom = cachedDragMarginBottom;
-        DragMarginTop = cachedDragMarginTop;
-        DragMarginLeft = cachedDragMarginLeft;
-        DragMarginRight = cachedDragMarginRight;
+        DragBottomMargin = cachedDragMarginBottom;
+        DragTopMargin = cachedDragMarginTop;
+        DragLeftMargin = cachedDragMarginLeft;
+        DragRightMargin = cachedDragMarginRight;
     }
 
     public void zoom_by(float factor)
@@ -158,20 +158,20 @@ public class GameCamera : Camera2D, IPersistant
 
     private void ConnectSignals()
     {
-        Event.Instance().Connect("checkpoint_reached", this, nameof(_OnCheckpointHit));
-        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
-        Event.Instance().Connect("player_jumped", this, nameof(_OnPlayerJump));
-        Event.Instance().Connect("player_land", this, nameof(_OnPlayerLand));
-        Event.Instance().Connect("player_diying", this, nameof(_OnPlayerDying));
+        Event.Instance().Connect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
+        Event.Instance().Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
+        Event.Instance().Connect("player_jumped", new Callable(this, nameof(_OnPlayerJump)));
+        Event.Instance().Connect("player_land", new Callable(this, nameof(_OnPlayerLand)));
+        Event.Instance().Connect("player_diying", new Callable(this, nameof(_OnPlayerDying)));
     }
 
     private void DisconnectSignals()
     {
-        Event.Instance().Disconnect("checkpoint_reached", this, nameof(_OnCheckpointHit));
-        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
-        Event.Instance().Disconnect("player_jumped", this, nameof(_OnPlayerJump));
-        Event.Instance().Disconnect("player_land", this, nameof(_OnPlayerLand));
-        Event.Instance().Disconnect("player_diying", this, nameof(_OnPlayerDying));
+        Event.Instance().Disconnect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
+        Event.Instance().Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
+        Event.Instance().Disconnect("player_jumped", new Callable(this, nameof(_OnPlayerJump)));
+        Event.Instance().Disconnect("player_land", new Callable(this, nameof(_OnPlayerLand)));
+        Event.Instance().Disconnect("player_diying", new Callable(this, nameof(_OnPlayerDying)));
     }
 
     public override void _EnterTree()
@@ -186,7 +186,7 @@ public class GameCamera : Camera2D, IPersistant
 
     public async void update_position(Vector2 pos)
     {
-        SmoothingEnabled = false;
+        PositionSmoothingEnabled = false;
         GlobalPosition = pos;
         await ToSignal(GetTree(), "idle_frame");
         SetDeferred("smoothing_enabled", true);
@@ -200,25 +200,25 @@ public class GameCamera : Camera2D, IPersistant
 
     public void set_drag_margin_top(float value)
     {
-        DragMarginTop = value;
+        DragTopMargin = value;
         cachedDragMarginTop = value;
     }
 
     public void set_drag_margin_bottom(float value)
     {
-        DragMarginBottom = value;
+        DragBottomMargin = value;
         cachedDragMarginBottom = value;
     }
 
     public void set_drag_margin_left(float value)
     {
-        DragMarginLeft = value;
+        DragLeftMargin = value;
         cachedDragMarginLeft = value;
     }
 
     public void set_drag_margin_right(float value)
     {
-        DragMarginRight = value;
+        DragRightMargin = value;
         cachedDragMarginRight = value;
     }
 

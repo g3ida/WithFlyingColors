@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class BoxCorner : BaseFace
+public partial class BoxCorner : BaseFace
 {
     public float edgeLength;
 
@@ -9,7 +9,7 @@ public class BoxCorner : BaseFace
     {
         base._Ready();
         collisionShapeNode = GetNode<CollisionShape2D>("CollisionShape2D");
-        edgeLength = (collisionShapeNode.Shape as RectangleShape2D).Extents.x;
+        edgeLength = (collisionShapeNode.Shape as RectangleShape2D).Size.X;
     }
 
     public void _on_area_entered(Area2D area)
@@ -36,7 +36,7 @@ public class BoxCorner : BaseFace
         }
     }
 
-    private bool CheckGroup(Area2D area, Godot.Collections.Array groups)
+    private bool CheckGroup(Area2D area, Godot.Collections.Array<StringName> groups)
     {
         // FIXME: remove reddundant code
         if (area is Gem gem) {

@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class TripleBallsPowerUp : PowerUpScript
+public partial class TripleBallsPowerUp : PowerUpScript
 {
     private bool isDone = false;
 
@@ -25,9 +25,9 @@ public class TripleBallsPowerUp : PowerUpScript
                 BouncingBall ball = BrickBreakerNode.SpawnBall(b.color_group) as BouncingBall;
                 ball.Position = b.Position;
                 Vector2 spawnVelocity = b.velocity.Rotated((i - 0.5f) * 2 * Constants.PI3);
-                if (spawnVelocity.y > 0)
+                if (spawnVelocity.Y > 0)
                 {
-                    spawnVelocity.y = -spawnVelocity.y;
+                    spawnVelocity.Y = -spawnVelocity.Y;
                 }
                 ball.CallDeferred("SetVelocity", spawnVelocity);
             }

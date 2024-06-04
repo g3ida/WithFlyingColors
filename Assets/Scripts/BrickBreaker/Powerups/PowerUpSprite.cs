@@ -1,6 +1,6 @@
 using Godot;
 
-public class PowerUpSprite : Sprite
+public partial class PowerUpSprite : Sprite2D
 {
     public override void _Ready()
     {

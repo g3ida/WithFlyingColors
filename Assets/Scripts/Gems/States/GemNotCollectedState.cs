@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class GemNotCollectedState : GemBaseState
+public partial class GemNotCollectedState : GemBaseState
 {
     private const float AMPLITUDE = 4.0f;
     private const float ANIMATION_DURATION = 4.0f;

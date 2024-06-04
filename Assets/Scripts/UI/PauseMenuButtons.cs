@@ -1,6 +1,6 @@
 using Godot;
 
-public class PauseMenuButtons : Button
+public partial class PauseMenuButtons : Button
 {
     private AnimationPlayer animationPlayer;
     private enum State { HIDDEN, HIDING, SHOWN, SHOWING }
@@ -20,11 +20,11 @@ public class PauseMenuButtons : Button
         {
             currentState = State.HIDING;
             animationPlayer.Play("Hide");
-            animationPlayer.Connect("animation_finished", this, nameof(OnHideAnimationDone), flags: (uint)ConnectFlags.Oneshot);
+            animationPlayer.Connect("animation_finished", new Callable(this, nameof(OnHideAnimationDone)), flags: (uint)ConnectFlags.OneShot);
         }
         else if (currentState == State.SHOWING)
         {
-            animationPlayer.Disconnect("animation_finished", this, nameof(OnShowAnimationDone));
+            animationPlayer.Disconnect("animation_finished", new Callable(this, nameof(OnShowAnimationDone)));
             currentState = State.SHOWN;
             Hide();
         }
@@ -37,11 +37,11 @@ public class PauseMenuButtons : Button
             currentState = State.SHOWING;
             Visible = true;
             animationPlayer.PlayBackwards("Hide");
-            animationPlayer.Connect("animation_finished", this, nameof(OnShowAnimationDone), flags: (uint)ConnectFlags.Oneshot);
+            animationPlayer.Connect("animation_finished", new Callable(this, nameof(OnShowAnimationDone)), flags: (uint)ConnectFlags.OneShot);
         }
         else if (currentState == State.HIDING)
         {
-            animationPlayer.Disconnect("animation_finished", this, nameof(OnHideAnimationDone));
+            animationPlayer.Disconnect("animation_finished", new Callable(this, nameof(OnHideAnimationDone)));
             currentState = State.HIDDEN;
             Show();
         }

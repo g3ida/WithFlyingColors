@@ -5,20 +5,20 @@ public static class NinePatchTextureUtils
 {
     public static void ScaleTexture(NinePatchRect ninePatchRect, Vector2 scale)
     {
-        Debug.Assert(scale.x >= 1 && scale.y >= 1);
-        ninePatchRect.RectScale = new Vector2(1 / scale.x, 1 / scale.y);
-        Vector2 size = ninePatchRect.RectSize;
+        Debug.Assert(scale.X >= 1 && scale.Y >= 1);
+        ninePatchRect.Scale = new Vector2(1 / scale.X, 1 / scale.Y);
+        Vector2 size = ninePatchRect.Size;
 
-        Vector2 newSize = new Vector2(size.x * scale.x, size.y * scale.y);
-        ninePatchRect.RectSize = new Vector2(newSize.x, newSize.y);
+        Vector2 newSize = new Vector2(size.X * scale.X, size.Y * scale.Y);
+        ninePatchRect.Size = new Vector2(newSize.X, newSize.Y);
 
         Vector2 rectPos = new Vector2(
-            ninePatchRect.RectPosition.x - (newSize.x - size.x) / (scale.x * 2),
-            ninePatchRect.RectPosition.y - (newSize.y - size.y) / (scale.y * 2));
-        ninePatchRect.RectPosition = rectPos;
+            ninePatchRect.Position.X - (newSize.X - size.X) / (scale.X * 2),
+            ninePatchRect.Position.Y - (newSize.Y - size.Y) / (scale.Y * 2));
+        ninePatchRect.Position = rectPos;
     }
 
-    public static void SetTexture(NinePatchRect ninePatchRect, Texture texture)
+    public static void SetTexture(NinePatchRect ninePatchRect, Texture2D texture)
     {
         ninePatchRect.Texture = texture;
     }

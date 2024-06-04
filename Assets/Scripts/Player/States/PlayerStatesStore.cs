@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerStatesStore : BaseStatesStore<Player, PlayerStatesEnum>
+public partial class PlayerStatesStore : BaseStatesStore<Player, PlayerStatesEnum>
 {
     // Player states
     public PlayerStandingState standingState;

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerDyingState : PlayerBaseState
+public partial class PlayerDyingState : PlayerBaseState
 {
     private static readonly PackedScene ExplosionScene = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Explosion/Explosion.tscn");
 
@@ -30,19 +30,19 @@ public class PlayerDyingState : PlayerBaseState
             Event.Instance().EmitPlayerExplode();
             player.lightOccluder.LightMask = 0;
             player.animatedSpriteNode.Play("die");
-            player.animatedSpriteNode.Connect("animation_finished", this, nameof(OnAnimationFinished));
+            player.animatedSpriteNode.Connect("animation_finished", new Callable(this, nameof(OnAnimationFinished)));
         }
         else // this is the falling case
         {
             Event.Instance().EmitPlayerFall();
             player.fallTimerNode.Start();
-            player.fallTimerNode.Connect("timeout", this, nameof(OnFallTimeout), null, (uint)ConnectFlags.Oneshot);
+            player.fallTimerNode.Connect("timeout", new Callable(this, nameof(OnFallTimeout)), (uint)ConnectFlags.OneShot);
         }
     }
 
     private void OnAnimationFinished(Player player)
     {
-        player.animatedSpriteNode.Disconnect("animation_finished", this, nameof(OnAnimationFinished));
+        player.animatedSpriteNode.Disconnect("animation_finished", new Callable(this, nameof(OnAnimationFinished)));
         player.lightOccluder.LightMask = lightMask;
         Event.Instance().EmitPlayerDied();
     }
@@ -70,11 +70,11 @@ public class PlayerDyingState : PlayerBaseState
 
     private void CreateExplosion(Player player)
     {
-        var explosion = ExplosionScene.Instance<Explosion>();
+        var explosion = ExplosionScene.Instantiate<Explosion>();
         explosion.player = player;
         explosion.playerTexture = Global.Instance().GetPlayerSprite();
-        explosion.Connect(nameof(Explosion.ObjectDetonated), this, nameof(OnObjectDetonated), flags: (uint)ConnectFlags.Oneshot);
-        explosion.Connect("ready", this, nameof(OnExplosionReady), new Godot.Collections.Array { explosion }, (uint)ConnectFlags.Oneshot);
+        explosion.Connect(nameof(Explosion.ObjectDetonatedEventHandler), new Callable(this, nameof(OnObjectDetonated)), flags: (uint)ConnectFlags.OneShot);
+        explosion.Connect("ready", new Callable(this, nameof(OnExplosionReady)), (uint)ConnectFlags.OneShot);
         player.AddChild(explosion);
         explosion.Owner = player;
     }

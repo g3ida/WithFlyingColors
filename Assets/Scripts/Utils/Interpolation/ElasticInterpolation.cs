@@ -1,6 +1,6 @@
 using Godot;
 using System;
 
-public abstract class ElasticInterpolation : Interpolation
+public abstract partial class ElasticInterpolation : Interpolation
 {
 }

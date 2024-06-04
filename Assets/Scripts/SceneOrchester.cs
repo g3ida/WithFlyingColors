@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class SceneOrchester : Node2D
+public partial class SceneOrchester : Node2D
 {
     public override void _EnterTree()
     {
@@ -40,14 +40,14 @@ public class SceneOrchester : Node2D
 
     private void ConnectSignals()
     {
-        Event.Instance().Connect("player_died", this, nameof(OnGameOver));
-        Event.Instance().Connect("level_cleared", this, nameof(OnLevelCleared));
+        Event.Instance().Connect("player_died", new Callable(this, nameof(OnGameOver)));
+        Event.Instance().Connect("level_cleared", new Callable(this, nameof(OnLevelCleared)));
     }
 
     private void DisconnectSignals()
     {
-        Event.Instance().Disconnect("player_died", this, nameof(OnGameOver));
-        Event.Instance().Disconnect("level_cleared", this, nameof(OnLevelCleared));
+        Event.Instance().Disconnect("player_died", new Callable(this, nameof(OnGameOver)));
+        Event.Instance().Disconnect("level_cleared", new Callable(this, nameof(OnLevelCleared)));
     }
 
     private void OnGameOver()
@@ -57,7 +57,7 @@ public class SceneOrchester : Node2D
 
     private void SetupSceneGame(PackedScene sceneResource, bool tryLoad)
     {
-        var sceneInstance = sceneResource.Instance();
+        var sceneInstance = sceneResource.Instantiate();
         AddChild(sceneInstance);
         sceneInstance.Owner = this;
 

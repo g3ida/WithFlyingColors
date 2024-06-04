@@ -1,10 +1,10 @@
 using Godot;
 using System;
 
-public class SaveSlot : PanelContainer
+public partial class SaveSlot : PanelContainer
 {
     [Signal]
-    public delegate void pressed(string action);
+    public delegate void pressedEventHandler(string action);
 
     public enum State { INIT, DEFAULT, FOCUS, ACTIONS_SHOWN }
 
@@ -45,7 +45,7 @@ public class SaveSlot : PanelContainer
         _buttonNode = GetNode<Button>("Button");
         _animationPlayerNode = GetNode<AnimationPlayer>("AnimationPlayer");
 
-        _posX = RectPosition.x;
+        _posX = Position.X;
 
         SetTexture(_texture);
         SetTimestamp(_timestamp);
@@ -53,10 +53,10 @@ public class SaveSlot : PanelContainer
         SetSlotIndexLabel(_id);
         SetBgColor(_bgColor);
         SetState(State.DEFAULT);
-        RectMinSize = new Vector2(MIN_WIDTH, RectMinSize.y);
+        CustomMinimumSize = new Vector2(MIN_WIDTH, CustomMinimumSize.Y);
     }
 
-    public ImageTexture Texture
+    public ImageTexture Texture2D
     {
         get => _texture;
         set => SetTexture(value);
@@ -132,11 +132,11 @@ public class SaveSlot : PanelContainer
         else if (_currentState == State.ACTIONS_SHOWN)
         {
             SetState(State.FOCUS);
-            EmitSignal(nameof(pressed), "focus");
+            EmitSignal(nameof(pressedEventHandler), "focus");
         }
     }
 
-    public override void _Process(float delta)
+    public override void _Process(double delta)
     {
         if (GetHasFocus())
         {
@@ -241,12 +241,12 @@ public class SaveSlot : PanelContainer
 
     private void _on_ActionButtons_clear_button_pressed(int slotIndex)
     {
-        EmitSignal(nameof(pressed), "delete");
+        EmitSignal(nameof(pressedEventHandler), "delete");
     }
 
     private void _on_ActionButtons_select_button_pressed(int slotIndex)
     {
-        EmitSignal(nameof(pressed), "select");
+        EmitSignal(nameof(pressedEventHandler), "select");
         HideActionButtons();
     }
 
@@ -275,7 +275,7 @@ public class SaveSlot : PanelContainer
     {
         var stylePath = state ? "res://Assets/Styles/greyPanelWithBorder.tres" : "res://Assets/Styles/greyPanelWithBorderTransparent.tres";
         var style = (StyleBox)GD.Load(stylePath);
-        RemoveStyleboxOverride("panel");
-        AddStyleboxOverride("panel", style);
+        RemoveThemeStyleboxOverride("panel");
+        AddThemeStyleboxOverride("panel", style);
     }
 }

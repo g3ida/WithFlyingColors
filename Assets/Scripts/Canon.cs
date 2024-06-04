@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class Canon : Node2D
+public partial class Canon : Node2D
 {
     [Export]
     public string followNodeName { get; set; }
@@ -63,7 +63,7 @@ public class Canon : Node2D
 
     private Node2D SpawnBullet()
     {
-        Node2D bullet = (Node2D)bullet_scene.Instance();
+        Node2D bullet = bullet_scene.Instantiate<Node2D>();
         bullet.GlobalPosition = CanonMuzzle.GlobalPosition;
         GetParent().AddChild(bullet);
         bullet.Owner = GetParent();
@@ -101,7 +101,7 @@ public class Canon : Node2D
         return !(targetAngle > VIEW_LIMIT_1 || targetAngle < VIEW_LIMIT_2) && distanceSquared < DISTANCE_LIMIT * DISTANCE_LIMIT;
     }
 
-    public override void _PhysicsProcess(float delta)
+    public override void _PhysicsProcess(double delta)
     {
         Vector2 direction = follow.GlobalPosition - CanonMuzzle.GlobalPosition;
         angle = CanonNode.Rotation + Mathf.Pi / 2.0f;
@@ -110,12 +110,12 @@ public class Canon : Node2D
 
         if (CanFollow(targetAngle, direction.LengthSquared()))
         {
-            float amount = ANGULAR_VELOCITY * delta;
+            float amount = ANGULAR_VELOCITY * (float)delta;
             if (Mathf.Abs(rotationAmount) < Mathf.Abs(amount))
             {
                 amount = rotationAmount;
             }
-            CanonNode.Rotate(rotationAmount * delta);
+            CanonNode.Rotate(rotationAmount * (float)delta);
         }
 
         if (Mathf.Abs(targetAngle - angle) < SHOOT_PRECISION && canShoot)

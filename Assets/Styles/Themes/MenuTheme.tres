@@ -1,46 +1,54 @@
-[gd_resource type="Theme" load_steps=13 format=2]
+[gd_resource type="Theme" load_steps=13 format=3 uid="uid://ccmgef5cebsxv"]
 
-[ext_resource path="res://Assets/Fonts/HeavyEquipment.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://Assets/Sprites/UI/checkbox_checked.png" type="Texture" id=2]
-[ext_resource path="res://Assets/Sprites/UI/checkbox_unchecked.png" type="Texture" id=3]
-[ext_resource path="res://Assets/Styles/TabContainerBackground.tres" type="StyleBox" id=4]
-[ext_resource path="res://Assets/Sprites/MainMenu/empty_close_button.png" type="Texture" id=5]
-[ext_resource path="res://Assets/Sprites/MainMenu/slider-grabber.png" type="Texture" id=6]
+[ext_resource type="FontFile" uid="uid://e6iodry72ny8" path="res://Assets/Fonts/HeavyEquipment.ttf" id="1"]
+[ext_resource type="Texture2D" uid="uid://ckjfrltgb6mvr" path="res://Assets/Sprites/UI/checkbox_checked.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://bcdofkgpgxc0s" path="res://Assets/Sprites/UI/checkbox_unchecked.png" id="3"]
+[ext_resource type="StyleBox" path="res://Assets/Styles/TabContainerBackground.tres" id="4"]
+[ext_resource type="Texture2D" uid="uid://bixr4bvoq3pm2" path="res://Assets/Sprites/MainMenu/empty_close_button.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://d2c4rteukjibt" path="res://Assets/Sprites/MainMenu/slider-grabber.png" id="6"]
 
-[sub_resource type="StyleBoxEmpty" id=2]
+[sub_resource type="StyleBoxEmpty" id="2"]
 
-[sub_resource type="StyleBoxEmpty" id=5]
+[sub_resource type="StyleBoxEmpty" id="5"]
 
-[sub_resource type="StyleBoxEmpty" id=3]
+[sub_resource type="StyleBoxEmpty" id="3"]
 
-[sub_resource type="StyleBoxTexture" id=4]
+[sub_resource type="StyleBoxTexture" id="4"]
 
-[sub_resource type="StyleBoxEmpty" id=6]
+[sub_resource type="StyleBoxEmpty" id="6"]
 content_margin_left = 20.0
-content_margin_right = 20.0
 content_margin_top = 10.0
+content_margin_right = 20.0
 content_margin_bottom = 10.0
 
-[sub_resource type="DynamicFont" id=1]
-size = 60
-font_data = ExtResource( 1 )
+[sub_resource type="FontFile" id="1"]
+fallbacks = Array[Font]([ExtResource("1")])
+face_index = null
+embolden = null
+transform = null
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
 [resource]
-default_font = SubResource( 1 )
-Button/colors/font_color = Color( 0.176471, 0.176471, 0.176471, 1 )
-Button/styles/focus = SubResource( 2 )
-Button/styles/hover = SubResource( 5 )
-Button/styles/normal = SubResource( 3 )
-Button/styles/pressed = SubResource( 4 )
-CheckBox/icons/checked = ExtResource( 2 )
-CheckBox/icons/unchecked = ExtResource( 3 )
-HSlider/icons/grabber = ExtResource( 6 )
-HSlider/icons/grabber_disabled = ExtResource( 6 )
-HSlider/icons/grabber_highlight = ExtResource( 6 )
-HSlider/icons/tick = ExtResource( 5 )
-Label/colors/font_color = Color( 0.176471, 0.176471, 0.176471, 1 )
-TabContainer/colors/font_color_bg = Color( 0.392157, 0.392157, 0.392157, 1 )
-TabContainer/colors/font_color_fg = Color( 0.176471, 0.176471, 0.176471, 1 )
-TabContainer/styles/panel = ExtResource( 4 )
-TabContainer/styles/tab_bg = SubResource( 6 )
-TabContainer/styles/tab_fg = ExtResource( 4 )
+default_font = SubResource("1")
+Button/colors/font_color = Color(0.176471, 0.176471, 0.176471, 1)
+Button/styles/focus = SubResource("2")
+Button/styles/hover = SubResource("5")
+Button/styles/normal = SubResource("3")
+Button/styles/pressed = SubResource("4")
+CheckBox/icons/checked = ExtResource("2")
+CheckBox/icons/unchecked = ExtResource("3")
+HSlider/icons/grabber = ExtResource("6")
+HSlider/icons/grabber_disabled = ExtResource("6")
+HSlider/icons/grabber_highlight = ExtResource("6")
+HSlider/icons/tick = ExtResource("5")
+Label/colors/font_color = Color(0.176471, 0.176471, 0.176471, 1)
+TabContainer/colors/font_color_bg = Color(0.392157, 0.392157, 0.392157, 1)
+TabContainer/colors/font_color_fg = Color(0.176471, 0.176471, 0.176471, 1)
+TabContainer/styles/panel = ExtResource("4")
+TabContainer/styles/tab_bg = SubResource("6")
+TabContainer/styles/tab_fg = ExtResource("4")

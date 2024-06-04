@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class CameraLocalizer : Node2D
+public partial class CameraLocalizer : Node2D
 {
     private static readonly CameraLimit[] X_AXIS_LIMITS = 
     {
@@ -28,7 +28,7 @@ public class CameraLocalizer : Node2D
     [Export] public bool limit_x_axis_to_view_size = false;
     [Export] public bool limit_y_axis_to_view_size = false;
 
-    private List<Position2D> positionsNodes = new List<Position2D>();
+    private List<Marker2D> positionsNodes = new List<Marker2D>();
     private List<Area2D> areaNodes = new List<Area2D>();
 
     private int top;
@@ -40,14 +40,14 @@ public class CameraLocalizer : Node2D
     {
         foreach (Node child in GetChildren())
         {
-            if (child is Position2D position2D)
+            if (child is Marker2D position2D)
             {
                 positionsNodes.Add(position2D);
             }
             else if (child is Area2D area2D)
             {
                 areaNodes.Add(area2D);
-                area2D.Connect("body_entered", this, nameof(_OnBodyEntered));
+                area2D.Connect("body_entered", new Callable(this, nameof(_OnBodyEntered)));
             }
         }
         SetupLimiting();
@@ -66,10 +66,10 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    top = (int)Mathf.Min(positionsNodes[0].GlobalPosition.y, positionsNodes[1].GlobalPosition.y);
-                    bottom = (int)Mathf.Max(positionsNodes[0].GlobalPosition.y, positionsNodes[1].GlobalPosition.y);
-                    left = (int)Mathf.Min(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
-                    right = (int)Mathf.Max(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
+                    top = (int)Mathf.Min(positionsNodes[0].GlobalPosition.Y, positionsNodes[1].GlobalPosition.Y);
+                    bottom = (int)Mathf.Max(positionsNodes[0].GlobalPosition.Y, positionsNodes[1].GlobalPosition.Y);
+                    left = (int)Mathf.Min(positionsNodes[0].GlobalPosition.X, positionsNodes[1].GlobalPosition.X);
+                    right = (int)Mathf.Max(positionsNodes[0].GlobalPosition.X, positionsNodes[1].GlobalPosition.X);
                 }
                 break;
             case CameraLimit.LIMIT_BOTTOM_RIGHT:
@@ -79,8 +79,8 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    bottom = (int)positionsNodes[0].GlobalPosition.y;
-                    right = (int)positionsNodes[0].GlobalPosition.x;
+                    bottom = (int)positionsNodes[0].GlobalPosition.Y;
+                    right = (int)positionsNodes[0].GlobalPosition.X;
                 }
                 break;
             case CameraLimit.LIMIT_BOTTOM_LEFT:
@@ -90,8 +90,8 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    bottom = (int)positionsNodes[0].GlobalPosition.y;
-                    left = (int)positionsNodes[0].GlobalPosition.x;
+                    bottom = (int)positionsNodes[0].GlobalPosition.Y;
+                    left = (int)positionsNodes[0].GlobalPosition.X;
                 }
                 break;
             case CameraLimit.LIMIT_TOP_RIGHT:
@@ -101,8 +101,8 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    top = (int)positionsNodes[0].GlobalPosition.y;
-                    right = (int)positionsNodes[0].GlobalPosition.x;
+                    top = (int)positionsNodes[0].GlobalPosition.Y;
+                    right = (int)positionsNodes[0].GlobalPosition.X;
                 }
                 break;
             case CameraLimit.LIMIT_TOP_LEFT:
@@ -112,8 +112,8 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    top = (int)positionsNodes[0].GlobalPosition.y;
-                    left = (int)positionsNodes[0].GlobalPosition.x;
+                    top = (int)positionsNodes[0].GlobalPosition.Y;
+                    left = (int)positionsNodes[0].GlobalPosition.X;
                 }
                 break;
             case CameraLimit.LIMIT_X_AXIS:
@@ -123,8 +123,8 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    left = (int)Math.Min(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
-                    right = (int)Math.Max(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
+                    left = (int)Math.Min(positionsNodes[0].GlobalPosition.X, positionsNodes[1].GlobalPosition.X);
+                    right = (int)Math.Max(positionsNodes[0].GlobalPosition.X, positionsNodes[1].GlobalPosition.X);
                 }
                 break;
             case CameraLimit.LIMIT_Y_AXIS:
@@ -134,8 +134,8 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    top = (int)Math.Min(positionsNodes[0].GlobalPosition.y, positionsNodes[1].GlobalPosition.y);
-                    bottom = (int)Math.Max(positionsNodes[0].GlobalPosition.y, positionsNodes[1].GlobalPosition.y);
+                    top = (int)Math.Min(positionsNodes[0].GlobalPosition.Y, positionsNodes[1].GlobalPosition.Y);
+                    bottom = (int)Math.Max(positionsNodes[0].GlobalPosition.Y, positionsNodes[1].GlobalPosition.Y);
                 }
                 break;
             case CameraLimit.LIMIT_ALL_BUT_TOP:
@@ -145,9 +145,9 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    bottom = (int)Math.Max(positionsNodes[0].GlobalPosition.y, positionsNodes[1].GlobalPosition.y);
-                    left = (int)Math.Min(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
-                    right = (int)Math.Max(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
+                    bottom = (int)Math.Max(positionsNodes[0].GlobalPosition.Y, positionsNodes[1].GlobalPosition.Y);
+                    left = (int)Math.Min(positionsNodes[0].GlobalPosition.X, positionsNodes[1].GlobalPosition.X);
+                    right = (int)Math.Max(positionsNodes[0].GlobalPosition.X, positionsNodes[1].GlobalPosition.X);
                 }
                 break;
             case CameraLimit.LIMIT_ALL_BUT_BOTTOM:
@@ -157,9 +157,9 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    top = (int)Math.Min(positionsNodes[0].GlobalPosition.y, positionsNodes[1].GlobalPosition.y);
-                    left = (int)Math.Min(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
-                    right = (int)Math.Max(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
+                    top = (int)Math.Min(positionsNodes[0].GlobalPosition.Y, positionsNodes[1].GlobalPosition.Y);
+                    left = (int)Math.Min(positionsNodes[0].GlobalPosition.X, positionsNodes[1].GlobalPosition.X);
+                    right = (int)Math.Max(positionsNodes[0].GlobalPosition.X, positionsNodes[1].GlobalPosition.X);
                 }
                 break;
             case CameraLimit.LIMIT_ALL_BUT_LEFT:
@@ -169,9 +169,9 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    top = (int)Math.Min(positionsNodes[0].GlobalPosition.y, positionsNodes[1].GlobalPosition.y);
-                    bottom = (int)Math.Max(positionsNodes[0].GlobalPosition.y, positionsNodes[1].GlobalPosition.y);
-                    right = (int)Math.Max(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
+                    top = (int)Math.Min(positionsNodes[0].GlobalPosition.Y, positionsNodes[1].GlobalPosition.Y);
+                    bottom = (int)Math.Max(positionsNodes[0].GlobalPosition.Y, positionsNodes[1].GlobalPosition.Y);
+                    right = (int)Math.Max(positionsNodes[0].GlobalPosition.X, positionsNodes[1].GlobalPosition.X);
                 }
                 break;
             case CameraLimit.LIMIT_ALL_BUT_RIGHT:
@@ -181,9 +181,9 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    top = (int)Math.Min(positionsNodes[0].GlobalPosition.y, positionsNodes[1].GlobalPosition.y);
-                    bottom = (int)Math.Max(positionsNodes[0].GlobalPosition.y, positionsNodes[1].GlobalPosition.y);
-                    left = (int)Math.Min(positionsNodes[0].GlobalPosition.x, positionsNodes[1].GlobalPosition.x);
+                    top = (int)Math.Min(positionsNodes[0].GlobalPosition.Y, positionsNodes[1].GlobalPosition.Y);
+                    bottom = (int)Math.Max(positionsNodes[0].GlobalPosition.Y, positionsNodes[1].GlobalPosition.Y);
+                    left = (int)Math.Min(positionsNodes[0].GlobalPosition.X, positionsNodes[1].GlobalPosition.X);
                 }
                 break;
             case CameraLimit.LIMIT_LEFT:
@@ -193,7 +193,7 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    left = (int)positionsNodes[0].GlobalPosition.x;
+                    left = (int)positionsNodes[0].GlobalPosition.X;
                 }
                 break;
             case CameraLimit.LIMIT_RIGHT:
@@ -203,7 +203,7 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    right = (int)positionsNodes[0].GlobalPosition.x;
+                    right = (int)positionsNodes[0].GlobalPosition.X;
                 }
                 break;
             case CameraLimit.LIMIT_TOP:
@@ -213,7 +213,7 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    top = (int)positionsNodes[0].GlobalPosition.y;
+                    top = (int)positionsNodes[0].GlobalPosition.Y;
                 }
                 break;
             case CameraLimit.LIMIT_BOTTOM:
@@ -223,7 +223,7 @@ public class CameraLocalizer : Node2D
                 }
                 else
                 {
-                    bottom = (int)positionsNodes[0].GlobalPosition.y;
+                    bottom = (int)positionsNodes[0].GlobalPosition.Y;
                 }
                 break;
         }
@@ -236,16 +236,16 @@ public class CameraLocalizer : Node2D
 
         if (limit_x_axis_to_view_size && X_AXIS_LIMITS.Contains(position_clipping_mode))
         {
-            float diff = (right - left) * invZoom - viewportRect.x;
+            float diff = (right - left) * invZoom - viewportRect.X;
             left += (int)(diff * 0.5f * zoom);
-            right = left + (int)(viewportRect.x * zoom);
+            right = left + (int)(viewportRect.X * zoom);
         }
 
         if (limit_y_axis_to_view_size && Y_AXIS_LIMITS.Contains(position_clipping_mode))
         {
-            float diff = (bottom - top) * invZoom - viewportRect.y;
+            float diff = (bottom - top) * invZoom - viewportRect.Y;
             bottom -= (int)(diff * 0.5f * zoom);
-            top = bottom - (int)(viewportRect.y * zoom);
+            top = bottom - (int)(viewportRect.Y * zoom);
         }
     }
 

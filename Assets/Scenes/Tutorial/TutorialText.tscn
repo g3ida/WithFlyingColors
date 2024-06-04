@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://Assets/Fonts/KeyboardButton.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Assets/Fonts/KeyboardButton.tres" type="FontFile" id=1]
 
 [node name="Tutorial Text" type="Label"]
-margin_right = 126.0
-margin_bottom = 51.0
-custom_fonts/font = ExtResource( 1 )
+offset_right = 126.0
+offset_bottom = 51.0
+theme_override_fonts/font = ExtResource( 1 )

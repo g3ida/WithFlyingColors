@@ -1,6 +1,6 @@
 using Godot;
 
-public class SceneCard : Control
+public partial class SceneCard : Control
 {
     [Export]
     public string LevelName 
@@ -58,7 +58,7 @@ public class SceneCard : Control
 
     private void _on_Button_pressed()
     {
-        Event.Instance().EmitSignal("menu_button_pressed", MenuButtons.SELECT_LEVEL);
+        Event.Instance().EmitMenuButtonPressed(MenuButtons.SELECT_LEVEL);
         GetParent().GetParent<GameMenu>().NavigateToLevelScreen(levelScene);
     }
 

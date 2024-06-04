@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Assets/Shaders/ColorSplash.tres" type="Shader" id=1]
 [ext_resource path="res://Assets/Scripts/Platforms/SimplePlatform.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Sprites/Platforms/geared-platform.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Sprites/Platforms/geared-platform.png" type="Texture2D" id=3]
 
 [sub_resource type="ShaderMaterial" id=1]
 resource_local_to_scene = true
@@ -14,10 +14,10 @@ shader_param/propagation_speed = 1.0
 shader_param/darkness = 0.78
 
 [sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 39.925, 39.925 )
+size = Vector2( 39.925, 39.925 )
 
 [sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 40, 40 )
+size = Vector2( 40, 40 )
 
 [node name="SimplePlatform" type="StaticBody2D"]
 collision_layer = 4
@@ -29,11 +29,11 @@ __meta__ = {
 
 [node name="NinePatchRect" type="NinePatchRect" parent="."]
 material = SubResource( 1 )
-margin_left = -40.0
-margin_top = -40.0
-margin_right = 40.0
-margin_bottom = 40.0
-rect_pivot_offset = Vector2( 40, 40 )
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+pivot_offset = Vector2( 40, 40 )
 texture = ExtResource( 3 )
 patch_margin_left = 40
 patch_margin_top = 40

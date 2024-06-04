@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerRotationAction: Godot.Object
+public partial class PlayerRotationAction: GodotObject
 {
     private const float DEFAULT_ROTATION_DURATION = 0.1f;
     private CountdownTimer rotationTimer = new CountdownTimer();
@@ -11,7 +11,7 @@ public class PlayerRotationAction: Godot.Object
     private float thetaTarget = 0.0f; // target angle, after the rotation is completed.
     private float thetaPoint = 0.0f; // the calculated angle.
     public bool canRotate = true; // set to false when rotation is in progress.
-    private KinematicBody2D body;
+    private CharacterBody2D body;
 
 
     public PlayerRotationAction()
@@ -19,7 +19,7 @@ public class PlayerRotationAction: Godot.Object
         // FIXME remove this constructor after c# migration
     }
 
-    public void Set(KinematicBody2D _body)
+    public void Set(CharacterBody2D _body)
     {
         rotationTimer.Set(DEFAULT_ROTATION_DURATION, false);
         body = _body;
@@ -62,7 +62,7 @@ public class PlayerRotationAction: Godot.Object
             thetaZero = thetaTarget;
         }
 
-        float unroundedAngle = Mathf.Deg2Rad(Mathf.Rad2Deg(thetaZero + direction * angleRadians)) / angleRadians;
+        float unroundedAngle = Mathf.DegToRad(Mathf.RadToDeg(thetaZero + direction * angleRadians)) / angleRadians;
         if (useRound)
         {
             thetaTarget = Mathf.Round(unroundedAngle) * angleRadians;

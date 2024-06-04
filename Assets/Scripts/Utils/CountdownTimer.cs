@@ -1,7 +1,7 @@
 // Deprecated. use built in timer instead. I was new to godot didn't know it existed :p
 using Godot;
 
-public class CountdownTimer : Node
+public partial class CountdownTimer : Node
 {
     private float duration;
     private float timer;

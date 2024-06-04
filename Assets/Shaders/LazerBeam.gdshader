@@ -1,6 +1,6 @@
 shader_type canvas_item;
 
-uniform sampler2D noise: hint_white;
+uniform sampler2D noise: hint_default_white;
 
 void fragment(){ float speed_factor = TIME / 5.0;
 

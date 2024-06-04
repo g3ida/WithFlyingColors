@@ -2,10 +2,10 @@
 
 [ext_resource path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/Scripts/Menus/StatsMenu/StatsMenu.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Sprites/MainMenu/MenuBkg.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Sprites/MainMenu/MenuBkg.png" type="Texture2D" id=3]
 [ext_resource path="res://Assets/Scripts/Menus/MainMenu/BackButton.cs" type="Script" id=4]
 [ext_resource path="res://Assets/Styles/MenuButtonPressedStyle.tres" type="StyleBox" id=5]
-[ext_resource path="res://Assets/Sprites/MainMenu/ArrowBack.png" type="Texture" id=6]
+[ext_resource path="res://Assets/Sprites/MainMenu/ArrowBack.png" type="Texture2D" id=6]
 [ext_resource path="res://Assets/Scenes/UI/UITransition.tscn" type="PackedScene" id=7]
 
 [sub_resource type="StyleBoxEmpty" id=1]
@@ -16,9 +16,9 @@ anchor_bottom = 1.0
 script = ExtResource( 2 )
 
 [node name="Background" type="TextureRect" parent="."]
-margin_left = -270.0
-margin_right = 2370.0
-margin_bottom = 1080.0
+offset_left = -270.0
+offset_right = 2370.0
+offset_bottom = 1080.0
 texture = ExtResource( 3 )
 
 [node name="GAME" parent="." instance=ExtResource( 1 )]
@@ -31,9 +31,9 @@ underline_shadow_color = Color( 0, 0.776471, 0.843137, 1 )
 hidden_relative_position = Vector2( -900, 0 )
 
 [node name="STATS" parent="." instance=ExtResource( 1 )]
-margin_top = 250.0
-margin_right = 935.0
-margin_bottom = 274.0
+offset_top = 250.0
+offset_right = 935.0
+offset_bottom = 274.0
 text = "STATS"
 content = "STATS"
 underline_color = Color( 0.843137, 1, 0.219608, 1 )
@@ -44,12 +44,12 @@ delay = 0.5
 hidden_relative_position = Vector2( -900, 0 )
 
 [node name="BackButton" type="Button" parent="."]
-margin_left = 50.0
-margin_top = 900.0
-margin_right = 180.0
-margin_bottom = 997.0
-custom_styles/pressed = ExtResource( 5 )
-custom_styles/focus = SubResource( 1 )
+offset_left = 50.0
+offset_top = 900.0
+offset_right = 180.0
+offset_bottom = 997.0
+theme_override_styles/pressed = ExtResource( 5 )
+theme_override_styles/focus = SubResource( 1 )
 icon = ExtResource( 6 )
 flat = true
 script = ExtResource( 4 )

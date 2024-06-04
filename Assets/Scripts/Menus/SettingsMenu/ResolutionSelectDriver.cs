@@ -1,26 +1,26 @@
 using Godot;
 using System.Collections.Generic;
 
-public class ResolutionSelectDriver : UISelectDriver
+public partial class ResolutionSelectDriver : UISelectDriver
 {
-    private List<Vector2> resolutions = new List<Vector2>();
+    private List<Vector2I> resolutions = new List<Vector2I>();
 
     public ResolutionSelectDriver()
     {
-        var vals = new List<Vector2>
+        var vals = new List<Vector2I>
         {
-            new Vector2(1920, 1080),
-            new Vector2(1280, 720),
-            new Vector2(1024, 576),
-            new Vector2(800, 450)
+            new Vector2I(1920, 1080),
+            new Vector2I(1280, 720),
+            new Vector2I(1024, 576),
+            new Vector2I(800, 450)
         };
 
-        var screen_size = OS.GetScreenSize();
+        var screen_size = DisplayServer.ScreenGetSize();
         foreach (var el in vals)
         {
-            if (el.x <= screen_size.x && el.y <= screen_size.y)
+            if (el.X <= screen_size.X && el.Y <= screen_size.Y)
             {
-                items.Add($"{el.x}x{el.y}");
+                items.Add($"{el.X}x{el.Y}");
                 item_values.Add(el);
                 resolutions.Add(el);
             }

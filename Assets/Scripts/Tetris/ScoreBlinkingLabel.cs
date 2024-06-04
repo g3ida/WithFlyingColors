@@ -1,6 +1,6 @@
 using Godot;
 
-public class ScoreBlinkingLabel : Label
+public partial class ScoreBlinkingLabel : Label
 {
     private AnimationPlayer animationPlayerNode;
 

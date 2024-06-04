@@ -1,6 +1,6 @@
 using Godot;
 
-public class ScoreBoard : Node2D
+public partial class ScoreBoard : Node2D
 {
     private Label ScoreNode;
     private Label LevelNode;

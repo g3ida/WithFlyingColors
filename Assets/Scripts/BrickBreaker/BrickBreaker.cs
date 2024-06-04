@@ -16,9 +16,9 @@ public partial class BrickBreaker : Node2D, IPersistant
     private Area2D DeathZoneNode;
     private Node2D BricksTileMapNode = null;
     public Node2D BallsContainer;
-    private Position2D BallsSpawnPos;
-    private Position2D BallSpawnPosNode;
-    private Position2D BricksSpawnPosNode;
+    private Marker2D BallsSpawnPos;
+    private Marker2D BallSpawnPosNode;
+    private Marker2D BricksSpawnPosNode;
     private Timer BricksTimerNode;
     private IPowerUpHandler bricksPowerUpHandler;
     private Area2D Checkpoint;
@@ -39,15 +39,15 @@ public partial class BrickBreaker : Node2D, IPersistant
         {"state", (int)BrickBreakerState.STOPPED}
     };
 
-    private SceneTreeTween bricksMoveTweener;
+    private Tween bricksMoveTweener;
 
     public override void _Ready()
     {
         DeathZoneNode = GetNode<Area2D>("DeathZone");
         BallsContainer = GetNode<Node2D>("BallsContainer");
-        BallsSpawnPos = GetNode<Position2D>("BallsContainer/BallSpawnPos");
-        BallSpawnPosNode = GetNode<Position2D>("BallsContainer/BallSpawnPos");
-        BricksSpawnPosNode = GetNode<Position2D>("BricksContainer/BricksSpawnPos");
+        BallsSpawnPos = GetNode<Marker2D>("BallsContainer/BallSpawnPos");
+        BallSpawnPosNode = GetNode<Marker2D>("BallsContainer/BallSpawnPos");
+        BricksSpawnPosNode = GetNode<Marker2D>("BricksContainer/BricksSpawnPos");
         BricksTimerNode = GetNode<Timer>("BricksContainer/LevelUpTimer");
         bricksPowerUpHandler = GetNode<IPowerUpHandler>("BricksContainer/BrickPowerUpHandler");
         Checkpoint = GetNode<Area2D>("CheckpointArea");
@@ -61,7 +61,7 @@ public partial class BrickBreaker : Node2D, IPersistant
 
     public Node2D SpawnBall(string color = "blue")
     {
-        var bouncingBall = BouncingBallScene.Instance<BouncingBall>();
+        var bouncingBall = BouncingBallScene.Instantiate<BouncingBall>();
         bouncingBall.DeathZone = DeathZoneNode;
         bouncingBall.color_group = color;
         BallsContainer.CallDeferred("add_child", bouncingBall);
@@ -77,8 +77,8 @@ public partial class BrickBreaker : Node2D, IPersistant
     {
         if (BricksTileMapNode != null)
         {
-            BricksTileMapNode.Disconnect("bricks_cleared", this, nameof(_OnBricksCleared));
-            BricksTileMapNode.Disconnect("level_cleared", this, nameof(_OnLevelCleared));
+            BricksTileMapNode.Disconnect("bricks_cleared", new Callable(this, nameof(_OnBricksCleared)));
+            BricksTileMapNode.Disconnect("level_cleared", new Callable(this, nameof(_OnLevelCleared)));
             BricksTileMapNode.QueueFree();
             BricksTileMapNode = null;
         }
@@ -86,7 +86,7 @@ public partial class BrickBreaker : Node2D, IPersistant
 
     private Node2D SpawnBricks(bool shouldInstanceBricks = true, bool shouldTranslateDown = true)
     {
-        var bricks = BricksTileMap.Instance<BricksTileMap>();
+        var bricks = BricksTileMap.Instantiate<BricksTileMap>();
         bricks.should_instance_bricks = shouldInstanceBricks;
         bricks.Position = BricksSpawnPosNode.Position + (shouldTranslateDown ? Vector2.Up * BRIKS_TRANSLATION_Y_AMOUNT : Vector2.Zero);
         CallDeferred("add_child", bricks);
@@ -101,18 +101,18 @@ public partial class BrickBreaker : Node2D, IPersistant
 
     private void ConnectSignals()
     {
-        Event.Instance().Connect("checkpoint_reached", this, nameof(_OnCheckpointHit));
-        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
-        Event.Instance().Connect("player_diying", this, nameof(_OnPlayerDying));
-        Event.Instance().Connect("bouncing_ball_removed", this, nameof(_OnBouncingBallRemoved));
+        Event.Instance().Connect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
+        Event.Instance().Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
+        Event.Instance().Connect("player_diying", new Callable(this, nameof(_OnPlayerDying)));
+        Event.Instance().Connect("bouncing_ball_removed", new Callable(this, nameof(_OnBouncingBallRemoved)));
     }
 
     private void DisconnectSignals()
     {
-        Event.Instance().Disconnect("checkpoint_reached", this, nameof(_OnCheckpointHit));
-        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
-        Event.Instance().Disconnect("player_diying", this, nameof(_OnPlayerDying));
-        Event.Instance().Disconnect("bouncing_ball_removed", this, nameof(_OnBouncingBallRemoved));
+        Event.Instance().Disconnect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
+        Event.Instance().Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
+        Event.Instance().Disconnect("player_diying", new Callable(this, nameof(_OnPlayerDying)));
+        Event.Instance().Disconnect("bouncing_ball_removed", new Callable(this, nameof(_OnBouncingBallRemoved)));
     }
 
     public override void _EnterTree()
@@ -216,8 +216,8 @@ public partial class BrickBreaker : Node2D, IPersistant
             await ToSignal(bricksMoveTweener, "finished");
             SpawnBall();
             BricksTimerNode.Start();
-            BricksTileMapNode.Connect("bricks_cleared", this, nameof(_OnBricksCleared));
-            BricksTileMapNode.Connect("level_cleared", this, nameof(_OnLevelCleared));
+            BricksTileMapNode.Connect("bricks_cleared", new Callable(this, nameof(_OnBricksCleared)));
+            BricksTileMapNode.Connect("level_cleared", new Callable(this, nameof(_OnLevelCleared)));
             Global.Instance().Player.CurrentDefaultCornerScaleFactor = FACE_SEPARATOR_SCALE_FACTOR;
         }
     }
@@ -282,8 +282,8 @@ public partial class BrickBreaker : Node2D, IPersistant
         bricksMoveTweener.TweenProperty(
             BricksTileMapNode,
             "position:y",
-            BricksTileMapNode.Position.y + value,
-            duration).From(BricksTileMapNode.Position.y);
+            BricksTileMapNode.Position.Y + value,
+            duration).From(BricksTileMapNode.Position.Y);
     }
 
     private async void _OnBricksCleared()

@@ -2,12 +2,12 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class Piano : Node2D
+public partial class Piano : Node2D
 {
     private PackedScene NotesPointerScene = (PackedScene)ResourceLoader.Load("res://Assets/Scenes/Piano/NextNotePointer.tscn");
     private List<string> notes = new List<string> { "do", "re", "mi", "fa", "sol", "la", "si" };
 
-    private Godot.Collections.Array PianoNotesNodes;
+    private Godot.Collections.Array<Node> PianoNotesNodes;
     private SolfegeBoard SolfegeBoardNode;
     private Node lettersContainerNode;
 
@@ -61,7 +61,7 @@ public class Piano : Node2D
 
     private NextNotePointer _InstanceNotesPointer()
     {
-        var node = NotesPointerScene.Instance();
+        var node = NotesPointerScene.Instantiate();
         lettersContainerNode.AddChild(node);
         node.Owner = lettersContainerNode;
         return node as NextNotePointer;
@@ -79,7 +79,7 @@ public class Piano : Node2D
             var note = _GetNoteNode(newExpectedNote);
             if (note != null)
             {
-                NotesPointerNode.Position = new Vector2(note.Position.x, 0);
+                NotesPointerNode.Position = new Vector2(note.Position.X, 0);
             }
         }
     }
@@ -119,12 +119,12 @@ public class Piano : Node2D
     // FIXME logic after migration should change
     public override void _EnterTree()
     {
-        Event.Instance().Connect("checkpoint_loaded", this, "Reset");
+        Event.Instance().Connect("checkpoint_loaded", new Callable(this, "Reset"));
     }
 
     public override void _ExitTree()
     {
-        Event.Instance().Disconnect("checkpoint_loaded", this, "Reset");
+        Event.Instance().Disconnect("checkpoint_loaded", new Callable(this, "Reset"));
     }
 
     public bool IsStopped()

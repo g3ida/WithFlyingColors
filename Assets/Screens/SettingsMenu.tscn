@@ -2,8 +2,8 @@
 
 [ext_resource path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/SettingsMenu.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Sprites/MainMenu/MenuBkg.png" type="Texture" id=3]
-[ext_resource path="res://Assets/Sprites/MainMenu/ArrowBack.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Sprites/MainMenu/MenuBkg.png" type="Texture2D" id=3]
+[ext_resource path="res://Assets/Sprites/MainMenu/ArrowBack.png" type="Texture2D" id=4]
 [ext_resource path="res://Assets/Scripts/Menus/MainMenu/BackButton.cs" type="Script" id=5]
 [ext_resource path="res://Assets/Styles/MenuButtonPressedStyle.tres" type="StyleBox" id=6]
 [ext_resource path="res://Assets/Scenes/MainMenu/GameSettingsUI.tscn" type="PackedScene" id=7]
@@ -20,13 +20,13 @@
 [node name="Settings" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-rect_pivot_offset = Vector2( -1987, -585 )
+pivot_offset = Vector2( -1987, -585 )
 script = ExtResource( 2 )
 
 [node name="Background" type="TextureRect" parent="."]
-margin_left = -270.0
-margin_right = 2370.0
-margin_bottom = 1080.0
+offset_left = -270.0
+offset_right = 2370.0
+offset_bottom = 1080.0
 texture = ExtResource( 3 )
 
 [node name="GAME" parent="." instance=ExtResource( 1 )]
@@ -39,9 +39,9 @@ underline_shadow_color = Color( 0, 0.776471, 0.843137, 1 )
 hidden_relative_position = Vector2( -900, 0 )
 
 [node name="SETTINGS" parent="." instance=ExtResource( 1 )]
-margin_top = 250.0
-margin_right = 935.0
-margin_bottom = 274.0
+offset_top = 250.0
+offset_right = 935.0
+offset_bottom = 274.0
 text = "SETTINGS"
 content = "SETTINGS"
 underline_color = Color( 0.843137, 1, 0.219608, 1 )
@@ -52,14 +52,14 @@ delay = 0.5
 hidden_relative_position = Vector2( -900, 0 )
 
 [node name="BackButton" type="Button" parent="."]
-margin_left = 50.0
-margin_top = 900.0
-margin_right = 180.0
-margin_bottom = 997.0
+offset_left = 50.0
+offset_top = 900.0
+offset_right = 180.0
+offset_bottom = 997.0
 focus_mode = 0
-custom_styles/pressed = ExtResource( 6 )
-custom_styles/focus = SubResource( 1 )
-enabled_focus_mode = 0
+theme_override_styles/pressed = ExtResource( 6 )
+theme_override_styles/focus = SubResource( 1 )
+focus_mode = 0
 icon = ExtResource( 4 )
 flat = true
 script = ExtResource( 5 )
@@ -71,59 +71,59 @@ hidden_relative_position = Vector2( -900, 0 )
 [node name="TabContainer" type="TabContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 900.0
-margin_top = 90.0
-margin_right = -120.0
-margin_bottom = -90.0
+offset_left = 900.0
+offset_top = 90.0
+offset_right = -120.0
+offset_bottom = -90.0
 theme = ExtResource( 8 )
-custom_constants/side_margin = 0
-tab_align = 2
+theme_override_constants/side_margin = 0
+tab_alignment = 2
 
-[node name="Display" type="Tabs" parent="TabContainer"]
+[node name="Display" type="TabBar" parent="TabContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = 80.0
-focus_neighbour_right = NodePath("../Controller")
+offset_top = 80.0
+focus_neighbor_right = NodePath("../Controller")
 script = ExtResource( 15 )
 
 [node name="SettingsUI" parent="TabContainer/Display" instance=ExtResource( 7 )]
-margin_left = 20.0
-margin_top = 50.0
-margin_right = 20.0
-margin_bottom = 50.0
+offset_left = 20.0
+offset_top = 50.0
+offset_right = 20.0
+offset_bottom = 50.0
 
-[node name="Controller" type="Tabs" parent="TabContainer"]
+[node name="Controller" type="TabBar" parent="TabContainer"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 20.0
-margin_top = 90.0
-margin_right = -20.0
-margin_bottom = -10.0
-focus_neighbour_left = NodePath("../Display")
+offset_left = 20.0
+offset_top = 90.0
+offset_right = -20.0
+offset_bottom = -10.0
+focus_neighbor_left = NodePath("../Display")
 script = ExtResource( 15 )
 
 [node name="ControllerSettings" parent="TabContainer/Controller" instance=ExtResource( 9 )]
-margin_left = 20.0
-margin_top = 50.0
-margin_right = 734.0
-margin_bottom = 485.0
+offset_left = 20.0
+offset_top = 50.0
+offset_right = 734.0
+offset_bottom = 485.0
 
-[node name="Audio" type="Tabs" parent="TabContainer"]
+[node name="Audio" type="TabBar" parent="TabContainer"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 20.0
-margin_top = 90.0
-margin_right = -20.0
-margin_bottom = 10.0
+offset_left = 20.0
+offset_top = 90.0
+offset_right = -20.0
+offset_bottom = 10.0
 script = ExtResource( 15 )
 
 [node name="AudioSettings" parent="TabContainer/Audio" instance=ExtResource( 14 )]
-margin_left = 20.0
-margin_top = 50.0
-margin_right = 734.0
-margin_bottom = 485.0
+offset_left = 20.0
+offset_top = 50.0
+offset_right = 734.0
+offset_bottom = 485.0
 
 [node name="DialogContainer" parent="." instance=ExtResource( 11 )]
 DialogNodePath = NodePath("AcceptDialog")
@@ -133,10 +133,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -576.5
-margin_top = -205.5
-margin_right = 576.5
-margin_bottom = 205.5
+offset_left = -576.5
+offset_top = -205.5
+offset_right = 576.5
+offset_bottom = 205.5
 theme = ExtResource( 12 )
 window_title = ""
 dialog_text = "Please Make sure all input keys are bound correctly."

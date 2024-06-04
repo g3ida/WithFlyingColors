@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerStandingState : PlayerBaseState
+public partial class PlayerStandingState : PlayerBaseState
 {
     private const float RAYCAST_LENGTH = 10.0f;
     private const float RAYCAST_Y_OFFSET = -3.0f; // https://godotengine.org/qa/63336/raycast2d-doesnt-collide-with-tilemap
@@ -15,7 +15,7 @@ public class PlayerStandingState : PlayerBaseState
     protected override void _Enter(Player player)
     {
         player.animatedSpriteNode.Play("idle");
-        player.animatedSpriteNode.Playing = false;
+        player.animatedSpriteNode.Stop();
         Event.Instance().EmitPlayerLand();
         player.can_dash = true;
     }
@@ -43,7 +43,7 @@ public class PlayerStandingState : PlayerBaseState
         }
         else
         {
-            if (Math.Abs(player.velocity.x) < player.speed_unit
+            if (Math.Abs(player.velocity.X) < player.speed_unit
                 && player.player_rotation_state.baseState == PlayerStatesEnum.IDLE)
             {
                 return RaycastFloor(player);
@@ -54,23 +54,26 @@ public class PlayerStandingState : PlayerBaseState
 
     private BaseState<Player> RaycastFloor(Player player)
     {
-        var spaceState = player.GetWorld2d().DirectSpaceState;
+        var spaceState = player.GetWorld2D().DirectSpaceState;
         var playerHalfSize = player.GetCollisionShapeSize() * 0.5f * player.Scale;
 
         int combination = 0;
         int i = 1;
         float[] fromOffsetX = {
-            -playerHalfSize.x,
-            -playerHalfSize.x * SLIPPERING_LIMIT,
-            playerHalfSize.x * SLIPPERING_LIMIT,
-            playerHalfSize.x
+            -playerHalfSize.X,
+            -playerHalfSize.X * SLIPPERING_LIMIT,
+            playerHalfSize.X * SLIPPERING_LIMIT,
+            playerHalfSize.X
         };
 
         foreach (var offset in fromOffsetX)
         {
-            Vector2 from = player.GlobalPosition + new Vector2(offset, playerHalfSize.y + RAYCAST_Y_OFFSET);
+            Vector2 from = player.GlobalPosition + new Vector2(offset, playerHalfSize.Y + RAYCAST_Y_OFFSET);
             Vector2 to = from + new Vector2(0.0f, RAYCAST_LENGTH);
-            var result = spaceState.IntersectRay(from, to, new Godot.Collections.Array { player });
+            var physicsRayQueryParameters = PhysicsRayQueryParameters2D.Create(
+                from, to, exclude: new Godot.Collections.Array<Rid> { player.GetRid() }
+            );
+            var result = spaceState.IntersectRay(physicsRayQueryParameters);
             if (result.Count != 0)
             {
                 combination += i;

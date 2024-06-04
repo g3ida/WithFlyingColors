@@ -2,18 +2,18 @@ using Godot;
 using System;
 using System.Xml.Serialization;
 
-public class LevelClearedMenu : GameMenu
+public partial class LevelClearedMenu : GameMenu
 {
     public override void _Ready()
     {
         base._Ready();
     }
 
-    public override void _Input(InputEvent @event)
+    public override void _Input(InputEvent ev)
     {
-        base._Input(@event);
+        base._Input(ev);
         // Handle input based on input type
-        if (@event is InputEventKey)
+        if (ev is InputEventKey)
         {
             Event.Instance().EmitMenuButtonPressed(MenuButtons.EXIT_LEVEL_CLEAR);
         }

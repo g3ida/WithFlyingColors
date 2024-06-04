@@ -1,10 +1,10 @@
 using Godot;
 using System;
 
-public class PowerUpScript : Node2D
+public partial class PowerUpScript : Node2D
 {
     [Signal]
-    public delegate void is_destroyed(PowerUpScript powerUpScript);
+    public delegate void is_destroyedEventHandler(PowerUpScript powerUpScript);
 
     protected BrickBreaker BrickBreakerNode = null;
     public bool IsIncremental = false; // Player can have multiple instances of this power-up
@@ -16,7 +16,7 @@ public class PowerUpScript : Node2D
 
     public void EmitIsDestroyed()
     {
-        EmitSignal(nameof(is_destroyed), this);
+        EmitSignal(nameof(is_destroyedEventHandler), this);
     }
 
     public virtual bool IsStillRelevant()

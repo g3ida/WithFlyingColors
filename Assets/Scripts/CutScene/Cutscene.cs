@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class Cutscene : Node2D
+public partial class Cutscene : Node2D
 {
     private const float DURATION = 0.1f;
     private const float EXPAND_SIZE = 100;
@@ -17,7 +17,7 @@ public class Cutscene : Node2D
 
     private string currentCutsceneId = null;
     private CutsceneState currentState = CutsceneState.DISABLED;
-    private SceneTreeTween tweener;
+    private Tween tweener;
 
     // Nodes
     private CanvasLayer canvasNode;
@@ -36,20 +36,20 @@ public class Cutscene : Node2D
         bottomRectNode = GetNode<Control>("CanvasLayer/Control/BottomRect");
         timerNode = GetNode<Timer>("Timer");
 
-        bottomReducePosition = bottomRectNode.RectPosition.y;
-        bottomExpandPosition = bottomRectNode.RectPosition.y - EXPAND_SIZE;
+        bottomReducePosition = bottomRectNode.Position.Y;
+        bottomExpandPosition = bottomRectNode.Position.Y - EXPAND_SIZE;
     }
 
     public override void _EnterTree()
     {
-        Event.Instance().Connect("cutscene_request_start", this, nameof(OnCutsceneRequestStart));
-        Event.Instance().Connect("cutscene_request_end", this, nameof(OnCutsceneRequestEnd));
+        Event.Instance().Connect("cutscene_request_start", new Callable(this, nameof(OnCutsceneRequestStart)));
+        Event.Instance().Connect("cutscene_request_end", new Callable(this, nameof(OnCutsceneRequestEnd)));
     }
 
     public override void _ExitTree()
     {
-        Event.Instance().Disconnect("cutscene_request_start", this, nameof(OnCutsceneRequestStart));
-        Event.Instance().Disconnect("cutscene_request_end", this, nameof(OnCutsceneRequestEnd));
+        Event.Instance().Disconnect("cutscene_request_start", new Callable(this, nameof(OnCutsceneRequestStart)));
+        Event.Instance().Disconnect("cutscene_request_end", new Callable(this, nameof(OnCutsceneRequestEnd)));
     }
 
     public bool IsBusy()
@@ -92,7 +92,7 @@ public class Cutscene : Node2D
     {
         tweener?.Kill();
         tweener = CreateTween();
-        tweener.Connect("finished", this, nameof(OnTweenCompleted), flags: (uint)ConnectFlags.Oneshot);
+        tweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);
     }
 
     private void ShowStripes()
@@ -136,14 +136,14 @@ public class Cutscene : Node2D
     public async void ShowSomeNode(Node2D node, float duration = 7.0f, float moveSpeed = 3.2f)
     {
         var cameraLastFocus = Global.Instance().Camera.follow;
-        var cameraLastSpeed = Global.Instance().Camera.SmoothingSpeed;
+        var cameraLastSpeed = Global.Instance().Camera.PositionSmoothingSpeed;
         Event.Instance().EmitCutsceneRequestStart("my_cutscene");
 
         if (node != null)
         {
             Global.Instance().Camera.follow = node;
         }
-        Global.Instance().Camera.SmoothingSpeed = moveSpeed;
+        Global.Instance().Camera.PositionSmoothingSpeed = moveSpeed;
 
         timerNode.WaitTime = duration * 0.6f;
         timerNode.Start();
@@ -155,6 +155,6 @@ public class Cutscene : Node2D
         await ToSignal(timerNode, "timeout");
 
         Event.Instance().EmitCutsceneRequestEnd("my_cutscene");
-        Global.Instance().Camera.SmoothingSpeed = cameraLastSpeed;
+        Global.Instance().Camera.PositionSmoothingSpeed = cameraLastSpeed;
     }
 }

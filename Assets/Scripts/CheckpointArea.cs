@@ -1,10 +1,10 @@
 using Godot;
 using System.Collections.Generic;
 
-public class CheckpointArea : Area2D, IPersistant
+public partial class CheckpointArea : Area2D, IPersistant
 {
     [Signal]
-    public delegate void checkpoint_hit();
+    public delegate void checkpoint_hitEventHandler();
 
     [Export]
     public string color_group { get; set; }
@@ -39,7 +39,7 @@ public class CheckpointArea : Area2D, IPersistant
         {
             _isChecked = true;
             _save_data["is_checked"] = true;
-            EmitSignal(nameof(checkpoint_hit));
+            EmitSignal(nameof(checkpoint_hitEventHandler));
             Event.Instance().EmitCheckpointReached(this);
         }
     }

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class BouncingBallSprite : Sprite
+public partial class BouncingBallSprite : Sprite2D
 {
     public void SetColor(string colorGroup)
     {

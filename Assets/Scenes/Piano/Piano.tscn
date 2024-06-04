@@ -5,13 +5,13 @@
 [ext_resource path="res://Assets/Scenes/Piano/PianoBase.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/Scripts/Piano/Piano.cs" type="Script" id=4]
 [ext_resource path="res://Assets/Scenes/Piano/SolfegeBoard.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Assets/Sprites/Piano/letters/letter-f.png" type="Texture" id=6]
-[ext_resource path="res://Assets/Sprites/Piano/letters/letter-d.png" type="Texture" id=7]
-[ext_resource path="res://Assets/Sprites/Piano/letters/letter-e.png" type="Texture" id=8]
-[ext_resource path="res://Assets/Sprites/Piano/letters/letter-g.png" type="Texture" id=9]
-[ext_resource path="res://Assets/Sprites/Piano/letters/letter-c.png" type="Texture" id=10]
-[ext_resource path="res://Assets/Sprites/Piano/letters/letter-a.png" type="Texture" id=11]
-[ext_resource path="res://Assets/Sprites/Piano/letters/letter-b.png" type="Texture" id=12]
+[ext_resource path="res://Assets/Sprites/Piano/letters/letter-f.png" type="Texture2D" id=6]
+[ext_resource path="res://Assets/Sprites/Piano/letters/letter-d.png" type="Texture2D" id=7]
+[ext_resource path="res://Assets/Sprites/Piano/letters/letter-e.png" type="Texture2D" id=8]
+[ext_resource path="res://Assets/Sprites/Piano/letters/letter-g.png" type="Texture2D" id=9]
+[ext_resource path="res://Assets/Sprites/Piano/letters/letter-c.png" type="Texture2D" id=10]
+[ext_resource path="res://Assets/Sprites/Piano/letters/letter-a.png" type="Texture2D" id=11]
+[ext_resource path="res://Assets/Sprites/Piano/letters/letter-b.png" type="Texture2D" id=12]
 
 [node name="Piano" type="Node2D"]
 script = ExtResource( 4 )
@@ -89,30 +89,30 @@ position = Vector2( 0, -150 )
 [node name="LettersContainer" type="Node2D" parent="."]
 position = Vector2( 0, 108 )
 
-[node name="Letter-A" type="Sprite" parent="LettersContainer"]
+[node name="Letter-A" type="Sprite2D" parent="LettersContainer"]
 position = Vector2( 294, 0 )
 texture = ExtResource( 11 )
 
-[node name="Letter-B" type="Sprite" parent="LettersContainer"]
+[node name="Letter-B" type="Sprite2D" parent="LettersContainer"]
 position = Vector2( 441, 0 )
 texture = ExtResource( 12 )
 
-[node name="Letter-C" type="Sprite" parent="LettersContainer"]
+[node name="Letter-C" type="Sprite2D" parent="LettersContainer"]
 position = Vector2( -441, 0 )
 texture = ExtResource( 10 )
 
-[node name="Letter-D" type="Sprite" parent="LettersContainer"]
+[node name="Letter-D" type="Sprite2D" parent="LettersContainer"]
 position = Vector2( -294, 0 )
 texture = ExtResource( 7 )
 
-[node name="Letter-E" type="Sprite" parent="LettersContainer"]
+[node name="Letter-E" type="Sprite2D" parent="LettersContainer"]
 position = Vector2( -147, 0 )
 texture = ExtResource( 8 )
 
-[node name="Letter-F" type="Sprite" parent="LettersContainer"]
+[node name="Letter-F" type="Sprite2D" parent="LettersContainer"]
 texture = ExtResource( 6 )
 
-[node name="Letter-G" type="Sprite" parent="LettersContainer"]
+[node name="Letter-G" type="Sprite2D" parent="LettersContainer"]
 position = Vector2( 147, 0 )
 texture = ExtResource( 9 )
 

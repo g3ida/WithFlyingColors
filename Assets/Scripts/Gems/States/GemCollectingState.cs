@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class GemCollectingState : GemBaseState
+public partial class GemCollectingState : GemBaseState
 {
     public GemCollectingState() : base()
     {
@@ -23,11 +23,10 @@ public class GemCollectingState : GemBaseState
     {
         if (animName == "gem_collected_animation")
         {
-            Event.Instance().EmitSignal(
-                "gem_collected",
+            Event.Instance().EmitGemCollected(
                 gem.group_name,
-                gem.AnimatedSpriteNode.GetGlobalTransformWithCanvas().origin,
-                gem.AnimatedSpriteNode.Frames);
+                gem.AnimatedSpriteNode.GetGlobalTransformWithCanvas().Origin,
+                gem.AnimatedSpriteNode.SpriteFrames);
             return gem.StatesStore.Collected;
         }
         return null;

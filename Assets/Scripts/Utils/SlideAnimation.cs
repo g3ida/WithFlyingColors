@@ -1,6 +1,6 @@
 using Godot;
 
-public class SlideAnimation : Node2D
+public partial class SlideAnimation : Node2D
 {
     private Node2D thisNode;
     private Vector2 destination;
@@ -35,7 +35,7 @@ public class SlideAnimation : Node2D
         }
 
         float weight = timer / duration;
-        thisNode.Position = thisNode.Position.LinearInterpolate(destination, weight);
+        thisNode.Position = thisNode.Position.Lerp(destination, weight);
 
         if (!notified && thisNode.Position == destination)
         {

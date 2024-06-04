@@ -1,6 +1,6 @@
 using Godot;
 
-public class StatsMenu : GameMenu
+public partial class StatsMenu : GameMenu
 {
     public override void _Ready()
     {

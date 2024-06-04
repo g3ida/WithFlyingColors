@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class MainMenu : GameMenu
+public partial class MainMenu : GameMenu
 {
     private Label currentSlotLabelNode;
     private MenuBox menuBoxNode;

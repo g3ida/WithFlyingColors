@@ -1,6 +1,6 @@
 using Godot;
 
-public class BackButton : Button
+public partial class BackButton : Button
 {
     public override void _Ready()
     {
@@ -9,6 +9,6 @@ public class BackButton : Button
 
     public void UpdatePositionX(float value)
     {
-        RectPosition = new Vector2(value, RectPosition.y);
+        Position = new Vector2(value, Position.Y);
     }
 }

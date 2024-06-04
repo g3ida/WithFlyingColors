@@ -3,12 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Gem : Area2D, IPersistant
+public partial class Gem : Area2D, IPersistant
 {
     [Export]
     public string group_name;
 
-    public Light2D LightNode;
+    public PointLight2D LightNode;
     public AudioStreamPlayer2D ShineNode;
 
     public GemStatesStore StatesStore;
@@ -22,7 +22,7 @@ public class Gem : Area2D, IPersistant
 
     public CollisionPolygon2D CollisionShapeNode;
 
-    public AnimatedSprite AnimatedSpriteNode;
+    public AnimatedSprite2D AnimatedSpriteNode;
 
     public AnimationPlayer AnimationPlayerNode;
 
@@ -31,16 +31,16 @@ public class Gem : Area2D, IPersistant
     public override void _Ready()
     {
         CollisionShapeNode = GetNode<CollisionPolygon2D>("CollisionShape2D");
-        LightNode = GetNode<Light2D>("Light2D");
+        LightNode = GetNode<PointLight2D>("PointLight2D");
         ShineNode = GetNode<AudioStreamPlayer2D>("ShineSfx");
-        AnimatedSpriteNode = GetNode<AnimatedSprite>("AnimatedSprite");
-        AnimationPlayerNode = GetNode<AnimationPlayer>("AnimatedSprite/AnimationPlayer");
+        AnimatedSpriteNode = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        AnimationPlayerNode = GetNode<AnimationPlayer>("AnimatedSprite2D/AnimationPlayer");
 
         AddToGroup(group_name);
         int colorIndex = ColorUtils.GetGroupColorIndex(group_name);
         Color color = ColorUtils.GetLight2Color(colorIndex);
         LightNode.Color = ColorUtils.GetBasicColor(colorIndex);
-        GetNode<AnimatedSprite>("AnimatedSprite").Modulate = color;
+        GetNode<AnimatedSprite2D>("AnimatedSprite2D").Modulate = color;
 
         StatesStore = new GemStatesStore();
         StatesStore.Init(this);
@@ -60,9 +60,9 @@ public class Gem : Area2D, IPersistant
         }
     }
 
-    public override void _PhysicsProcess(float delta)
+    public override void _PhysicsProcess(double delta)
     {
-        GemBaseState state = (GemBaseState)CurrentState.PhysicsUpdate(this, delta);
+        GemBaseState state = (GemBaseState)CurrentState.PhysicsUpdate(this, (float)delta);
         SwitchState(state);
     }
 
@@ -85,14 +85,14 @@ public class Gem : Area2D, IPersistant
 
     private void ConnectSignals()
     {
-        Event.Instance().Connect("checkpoint_reached", this, nameof(_OnCheckpointHit));
-        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Connect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
+        Event.Instance().Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
     }
 
     private void DisconnectSignals()
     {
-        Event.Instance().Disconnect("checkpoint_reached", this, nameof(_OnCheckpointHit));
-        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Disconnect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
+        Event.Instance().Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
     }
 
     public override void _EnterTree()
@@ -122,7 +122,7 @@ public class Gem : Area2D, IPersistant
         SwitchState((GemBaseState)StatesStore.GetState(state));
     }
 
-    public new bool IsInGroup(string grp)
+    public bool IsInGroup(string grp)
     {
         // if the player is dying we don't want to collect it
         if (Global.Instance().Player.IsDying())

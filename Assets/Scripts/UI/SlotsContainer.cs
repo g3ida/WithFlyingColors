@@ -1,10 +1,10 @@
 using Godot;
 using System;
 
-public class SlotsContainer : Control
+public partial class SlotsContainer : Control
 {
     [Signal]
-    public delegate void slot_pressed(int id, string action);
+    public delegate void slot_pressedEventHandler(int id, string action);
 
     [Export]
     public bool centered_on_screen_v = false;
@@ -26,11 +26,11 @@ public class SlotsContainer : Control
         _saveSlots = new SaveSlot[] { _saveSlot1Node, _saveSlot2Node, _saveSlot3Node };
 
         SetProcess(false);
-        RectSize = _boxContainerNode.RectSize;
+        Size = _boxContainerNode.Size;
 
         for (int i = 0; i < _saveSlots.Length; i++)
         {
-            _saveSlots[i].Texture = SaveGame.Instance().LoadSlotImage(i);
+            _saveSlots[i].Texture2D = SaveGame.Instance().LoadSlotImage(i);
             _saveSlots[i]._id = i;
             _saveSlots[i].UpdateMetaData();
             _saveSlots[i].SlotIndexLabel = i;
@@ -47,11 +47,11 @@ public class SlotsContainer : Control
 
         if (centered_on_screen_h)
         {
-            RectPosition = new Vector2((GetViewportRect().Size.x - RectSize.x) * 0.5f, RectPosition.y);
+            Position = new Vector2((GetViewportRect().Size.X - Size.X) * 0.5f, Position.Y);
         }
         if (centered_on_screen_v)
         {
-            RectPosition = new Vector2(RectPosition.x, (GetViewportRect().Size.y - RectSize.y) * 0.5f);
+            Position = new Vector2(Position.X, (GetViewportRect().Size.Y - Size.Y) * 0.5f);
         }
 
         _saveSlots[SaveGame.Instance().currentSlotIndex].SetHasFocus(true);
@@ -61,24 +61,19 @@ public class SlotsContainer : Control
         // _saveSlot3Node.Connect("pressed", this, nameof(OnSaveSlot3Pressed));
     }
 
-    public override void _Process(float delta)
-    {
-        // This method can be used for any per-frame logic if necessary
-    }
-
     private void _on_SaveSlot1_pressed(string action)
     {
-        EmitSignal(nameof(slot_pressed), 0, action);
+        EmitSignal(nameof(slot_pressedEventHandler), 0, action);
     }
 
     private void _on_SaveSlot2_pressed(string action)
     {
-        EmitSignal(nameof(slot_pressed), 1, action);
+        EmitSignal(nameof(slot_pressedEventHandler), 1, action);
     }
 
     private void _on_SaveSlot3_pressed(string action)
     {
-        EmitSignal(nameof(slot_pressed), 2, action);
+        EmitSignal(nameof(slot_pressedEventHandler), 2, action);
     }
 
     public void UpdateSlots()

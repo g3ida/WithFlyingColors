@@ -2,9 +2,9 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class MusicTrackManager : Node2D, IPersistant
+public partial class MusicTrackManager : Node2D, IPersistant
 {
-    public class Track: Godot.Object
+    public partial class Track
     {
         public string Name { get; }
         public AudioStreamPlayer Stream { get; }
@@ -26,7 +26,7 @@ public class MusicTrackManager : Node2D, IPersistant
         FADE_OUT
     }
 
-    private SceneTreeTween fade_tweener;
+    private Tween fade_tweener;
 
     private Dictionary<string, Track> music_pool = new Dictionary<string, Track>();
     private Track current_track = null;
@@ -219,7 +219,7 @@ public class MusicTrackManager : Node2D, IPersistant
     {
         fade_tweener?.Kill();
         fade_tweener = CreateTween();
-        fade_tweener.Connect("finished", this, nameof(OnTweenCompleted), flags: (uint)ConnectFlags.Oneshot);
+        fade_tweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);
     }
 
     private void FadeOut()
@@ -302,13 +302,13 @@ public class MusicTrackManager : Node2D, IPersistant
     public override void _EnterTree()
     {
         // AddToGroup("persist");
-        Event.Instance().Connect("checkpoint_reached", this, nameof(OnCheckpointHit));
-        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
+        Event.Instance().Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
     }
 
     public override void _ExitTree() {
-        Event.Instance().Disconnect("checkpoint_reached", this, nameof(OnCheckpointHit));
-        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
+        Event.Instance().Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
     }
 
     public void load(Dictionary<string, object> save_data)

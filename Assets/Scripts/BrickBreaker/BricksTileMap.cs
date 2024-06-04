@@ -2,18 +2,18 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class BricksTileMap : Node2D
+public partial class BricksTileMap : Node2D
 {
     [Signal]
-    public delegate void bricks_cleared();
+    public delegate void bricks_clearedEventHandler();
 
     [Signal]
-    public delegate void level_cleared(int level);
+    public delegate void level_clearedEventHandler(int level);
 
     [Export]
     public bool should_instance_bricks { get; set; } = true;
 
-    private Godot.Collections.Array _levels;
+    private Godot.Collections.Array<Node> _levels;
     private List<bool> _isLevelCleared;
     private int _leastUnclearedLevel = 0;
 
@@ -60,11 +60,11 @@ public class BricksTileMap : Node2D
 
     private void _EmitLevelCleared(int newUnclearedLevel)
     {
-        EmitSignal(nameof(level_cleared), newUnclearedLevel);
+        EmitSignal(nameof(level_clearedEventHandler), newUnclearedLevel);
     }
 
     private void _EmitBricksCleared()
     {
-        EmitSignal(nameof(bricks_cleared));
+        EmitSignal(nameof(bricks_clearedEventHandler));
     }
 }

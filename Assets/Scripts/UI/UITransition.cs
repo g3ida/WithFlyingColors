@@ -1,12 +1,12 @@
 using Godot;
 
-public class UITransition : Control
+public partial class UITransition : Control
 {
     [Signal]
-    public delegate void entered();
+    public delegate void enteredEventHandler();
 
     [Signal]
-    public delegate void exited();
+    public delegate void exitedEventHandler();
 
     public enum TransitionStates
     {
@@ -22,7 +22,7 @@ public class UITransition : Control
     private Vector2 displayPosition;
     private Vector2 hiddenPosition;
     private TransitionStates currentState = TransitionStates.ENTER_DELAY;
-    private SceneTreeTween tweener;
+    private Tween tweener;
 
     [Export]
     public float time = 0.3f;
@@ -36,7 +36,7 @@ public class UITransition : Control
     public override void _Ready()
     {
         parent = GetParent<Control>();
-        parent.Connect("ready", this, nameof(_prepare), flags: (uint)ConnectFlags.Oneshot);
+        parent.Connect("ready", new Callable(this, nameof(_prepare)), flags: (uint)ConnectFlags.OneShot);
     }
 
     // API: enter(), exit()
@@ -78,7 +78,7 @@ public class UITransition : Control
     {
         tweener?.Kill();
         tweener = CreateTween();
-        tweener.Connect("finished", this, nameof(OnTweenCompleted), flags: (uint)ConnectFlags.Oneshot);
+        tweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);
         tweener.TweenProperty(parent, "rect_position", destinationPos, duration)
               .SetTrans(Tween.TransitionType.Quad)
               .SetEase(Tween.EaseType.InOut);
@@ -86,9 +86,9 @@ public class UITransition : Control
 
     private void _prepare()
     {
-        displayPosition = parent.RectPosition;
-        hiddenPosition = parent.RectPosition + hidden_relative_position;
-        parent.RectPosition = hiddenPosition;
+        displayPosition = parent.Position;
+        hiddenPosition = parent.Position + hidden_relative_position;
+        parent.Position = hiddenPosition;
     }
 
     private void OnTweenCompleted()
@@ -96,7 +96,7 @@ public class UITransition : Control
         if (currentState == TransitionStates.ENTER_DELAY)
         {
             ReallyEnter();
-            EmitSignal(nameof(entered));
+            EmitSignal(nameof(enteredEventHandler));
         }
         else if (currentState == TransitionStates.ENTERING)
         {
@@ -109,7 +109,7 @@ public class UITransition : Control
         else if (currentState == TransitionStates.EXITING)
         {
             currentState = TransitionStates.EXITED;
-            EmitSignal(nameof(exited));
+            EmitSignal(nameof(exitedEventHandler));
         }
     }
 }

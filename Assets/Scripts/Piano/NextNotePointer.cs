@@ -1,9 +1,9 @@
 using Godot;
 
-public class NextNotePointer : Node2D
+public partial class NextNotePointer : Node2D
 {
     private const float SPEED = 20f * Constants.WORLD_TO_SCREEN;
-    private SceneTreeTween tweener;
+    private Tween tweener;
 
     public override void _Ready()
     {

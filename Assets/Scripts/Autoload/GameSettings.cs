@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class GameSettings : Node2D
+public partial class GameSettings : Node2D
 {
     private const string ConfigFilePath = "settings.ini";
     private const float MaxVolume = 0f;
@@ -11,20 +11,44 @@ public class GameSettings : Node2D
 
     public bool Vsync
     {
-        get => OS.VsyncEnabled;
-        set => OS.VsyncEnabled = value;
+        get {
+            switch(DisplayServer.WindowGetVsyncMode()) {
+                case DisplayServer.VSyncMode.Disabled:
+                    return false;
+                case DisplayServer.VSyncMode.Enabled:
+                case DisplayServer.VSyncMode.Mailbox:
+                case DisplayServer.VSyncMode.Adaptive:
+                    return true;
+            }
+            return false;
+            
+        }
+        set  {
+            if (value == true) {
+                DisplayServer.WindowSetVsyncMode(DisplayServer.VSyncMode.Enabled);
+            } else {
+            
+            }
+            DisplayServer.WindowSetVsyncMode(DisplayServer.VSyncMode.Disabled);
+        }
     }
 
     public bool Fullscreen
     {
-        get => OS.WindowFullscreen;
-        set => OS.WindowFullscreen = value;
+        get => DisplayServer.WindowGetMode() == DisplayServer.WindowMode.Fullscreen;
+        set {
+            if (value) {
+                DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
+            } else {
+                DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
+            }
+        }
     }
 
-    public Vector2 WindowSize
+    public Vector2I WindowSize
     {
-        get => OS.WindowSize;
-        set => OS.WindowSize = value;
+        get => DisplayServer.WindowGetSize();
+        set => DisplayServer.WindowSetSize(value);
     }
 
     public float SfxVolume
@@ -90,7 +114,7 @@ public class GameSettings : Node2D
     public void BindActionToKeyboardKey(string action, int scancode)
     {
         // Erase the current action:
-        var actionList = InputMap.GetActionList(action).Cast<InputEvent>();
+        var actionList = InputMap.ActionGetEvents(action).Cast<InputEvent>();
         var inputEvent = InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList);
         if (inputEvent != null)
         {
@@ -101,7 +125,7 @@ public class GameSettings : Node2D
         // Add the new action:
         var newKey = new InputEventKey
         {
-            Scancode = (uint)scancode
+            Keycode = (Godot.Key)scancode
         };
         InputMap.ActionAddEvent(action, newKey);
     }
@@ -109,7 +133,7 @@ public class GameSettings : Node2D
     public void UnbindActionKey(string action)
     {
         // Erase the current action:
-        var actionList = InputMap.GetActionList(action).Cast<InputEvent>();
+        var actionList = InputMap.ActionGetEvents(action).Cast<InputEvent>();
         var inputEvent = InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList);
         if (inputEvent != null)
         {
@@ -137,7 +161,7 @@ public class GameSettings : Node2D
         var gameActions = GetGameActions();
         foreach (var action in gameActions)
         {
-            var actionList = InputMap.GetActionList(action).Cast<InputEvent>();
+            var actionList = InputMap.ActionGetEvents(action).Cast<InputEvent>();
             if (InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList) == null)
             {
                 return false;
@@ -155,11 +179,11 @@ public class GameSettings : Node2D
         foreach (var action in gameActions)
         {
             var key = action;
-            var actionList = InputMap.GetActionList(key).Cast<InputEvent>();
+            var actionList = InputMap.ActionGetEvents(key).Cast<InputEvent>();
             var keyValue = InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList);
             if (keyValue != null)
             {
-                configFile.SetValue("keyboard", key, keyValue.Scancode);
+                configFile.SetValue("keyboard", key, (int)keyValue.Keycode);
             }
             else
             {
@@ -170,7 +194,7 @@ public class GameSettings : Node2D
         // Display settings:
         configFile.SetValue("display", "fullscreen", Fullscreen);
         configFile.SetValue("display", "vsync", Vsync);
-        configFile.SetValue("display", "resolution", $"{WindowSize.x}x{WindowSize.y}");
+        configFile.SetValue("display", "resolution", $"{WindowSize.X}x{WindowSize.Y}");
 
         // Audio settings:
         configFile.SetValue("audio", "sfx_volume", SfxVolume);
@@ -209,7 +233,7 @@ public class GameSettings : Node2D
                     var values = keyValue.ToString().Split('x');
                     if (values.Length == 2)
                     {
-                        WindowSize = new Vector2(float.Parse(values[0]), float.Parse(values[1]));
+                        WindowSize = new Vector2I(int.Parse(values[0]), int.Parse(values[1]));
                     }
                 }
             }

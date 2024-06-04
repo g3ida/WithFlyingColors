@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class TetrisAI : Node
+public partial class TetrisAI : Node
 {
     private const float HEIGHT_WEIGHT = 0.510066f;
     private const float LINES_WEIGHT = 0.760666f;
@@ -127,7 +127,7 @@ public class TetrisAI : Node
         {
             for (int c = 0; c < Constants.TETRIS_POOL_WIDTH; c++)
             {
-                var rotatedPiece = (Tetromino)tetromino.Instance();
+                var rotatedPiece = tetromino.Instantiate<Tetromino>();
                 rotatedPiece._Ready(); //FIXME: why ? just move the logic to constructor 
                 rotatedPiece.SetGrid(grid);
                 rotatedPiece.MoveBy(0, Constants.TETRIS_SPAWN_J);

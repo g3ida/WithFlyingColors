@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class DialogContainer : Control
+public partial class DialogContainer : Control
 {
     private const float TWEEN_DURATION = 0.2f;
 
@@ -26,28 +26,28 @@ public class DialogContainer : Control
     private DialogStates currentState = DialogStates.HIDDEN;
     private List<Button> dialogButtons = new List<Button>();
     private Control lastFocusOwner = null;
-    private SceneTreeTween tweener;
+    private Tween tweener;
 
     public override void _Ready()
     {
-        PauseMode = PauseModeEnum.Process;
+        ProcessMode = ProcessModeEnum.Always;
         ColorRectNode = GetNode<ColorRect>("ColorRect");
         GameMenuNode = GetParent<Control>();
         DialogNode = GetNode<Control>(DialogNodePath);
 
-        shownPosY = DialogNode.RectPosition.y;
+        shownPosY = DialogNode.Position.Y;
         hiddenPosY = shownPosY - 1000;
 
         HideDialog();
-        DialogNode.Connect("hide", this, nameof(StartHidingDialog));
-        DialogNode.Connect("confirmed", this, nameof(StartHidingDialog));
+        DialogNode.Connect("hide", new Callable(this, nameof(StartHidingDialog)));
+        DialogNode.Connect("confirmed", new Callable(this, nameof(StartHidingDialog)));
         dialogButtons = GetDialogButtons();
     }
 
     public override void _ExitTree()
     {
-        DialogNode.Disconnect("hide", this, nameof(StartHidingDialog));
-        DialogNode.Disconnect("confirmed", this, nameof(StartHidingDialog));
+        DialogNode.Disconnect("hide", new Callable(this, nameof(StartHidingDialog)));
+        DialogNode.Disconnect("confirmed", new Callable(this, nameof(StartHidingDialog)));
     }
 
     public void ShowDialog()
@@ -59,7 +59,7 @@ public class DialogContainer : Control
         PrepareTween(shownPosY);
         currentState = DialogStates.SHOWING;
         ShowNodes();
-        lastFocusOwner = GetFocusOwner();
+        lastFocusOwner = GetViewport().GuiGetFocusOwner();
         dialogButtons[0].GrabFocus();
     }
 
@@ -74,7 +74,7 @@ public class DialogContainer : Control
 
     private void HideDialog()
     {
-        DialogNode.RectPosition = new Vector2(DialogNode.RectPosition.x, hiddenPosY);
+        DialogNode.Position = new Vector2(DialogNode.Position.X, hiddenPosY);
         HideNodes();
         GetTree().Paused = false;
         lastFocusOwner?.GrabFocus();
@@ -89,7 +89,7 @@ public class DialogContainer : Control
         GameMenuNode.Set("handle_back_event", true);
     }
 
-    public override void _Input(InputEvent @event)
+    public override void _Input(InputEvent ev)
     {
         if (IsAcceptOrCancelPressed() && IsShownOrShowingState())
         {
@@ -101,7 +101,7 @@ public class DialogContainer : Control
     {
         tweener?.Kill();
         tweener = CreateTween();
-        tweener.Connect("finished", this, nameof(OnTweenCompleted), flags: (uint)ConnectFlags.Oneshot);
+        tweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);
 
         tweener.TweenProperty(DialogNode, "rect_position:y", targetPosY, TWEEN_DURATION)
                .SetTrans(Tween.TransitionType.Linear)
@@ -113,7 +113,7 @@ public class DialogContainer : Control
         if (IsHiddenOrHidingState())
             return;
 
-        Event.Instance().EmitSignal("menu_button_pressed", MenuButtons.CONFIRM_DIALOG);
+        Event.Instance().EmitMenuButtonPressed(MenuButtons.CONFIRM_DIALOG);
         ShowNodes(); // just to make sure they are visible
         currentState = DialogStates.HIDING;
         PrepareTween(hiddenPosY);

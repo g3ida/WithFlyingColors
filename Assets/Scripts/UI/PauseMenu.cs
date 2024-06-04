@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-public class PauseMenu : GameMenu
+public partial class PauseMenu : GameMenu
 {
     private List<PauseMenuButtons> buttons;
 

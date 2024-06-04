@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class CameraShake : Node2D
+public partial class CameraShake : Node2D
 {
     private const Tween.TransitionType TRANS = Tween.TransitionType.Sine;
     private const Tween.EaseType EASE = Tween.EaseType.InOut;
@@ -20,8 +20,6 @@ public class CameraShake : Node2D
         DurationNode = GetNode<Timer>("Duration");
         FrequencyNode = GetNode<Timer>("Frequency");
         camera = GetParent<Camera2D>();
-        tweener = new Tween();
-        AddChild(tweener);
     }
 
     public void Start(float duration = 0.15f, float frequency = 10.0f, float _amplitude = 10, int _priority = 0)
@@ -40,19 +38,18 @@ public class CameraShake : Node2D
 
     private void CameraTweenInterpolate(Vector2 v)
     {
-        if (tweener != null)
-        {
-            tweener.Stop(camera, "offset");
-            tweener.InterpolateProperty(camera, "offset", camera.Offset, v, FrequencyNode.WaitTime, TRANS, EASE);
-            tweener.Start();
-        }
+        tweener?.Kill();
+        tweener = CreateTween();
+        tweener.TweenProperty(camera, "offset", v, FrequencyNode.WaitTime)
+            .SetEase(EASE)
+            .SetTrans(TRANS);
     }
 
     private void NewShake()
     {
         Vector2 rand = new Vector2();
-        rand.x = (float)GD.RandRange(-amplitude, amplitude);
-        rand.y = (float)GD.RandRange(-amplitude, amplitude);
+        rand.X = (float)GD.RandRange(-amplitude, amplitude);
+        rand.Y = (float)GD.RandRange(-amplitude, amplitude);
         CameraTweenInterpolate(rand);
     }
 

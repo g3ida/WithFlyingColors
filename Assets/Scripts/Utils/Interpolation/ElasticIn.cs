@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.ComponentModel;
 
-public class ElasticIn : ElasticInterpolation
+public partial class ElasticIn : ElasticInterpolation
 {
     private float _value;
     private float _power;

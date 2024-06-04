@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Assets/Animations/gem_yellow_frames.tres" type="SpriteFrames" id=1]
 [ext_resource path="res://Assets/Scripts/Gems/Gem.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Sprites/Lightmaps/shine_light.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Sprites/Lightmaps/shine_light.png" type="Texture2D" id=3]
 [ext_resource path="res://Assets/sfx/shine.ogg" type="AudioStream" id=4]
 
 [sub_resource type="Animation" id=4]
@@ -14,8 +14,8 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 0,
 "values": [ Vector2( 0, 0 ) ]
 }
@@ -31,8 +31,8 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0.02, 0.06, 0.09 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
+"times": PackedFloat32Array( 0.02, 0.06, 0.09 ),
+"transitions": PackedFloat32Array( 1, 1, 1 ),
 "update": 0,
 "values": [ Vector2( 0, 0 ), Vector2( 0, 40 ), Vector2( 0, 90 ) ]
 }
@@ -46,19 +46,19 @@ __meta__ = {
 }
 
 [node name="CollisionShape2D" type="CollisionPolygon2D" parent="."]
-polygon = PoolVector2Array( 0, 24, 26, -8, 17, -23, -17, -23, -26, -8 )
+polygon = PackedVector2Array( 0, 24, 26, -8, 17, -23, -17, -23, -26, -8 )
 
-[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 z_index = 101
 frames = ExtResource( 1 )
 frame = 2
 playing = true
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="AnimatedSprite"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="AnimatedSprite2D"]
 anims/RESET = SubResource( 4 )
 anims/gem_collected_animation = SubResource( 3 )
 
-[node name="Light2D" type="Light2D" parent="."]
+[node name="PointLight2D" type="PointLight2D" parent="."]
 texture = ExtResource( 3 )
 texture_scale = 1.25
 range_z_max = 90
@@ -75,4 +75,4 @@ max_distance = 800.0
 bus = "sfx2d"
 
 [connection signal="area_entered" from="." to="." method="_on_Gem_area_entered"]
-[connection signal="animation_finished" from="AnimatedSprite/AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
+[connection signal="animation_finished" from="AnimatedSprite2D/AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

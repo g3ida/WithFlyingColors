@@ -1,6 +1,6 @@
 using Godot;
 
-public class ProtectionArea : StaticBody2D
+public partial class ProtectionArea : StaticBody2D
 {
     public override void _Ready()
     {

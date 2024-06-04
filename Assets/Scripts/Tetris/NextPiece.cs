@@ -2,7 +2,7 @@ using Godot;
 using System;
 
 [Tool]
-public class NextPiece : Node
+public partial class NextPiece : Node
 {
     [Export]
     private PackedScene next_piece;
@@ -16,7 +16,7 @@ public class NextPiece : Node
             RemoveChild(nextPieceNode);
         }
         next_piece = piece;
-        nextPieceNode = (Tetromino)next_piece.Instance();
+        nextPieceNode = next_piece.Instantiate<Tetromino>();
         AddChild(nextPieceNode);
         nextPieceNode.Owner = this;
         nextPieceNode.Position -= GetPieceBounds(nextPieceNode);

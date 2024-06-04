@@ -1,15 +1,15 @@
 using Godot;
 using System;
 
-public class ExplosionElement : RigidBody2D
+public partial class ExplosionElement : RigidBody2D
 {
     private bool _shouldDetonate = false;
     private float _impulse = 0.0f;
 
     public override void _Ready() {}
 
-    public void SetupSprite(Texture texture, int vframes, int hframes, int currentFrame) {
-        var sprite = GetNode<Sprite>("Sprite");
+    public void SetupSprite(Texture2D texture, int vframes, int hframes, int currentFrame) {
+        var sprite = GetNode<Sprite2D>("Sprite2D");
         sprite.Texture = texture;
         sprite.Vframes = vframes;
         sprite.Hframes = hframes;
@@ -30,7 +30,7 @@ public class ExplosionElement : RigidBody2D
         _shouldDetonate = true;
     }
 
-    public override void _IntegrateForces(Physics2DDirectBodyState state) {
+    public override void _IntegrateForces(PhysicsDirectBodyState2D state) {
         if (_shouldDetonate) {
             ApplyCentralImpulse(new Vector2((float)GD.RandRange(-_impulse, _impulse), -_impulse));
             _shouldDetonate = false;

@@ -2,13 +2,13 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class TetrisPool : Node2D
+public partial class TetrisPool : Node2D
 {
     [Signal]
-    public delegate void lines_removed(int count);
+    public delegate void lines_removedEventHandler(int count);
 
     [Signal]
-    public delegate void game_over();
+    public delegate void game_overEventHandler();
 
     private static readonly PackedScene LevelUp = (PackedScene)GD.Load("res://Assets/Scenes/Tetris/LevelUp.tscn");
     private static readonly PackedScene SBlock = (PackedScene)GD.Load("res://Assets/Scenes/Tetris/S_Block.tscn");
@@ -37,23 +37,23 @@ public class TetrisPool : Node2D
     private List<List<Block>> grid; // FIXME: convert this to godot navtive list
     private bool isVirgin = true;
 
-    private Position2D spawnPosNode;
+    private Marker2D spawnPosNode;
     private ScoreBoard scoreBoardNode;
     private Timer shapeWaitTimerNode;
     private Timer removeLinesDurationTimerNode;
     private NextPiece nextPieceNode;
-    private Position2D levelUpPositionNode;
+    private Marker2D levelUpPositionNode;
     private Node2D slidingFloorSliderNode; // FIXME: change type after c# migration
     private Area2D triggerEnterAreaNode;
 
     public override void _Ready()
     {
-        spawnPosNode = GetNode<Position2D>("SpawnPosition");
+        spawnPosNode = GetNode<Marker2D>("SpawnPosition");
         scoreBoardNode = GetNode<ScoreBoard>("ScoreBoard");
         shapeWaitTimerNode = GetNode<Timer>("ShapeWaitTimer");
         removeLinesDurationTimerNode = GetNode<Timer>("RemoveLinesDurationTimer");
         nextPieceNode = GetNode<NextPiece>("NextPiece");
-        levelUpPositionNode = GetNode<Position2D>("LevelUpPosition");
+        levelUpPositionNode = GetNode<Marker2D>("LevelUpPosition");
         slidingFloorSliderNode = GetNode<Node2D>("SlidingFloor/SlidingPlatform");
         triggerEnterAreaNode = GetNode<Area2D>("TriggerEnterArea");
 
@@ -139,7 +139,7 @@ public class TetrisPool : Node2D
         var best = ai.Best(grid, currentTetromino);
         var pos = (int)best["position"];
         var rot = (int)best["rotation"];
-        shape = (Tetromino)currentTetromino.Instance();
+        shape = currentTetromino.Instantiate<Tetromino>();
         shape.SetGrid(grid);
         shape.MoveBy(pos, Constants.TETRIS_SPAWN_J);
         AddChild(shape);
@@ -160,11 +160,11 @@ public class TetrisPool : Node2D
         if (!shape.CanMoveDown())
         {
             isPaused = true;
-            EmitSignal(nameof(game_over));
+            EmitSignal(nameof(game_overEventHandler));
         }
     }
 
-    public override void _PhysicsProcess(float delta)
+    public override void _PhysicsProcess(double delta)
     {
         if (isPaused || nbQueuedLinesToRemove > 0) return;
 
@@ -201,7 +201,7 @@ public class TetrisPool : Node2D
         var lines = DetectLines();
         if (lines.Count > 0)
         {
-            EmitSignal(nameof(lines_removed), lines.Count);
+            EmitSignal(nameof(lines_removedEventHandler), lines.Count);
             Event.Instance().EmitTetrisLinesRemoved();
         }
         foreach (var line in lines)
@@ -308,7 +308,7 @@ public class TetrisPool : Node2D
             AudioManager.Instance().MusicTrackManager.SetPitchScale(1 + (speed - 1) * 0.1f);
             if (level > 1)
             {
-                var levelUpNode = (Node2D)LevelUp.Instance();
+                var levelUpNode = LevelUp.Instantiate<Node2D>();
                 AddChild(levelUpNode);
                 levelUpNode.Owner = this;
                 levelUpNode.Position = levelUpPositionNode.Position;
@@ -316,7 +316,7 @@ public class TetrisPool : Node2D
         }
     }
 
-    private void _on_player_diying(Node area, Vector2 position, string entityType)
+    private void _on_player_diying(Node area, Vector2 position, int entityType)
     {
         isPaused = true;
     }
@@ -353,16 +353,16 @@ public class TetrisPool : Node2D
 
     private void ConnectSignals()
     {
-        Event.Instance().Connect("player_diying", this, nameof(_on_player_diying));
-        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Connect("player_diying", new Callable(this, nameof(_on_player_diying)));
+        Event.Instance().Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
         //Connect(nameof(lines_removed), this, nameof(_on_TetrixPool_lines_removed));
         //Connect(nameof(game_over), this, nameof(_on_TetrixPool_game_over));
     }
 
     private void DisconnectSignals()
     {
-        Event.Instance().Disconnect("player_diying", this, nameof(_on_player_diying));
-        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Disconnect("player_diying", new Callable(this, nameof(_on_player_diying)));
+        Event.Instance().Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
         //Disconnect(nameof(lines_removed), this, nameof(_on_TetrixPool_lines_removed));
         //Disconnect(nameof(game_over), this, nameof(_on_TetrixPool_game_over));
     }

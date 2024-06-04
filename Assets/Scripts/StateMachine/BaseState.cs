@@ -1,6 +1,6 @@
 using Godot;
 
-public abstract class BaseState<T> : Node
+public abstract partial class BaseState<T> : Node
 {
     public BaseState()
     {
@@ -18,7 +18,7 @@ public abstract class BaseState<T> : Node
     {
     }
 
-    public virtual void _Input(T o, InputEvent @event)
+    public virtual void _Input(T o, InputEvent ev)
     {
     }
 

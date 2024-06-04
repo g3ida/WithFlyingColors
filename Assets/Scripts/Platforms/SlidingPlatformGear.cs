@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class SlidingPlatformGear : Sprite
+public partial class SlidingPlatformGear : Sprite2D
 {
     private Vector2 lastPosition;
     private const float RotationSpeed = 0.01f;
@@ -10,22 +10,22 @@ public class SlidingPlatformGear : Sprite
     {
         // Set parent scale so the sprite won't be affected.
         var parentPlatformScale = GetParent().GetParent<Node2D>().Scale;
-        GetParent<Node2D>().Scale = new Vector2(1 / parentPlatformScale.x, 1 / parentPlatformScale.y);
+        GetParent<Node2D>().Scale = new Vector2(1 / parentPlatformScale.X, 1 / parentPlatformScale.Y);
         lastPosition = GlobalPosition;
     }
 
-    public override void _PhysicsProcess(float delta)
+    public override void _PhysicsProcess(double delta)
     {
         var currentPosition = GlobalPosition;
         var deltaPosition = currentPosition - lastPosition;
         lastPosition = currentPosition;
 
         int direction = 0;
-        if (deltaPosition.x > Constants.EPSILON2 || deltaPosition.y > Constants.EPSILON2)
+        if (deltaPosition.X > Constants.EPSILON2 || deltaPosition.Y > Constants.EPSILON2)
         {
             direction = 1;
         }
-        else if (deltaPosition.x < -Constants.EPSILON2 || deltaPosition.y < -Constants.EPSILON2)
+        else if (deltaPosition.X < -Constants.EPSILON2 || deltaPosition.Y < -Constants.EPSILON2)
         {
             direction = -1;
         }

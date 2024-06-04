@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class AudioSettingsUI : Control, IUITab
+public partial class AudioSettingsUI : Control, IUITab
 {
     private UISliderButton SfxSliderNode;
     private UISliderButton MusicSliderNode;

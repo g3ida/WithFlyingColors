@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerDashingState : PlayerBaseState
+public partial class PlayerDashingState : PlayerBaseState
 {
     private static readonly PackedScene DashGhost = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Player/DashGhost.tscn");
     private const float DASH_DURATION = 0.17f;
@@ -23,7 +23,7 @@ public class PlayerDashingState : PlayerBaseState
     protected override void _Enter(Player player)
     {
         player.dashGhostTimerNode.WaitTime = DASH_GHOST_INSTANCE_DELAY;
-        player.dashGhostTimerNode.Connect("timeout", this, "_OnDashGhostTimerTimeout");
+        player.dashGhostTimerNode.Connect("timeout", new Callable(this, "_OnDashGhostTimerTimeout"));
         if (direction == Vector2.Zero)
         {
             permissivenessTimer.Reset();
@@ -47,12 +47,12 @@ public class PlayerDashingState : PlayerBaseState
     {
         if (dashDone)
         {
-            player.velocity.x = 0;
+            player.velocity.X = 0;
         }
         dashTimer.Stop();
         permissivenessTimer.Stop();
         player.dashGhostTimerNode.Stop();
-        player.dashGhostTimerNode.Disconnect("timeout", this, "_OnDashGhostTimerTimeout");
+        player.dashGhostTimerNode.Disconnect("timeout", new Callable(this, "_OnDashGhostTimerTimeout"));
         direction = Vector2.Zero;
     }
 
@@ -74,13 +74,13 @@ public class PlayerDashingState : PlayerBaseState
 
         if (dashDone)
         {
-            if (Mathf.Abs(direction.x) > 0.01f)
+            if (Mathf.Abs(direction.X) > 0.01f)
             {
-                player.velocity.x = DASH_SPEED * direction.x;
+                player.velocity.X = DASH_SPEED * direction.X;
             }
-            if (Mathf.Abs(direction.y) > 0.01f)
+            if (Mathf.Abs(direction.Y) > 0.01f)
             {
-                player.velocity.y = DASH_SPEED * direction.y;
+                player.velocity.Y = DASH_SPEED * direction.Y;
             }
         }
 
@@ -90,7 +90,7 @@ public class PlayerDashingState : PlayerBaseState
         }
         else
         {
-            player.velocity.y = 0;
+            player.velocity.Y = 0;
         }
 
         dashTimer.Step(delta);
@@ -104,27 +104,27 @@ public class PlayerDashingState : PlayerBaseState
         direction = Vector2.Zero;
         if (Input.IsActionPressed("move_right") && Input.IsActionPressed("move_left"))
         {
-            direction.x = 0;
+            direction.X = 0;
         }
         else if (Input.IsActionPressed("move_left"))
         {
-            direction.x = -1;
+            direction.X = -1;
         }
         else if (Input.IsActionPressed("move_right"))
         {
-            direction.x = 1;
+            direction.X = 1;
         }
-        else if (Mathf.Abs(player.velocity.x) > 0.1f)
+        else if (Mathf.Abs(player.velocity.X) > 0.1f)
         {
-            direction.x = 1 * Mathf.Sign(player.velocity.x);
+            direction.X = 1 * Mathf.Sign(player.velocity.X);
         }
         else
         {
-            direction.x = 0;
+            direction.X = 0;
         }
         if (Input.IsActionPressed("down"))
         {
-            direction.y = 1;
+            direction.Y = 1;
         }
     }
 
@@ -135,11 +135,11 @@ public class PlayerDashingState : PlayerBaseState
 
     private void InstanceGhost(Player player)
     {
-        Sprite ghost = (Sprite)DashGhost.Instance();
+        Sprite2D ghost = DashGhost.Instantiate<Sprite2D>();
         ghost.Scale = player.Scale;
         player.GetParent().AddChild(ghost);
         ghost.GlobalPosition = player.GlobalPosition;
-        ghost.Texture = player.animatedSpriteNode.Frames.GetFrame(player.animatedSpriteNode.Animation, player.animatedSpriteNode.Frame);
+        ghost.Texture = player.animatedSpriteNode.SpriteFrames.GetFrameTexture(player.animatedSpriteNode.Animation, player.animatedSpriteNode.Frame);
         ghost.Rotate(player.Rotation);
     }
 }

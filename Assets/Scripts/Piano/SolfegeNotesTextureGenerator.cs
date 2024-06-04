@@ -2,23 +2,23 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class SolfegeNotesTextureGenerator : Node
+public partial class SolfegeNotesTextureGenerator : Node
 {
     public const int SOLFEGE_KEY_OFFSET = 67;
     public const int NOTE_SPRITE_WIDTH = 39;
     public static readonly Color BACKGROUND_COLOR = new Color("fdfbe7");
 
-    public static readonly Texture SOLFEGE_TEXTURE = GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/key-sol.png");
+    public static readonly Texture2D SOLFEGE_TEXTURE = GD.Load<Texture2D>("res://Assets/Sprites/Piano/sheet/key-sol.png");
 
-    private static readonly Dictionary<string, Texture> NOTES_TEXTURES = new Dictionary<string, Texture>
+    private static readonly Dictionary<string, Texture2D> NOTES_TEXTURES = new Dictionary<string, Texture2D>
     {
-        { "do", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/do.png") },
-        { "re", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/re.png") },
-        { "mi", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/mi.png") },
-        { "fa", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/fa.png") },
-        { "sol", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/sol.png") },
-        { "la", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/la.png") },
-        { "si", GD.Load<Texture>("res://Assets/Sprites/Piano/sheet/si.png") }
+        { "do", GD.Load<Texture2D>("res://Assets/Sprites/Piano/sheet/do.png") },
+        { "re", GD.Load<Texture2D>("res://Assets/Sprites/Piano/sheet/re.png") },
+        { "mi", GD.Load<Texture2D>("res://Assets/Sprites/Piano/sheet/mi.png") },
+        { "fa", GD.Load<Texture2D>("res://Assets/Sprites/Piano/sheet/fa.png") },
+        { "sol", GD.Load<Texture2D>("res://Assets/Sprites/Piano/sheet/sol.png") },
+        { "la", GD.Load<Texture2D>("res://Assets/Sprites/Piano/sheet/la.png") },
+        { "si", GD.Load<Texture2D>("res://Assets/Sprites/Piano/sheet/si.png") }
     };
 
     public override void _Ready()
@@ -26,16 +26,16 @@ public class SolfegeNotesTextureGenerator : Node
         // Initialization code if needed
     }
 
-    public Texture CreateFromNotes(String[] notesArray, Vector2 textureSize)
+    public Texture2D CreateFromNotes(String[] notesArray, Vector2 textureSize)
     {
         var notesTextures = GenerateNotesTextureArray(notesArray);
         var texture = GenerateTexture(notesTextures, textureSize);
         return texture;
     }
 
-    private List<Texture> GenerateNotesTextureArray(String[] notesArray)
+    private List<Texture2D> GenerateNotesTextureArray(String[] notesArray)
     {
-        var textureArray = new List<Texture>();
+        var textureArray = new List<Texture2D>();
         foreach (string note in notesArray)
         {
             var texture = NOTES_TEXTURES[note];
@@ -44,23 +44,20 @@ public class SolfegeNotesTextureGenerator : Node
         return textureArray;
     }
 
-    private Texture GenerateTexture(List<Texture> notesTextures, Vector2 textureSize)
+    private Texture2D GenerateTexture(List<Texture2D> notesTextures, Vector2 textureSize)
     {
-        var imageTexture = new ImageTexture();
-        var image = new Image();
-        var format = SOLFEGE_TEXTURE.GetData().GetFormat();
-        image.Create((int)textureSize.x, (int)textureSize.y, false, format);
+        var format = SOLFEGE_TEXTURE.GetImage().GetFormat();
+        var image = Image.Create((int)textureSize.X, (int)textureSize.Y, false, format);
         image.Fill(BACKGROUND_COLOR);
-        var offsetX = (textureSize.x - SOLFEGE_TEXTURE.GetWidth()) * 0.5f;
-        var offsetY = (textureSize.y - SOLFEGE_TEXTURE.GetHeight()) * 0.5f;
-        ImageUtils.BlitTexture(image, SOLFEGE_TEXTURE.GetData(), new Vector2(offsetX, offsetY));
+        int offsetX = (int)((textureSize.X - SOLFEGE_TEXTURE.GetWidth()) * 0.5f);
+        int offsetY = (int)((textureSize.Y - SOLFEGE_TEXTURE.GetHeight()) * 0.5f);
+        ImageUtils.BlitTexture(image, SOLFEGE_TEXTURE.GetImage(), new Vector2I(offsetX, offsetY));
         var noteOffset = SOLFEGE_KEY_OFFSET;
         foreach (var note in notesTextures)
         {
-            ImageUtils.BlitTexture(image, note.GetData(), new Vector2(offsetX + noteOffset, offsetY));
+            ImageUtils.BlitTexture(image, note.GetImage(), new Vector2I(offsetX + noteOffset, offsetY));
             noteOffset += NOTE_SPRITE_WIDTH;
         }
-        imageTexture.CreateFromImage(image);
-        return imageTexture;
+        return ImageTexture.CreateFromImage(image);
     }
 }

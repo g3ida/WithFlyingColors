@@ -1,6 +1,6 @@
 using Godot;
 
-public class NodeOscillator : Node
+public partial class NodeOscillator : Node
 {
     private float timer = 0;
     private Vector2 initialPosition;
@@ -29,6 +29,6 @@ public class NodeOscillator : Node
         {
             timer = 0;
         }
-        node.Position = new Vector2(node.Position.x, initialPosition.y + amplitude * Mathf.Sin(2 * Mathf.Pi * timer / duration));
+        node.Position = new Vector2(node.Position.X, initialPosition.Y + amplitude * Mathf.Sin(2 * Mathf.Pi * timer / duration));
     }
 }

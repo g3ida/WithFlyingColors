@@ -1,15 +1,19 @@
 [remap]
 
-importer="ogg_vorbis"
-type="AudioStreamOGGVorbis"
-path="res://.import/wrong-answer.ogg-8f4ff572fde8c2f80c16182b02f0e571.oggstr"
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bcir3xlxpq58m"
+path="res://.godot/imported/wrong-answer.ogg-8f4ff572fde8c2f80c16182b02f0e571.oggvorbisstr"
 
 [deps]
 
 source_file="res://Assets/sfx/piano/wrong-answer.ogg"
-dest_files=[ "res://.import/wrong-answer.ogg-8f4ff572fde8c2f80c16182b02f0e571.oggstr" ]
+dest_files=["res://.godot/imported/wrong-answer.ogg-8f4ff572fde8c2f80c16182b02f0e571.oggvorbisstr"]
 
 [params]
 
 loop=true
 loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

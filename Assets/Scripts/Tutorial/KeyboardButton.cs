@@ -3,16 +3,16 @@ using System.Linq;
 using Godot;
 
 [Tool]
-public class KeyboardButton : Control
+public partial class KeyboardButton : Control
 {
     private const int MarginsX = 23;
     private const int ButtonWidth = 103;
 
     private readonly uint[] ArrowKeys = { 
-        (uint)KeyList.Right,
-        (uint)KeyList.Down,
-        (uint)KeyList.Left,
-        (uint)KeyList.Up
+        (uint)Key.Right,
+        (uint)Key.Down,
+        (uint)Key.Left,
+        (uint)Key.Up
     };
 
     [Export]
@@ -20,22 +20,22 @@ public class KeyboardButton : Control
 
     private Label _labelNode;
     private NinePatchRect _buttonTextureNode;
-    private Sprite _arrowSpriteNode;
+    private Sprite2D _arrowSpriteNode;
 
     public override void _Ready()
     {
         base._Ready();
         _labelNode = GetNode<Label>("Label");
         _buttonTextureNode = GetNode<NinePatchRect>("NinePatchRect");
-        _arrowSpriteNode = GetNode<Sprite>("Arrow");
+        _arrowSpriteNode = GetNode<Sprite2D>("Arrow");
 
-        var actionList = InputMap.GetActionList(key_text);
+        var actionList = InputMap.ActionGetEvents(key_text);
         if (actionList != null && actionList.Count > 0)
         {
             var key = InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList.Cast<InputEventKey>());
             if (key != null)
             {
-                var index = Array.IndexOf(ArrowKeys, key.Scancode);
+                var index = Array.IndexOf(ArrowKeys, key.Keycode);
                 if (index != -1)
                 {
                     _arrowSpriteNode.Visible = true;
@@ -45,7 +45,7 @@ public class KeyboardButton : Control
                 }
                 else
                 {
-                    _labelNode.Text = OS.GetScancodeString(key.Scancode);
+                    _labelNode.Text = OS.GetKeycodeString(key.Keycode);
                 }
                 _on_Label_resized();
             }
@@ -54,13 +54,13 @@ public class KeyboardButton : Control
 
     private void _on_Label_resized()
     {
-        var width = Mathf.Max(_labelNode.RectSize.x + MarginsX, ButtonWidth);
-        var height = _labelNode.RectSize.y;
+        var width = Mathf.Max(_labelNode.Size.X + MarginsX, ButtonWidth);
+        var height = _labelNode.Size.Y;
 
-        _buttonTextureNode.RectSize = new Vector2(width, height);
-        _buttonTextureNode.RectMinSize = _buttonTextureNode.RectSize;
-        RectSize = _buttonTextureNode.RectSize;
-        RectMinSize = _buttonTextureNode.RectSize;
-        _labelNode.RectPosition = new Vector2((width - _labelNode.RectSize.x) * 0.72f, _labelNode.RectPosition.y);
+        _buttonTextureNode.Size = new Vector2(width, height);
+        _buttonTextureNode.CustomMinimumSize = _buttonTextureNode.Size;
+        Size = _buttonTextureNode.Size;
+        CustomMinimumSize = _buttonTextureNode.Size;
+        _labelNode.Position = new Vector2((width - _labelNode.Size.X) * 0.72f, _labelNode.Position.Y);
     }
 }

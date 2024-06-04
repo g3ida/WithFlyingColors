@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class TabLogic : Tabs
+public partial class TabLogic : TabBar
 {
     private void _on_TabContainer_tab_changed(int tab)
     {

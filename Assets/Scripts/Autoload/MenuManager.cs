@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class MenuManager : Node2D
+public partial class MenuManager : Node2D
 {
 
     private static MenuManager _instance = null;
@@ -87,7 +87,7 @@ public class MenuManager : Node2D
             string scenePath = GetMenuScenePath(nextMenu);
             if (scenePath != null)
             {
-                GetTree().ChangeScene(scenePath);
+                GetTree().ChangeSceneToFile(scenePath);
             }
         }
     }

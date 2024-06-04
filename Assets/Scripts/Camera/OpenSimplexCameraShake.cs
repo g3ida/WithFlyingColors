@@ -1,9 +1,9 @@
 using Godot;
 using System;
 
-public class OpenSimplexCameraShake : Node2D
+public partial class OpenSimplexCameraShake : Node2D
 {
-    [Export] public OpenSimplexNoise noise;
+    [Export] public FastNoiseLite noise;
     [Export(PropertyHint.Range, "0,1")] public float trauma = 0.0f;
 
     [Export] public int max_x = 150;
@@ -26,21 +26,21 @@ public class OpenSimplexCameraShake : Node2D
         trauma = Mathf.Clamp(trauma + trauma_in, 0, 1);
     }
 
-    public override void _Process(float delta)
+    public override void _Process(double delta)
     {
-        time += delta;
+        time += (float)delta;
         float shake = Mathf.Pow(trauma, 2);
         camera.Offset = new Vector2(
-            noise.GetNoise3d(time * time_scale, 0, 0) * max_x * shake,
-            noise.GetNoise3d(0, time * time_scale, 0) * max_y * shake
+            noise.GetNoise3D(time * time_scale, 0, 0) * max_x * shake,
+            noise.GetNoise3D(0, time * time_scale, 0) * max_y * shake
         );
 
         // Need to activate camera rotation for this to function
-        camera.RotationDegrees = noise.GetNoise3d(0, 0, time * time_scale) * max_r * shake;
+        camera.RotationDegrees = noise.GetNoise3D(0, 0, time * time_scale) * max_r * shake;
 
         if (trauma > 0)
         {
-            trauma = Mathf.Clamp(trauma - (delta * decay), 0, 1);
+            trauma = Mathf.Clamp(trauma - ((float)delta * decay), 0, 1);
         }
     }
 }

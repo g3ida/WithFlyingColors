@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class PianoNote : KinematicBody2D
+public partial class PianoNote : CharacterBody2D
 {
     private enum NoteStates
     {
@@ -13,17 +13,17 @@ public class PianoNote : KinematicBody2D
     }
 
     [Signal]
-    public delegate void on_note_pressed(PianoNote note);
+    public delegate void on_note_pressedEventHandler(PianoNote note);
     [Signal]
-    public delegate void on_note_released(PianoNote note);
+    public delegate void on_note_releasedEventHandler(PianoNote note);
 
-    private static readonly Texture PairTexture = GD.Load<Texture>("res://Assets/Sprites/Piano/note_1.png");
-    private static readonly Texture OddTexture = GD.Load<Texture>("res://Assets/Sprites/Piano/note_2.png");
+    private static readonly Texture2D PairTexture = GD.Load<Texture2D>("res://Assets/Sprites/Piano/note_1.png");
+    private static readonly Texture2D OddTexture = GD.Load<Texture2D>("res://Assets/Sprites/Piano/note_2.png");
 
-    private static readonly Texture[] NoteEdgeTextures = {
-        GD.Load<Texture>("res://Assets/Sprites/Piano/note_edge.png"),
-        GD.Load<Texture>("res://Assets/Sprites/Piano/note_edge2.png"),
-        GD.Load<Texture>("res://Assets/Sprites/Piano/note_edge3.png"),
+    private static readonly Texture2D[] NoteEdgeTextures = {
+        GD.Load<Texture2D>("res://Assets/Sprites/Piano/note_edge.png"),
+        GD.Load<Texture2D>("res://Assets/Sprites/Piano/note_edge2.png"),
+        GD.Load<Texture2D>("res://Assets/Sprites/Piano/note_edge3.png"),
     };
 
     private static readonly Vector2 PRESS_OFFSET = new Vector2(0, 25);
@@ -48,7 +48,7 @@ public class PianoNote : KinematicBody2D
 
     private NoteStates current_state = NoteStates.RELEASED;
 
-    private Sprite SpriteNode;
+    private Sprite2D SpriteNode;
     private CollisionShape2D AreaCollisionShapeNode;
     private CollisionShape2D CollisionShapeNode;
     private Timer ResponsivenessTimerNode;
@@ -56,11 +56,11 @@ public class PianoNote : KinematicBody2D
     private Vector2 released_position;
     private Vector2 calculated_position;
 
-    private SceneTreeTween tweener;
+    private Tween tweener;
 
     public override void _Ready()
     {
-        SpriteNode = GetNode<Sprite>("NoteSpr");
+        SpriteNode = GetNode<Sprite2D>("NoteSpr");
         AreaCollisionShapeNode = GetNode<CollisionShape2D>("Area2D/CollisionShape2D");
         CollisionShapeNode = GetNode<CollisionShape2D>("CollisionShape2D");
         ResponsivenessTimerNode = GetNode<Timer>("ResponsivenessTimer");
@@ -72,7 +72,7 @@ public class PianoNote : KinematicBody2D
         SetTexture();
     }
 
-    public override void _PhysicsProcess(float delta)
+    public override void _PhysicsProcess(double delta)
     {
         Position = calculated_position;
         StartReleasingNoteTimerIfRelevant();
@@ -91,10 +91,10 @@ public class PianoNote : KinematicBody2D
 
     private void MoveToPosition(Vector2 dest_position)
     {
-        float duration = Math.Abs(calculated_position.y - dest_position.y) / PRESS_SPEED;
+        float duration = Math.Abs(calculated_position.Y - dest_position.Y) / PRESS_SPEED;
         tweener?.Kill();
         tweener = CreateTween();
-        tweener.Connect("finished", this, nameof(OnTweenCompleted), flags: (uint)ConnectFlags.Oneshot);
+        tweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);
         tweener.TweenProperty(this, "calculated_position", dest_position, duration)
             .From(calculated_position)
             .SetTrans(Tween.TransitionType.Linear)
@@ -169,23 +169,23 @@ public class PianoNote : KinematicBody2D
         if (current_state == NoteStates.PRESSING)
         {
             current_state = NoteStates.PRESSED;
-            EmitSignal(nameof(on_note_pressed), this);
+            EmitSignal(nameof(on_note_pressedEventHandler), this);
         }
         else if (current_state == NoteStates.RELEASING)
         {
             current_state = NoteStates.RELEASED;
-            EmitSignal(nameof(on_note_released), this);
+            EmitSignal(nameof(on_note_releasedEventHandler), this);
         }
     }
 
     private Vector2 GetDetectionAreaShapeSize()
     {
-        return (AreaCollisionShapeNode.Shape as RectangleShape2D).Extents * 2.0f;
+        return (AreaCollisionShapeNode.Shape as RectangleShape2D).Size * 2.0f;
     }
 
     private Vector2 GetCollisionShapeSize()
     {
-        return (CollisionShapeNode.Shape as RectangleShape2D).Extents * 2.0f;
+        return (CollisionShapeNode.Shape as RectangleShape2D).Size * 2.0f;
     }
 
     private List<Dictionary<string, Vector2>> GetRayLinesInGlobalPosition()
@@ -194,15 +194,15 @@ public class PianoNote : KinematicBody2D
         Vector2 note_half_size = GetDetectionAreaShapeSize() * 0.5f * Scale;
         var from_offset_x = new float[]
         {
-            -note_half_size.x,
-            -note_half_size.x * 0.5f,
+            -note_half_size.X,
+            -note_half_size.X * 0.5f,
             0.0f,
-            note_half_size.x * 0.5f,
-            note_half_size.x
+            note_half_size.X * 0.5f,
+            note_half_size.X
         };
         foreach (float offset in from_offset_x)
         {
-            var from = GlobalPosition + new Vector2(offset, -GetCollisionShapeSize().y * 0.5f + RAYCAST_Y_OFFSET);
+            var from = GlobalPosition + new Vector2(offset, -GetCollisionShapeSize().Y * 0.5f + RAYCAST_Y_OFFSET);
             var to = from + new Vector2(0.0f, -RAYCAST_LENGTH);
             rays.Add(new Dictionary<string, Vector2> { { "from", from }, { "to", to } });
         }
@@ -211,14 +211,15 @@ public class PianoNote : KinematicBody2D
 
     private bool RaycastPlayer()
     {
-        var spaceState = GetWorld2d().DirectSpaceState;
+        var spaceState = GetWorld2D().DirectSpaceState;
         var rays = GetRayLinesInGlobalPosition();
         foreach (var ray in rays)
         {
             var from = ray["from"];
             var to = ray["to"];
-            var result = spaceState.IntersectRay(from, to, new Godot.Collections.Array { this });
-            if (result.Count > 0 && result["collider"] == Global.Instance().Player)
+            var physicsRayQueryParameters = PhysicsRayQueryParameters2D.Create(from, to, exclude: new Godot.Collections.Array<Rid> { GetRid() });
+            var result = spaceState.IntersectRay(physicsRayQueryParameters);
+            if (result.Count > 0 && result["collider_id"].As<Rid>() == Global.Instance().Player.GetRid())
             {
                 return true;
             }
@@ -280,7 +281,7 @@ public class PianoNote : KinematicBody2D
         color_group = _color_group;
         int color_index = ColorUtils.GetGroupColorIndex(color_group);
         Color color = ColorUtils.GetBasicColor(color_index);
-        GetNode<Sprite>("NoteEdge").Modulate = color;
+        GetNode<Sprite2D>("NoteEdge").Modulate = color;
         var area = GetNode<Area2D>("ColorArea");
         foreach (string grp in area.GetGroups())
         {
@@ -293,8 +294,8 @@ public class PianoNote : KinematicBody2D
     {
         int scale = (note_index / (NoteEdgeTextures.Length + 1)) % 2 == 0 ? -1 : 1;
         note_edge_index = note_index % NoteEdgeTextures.Length;
-        GetNode<Sprite>("NoteEdge").Texture = NoteEdgeTextures[note_edge_index];
-        GetNode<Sprite>("NoteEdge").Scale = new Vector2(scale, 1);
+        GetNode<Sprite2D>("NoteEdge").Texture = NoteEdgeTextures[note_edge_index];
+        GetNode<Sprite2D>("NoteEdge").Scale = new Vector2(scale, 1);
     }
 
     public int GetNoteEdgeIndex()

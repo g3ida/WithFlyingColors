@@ -6,14 +6,14 @@
 bg_color = Color( 0, 0, 0, 0.176471 )
 
 [node name="Checkbox" type="CheckBox"]
-margin_left = 534.0
-margin_top = 75.0
-margin_right = 582.0
-margin_bottom = 135.0
+offset_left = 534.0
+offset_top = 75.0
+offset_right = 582.0
+offset_bottom = 135.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_constants/check_vadjust = -6
-custom_styles/focus = SubResource( 1 )
+theme_override_constants/check_v_offset = -6
+theme_override_styles/focus = SubResource( 1 )
 script = ExtResource( 1 )
 
 [connection signal="mouse_entered" from="." to="." method="_on_Checkbox_mouse_entered"]

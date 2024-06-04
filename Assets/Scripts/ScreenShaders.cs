@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class ScreenShaders : CanvasLayer
+public partial class ScreenShaders : CanvasLayer
 {
     private enum State { DISABLED, TRANSITION_IN, ENABLED, TRANSITION_OUT }
     
@@ -33,12 +33,12 @@ public class ScreenShaders : CanvasLayer
             simpleBlur.Visible = true;
             darkerShaderAnimationPlayer.Play("Blackout");
             simpleBlurAnimationPlayer.Play("Blur");
-            darkerShaderAnimationPlayer.Connect("animation_finished", this, nameof(OnBlackoutAnimationFinished), flags: (uint)ConnectFlags.Oneshot);
+            darkerShaderAnimationPlayer.Connect("animation_finished", new Callable(this, nameof(OnBlackoutAnimationFinished)), flags: (uint)ConnectFlags.OneShot);
             currentState = State.TRANSITION_IN;
         }
         else if (currentState == State.TRANSITION_OUT)
         {
-            darkerShaderAnimationPlayer.Disconnect("animation_finished", this, nameof(OnBlackoutAnimationReversedFinished));
+            darkerShaderAnimationPlayer.Disconnect("animation_finished", new Callable(this, nameof(OnBlackoutAnimationReversedFinished)));
             currentState = State.DISABLED;
             ActivatePauseShader();
         }
@@ -50,12 +50,12 @@ public class ScreenShaders : CanvasLayer
         {
             darkerShaderAnimationPlayer.PlayBackwards("Blackout");
             simpleBlurAnimationPlayer.PlayBackwards("Blur");
-            darkerShaderAnimationPlayer.Connect("animation_finished", this, nameof(OnBlackoutAnimationReversedFinished), flags: (uint)ConnectFlags.Oneshot);
+            darkerShaderAnimationPlayer.Connect("animation_finished", new Callable(this, nameof(OnBlackoutAnimationReversedFinished)), flags: (uint)ConnectFlags.OneShot);
             currentState = State.TRANSITION_OUT;
         }
         else if (currentState == State.TRANSITION_IN)
         {
-            darkerShaderAnimationPlayer.Disconnect("animation_finished", this, nameof(OnBlackoutAnimationFinished));
+            darkerShaderAnimationPlayer.Disconnect("animation_finished", new Callable(this, nameof(OnBlackoutAnimationFinished)));
             currentState = State.ENABLED;
             DisablePauseShader();
         }

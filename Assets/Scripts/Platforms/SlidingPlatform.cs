@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class SlidingPlatform : Node2D, IPersistant
+public partial class SlidingPlatform : Node2D, IPersistant
 {
     public enum State
     {
@@ -21,12 +21,12 @@ public class SlidingPlatform : Node2D, IPersistant
     [Export] public bool show_gear { get; set; } = true;
     [Export] public bool restore_delayed_stop { get; set; } = false;
 
-    private KinematicBody2D _platform;
+    private CharacterBody2D _platform;
     private Node2D _gearNone;
     private Vector2 _follow;
     private Vector2 _destination;
 
-    private SceneTreeTween _tweener;
+    private Tween _tweener;
     private bool _isTweenLooping = false;
 
     private bool _delayedStop = false;
@@ -49,7 +49,7 @@ public class SlidingPlatform : Node2D, IPersistant
 
     public override void _Ready()
     {
-        _platform = GetParent<KinematicBody2D>();
+        _platform = GetParent<CharacterBody2D>();
         _gearNone = GetNode<Node2D>("Gear");
         _follow = _platform.GlobalPosition;
         _destination = ParseDestination();
@@ -58,11 +58,11 @@ public class SlidingPlatform : Node2D, IPersistant
         ProcessTween();
     }
 
-    public override void _PhysicsProcess(float delta)
+    public override void _PhysicsProcess(double delta)
     {
         if (smooth_landing)
         {
-            _platform.GlobalPosition = _platform.GlobalPosition.LinearInterpolate(_follow, 0.075f);
+            _platform.GlobalPosition = _platform.GlobalPosition.Lerp(_follow, 0.075f);
         }
         else
         {
@@ -74,7 +74,7 @@ public class SlidingPlatform : Node2D, IPersistant
     {
         foreach (Node child in GetChildren())
         {
-            if (child is Position2D pos2D)
+            if (child is Marker2D pos2D)
             {
                 return pos2D.Position * _platform.GlobalScale + _follow;
             }
@@ -129,7 +129,7 @@ public class SlidingPlatform : Node2D, IPersistant
             .SetEase(Tween.EaseType.InOut)
             .SetDelay(wait)
             .From(start)
-            .Connect("finished", this, nameof(OnTweenCompleted), null, (uint)ConnectFlags.Oneshot);
+            .Connect("finished", new Callable(this, nameof(OnTweenCompleted)), (uint)ConnectFlags.OneShot);
     }
 
     public void SetLooping(bool looping)
@@ -143,14 +143,14 @@ public class SlidingPlatform : Node2D, IPersistant
 
     private void ConnectSignals()
     {
-        Event.Instance().Connect("checkpoint_reached", this, nameof(OnCheckpointHit));
-        Event.Instance().Connect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
+        Event.Instance().Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
     }
 
     private void DisconnectSignals()
     {
-        Event.Instance().Disconnect("checkpoint_reached", this, nameof(OnCheckpointHit));
-        Event.Instance().Disconnect("checkpoint_loaded", this, nameof(reset));
+        Event.Instance().Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
+        Event.Instance().Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
     }
 
     public override void _EnterTree()
@@ -171,16 +171,16 @@ public class SlidingPlatform : Node2D, IPersistant
             save_data["state"] = (int)GetNextState(_currentState);
             save_data["is_stopped"] = true;
             save_data["delayed_stop"] = false;
-            save_data["position_x"] = dest.x;
-            save_data["position_y"] = dest.y;
+            save_data["position_x"] = dest.X;
+            save_data["position_y"] = dest.Y;
             save_data["looping"] = _isTweenLooping;
         }
         else
         {
             save_data["state"] = (int)_currentState;
             var dest = GetSourcePosition();
-            save_data["position_x"] = dest.x;
-            save_data["position_y"] = dest.y;
+            save_data["position_x"] = dest.X;
+            save_data["position_y"] = dest.Y;
             save_data["looping"] = _isTweenLooping;
             save_data["is_stopped"] = is_stopped;
             save_data["delayed_stop"] = _delayedStop;

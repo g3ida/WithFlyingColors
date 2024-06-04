@@ -2,22 +2,22 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Godot;
 
-public class SolfegeBoard : Node2D
+public partial class SolfegeBoard : Node2D
 {
     private const float DURATION = 0.8f;
     private PackedScene NotesCursorScene = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Piano/NotesCursor.tscn");
-    private Texture MusicPaperRectTexture = GD.Load<Texture>("res://Assets/Sprites/Piano/music-paper-rect.png");
+    private Texture2D MusicPaperRectTexture = GD.Load<Texture2D>("res://Assets/Sprites/Piano/music-paper-rect.png");
 
     [Signal]
-    public delegate void board_notes_played();
+    public delegate void board_notes_playedEventHandler();
 
     [Signal]
-    public delegate void expected_note_changed(string newExpectedNote);
+    public delegate void expected_note_changedEventHandler(string newExpectedNote);
 
     [Signal]
-    public delegate void wrong_note_played();
+    public delegate void wrong_note_playedEventHandler();
 
-    Sprite MusicPaperRectNode;
+    Sprite2D MusicPaperRectNode;
 
 
     private readonly string[][] PAGES = new string[][] {
@@ -38,7 +38,7 @@ public class SolfegeBoard : Node2D
         FINISHED
     }
 
-    private Texture currentTexture;
+    private Texture2D currentTexture;
     private BoardState currentState = BoardState.STOPPED;
     private bool isFlipping = false;
     private int currentPage = 0;
@@ -55,7 +55,7 @@ public class SolfegeBoard : Node2D
 
     public override void _Ready()
     {
-        MusicPaperRectNode = GetNode<Sprite>("MusicPaperRect");
+        MusicPaperRectNode = GetNode<Sprite2D>("MusicPaperRect");
         NUM_PAGES = PAGES.Length;
         solfegeNotesTextureGenerator = new SolfegeNotesTextureGenerator();
         _InitShader();
@@ -74,7 +74,7 @@ public class SolfegeBoard : Node2D
         if (currentPage >= NUM_PAGES)
         {
             currentState = BoardState.FINISHED;
-            EmitSignal(nameof(board_notes_played));
+            EmitSignal(nameof(board_notes_playedEventHandler));
             _SetFlipPageShader(MusicPaperRectTexture);
             _InitState();
         }
@@ -85,13 +85,13 @@ public class SolfegeBoard : Node2D
         }
     }
 
-    private void _SetFlipPageShader(Texture nextTexture)
+    private void _SetFlipPageShader(Texture2D nextTexture)
     {
         var paperShaderMaterial = (MusicPaperRectNode.Material as ShaderMaterial);
-        paperShaderMaterial.SetShaderParam("flip_left", true);
-        paperShaderMaterial.SetShaderParam("cylinder_direction", new Vector2(5.0f, 1.0f));
-        paperShaderMaterial.SetShaderParam("current_page", currentTexture);
-        paperShaderMaterial.SetShaderParam("next_page", nextTexture);
+        paperShaderMaterial.SetShaderParameter("flip_left", true);
+        paperShaderMaterial.SetShaderParameter("cylinder_direction", new Vector2(5.0f, 1.0f));
+        paperShaderMaterial.SetShaderParameter("current_page", currentTexture);
+        paperShaderMaterial.SetShaderParameter("next_page", nextTexture);
         time = 0.0f;
         isFlipping = true;
         Event.Instance().EmitPageFlipped();
@@ -100,18 +100,18 @@ public class SolfegeBoard : Node2D
     private void _InitShader()
     {
         var paperShaderMaterial = (MusicPaperRectNode.Material as ShaderMaterial);
-        paperShaderMaterial.SetShaderParam("time", 0);
-        paperShaderMaterial.SetShaderParam("flip_duration", DURATION);
-        paperShaderMaterial.SetShaderParam("cylinder_ratio", 0.3f);
-        paperShaderMaterial.SetShaderParam("rect", MusicPaperRectNode.GetRect().Size);
+        paperShaderMaterial.SetShaderParameter("time", 0);
+        paperShaderMaterial.SetShaderParameter("flip_duration", DURATION);
+        paperShaderMaterial.SetShaderParameter("cylinder_ratio", 0.3f);
+        paperShaderMaterial.SetShaderParameter("rect", MusicPaperRectNode.GetRect().Size);
     }
 
-    public override void _Process(float delta)
+    public override void _Process(double delta)
     {
         if (isFlipping)
         {
-            time += delta;
-            (MusicPaperRectNode.Material as ShaderMaterial).SetShaderParam("time", time);
+            time += (float)delta;
+            (MusicPaperRectNode.Material as ShaderMaterial).SetShaderParameter("time", time);
             if (time > DURATION)
             {
                 isFlipping = false;
@@ -122,16 +122,16 @@ public class SolfegeBoard : Node2D
 
     public override void _EnterTree()
     {
-        Event.Instance().Connect("piano_note_pressed", this, "_OnNotePressed");
-        Event.Instance().Connect("checkpoint_loaded", this, "Reset");
-        Event.Instance().Connect("checkpoint_reached", this, "_OnCheckpointHit");
+        Event.Instance().Connect("piano_note_pressed", new Callable(this, "_OnNotePressed"));
+        Event.Instance().Connect("checkpoint_loaded", new Callable(this, "Reset"));
+        Event.Instance().Connect("checkpoint_reached", new Callable(this, "_OnCheckpointHit"));
     }
 
     public override void _ExitTree()
     {
-        Event.Instance().Disconnect("piano_note_pressed", this, "_OnNotePressed");
-        Event.Instance().Disconnect("checkpoint_loaded", this, "Reset");
-        Event.Instance().Disconnect("checkpoint_reached", this, "_OnCheckpointHit");
+        Event.Instance().Disconnect("piano_note_pressed", new Callable(this, "_OnNotePressed"));
+        Event.Instance().Disconnect("checkpoint_loaded", new Callable(this, "Reset"));
+        Event.Instance().Disconnect("checkpoint_reached", new Callable(this, "_OnCheckpointHit"));
     }
 
     private void _InitState()
@@ -144,13 +144,13 @@ public class SolfegeBoard : Node2D
             currentTexture = MusicPaperRectNode.Texture;
             var resetTexture = solfegeNotesTextureGenerator.CreateFromNotes(PAGES[currentPage], MusicPaperRectNode.GetRect().Size);
             _SetFlipPageShader(resetTexture);
-            (MusicPaperRectNode.Material as ShaderMaterial).SetShaderParam("current_page", currentTexture);
+            (MusicPaperRectNode.Material as ShaderMaterial).SetShaderParameter("current_page", currentTexture);
             if (notesCursor != null)
             {
                 notesCursor.QueueFree();
                 notesCursor = null;
             }
-            notesCursor = NotesCursorScene.Instance<NotesCursor>();
+            notesCursor = NotesCursorScene.Instantiate<NotesCursor>();
             MusicPaperRectNode.AddChild(notesCursor);
             notesCursor.Owner = MusicPaperRectNode;
             _SetNotesCursorPosition();
@@ -208,7 +208,7 @@ public class SolfegeBoard : Node2D
         else
         {
             currentNoteIndex = 0;
-            EmitSignal(nameof(wrong_note_played));
+            EmitSignal(nameof(wrong_note_playedEventHandler));
         }
 
         _SetNotesCursorPosition();
@@ -220,14 +220,14 @@ public class SolfegeBoard : Node2D
     {
         if (currentState == BoardState.PLAYING)
         {
-            EmitSignal(nameof(expected_note_changed), PAGES[currentPage][currentNoteIndex]);
+            EmitSignal(nameof(expected_note_changedEventHandler), PAGES[currentPage][currentNoteIndex]);
         }
     }
 
     private void EmitWrongNoteEvent()
     {
         Event.Instance().EmitWrongPianoNotePlayed();
-        EmitSignal(nameof(wrong_note_played));
+        EmitSignal(nameof(wrong_note_playedEventHandler));
     }
 
     public string GetExpectedNote()

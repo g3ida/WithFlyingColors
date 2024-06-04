@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class GameSettingsUI : Control, IUITab
+public partial class GameSettingsUI : Control, IUITab
 {
     private CheckBox vsyncCheckbox;
     private CheckBox fscreenCheckbox;
@@ -26,8 +26,8 @@ public class GameSettingsUI : Control, IUITab
         fscreenCheckbox = GetNode<CheckBox>("GridContainer/FullscreenCheckbox");
         autoResolutionLabel = GetNode<Label>("GridContainer/AutoResolutionLabel");
 
-        vsyncCheckbox.Pressed = GameSettings.Instance().Vsync;
-        fscreenCheckbox.Pressed = GameSettings.Instance().Fullscreen;
+        vsyncCheckbox.ButtonPressed = GameSettings.Instance().Vsync;
+        fscreenCheckbox.ButtonPressed = GameSettings.Instance().Fullscreen;
         ToggleAutoResolution();
         on_gain_focus();
         is_ready = true;
@@ -74,7 +74,7 @@ public class GameSettingsUI : Control, IUITab
         }
     }
 
-    private void _on_UISelect_Value_changed(Vector2 value)
+    private void _on_UISelect_Value_changed(Vector2I value)
     {
         //var resolution = (Vector2)GD.Convert(value, Variant.Type.Vector2);
         var resolution = value;
@@ -92,14 +92,14 @@ public class GameSettingsUI : Control, IUITab
             WaitTime = 0.4f,
             OneShot = true
         };
-        rescaleTimer.Connect("timeout", this, nameof(on_rescale_timeout));
+        rescaleTimer.Connect("timeout", new Callable(this, nameof(on_rescale_timeout)));
         AddChild(rescaleTimer, true);
         rescaleTimer.Start();
     }
 
     private void on_rescale_timeout()
     {
-        GameSettings.Instance().WindowSize = (Vector2)resolutionSelect.selected_value;
+        GameSettings.Instance().WindowSize = (Vector2I)resolutionSelect.selected_value;
     }
 
     public void on_gain_focus()

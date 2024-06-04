@@ -1,13 +1,13 @@
 using Godot;
 using System;
 
-public class UISliderButton : Button
+public partial class UISliderButton : Button
 {
     [Signal]
-    public delegate void value_changed(float value);
+    public delegate void value_changedEventHandler(float value);
 
     [Signal]
-    public delegate void selection_changed(bool isSelected);
+    public delegate void selection_changedEventHandler(bool isSelected);
 
     private HSlider SliderNode;
     private AnimationPlayer AnimationPlayerNode;
@@ -30,31 +30,31 @@ public class UISliderButton : Button
         // SliderNode.Connect("drag_ended", this, nameof(_on_HSlider_drag_ended));
     }
 
-    public override void _Input(InputEvent @event)
+    public override void _Input(InputEvent ev)
     {
         if (HasFocus())
         {
             if (Input.IsActionJustPressed("ui_accept"))
             {
                 SetEditing(!isEditing);
-                GetTree().SetInputAsHandled();
+                GetViewport().SetInputAsHandled();
             }
             else if (Input.IsActionJustPressed("ui_cancel") && isEditing)
             {
                 SetEditing(false);
-                GetTree().SetInputAsHandled();
+                GetViewport().SetInputAsHandled();
             }
             else if (isEditing)
             {
                 if (Input.IsActionJustPressed("ui_left"))
                 {
                     _on_left_pressed();
-                    GetTree().SetInputAsHandled();
+                    GetViewport().SetInputAsHandled();
                 }
                 else if (Input.IsActionJustPressed("ui_right"))
                 {
                     _on_right_pressed();
-                    GetTree().SetInputAsHandled();
+                    GetViewport().SetInputAsHandled();
                 }
             }
         }
@@ -105,11 +105,11 @@ public class UISliderButton : Button
 
     private void EmitValueChangedSignal()
     {
-        EmitSignal(nameof(value_changed), SliderNode.Value);
+        EmitSignal(nameof(value_changedEventHandler), SliderNode.Value);
     }
 
     private void EmitSelectionChangedSignal()
     {
-        EmitSignal(nameof(selection_changed), isEditing);
+        EmitSignal(nameof(selection_changedEventHandler), isEditing);
     }
 }

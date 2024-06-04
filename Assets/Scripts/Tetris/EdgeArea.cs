@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class EdgeArea : Area2D
+public partial class EdgeArea : Area2D
 {
     public CollisionShape2D collisionShapeNode;
 
@@ -12,8 +12,8 @@ public class EdgeArea : Area2D
     {
         collisionShapeNode = new CollisionShape2D();
         var rectagleShape = new RectangleShape2D();
-        Width = rectagleShape.Extents.x;
-        Height = rectagleShape.Extents.y;
+        Width = rectagleShape.Size.X;
+        Height = rectagleShape.Size.Y;
         collisionShapeNode.Shape = rectagleShape;
         AddChild(collisionShapeNode);
     }

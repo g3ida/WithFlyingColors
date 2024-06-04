@@ -5,8 +5,8 @@
 [ext_resource path="res://Assets/Scenes/UI/UISliderButton.tscn" type="PackedScene" id=3]
 
 [node name="AudioSettings" type="Control"]
-margin_right = 1920.0
-margin_bottom = 1080.0
+offset_right = 1920.0
+offset_bottom = 1080.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource( 1 )
@@ -15,33 +15,33 @@ script = ExtResource( 2 )
 [node name="GridContainer" type="GridContainer" parent="."]
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_constants/vseparation = 15
-custom_constants/hseparation = 50
+theme_override_constants/v_separation = 15
+theme_override_constants/h_separation = 50
 columns = 2
 
 [node name="SfxLabel" type="Label" parent="GridContainer"]
-margin_right = 420.0
-margin_bottom = 60.0
-rect_min_size = Vector2( 420, 0 )
+offset_right = 420.0
+offset_bottom = 60.0
+custom_minimum_size = Vector2( 420, 0 )
 size_flags_horizontal = 3
 text = "SFX Volume"
 
 [node name="SfxSlider" parent="GridContainer" instance=ExtResource( 3 )]
-margin_top = 0.0
-margin_bottom = 60.0
-rect_min_size = Vector2( 300, 0 )
+offset_top = 0.0
+offset_bottom = 60.0
+custom_minimum_size = Vector2( 300, 0 )
 
 [node name="MusicLabel" type="Label" parent="GridContainer"]
-margin_top = 75.0
-margin_right = 420.0
-margin_bottom = 135.0
-rect_min_size = Vector2( 400, 0 )
+offset_top = 75.0
+offset_right = 420.0
+offset_bottom = 135.0
+custom_minimum_size = Vector2( 400, 0 )
 text = "Music Volume"
 
 [node name="MusicSlider" parent="GridContainer" instance=ExtResource( 3 )]
-margin_top = 75.0
-margin_bottom = 135.0
-rect_min_size = Vector2( 300, 0 )
+offset_top = 75.0
+offset_bottom = 135.0
+custom_minimum_size = Vector2( 300, 0 )
 
 [connection signal="selection_changed" from="GridContainer/SfxSlider" to="." method="_on_SfxSlider_selection_changed"]
 [connection signal="value_changed" from="GridContainer/SfxSlider" to="." method="_on_SfxSliderButton_value_changed"]

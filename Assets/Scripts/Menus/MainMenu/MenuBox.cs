@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class MenuBox : Control
+public partial class MenuBox : Control
 {
     private const float SUB_MENU_POPUP_DURATION = 0.2f;
 
@@ -18,12 +18,12 @@ public class MenuBox : Control
     private MenuBoxButton statsButton;
     private MenuBoxButton quitButton;
 
-    private KinematicBody2D MenuBoxNode;
+    private CharacterBody2D MenuBoxNode;
     private Control PlaySubMenuNode = null;
-    private Sprite SpriteNode;
+    private Sprite2D SpriteNode;
     private float SpriteHeight;
 
-    private SceneTreeTween subMenuTweener;
+    private Tween subMenuTweener;
 
     public void SetPreviousMenu()
     {
@@ -42,7 +42,7 @@ public class MenuBox : Control
 
     public override void _Ready()
     {
-        MenuBoxNode = GetNode<KinematicBody2D>("MenuBox");
+        MenuBoxNode = GetNode<CharacterBody2D>("MenuBox");
         boxRotation = new PlayerRotationAction();
         boxRotation.Set(MenuBoxNode);
         
@@ -51,7 +51,7 @@ public class MenuBox : Control
         statsButton = GetNode<MenuBoxButton>("MenuBox/Spr/StatsBoxButton");
         quitButton = GetNode<MenuBoxButton>("MenuBox/Spr/QuitBoxButton");
 
-        SpriteNode = GetNode<Sprite>("MenuBox/Spr");
+        SpriteNode = GetNode<Sprite2D>("MenuBox/Spr");
         SpriteHeight = SpriteNode.Texture.GetHeight();
 
         buttons = new MenuBoxButton[] { playButton, settingsButton, statsButton, quitButton };
@@ -70,9 +70,9 @@ public class MenuBox : Control
         }
     }
 
-    public override void _PhysicsProcess(float delta)
+    public override void _PhysicsProcess(double delta)
     {
-        boxRotation.Step(delta);
+        boxRotation.Step((float)delta);
 
         if (PlaySubMenuNode != null)
         {
@@ -186,11 +186,11 @@ public class MenuBox : Control
         if (PlaySubMenuNode == null)
         {
             PackedScene PlaySubMenuScene = GD.Load<PackedScene>("res://Assets/Scenes/MainMenu/PlaySubMenu.tscn");
-            PlaySubMenuNode = (Control)PlaySubMenuScene.Instance();
+            PlaySubMenuNode = (Control)PlaySubMenuScene.Instantiate();
             MenuBoxNode.AddChild(PlaySubMenuNode);
             PlaySubMenuNode.Owner = MenuBoxNode;
-            Vector2 sz = ((Control)PlaySubMenuNode).RectMinSize;
-            Vector2 source = new Vector2(-sz.x * 0.5f, -sz.y);
+            Vector2 sz = ((Control)PlaySubMenuNode).CustomMinimumSize;
+            Vector2 source = new Vector2(-sz.X * 0.5f, -sz.Y);
             Vector2 destination = source + Vector2.Up * SpriteHeight * 0.5f;
             if (shouldShow)
             {
@@ -200,8 +200,8 @@ public class MenuBox : Control
         }
         else if (!shouldShow)
         {
-            Vector2 sz = ((Control)PlaySubMenuNode).RectMinSize;
-            Vector2 destination = new Vector2(-sz.x * 0.5f, -sz.y);
+            Vector2 sz = ((Control)PlaySubMenuNode).CustomMinimumSize;
+            Vector2 destination = new Vector2(-sz.X * 0.5f, -sz.Y);
             Vector2 source = playSubMenuPos;
             currentState = States.SUB_MENU_EXIT;
             InterpolateSubMenu(source, destination);
@@ -215,7 +215,7 @@ public class MenuBox : Control
             subMenuTweener.Kill();
         }
         subMenuTweener = CreateTween();
-        subMenuTweener.Connect("finished", this, nameof(_SubmenuTweenCompleted), null, (uint)ConnectFlags.Oneshot);
+        subMenuTweener.Connect("finished", new Callable(this, nameof(_SubmenuTweenCompleted)), (uint)ConnectFlags.OneShot);
 
         playSubMenuPos = source;
         subMenuTweener.TweenProperty(this, nameof(playSubMenuPos), destination, SUB_MENU_POPUP_DURATION)

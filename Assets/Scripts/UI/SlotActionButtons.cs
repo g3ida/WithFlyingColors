@@ -1,12 +1,12 @@
 using Godot;
 using System;
 
-public class SlotActionButtons : HBoxContainer
+public partial class SlotActionButtons : HBoxContainer
 {
     [Signal]
-    public delegate void select_button_pressed(int slotIndex);
+    public delegate void select_button_pressedEventHandler(int slotIndex);
     [Signal]
-    public delegate void clear_button_pressed(int slotIndex);
+    public delegate void clear_button_pressedEventHandler(int slotIndex);
 
     public int SlotIndex { get; set; } = 0;
 
@@ -49,13 +49,13 @@ public class SlotActionButtons : HBoxContainer
     private void UpdateSpaceNode(float buttonsSize)
     {
         float buttonsMaxWidth = SlotButton.BUTTON_MAX_WIDTH * 2;
-        _spaceNode.RectSize = new Vector2(buttonsMaxWidth - buttonsSize, _spaceNode.RectSize.y);
-        _spaceNode.RectMinSize = new Vector2(buttonsMaxWidth - buttonsSize, _spaceNode.RectMinSize.y);
+        _spaceNode.Size = new Vector2(buttonsMaxWidth - buttonsSize, _spaceNode.Size.Y);
+        _spaceNode.CustomMinimumSize = new Vector2(buttonsMaxWidth - buttonsSize, _spaceNode.CustomMinimumSize.Y);
     }
 
-    public override void _Process(float delta)
+    public override void _Process(double delta)
     {
-        float buttonsSize = _deleteButtonNode.RectSize.x + _confirmButtonNode.RectSize.x;
+        float buttonsSize = _deleteButtonNode.Size.X + _confirmButtonNode.Size.X;
         UpdateSpaceNode(buttonsSize);
     }
 
@@ -66,7 +66,7 @@ public class SlotActionButtons : HBoxContainer
 
     private void _on_DeleteButton_pressed()
     {
-        EmitSignal(nameof(clear_button_pressed), SlotIndex);
+        EmitSignal(nameof(clear_button_pressedEventHandler), SlotIndex);
     }
 
     private bool ShouldShowDeleteButton()
@@ -81,6 +81,6 @@ public class SlotActionButtons : HBoxContainer
 
     private void _on_ConfirmButton_pressed()
     {
-        EmitSignal(nameof(select_button_pressed), SlotIndex);
+        EmitSignal(nameof(select_button_pressedEventHandler), SlotIndex);
     }
 }

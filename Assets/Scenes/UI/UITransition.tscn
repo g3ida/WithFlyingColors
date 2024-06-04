@@ -3,8 +3,8 @@
 [ext_resource path="res://Assets/Scripts/UI/UITransition.cs" type="Script" id=1]
 
 [node name="UITransition" type="Control"]
-margin_left = 57.0
-margin_top = 272.0
-margin_right = 97.0
-margin_bottom = 312.0
+offset_left = 57.0
+offset_top = 272.0
+offset_right = 97.0
+offset_bottom = 312.0
 script = ExtResource( 1 )

@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-public class Levels: Godot.Object
+public partial class Levels: GodotObject
 {
     public static readonly List<Level> LEVELS = new List<Level>
     {
@@ -9,7 +9,7 @@ public class Levels: Godot.Object
         new Level { Id = 2, Name = "Dark Games", Scene = "res://Levels/Level1.tscn" },
         new Level { Id = 3, Name = "One More Level", Scene = "res://Levels/Level1.tscn" }
     };
-    public class Level: Godot.Object
+    public partial class Level: GodotObject
     {
         public int Id { get; set; }
         public string Name { get; set; }

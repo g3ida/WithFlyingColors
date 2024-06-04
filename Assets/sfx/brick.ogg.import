@@ -1,15 +1,19 @@
 [remap]
 
-importer="ogg_vorbis"
-type="AudioStreamOGGVorbis"
-path="res://.import/brick.ogg-7068b2e11f47fee2f0ea2986dc97e895.oggstr"
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://blsylus56kxea"
+path="res://.godot/imported/brick.ogg-7068b2e11f47fee2f0ea2986dc97e895.oggvorbisstr"
 
 [deps]
 
 source_file="res://Assets/sfx/brick.ogg"
-dest_files=[ "res://.import/brick.ogg-7068b2e11f47fee2f0ea2986dc97e895.oggstr" ]
+dest_files=["res://.godot/imported/brick.ogg-7068b2e11f47fee2f0ea2986dc97e895.oggvorbisstr"]
 
 [params]
 
 loop=true
 loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

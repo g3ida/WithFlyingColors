@@ -7,7 +7,7 @@
 [ext_resource path="res://Assets/Scenes/Platforms/SimplePlatform.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Assets/Scenes/Fallzone.tscn" type="PackedScene" id=9]
 [ext_resource path="res://Assets/Scenes/Gem.tscn" type="PackedScene" id=10]
-[ext_resource path="res://Assets/Sprites/Backgrounds/bg_grey.png" type="Texture" id=11]
+[ext_resource path="res://Assets/Sprites/Backgrounds/bg_grey.png" type="Texture2D" id=11]
 [ext_resource path="res://Assets/Scenes/HUD/GemsHUDContainer.tscn" type="PackedScene" id=16]
 [ext_resource path="res://Assets/Scenes/Checkpoint.tscn" type="PackedScene" id=18]
 [ext_resource path="res://Assets/Scenes/PauseScreen.tscn" type="PackedScene" id=19]
@@ -25,7 +25,7 @@
 [ext_resource path="res://Assets/Scenes/Piano/PianoScene.tscn" type="PackedScene" id=37]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 14.5, 46 )
+size = Vector2( 14.5, 46 )
 
 [node name="Level1" type="Node2D"]
 script = ExtResource( 3 )
@@ -39,21 +39,21 @@ color_group = "purple"
 [node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
 motion_mirroring = Vector2( 2048, 2048 )
 
-[node name="Sprite" type="Sprite" parent="ParallaxBackground/ParallaxLayer"]
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer"]
 scale = Vector2( 32, 32 )
 texture = ExtResource( 11 )
 centered = false
 
 [node name="Camera2D" parent="." instance=ExtResource( 6 )]
 position = Vector2( 472, -489 )
-rotating = true
+ignore_rotation =true # reversed "rotating" for Camera2D
 limit_left = -200
 limit_top = -2500
 limit_right = 10000
 limit_bottom = 1000
-drag_margin_h_enabled = true
-drag_margin_top = 0.05
-drag_margin_bottom = 0.05
+drag_horizontal_enabled = true
+drag_top_margin = 0.05
+drag_bottom_margin = 0.05
 follow_path = NodePath("../Player")
 
 [node name="PauseMenu" parent="Camera2D" instance=ExtResource( 19 )]
@@ -133,7 +133,7 @@ group = "blue"
 
 [node name="Node2D" parent="MovingPlatform2" instance=ExtResource( 20 )]
 
-[node name="Pos" type="Position2D" parent="MovingPlatform2/Node2D"]
+[node name="Pos" type="Marker2D" parent="MovingPlatform2/Node2D"]
 position = Vector2( 450, 0 )
 
 [node name="MovingPlatform3" parent="." instance=ExtResource( 21 )]
@@ -143,7 +143,7 @@ group = "blue"
 
 [node name="Node2D" parent="MovingPlatform3" instance=ExtResource( 20 )]
 
-[node name="Pos" type="Position2D" parent="MovingPlatform3/Node2D"]
+[node name="Pos" type="Marker2D" parent="MovingPlatform3/Node2D"]
 position = Vector2( 300, 0 )
 
 [node name="LazerBeam" parent="." instance=ExtResource( 22 )]
@@ -171,7 +171,7 @@ position_clipping_mode = 2
 position = Vector2( 279, 13 )
 shape = SubResource( 1 )
 
-[node name="Pos" type="Position2D" parent="CameraLocalizer"]
+[node name="Pos" type="Marker2D" parent="CameraLocalizer"]
 position = Vector2( -56, 186 )
 
 [node name="BrickBreaker" parent="." instance=ExtResource( 34 )]

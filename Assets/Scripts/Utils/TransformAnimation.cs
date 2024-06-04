@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class TransformAnimation : Node
+public partial class TransformAnimation : Node
 {
     private float animationDuration;
     private Interpolation interpolation;
@@ -40,7 +40,7 @@ public class TransformAnimation : Node
         started = true;
     }
 
-    public void Step(Node2D node, AnimatedSprite sprite, float delta)
+    public void Step(Node2D node, AnimatedSprite2D sprite, float delta)
     {
         if (timer > 0)
         {
@@ -57,8 +57,8 @@ public class TransformAnimation : Node
 
             timer -= delta;
             sprite.Offset = new Vector2(
-                offsetY * (1.0f - sprite.Scale.x) * sinRot,
-                offsetY * (1.0f - sprite.Scale.y) * cosRot
+                offsetY * (1.0f - sprite.Scale.X) * sinRot,
+                offsetY * (1.0f - sprite.Scale.Y) * cosRot
             );
         }
         else
@@ -67,7 +67,7 @@ public class TransformAnimation : Node
         }
     }
 
-    public void Reset(AnimatedSprite sprite)
+    public void Reset(AnimatedSprite2D sprite)
     {
         timer = 0.0f;
         started = false;

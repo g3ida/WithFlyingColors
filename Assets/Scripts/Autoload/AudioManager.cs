@@ -2,10 +2,10 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class AudioManager : Node
+public partial class AudioManager : Node
 {
     [Signal]
-    public delegate void PlaySfx(string sfxName);
+    public delegate void PlaySfxEventHandler(string sfxName);
 
     private readonly PackedScene MusicTrackManagerScene = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Audio/MusicTrackManager.tscn");
 
@@ -57,13 +57,13 @@ public class AudioManager : Node
     {
         base._EnterTree();
         _instance = GetTree().Root.GetNode<AudioManager>("AudioManagerCS");
-        MusicTrackManager = MusicTrackManagerScene.Instance<MusicTrackManager>();
+        MusicTrackManager = MusicTrackManagerScene.Instantiate<MusicTrackManager>();
         ConnectSignals();
     }
 
     public override void _Ready()
     {
-        PauseMode = PauseModeEnum.Process;
+        ProcessMode = ProcessModeEnum.Always;
         SetProcess(false);
         /// FIXME: make this an extension function and use all over any node CreateChild<NodeType>()
         AddChild(MusicTrackManager);
@@ -106,76 +106,76 @@ public class AudioManager : Node
 
     private void ConnectSignals()
     {
-        Connect(nameof(PlaySfx), this, nameof(_OnPlaySfx));
-        Event.Instance().Connect(nameof(Event.player_jumped), this, nameof(_OnPlayerJumped));
-        Event.Instance().Connect("player_rotate", this, nameof(_OnPlayerRotate));
-        Event.Instance().Connect("player_land", this, nameof(_OnPlayerLand));
-        Event.Instance().Connect("gem_collected", this, nameof(_OnGemCollected));
-        Event.Instance().Connect("Fullscreen_toggled", this, nameof(_OnButtonToggle));
-        Event.Instance().Connect("Vsync_toggled", this, nameof(_OnButtonToggle));
-        Event.Instance().Connect("Screen_size_changed", this, nameof(_OnButtonToggle));
-        Event.Instance().Connect("on_action_bound", this, nameof(_OnKeyBound));
-        Event.Instance().Connect("tab_changed", this, nameof(_OnTabChanged));
-        Event.Instance().Connect("focus_changed", this, nameof(_OnFocusChanged));
-        Event.Instance().Connect("menu_box_rotated", this, nameof(_OnMenuBoxRotated));
-        Event.Instance().Connect("keyboard_action_biding", this, nameof(_OnKeyboardActionBinding));
-        Event.Instance().Connect("player_explode", this, nameof(_OnPlayerExplode));
-        Event.Instance().Connect("pause_menu_enter", this, nameof(_OnPauseMenuEnter));
-        Event.Instance().Connect("pause_menu_exit", this, nameof(_OnPauseMenuExit));
-        Event.Instance().Connect("player_fall", this, nameof(_OnPlayerFalling));
-        Event.Instance().Connect("tetris_lines_removed", this, nameof(_OnTetrisLinesRemoved));
-        Event.Instance().Connect("picked_powerup", this, nameof(_OnPickedPowerup));
-        Event.Instance().Connect("brick_broken", this, nameof(_OnBrickBroken));
-        Event.Instance().Connect("break_breaker_win", this, nameof(_OnWinMiniGame));
-        Event.Instance().Connect("brick_breaker_start", this, nameof(_OnBrickBreakerStart));
-        Event.Instance().Connect("menu_button_pressed", this, nameof(_OnMenuButtonPressed));
-        Event.Instance().Connect("sfx_volume_changed", this, nameof(_OnButtonToggle));
-        Event.Instance().Connect("music_volume_changed", this, nameof(_OnButtonToggle));
-        Event.Instance().Connect("piano_note_pressed", this, nameof(_OnPianoNotePressed));
-        Event.Instance().Connect("piano_note_released", this, nameof(_OnPianoNoteReleased));
-        Event.Instance().Connect("page_flipped", this, nameof(_OnPageFlipped));
-        Event.Instance().Connect("wrong_piano_note_played", this, nameof(_OnWrongPianoNotePlayed));
-        Event.Instance().Connect("piano_puzzle_won", this, nameof(_OnPianoPuzzleWon));
-        Event.Instance().Connect("gem_temple_triggered", this, nameof(_OnGemTempleTriggered));
-        Event.Instance().Connect("gem_engine_started", this, nameof(_OnGemEngineStarted));
-        Event.Instance().Connect("gem_put_in_temple", this, nameof(_OnGemPutInTemple));
+        Connect(nameof(PlaySfxEventHandler), new Callable(this, nameof(_OnPlaySfx)));
+        Event.Instance().Connect(nameof(Event.player_jumpedEventHandler), new Callable(this, nameof(_OnPlayerJumped)));
+        Event.Instance().Connect("player_rotate", new Callable(this, nameof(_OnPlayerRotate)));
+        Event.Instance().Connect("player_land", new Callable(this, nameof(_OnPlayerLand)));
+        Event.Instance().Connect("gem_collected", new Callable(this, nameof(_OnGemCollected)));
+        Event.Instance().Connect("Fullscreen_toggled", new Callable(this, nameof(_OnButtonToggle)));
+        Event.Instance().Connect("Vsync_toggled", new Callable(this, nameof(_OnButtonToggle)));
+        Event.Instance().Connect("Screen_size_changed", new Callable(this, nameof(_OnButtonToggle)));
+        Event.Instance().Connect("on_action_bound", new Callable(this, nameof(_OnKeyBound)));
+        Event.Instance().Connect("tab_changed", new Callable(this, nameof(_OnTabChanged)));
+        Event.Instance().Connect("focus_changed", new Callable(this, nameof(_OnFocusChanged)));
+        Event.Instance().Connect("menu_box_rotated", new Callable(this, nameof(_OnMenuBoxRotated)));
+        Event.Instance().Connect("keyboard_action_biding", new Callable(this, nameof(_OnKeyboardActionBinding)));
+        Event.Instance().Connect("player_explode", new Callable(this, nameof(_OnPlayerExplode)));
+        Event.Instance().Connect("pause_menu_enter", new Callable(this, nameof(_OnPauseMenuEnter)));
+        Event.Instance().Connect("pause_menu_exit", new Callable(this, nameof(_OnPauseMenuExit)));
+        Event.Instance().Connect("player_fall", new Callable(this, nameof(_OnPlayerFalling)));
+        Event.Instance().Connect("tetris_lines_removed", new Callable(this, nameof(_OnTetrisLinesRemoved)));
+        Event.Instance().Connect("picked_powerup", new Callable(this, nameof(_OnPickedPowerup)));
+        Event.Instance().Connect("brick_broken", new Callable(this, nameof(_OnBrickBroken)));
+        Event.Instance().Connect("break_breaker_win", new Callable(this, nameof(_OnWinMiniGame)));
+        Event.Instance().Connect("brick_breaker_start", new Callable(this, nameof(_OnBrickBreakerStart)));
+        Event.Instance().Connect("menu_button_pressed", new Callable(this, nameof(_OnMenuButtonPressed)));
+        Event.Instance().Connect("sfx_volume_changed", new Callable(this, nameof(_OnButtonToggle)));
+        Event.Instance().Connect("music_volume_changed", new Callable(this, nameof(_OnButtonToggle)));
+        Event.Instance().Connect("piano_note_pressed", new Callable(this, nameof(_OnPianoNotePressed)));
+        Event.Instance().Connect("piano_note_released", new Callable(this, nameof(_OnPianoNoteReleased)));
+        Event.Instance().Connect("page_flipped", new Callable(this, nameof(_OnPageFlipped)));
+        Event.Instance().Connect("wrong_piano_note_played", new Callable(this, nameof(_OnWrongPianoNotePlayed)));
+        Event.Instance().Connect("piano_puzzle_won", new Callable(this, nameof(_OnPianoPuzzleWon)));
+        Event.Instance().Connect("gem_temple_triggered", new Callable(this, nameof(_OnGemTempleTriggered)));
+        Event.Instance().Connect("gem_engine_started", new Callable(this, nameof(_OnGemEngineStarted)));
+        Event.Instance().Connect("gem_put_in_temple", new Callable(this, nameof(_OnGemPutInTemple)));
     }
 
     private void DisconnectSignals()
     {
-        Disconnect(nameof(PlaySfx), this, nameof(_OnPlaySfx));
-        Event.Instance().Disconnect("player_jumped", this, nameof(_OnPlayerJumped));
-        Event.Instance().Disconnect("player_rotate", this, nameof(_OnPlayerRotate));
-        Event.Instance().Disconnect("player_land", this, nameof(_OnPlayerLand));
-        Event.Instance().Disconnect("gem_collected", this, nameof(_OnGemCollected));
-        Event.Instance().Disconnect("Fullscreen_toggled", this, nameof(_OnButtonToggle));
-        Event.Instance().Disconnect("Vsync_toggled", this, nameof(_OnButtonToggle));
-        Event.Instance().Disconnect("Screen_size_changed", this, nameof(_OnButtonToggle));
-        Event.Instance().Disconnect("on_action_bound", this, nameof(_OnKeyBound));
-        Event.Instance().Disconnect("tab_changed", this, nameof(_OnTabChanged));
-        Event.Instance().Disconnect("focus_changed", this, nameof(_OnFocusChanged));
-        Event.Instance().Disconnect("menu_box_rotated", this, nameof(_OnMenuBoxRotated));
-        Event.Instance().Disconnect("keyboard_action_biding", this, nameof(_OnKeyboardActionBinding));
-        Event.Instance().Disconnect("player_explode", this, nameof(_OnPlayerExplode));
-        Event.Instance().Disconnect("pause_menu_enter", this, nameof(_OnPauseMenuEnter));
-        Event.Instance().Disconnect("pause_menu_exit", this, nameof(_OnPauseMenuExit));
-        Event.Instance().Disconnect("player_fall", this, nameof(_OnPlayerFalling));
-        Event.Instance().Disconnect("tetris_lines_removed", this, nameof(_OnTetrisLinesRemoved));
-        Event.Instance().Disconnect("picked_powerup", this, nameof(_OnPickedPowerup));
-        Event.Instance().Disconnect("brick_broken", this, nameof(_OnBrickBroken));
-        Event.Instance().Disconnect("break_breaker_win", this, nameof(_OnWinMiniGame));
-        Event.Instance().Disconnect("brick_breaker_start", this, nameof(_OnBrickBreakerStart));
-        Event.Instance().Disconnect("menu_button_pressed", this, nameof(_OnMenuButtonPressed));
-        Event.Instance().Disconnect("sfx_volume_changed", this, nameof(_OnButtonToggle));
-        Event.Instance().Disconnect("music_volume_changed", this, nameof(_OnButtonToggle));
-        Event.Instance().Disconnect("piano_note_pressed", this, nameof(_OnPianoNotePressed));
-        Event.Instance().Disconnect("piano_note_released", this, nameof(_OnPianoNoteReleased));
-        Event.Instance().Disconnect("page_flipped", this, nameof(_OnPageFlipped));
-        Event.Instance().Disconnect("wrong_piano_note_played", this, nameof(_OnWrongPianoNotePlayed));
-        Event.Instance().Disconnect("piano_puzzle_won", this, nameof(_OnPianoPuzzleWon));
-        Event.Instance().Disconnect("gem_temple_triggered", this, nameof(_OnGemTempleTriggered));
-        Event.Instance().Disconnect("gem_engine_started", this, nameof(_OnGemEngineStarted));
-        Event.Instance().Disconnect("gem_put_in_temple", this, nameof(_OnGemPutInTemple));
+        Disconnect(nameof(PlaySfxEventHandler), new Callable(this, nameof(_OnPlaySfx)));
+        Event.Instance().Disconnect("player_jumped", new Callable(this, nameof(_OnPlayerJumped)));
+        Event.Instance().Disconnect("player_rotate", new Callable(this, nameof(_OnPlayerRotate)));
+        Event.Instance().Disconnect("player_land", new Callable(this, nameof(_OnPlayerLand)));
+        Event.Instance().Disconnect("gem_collected", new Callable(this, nameof(_OnGemCollected)));
+        Event.Instance().Disconnect("Fullscreen_toggled", new Callable(this, nameof(_OnButtonToggle)));
+        Event.Instance().Disconnect("Vsync_toggled", new Callable(this, nameof(_OnButtonToggle)));
+        Event.Instance().Disconnect("Screen_size_changed", new Callable(this, nameof(_OnButtonToggle)));
+        Event.Instance().Disconnect("on_action_bound", new Callable(this, nameof(_OnKeyBound)));
+        Event.Instance().Disconnect("tab_changed", new Callable(this, nameof(_OnTabChanged)));
+        Event.Instance().Disconnect("focus_changed", new Callable(this, nameof(_OnFocusChanged)));
+        Event.Instance().Disconnect("menu_box_rotated", new Callable(this, nameof(_OnMenuBoxRotated)));
+        Event.Instance().Disconnect("keyboard_action_biding", new Callable(this, nameof(_OnKeyboardActionBinding)));
+        Event.Instance().Disconnect("player_explode", new Callable(this, nameof(_OnPlayerExplode)));
+        Event.Instance().Disconnect("pause_menu_enter", new Callable(this, nameof(_OnPauseMenuEnter)));
+        Event.Instance().Disconnect("pause_menu_exit", new Callable(this, nameof(_OnPauseMenuExit)));
+        Event.Instance().Disconnect("player_fall", new Callable(this, nameof(_OnPlayerFalling)));
+        Event.Instance().Disconnect("tetris_lines_removed", new Callable(this, nameof(_OnTetrisLinesRemoved)));
+        Event.Instance().Disconnect("picked_powerup", new Callable(this, nameof(_OnPickedPowerup)));
+        Event.Instance().Disconnect("brick_broken", new Callable(this, nameof(_OnBrickBroken)));
+        Event.Instance().Disconnect("break_breaker_win", new Callable(this, nameof(_OnWinMiniGame)));
+        Event.Instance().Disconnect("brick_breaker_start", new Callable(this, nameof(_OnBrickBreakerStart)));
+        Event.Instance().Disconnect("menu_button_pressed", new Callable(this, nameof(_OnMenuButtonPressed)));
+        Event.Instance().Disconnect("sfx_volume_changed", new Callable(this, nameof(_OnButtonToggle)));
+        Event.Instance().Disconnect("music_volume_changed", new Callable(this, nameof(_OnButtonToggle)));
+        Event.Instance().Disconnect("piano_note_pressed", new Callable(this, nameof(_OnPianoNotePressed)));
+        Event.Instance().Disconnect("piano_note_released", new Callable(this, nameof(_OnPianoNoteReleased)));
+        Event.Instance().Disconnect("page_flipped", new Callable(this, nameof(_OnPageFlipped)));
+        Event.Instance().Disconnect("wrong_piano_note_played", new Callable(this, nameof(_OnWrongPianoNotePlayed)));
+        Event.Instance().Disconnect("piano_puzzle_won", new Callable(this, nameof(_OnPianoPuzzleWon)));
+        Event.Instance().Disconnect("gem_temple_triggered", new Callable(this, nameof(_OnGemTempleTriggered)));
+        Event.Instance().Disconnect("gem_engine_started", new Callable(this, nameof(_OnGemEngineStarted)));
+        Event.Instance().Disconnect("gem_put_in_temple", new Callable(this, nameof(_OnGemPutInTemple)));
     }
 
     public override void _ExitTree()
@@ -213,7 +213,7 @@ public class AudioManager : Node
 
     public void EmitPlaySfx(string sfxName)
     {
-        EmitSignal(nameof(PlaySfx), sfxName);
+        EmitSignal(nameof(PlaySfxEventHandler), sfxName);
     }
 
     public void PauseAllSfx()
@@ -253,12 +253,12 @@ public class AudioManager : Node
         _OnPlaySfx("land");
     }
 
-    private void _OnMenuButtonPressed(string menuButton)
+    private void _OnMenuButtonPressed(int menuButton)
     {
         _OnPlaySfx("menuSelect");
     }
 
-    private void _OnGemCollected(string color, Vector2 position, int x)
+    private void _OnGemCollected(string color, Vector2 position, SpriteFrames x)
     {
         _OnPlaySfx("gemCollect");
     }

@@ -1,4 +1,4 @@
 [gd_scene format=2]
 
 [node name="GemCollisionShape" type="CollisionPolygon2D"]
-polygon = PoolVector2Array( 0, 24, 26, -8, 17, -23, -17, -23, -26, -8 )
+polygon = PackedVector2Array( 0, 24, 26, -8, 17, -23, -17, -23, -26, -8 )

@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-public class GemsHUDContainer : Panel
+public partial class GemsHUDContainer : Panel
 {
     private GemHUD blueGemNode;
     private GemHUD pinkGemNode;

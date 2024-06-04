@@ -4,12 +4,12 @@
 [ext_resource path="res://Assets/Shaders/LazerBeam.gdshader" type="Shader" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 612, 2.8 )
+size = Vector2( 612, 2.8 )
 
 [sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 612, 3 )
+size = Vector2( 612, 3 )
 
-[sub_resource type="OpenSimplexNoise" id=6]
+[sub_resource type="FastNoiseLite" id=6]
 seed = 1
 persistence = 0.33
 
@@ -20,7 +20,7 @@ noise = SubResource( 6 )
 shader = ExtResource( 2 )
 shader_param/noise = SubResource( 5 )
 
-[sub_resource type="CubeMesh" id=3]
+[sub_resource type="BoxMesh" id=3]
 
 [node name="ProtectionArea" type="StaticBody2D"]
 collision_layer = 512

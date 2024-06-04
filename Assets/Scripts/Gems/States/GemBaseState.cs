@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public abstract class GemBaseState : BaseState<Gem>
+public abstract partial class GemBaseState : BaseState<Gem>
 {
 
     public GemBaseState() : base() { }

@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Linq;
 
-public class BouncingBall : KinematicBody2D
+public partial class BouncingBall : CharacterBody2D
 {
     [Export]
     public string color_group = "blue";
@@ -32,7 +32,7 @@ public class BouncingBall : KinematicBody2D
         public KinematicCollision2D collision;
         public float angle;
         public float angle_deg;
-        public KinematicBody2D player;
+        public CharacterBody2D player;
         public bool is_player;
         public bool is_wall = false;
         public bool is_side_col;
@@ -46,18 +46,18 @@ public class BouncingBall : KinematicBody2D
         {
             collision = _collision;
             angle = ball.velocity.Angle();
-            angle_deg = Mathf.Rad2Deg(angle);
+            angle_deg = Mathf.RadToDeg(angle);
             player = Global.Instance().Player;
-            is_player = Global.Instance().Player == collision.Collider;
-            if (collision.Collider is Node2D colliderNode) {
+            is_player = Global.Instance().Player == collision.GetCollider();
+            if (collision.GetCollider() is Node2D colliderNode) {
               is_wall = colliderNode.IsInGroup("wall");
             }
             is_side_col = ball.IsSideCollision(_collision);
             side_ratio = !is_side_col ? -1 : ball.RelativeCollisionRatioToSide();
-            n = collision.Normal;
+            n = collision.GetNormal();
             u = ball.velocity.Dot(n) * n;
             w = ball.velocity - u;
-            side = Math.Sign(player.GlobalPosition.x - collision.Position.x);
+            side = Math.Sign(player.GlobalPosition.X - collision.GetPosition().X);
         }
     }
 
@@ -84,23 +84,23 @@ public class BouncingBall : KinematicBody2D
 
     private bool IsSideCollision(KinematicCollision2D collision)
     {
-        if (collision.Collider != Global.Instance().Player)
+        if (collision.GetCollider() != Global.Instance().Player)
             return false;
-        return Math.Abs(collision.Normal.y) < SIDE_COLLISION_NORMAL_THRESHOLD;
+        return Math.Abs(collision.GetNormal().Y) < SIDE_COLLISION_NORMAL_THRESHOLD;
     }
 
     private float RelativeCollisionRatioToSide()
     {
-        var scale_y = Global.Instance().Player.Scale.y;
+        var scale_y = Global.Instance().Player.Scale.Y;
         var ppos = Global.Instance().GlobalPosition;
         var dims = Global.Instance().Player.GetCollisionShapeSize();
-        var ratio = (ppos.y + dims.y * scale_y * 0.5f - GlobalPosition.y) / dims.y * scale_y;
+        var ratio = (ppos.Y + dims.Y * scale_y * 0.5f - GlobalPosition.Y) / dims.Y * scale_y;
         return Mathf.Clamp(ratio, 0.0f, 1.0f);
     }
 
     private bool IsFallingStraightAndCollidingWithSide(bool sideCollision, float angleDegrees)
     {
-        return sideCollision && velocity.y > Constants.EPSILON && Math.Abs(Math.Abs(angleDegrees) - 90.0f) < 45.0f;
+        return sideCollision && velocity.Y > Constants.EPSILON && Math.Abs(Math.Abs(angleDegrees) - 90.0f) < 45.0f;
     }
 
     private bool _HandlePlayerCollision(CollisionResolutionInfo info)
@@ -114,27 +114,27 @@ public class BouncingBall : KinematicBody2D
                     velocity = new Vector2(0, 1);
                 else
                 {
-                    var position = info.collision.Position;
+                    var position = info.collision.GetPosition();
                     var dp = player.GlobalPosition - position;
                     var player_size = (player as Player).GetCollisionShapeSize();
-                    var normalized_pos_x = dp.x / player_size.x;
-                    var m = new Vector2(info.n.y, info.n.x);
+                    var normalized_pos_x = dp.X / player_size.X;
+                    var m = new Vector2(info.n.Y, info.n.X);
                     velocity = DEVIATION * SPEED_UNIT * normalized_pos_x * m - info.u;
                 }
             }
             else // side collision
             {
                 if (IsFallingStraightAndCollidingWithSide(info.is_side_col, info.angle_deg))
-                    velocity = new Vector2(info.side, 0).Rotated(-info.side * Mathf.Deg2Rad((float)GD.RandRange(0.0f, 5.0f)));
+                    velocity = new Vector2(info.side, 0).Rotated(-info.side * Mathf.DegToRad((float)GD.RandRange(0.0f, 5.0f)));
                 else
                 {
                     velocity = info.w - info.u;
-                    if (velocity.y > Constants.EPSILON) //check ratio
-                        velocity.y = -velocity.y;
+                    if (velocity.Y > Constants.EPSILON) //check ratio
+                        velocity.Y = -velocity.Y;
                 }
                 // avoid player sticking to the ball
-                if (player.velocity.x * info.n.x >= 0)
-                    player.velocity.x = -info.n.x * PLAYER_SIDE_HIT_PUSH_VELOCITY;
+                if (player.velocity.X * info.n.X >= 0)
+                    player.velocity.X = -info.n.X * PLAYER_SIDE_HIT_PUSH_VELOCITY;
             }
             return true;
         }
@@ -143,7 +143,7 @@ public class BouncingBall : KinematicBody2D
 
     private bool _IsVerticalWall(CollisionResolutionInfo info)
     {
-        return Mathf.Abs(info.n.x) > 0.5f && Mathf.Abs(info.n.y) < Constants.EPSILON;
+        return Mathf.Abs(info.n.X) > 0.5f && Mathf.Abs(info.n.Y) < Constants.EPSILON;
     }
 
     private bool _IsBallAlmostHorizontal(CollisionResolutionInfo info)
@@ -158,7 +158,7 @@ public class BouncingBall : KinematicBody2D
 
     private bool _IsHorizontalWall(CollisionResolutionInfo info)
     {
-        return Mathf.Abs(info.n.y) > 0.5f && Mathf.Abs(info.n.x) < Constants.EPSILON;
+        return Mathf.Abs(info.n.Y) > 0.5f && Mathf.Abs(info.n.X) < Constants.EPSILON;
     }
 
     private void _HandleDefaultCollision(CollisionResolutionInfo info)
@@ -167,24 +167,24 @@ public class BouncingBall : KinematicBody2D
         if (info.is_wall)
         {
             if (_IsVerticalWall(info) && _IsBallAlmostHorizontal(info))
-                velocity = velocity.Rotated(Math.Sign(velocity.y * info.n.x) * Mathf.Deg2Rad((float)GD.RandRange(0, DEVIATION_DEGREES_ADDED)));
+                velocity = velocity.Rotated(Math.Sign(velocity.Y * info.n.X) * Mathf.DegToRad((float)GD.RandRange(0, DEVIATION_DEGREES_ADDED)));
             else if (_IsHorizontalWall(info) && _IsBallAlmostVertical())
-                velocity = velocity.Rotated(-Math.Sign(velocity.x) * Mathf.Deg2Rad((float)GD.RandRange(0, DEVIATION_DEGREES_ADDED)));
+                velocity = velocity.Rotated(-Math.Sign(velocity.X) * Mathf.DegToRad((float)GD.RandRange(0, DEVIATION_DEGREES_ADDED)));
         }
     }
 
     private void _SetPlayerLastDirection()
     {
-        if (Global.Instance().Player.velocity.x > 0.0f)
+        if (Global.Instance().Player.velocity.X > 0.0f)
             player_last_direction = 1;
-        else if (Global.Instance().Player.velocity.x < 0.0f)
+        else if (Global.Instance().Player.velocity.X < 0.0f)
             player_last_direction = -1;
     }
 
-public override void _PhysicsProcess(float delta)
+public override void _PhysicsProcess(double delta)
     {
         SetPlayerLastDirection();
-        KinematicCollision2D collision = MoveAndCollide(velocity * delta);
+        KinematicCollision2D collision = MoveAndCollide(velocity * (float)delta);
         if (collision != null)
         {
             var resInf = new CollisionResolutionInfo(collision, this);
@@ -214,23 +214,23 @@ public override void _PhysicsProcess(float delta)
                 bool handled = true;
                 if (IsSameDirectionAsPlayer())
                 {
-                    float s = -Mathf.Sign(Global.Instance().Player.GlobalPosition.x - GlobalPosition.x);
-                    velocity.x = s * Mathf.Abs(velocity.x);
+                    float s = -Mathf.Sign(Global.Instance().Player.GlobalPosition.X - GlobalPosition.X);
+                    velocity.X = s * Mathf.Abs(velocity.X);
                 }
                 else if (IsPlayerFallingOverTheFallingBall())
                 {
-                    if (velocity.x > Constants.EPSILON)
+                    if (velocity.X > Constants.EPSILON)
                     {
-                        velocity = new Vector2(0.0f, -Mathf.Abs(velocity.y));
+                        velocity = new Vector2(0.0f, -Mathf.Abs(velocity.Y));
                     }
                     else
                     {
-                        velocity = new Vector2(0.0f, Mathf.Abs(velocity.y)).Normalized() * speed;
+                        velocity = new Vector2(0.0f, Mathf.Abs(velocity.Y)).Normalized() * speed;
                     }
                 }
                 else if (IsPlayerPushingAFlyingBall())
                 {
-                    velocity = new Vector2(0.0f, Mathf.Abs(velocity.y)).Normalized() * speed;
+                    velocity = new Vector2(0.0f, Mathf.Abs(velocity.Y)).Normalized() * speed;
                 }
                 else
                 {
@@ -247,7 +247,7 @@ public override void _PhysicsProcess(float delta)
 
     private bool IsSameDirectionAsPlayer()
     {
-        bool sameDirection = player_last_direction * velocity.x >= 0;
+        bool sameDirection = player_last_direction * velocity.X >= 0;
         float ratio = RelativeCollisionRatioToSide();
         return sameDirection && ratio < 0.95f && ratio > 0.05f && IsPlayerFollowingTheBall();
     }
@@ -255,13 +255,13 @@ public override void _PhysicsProcess(float delta)
     private bool IsPlayerFollowingTheBall()
     {
         var player = Global.Instance().Player;
-        if (player.velocity.x > Constants.EPSILON)
+        if (player.velocity.X > Constants.EPSILON)
         {
-            return player.GlobalPosition.x < GlobalPosition.x;
+            return player.GlobalPosition.X < GlobalPosition.X;
         }
-        else if (player.velocity.x < -Constants.EPSILON)
+        else if (player.velocity.X < -Constants.EPSILON)
         {
-            return player.GlobalPosition.x > GlobalPosition.x;
+            return player.GlobalPosition.X > GlobalPosition.X;
         }
         else
         {
@@ -271,13 +271,13 @@ public override void _PhysicsProcess(float delta)
 
     private bool IsPlayerFallingOverTheFallingBall()
     {
-        bool bothFalling = Global.Instance().Player.velocity.y >= 0.0f;
+        bool bothFalling = Global.Instance().Player.velocity.Y >= 0.0f;
         return bothFalling && IsBallUnderPlayer();
     }
 
     private bool IsPlayerPushingAFlyingBall()
     {
-        bool bothUp = Global.Instance().Player.velocity.y < -Constants.EPSILON && velocity.y < -Constants.EPSILON;
+        bool bothUp = Global.Instance().Player.velocity.Y < -Constants.EPSILON && velocity.Y < -Constants.EPSILON;
         return bothUp && IsBallOverThePlayer();
     }
 
@@ -288,7 +288,7 @@ public override void _PhysicsProcess(float delta)
         var s = player.GetCollisionShapeSize() * player.Scale;
         var hs = s * 0.5f;
         var bp = GlobalPosition;
-        return (pp.y + hs.y) < bp.y && (bp.x > (pp.x - hs.x) && bp.x < (pp.x + hs.x));
+        return (pp.Y + hs.Y) < bp.Y && (bp.X > (pp.X - hs.X) && bp.X < (pp.X + hs.X));
     }
 
     private bool IsBallOverThePlayer()
@@ -298,7 +298,7 @@ public override void _PhysicsProcess(float delta)
         var s = player.GetCollisionShapeSize() * player.Scale;
         var hs = s * 0.5f;
         var bp = GlobalPosition;
-        return (pp.y - hs.y) > bp.y && (bp.x > (pp.x - hs.x) && bp.x < (pp.x + hs.x));
+        return (pp.Y - hs.Y) > bp.Y && (bp.X > (pp.X - hs.X) && bp.X < (pp.X + hs.X));
     }
 
     private bool IsCollidingWithPlayer()
@@ -308,7 +308,7 @@ public override void _PhysicsProcess(float delta)
         bool is_idle = player.IsRotationIdle();
         return is_idle && Helpers.Intersects(
             GlobalPosition,
-            (AreaCollisionShape.Shape as CircleShape2D).Radius * Scale.x + 10.0f,
+            (AreaCollisionShape.Shape as CircleShape2D).Radius * Scale.X + 10.0f,
             player.GlobalPosition,
             player_size
         );
@@ -316,14 +316,14 @@ public override void _PhysicsProcess(float delta)
 
     private void VelocityPostProcess(CollisionResolutionInfo resInf)
     {
-        if (resInf.n.x > Constants.EPSILON)
+        if (resInf.n.X > Constants.EPSILON)
         {
-            velocity.x = Mathf.Sign(resInf.n.x) * Mathf.Abs(velocity.x);
+            velocity.X = Mathf.Sign(resInf.n.X) * Mathf.Abs(velocity.X);
         }
         velocity = velocity.Normalized() * speed;
     }
 
-    private bool IsProbablyABrick(Area2D area, Godot.Collections.Array groups)
+    private bool IsProbablyABrick(Area2D area, Godot.Collections.Array<StringName> groups)
     {
         bool is_box_face = Global.Instance().Player.ContainsNode(area);
         return !is_box_face && groups.Count > 0;
@@ -362,7 +362,7 @@ public override void _PhysicsProcess(float delta)
     private void reset()
     {
         float randomness = (float)GD.RandRange(-SPAWN_DIRECTION_RANDOM_DEGREES, SPAWN_DIRECTION_RANDOM_DEGREES);
-        velocity = SPAWN_DIRECTION.Rotated(Mathf.Deg2Rad(randomness)) * SPEED;
+        velocity = SPAWN_DIRECTION.Rotated(Mathf.DegToRad(randomness)) * SPEED;
     }
 
     private void SetVelocity(Vector2 _velocity)
@@ -376,21 +376,21 @@ public override void _PhysicsProcess(float delta)
         velocity = velocity.Normalized() * speed;
     }
 
-    private void _on_Area2D_body_shape_entered(RID _body_rid, Node body, int body_shape_index, int _local_shape_index)
+    private void _on_Area2D_body_shape_entered(Rid _body_rid, Node body, int body_shape_index, int _local_shape_index)
     {
         if (body != Global.Instance().Player) return;
         // FIXME: fix this dynamic call after c# migration
-        body.Call("OnFastAreaCollidingWithPlayerShape", body_shape_index, AreaNode, Constants.EntityType.BALL);
+        body.Call("OnFastAreaCollidingWithPlayerShape", body_shape_index, AreaNode, (int)Constants.EntityType.BALL);
     }
 
     // Add the missing methods here
     private void SetPlayerLastDirection()
     {
-        if (Global.Instance().Player.velocity.x > 0.0f)
+        if (Global.Instance().Player.velocity.X > 0.0f)
         {
             player_last_direction = 1;
         }
-        else if (Global.Instance().Player.velocity.x < 0.0f)
+        else if (Global.Instance().Player.velocity.X < 0.0f)
         {
             player_last_direction = -1;
         }

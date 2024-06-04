@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerSlipperingState : PlayerBaseState
+public partial class PlayerSlipperingState : PlayerBaseState
 {
     public int direction = 1;
     private PlayerRotationAction playerRotation;
@@ -26,7 +26,7 @@ public class PlayerSlipperingState : PlayerBaseState
     {
         playerRotation = player.playerRotationAction;
         player.animatedSpriteNode.Play("idle");
-        player.animatedSpriteNode.Playing = false;
+        player.animatedSpriteNode.Stop();
         skipExitRotation = false;
         exitRotationSpeed = CORRECT_ROTATION_JUMP_SPEED;
         playerRotation.Execute(direction, Constants.PI2, SLIPPERING_ROTATION_DURATION, true, false, true);
@@ -39,7 +39,7 @@ public class PlayerSlipperingState : PlayerBaseState
         if (!skipExitRotation)
         {
             playerRotation.Execute(-direction, Constants.PI2, SLIPPERING_RECOVERY_INITIAL_DURATION, true, false, false);
-            player.GetTree().CreateTimer(0.05f).Connect("timeout", this, nameof(OnExitTimerTimeout));
+            player.GetTree().CreateTimer(0.05f).Connect("timeout", new Callable(this, nameof(OnExitTimerTimeout)));
         }
     }
 
@@ -99,22 +99,25 @@ public class PlayerSlipperingState : PlayerBaseState
         foreach (var cc in corners)
         {
             var cp = cc.GlobalPosition;
-            if (Mathf.Sign(pp.x - cp.x) == -direction && cp.y > position.y)
+            if (Mathf.Sign(pp.X - cp.X) == -direction && cp.Y > position.Y)
             {
                 position = cp;
-                size = (cc.Shape as RectangleShape2D).Extents;
+                size = (cc.Shape as RectangleShape2D).Size;
             }
         }
 
-        return position + new Vector2(-0.5f * direction * size.x, 0.5f * size.y) * player.Scale;
+        return position + new Vector2(-0.5f * direction * size.X, 0.5f * size.Y) * player.Scale;
     }
 
     private bool CheckIfGroundIsNear(Player player)
     {
-        var spaceState = player.GetWorld2d().DirectSpaceState;
+        var spaceState = player.GetWorld2D().DirectSpaceState;
         var from = GetFallingEdgePosition(player) + Vector2.Up * RAYCAST_Y_OFFSET;
         var to = from + new Vector2(0.0f, RAYCAST_LENGTH);
-        var result = spaceState.IntersectRay(from, to, new Godot.Collections.Array { player });
+        var physicsRayQueryParameters = PhysicsRayQueryParameters2D.Create(
+            from, to, exclude: new Godot.Collections.Array<Rid> { player.GetRid() }
+        );
+        var result = spaceState.IntersectRay(physicsRayQueryParameters);
 
         return result.Count != 0;
     }
@@ -123,7 +126,7 @@ public class PlayerSlipperingState : PlayerBaseState
     {
         if (CheckIfGroundIsNear(player))
         {
-            player.velocity.x -= player.Scale.x * direction * PLAYER_SPEED_THRESHOLD_TO_STAND;
+            player.velocity.X -= player.Scale.X * direction * PLAYER_SPEED_THRESHOLD_TO_STAND;
             return player.states_store.GetState(PlayerStatesEnum.STANDING);
         }
         return null;

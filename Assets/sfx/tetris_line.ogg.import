@@ -1,15 +1,19 @@
 [remap]
 
-importer="ogg_vorbis"
-type="AudioStreamOGGVorbis"
-path="res://.import/tetris_line.ogg-575b7ef3774078ca88cebf554f3ef25d.oggstr"
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://brngkkhr8k0w1"
+path="res://.godot/imported/tetris_line.ogg-575b7ef3774078ca88cebf554f3ef25d.oggvorbisstr"
 
 [deps]
 
 source_file="res://Assets/sfx/tetris_line.ogg"
-dest_files=[ "res://.import/tetris_line.ogg-575b7ef3774078ca88cebf554f3ef25d.oggstr" ]
+dest_files=["res://.godot/imported/tetris_line.ogg-575b7ef3774078ca88cebf554f3ef25d.oggvorbisstr"]
 
 [params]
 
 loop=true
 loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

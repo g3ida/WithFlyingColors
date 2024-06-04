@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class SelectSlotMenu : GameMenu
+public partial class SelectSlotMenu : GameMenu
 {
     private Button BackButtonNode;
     private SlotsContainer SlotsContainer;
@@ -58,7 +58,7 @@ public class SelectSlotMenu : GameMenu
 
     private void UpdateSlotsYPos(float posY)
     {
-        SlotsContainer.RectPosition = new Vector2(SlotsContainer.RectPosition.x, posY);
+        SlotsContainer.Position = new Vector2(SlotsContainer.Position.X, posY);
     }
 
     private void _on_SlotsContainer_slot_pressed(int id, string action)

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerFallingState : PlayerBaseState
+public partial class PlayerFallingState : PlayerBaseState
 {
     private CountdownTimer permissivenessTimer = new CountdownTimer();
     public bool wasOnFloor = false;
@@ -15,7 +15,7 @@ public class PlayerFallingState : PlayerBaseState
     protected override void _Enter(Player player)
     {
         player.animatedSpriteNode.Play("idle");
-        player.animatedSpriteNode.Playing = false;
+        player.animatedSpriteNode.Stop();
         if (wasOnFloor)
         {
             permissivenessTimer.Reset();

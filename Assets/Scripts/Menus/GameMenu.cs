@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class GameMenu : Control
+public partial class GameMenu : Control
 {
     public enum MenuScreenState
     {
@@ -37,35 +37,35 @@ public class GameMenu : Control
     public override void _Ready()
     {
         EnterTransitionElements();
-        Ready();
+        OnReady();
     }
 
-    public virtual void Ready()
+    public virtual void OnReady()
     {
         // Override this method in derived classes.
     }
 
-    public override void _Process(float delta)
+    public override void _Process(double delta)
     {
-        var focus_owner = GetFocusOwner();
+        var focus_owner = GetViewport().GuiGetFocusOwner(); 
         if (focus_owner != null && focus_owner != current_focus)
         {
             Event.Instance().EmitSignal("focus_changed");
         }
         current_focus = focus_owner;
-        Process(delta);
+        OnProcess(delta);
     }
 
-    public virtual void Process(float delta)
+    public virtual void OnProcess(double delta)
     {
         // Override this method in derived classes.
     }
 
-    public override void _Input(InputEvent @event)
+    public override void _Input(InputEvent ev)
     {
         if (screenState == (int)MenuScreenState.ENTERING || screenState == MenuScreenState.EXITING)
         {
-            GetTree().SetInputAsHandled();
+            GetViewport().SetInputAsHandled();
         }
 
         if (HandleBackEvent && (Input.IsActionJustPressed("ui_cancel") || Input.IsActionJustPressed("ui_home")))
@@ -128,12 +128,12 @@ public class GameMenu : Control
 
     private void ConnectSignals()
     {
-        Event.Instance().Connect("menu_button_pressed", this, nameof(_OnMenuButtonPressed));
+        Event.Instance().Connect("menu_button_pressed", new Callable(this, nameof(_OnMenuButtonPressed)));
     }
 
     private void DisconnectSignals()
     {
-        Event.Instance().Disconnect("menu_button_pressed", this, nameof(_OnMenuButtonPressed));
+        Event.Instance().Disconnect("menu_button_pressed", new Callable(this, nameof(_OnMenuButtonPressed)));
     }
 
     private void ParseTransitionElements()
@@ -146,8 +146,8 @@ public class GameMenu : Control
                 if (chch is UITransition transition)
                 {
                     transition_elements.Add(transition);
-                    transition.Connect("entered", this, nameof(OnTransitionElementEntered));
-                    transition.Connect("exited", this, nameof(OnTransitionElementExited));
+                    transition.Connect("entered", new Callable(this, nameof(OnTransitionElementEntered)));
+                    transition.Connect("exited", new Callable(this, nameof(OnTransitionElementExited)));
                     break;
                 }
             }
@@ -158,8 +158,8 @@ public class GameMenu : Control
     {
         foreach (var transition in transition_elements)
         {
-            transition.Disconnect("entered", this, nameof(OnTransitionElementEntered));
-            transition.Disconnect("exited", this, nameof(OnTransitionElementExited));
+            transition.Disconnect("entered", new Callable(this, nameof(OnTransitionElementEntered)));
+            transition.Disconnect("exited", new Callable(this, nameof(OnTransitionElementExited)));
         }
     }
 

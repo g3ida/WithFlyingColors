@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class Block : Node2D
+public partial class Block : Node2D
 {
     [Export]
     public string color_group { get; set; }
@@ -14,7 +14,7 @@ public class Block : Node2D
     public int J { get; set; } = 0;
 
     [Signal]
-    public delegate void BlockDestroyed();
+    public delegate void BlockDestroyedEventHandler();
 
     public const float BLINK_ANIMATION_DURATION = 0.5f;
     public List<List<Block>> grid;
@@ -95,7 +95,7 @@ public class Block : Node2D
     {
         spriteAnimationNode.Play("Blink");
         await ToSignal(spriteAnimationNode, "animation_finished");
-        EmitSignal(nameof(BlockDestroyed));
+        EmitSignal(nameof(BlockDestroyedEventHandler));
         QueueFree();
     }
 
@@ -136,14 +136,14 @@ public class Block : Node2D
 
         var areaShape = areaShapeNode.Shape as RectangleShape2D;
         edgeArea.Position = new Vector2(
-            dir == DIR_LEFT ? areaShape.Extents.x : Constants.TETRIS_BLOCK_SIZE - areaShape.Extents.x,
-            areaShape.Extents.y
+            dir == DIR_LEFT ? areaShape.Size.X : Constants.TETRIS_BLOCK_SIZE - areaShape.Size.X,
+            areaShape.Size.Y
         );
 
-        float edgeAreaX = ((RectangleShape2D)edgeArea.collisionShapeNode.Shape).Extents.x;
-        float areaX = areaShape.Extents.x;
+        float edgeAreaX = ((RectangleShape2D)edgeArea.collisionShapeNode.Shape).Size.X;
+        float areaX = areaShape.Size.X;
         float factor = 1 - (edgeAreaX / areaX);
-        areaShapeNode.Scale = new Vector2(factor - (1 - areaShapeNode.Scale.x), areaShapeNode.Scale.y);
+        areaShapeNode.Scale = new Vector2(factor - (1 - areaShapeNode.Scale.X), areaShapeNode.Scale.Y);
         areaShapeNode.Position -= new Vector2(dir * 0.5f * (1 - factor) * Constants.TETRIS_BLOCK_SIZE, 0);
     }
 }

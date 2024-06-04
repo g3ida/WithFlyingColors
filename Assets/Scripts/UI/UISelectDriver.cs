@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-public class UISelectDriver : Node
+public partial class UISelectDriver : Node
 {
     public List<string> items = new List<string>();
     public List<object> item_values = new List<object>();

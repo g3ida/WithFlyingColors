@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PauseScreenMenu : CanvasLayer
+public partial class PauseScreenMenu : CanvasLayer
 {
     private ScreenShaders screenShaders;
     private PauseMenu pauseMenu;
@@ -13,7 +13,7 @@ public class PauseScreenMenu : CanvasLayer
         pauseMenu = GetNode<PauseMenu>("PauseMenu");
     }
 
-    public override void _Process(float delta)
+    public override void _Process(double delta)
     {
         if (Input.IsActionJustPressed("pause"))
         {

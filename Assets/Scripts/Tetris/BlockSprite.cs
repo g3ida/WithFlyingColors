@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class BlockSprite : Node2D
+public partial class BlockSprite : Node2D
 {
     [Export]
     public string color_group
@@ -22,9 +22,9 @@ public class BlockSprite : Node2D
         Color darkColor = ColorUtils.GetDarkColor(colorIndex);
         
         // Apply colors to the sprite layers
-        GetNode<Sprite>("Layer1").Modulate = lightColor;
-        GetNode<Sprite>("Layer2").Modulate = darkColor;
-        GetNode<Sprite>("TopLayer").Modulate = baseColor;
+        GetNode<Sprite2D>("Layer1").Modulate = lightColor;
+        GetNode<Sprite2D>("Layer2").Modulate = darkColor;
+        GetNode<Sprite2D>("TopLayer").Modulate = baseColor;
     }
 
     public string GetGroup()

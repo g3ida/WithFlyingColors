@@ -1,27 +1,27 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Assets/Sprites/BrickBreaker/brick.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Sprites/BrickBreaker/brick.png" type="Texture2D" id=1]
 [ext_resource path="res://Assets/Scripts/BrickBreaker/Brick.cs" type="Script" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 53, 17 )
+size = Vector2( 53, 17 )
 
 [sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 53.9, 17.9 )
+size = Vector2( 53.9, 17.9 )
 
 [node name="Brick" type="Node2D"]
 script = ExtResource( 2 )
 
-[node name="BrickSpr" type="Sprite" parent="."]
+[node name="BrickSpr" type="Sprite2D" parent="."]
 modulate = Color( 0, 0.921569, 1, 1 )
 texture = ExtResource( 1 )
 centered = false
 
-[node name="KinematicBody2D" type="KinematicBody2D" parent="."]
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 collision_layer = 1024
 collision_mask = 530
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="KinematicBody2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 position = Vector2( 54, 18 )
 shape = SubResource( 1 )
 

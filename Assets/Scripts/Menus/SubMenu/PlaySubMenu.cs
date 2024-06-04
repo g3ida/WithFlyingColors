@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 [Tool]
-public class PlaySubMenu : Control
+public partial class PlaySubMenu : Control
 {
     private PackedScene SubMenuScene = (PackedScene)GD.Load("res://Assets/Scenes/MainMenu/SubMenu.tscn");
 
@@ -62,9 +62,9 @@ public class PlaySubMenu : Control
     {
         var colorIndex = ColorUtils.GetGroupColorIndex("blue");
         var blue = ColorUtils.GetSkinBasicColor(SkinLoader.DEFAULT_SKIN, colorIndex);
-        SubMenuNode = (SubMenu)SubMenuScene.Instance();
+        SubMenuNode = SubMenuScene.Instantiate<SubMenu>();
         SubMenuNode.color = ColorUtils.DarkenRGB(blue, 0.0f);
-        SubMenuNode.color.a = 1f; // FIXME: this is hack fix in color utils
+        SubMenuNode.color.A = 1f; // FIXME: this is hack fix in color utils
         SubMenuNode.top_color = ColorUtils.DarkenRGB(blue, 0.115f);
 
         SubMenuNode.buttons = new List<string>();
@@ -83,8 +83,8 @@ public class PlaySubMenu : Control
 
         AddChild(SubMenuNode);
         SubMenuNode.Owner = this;
-        RectMinSize = SubMenuNode.RectMinSize;
-        RectSize = SubMenuNode.RectSize;
+        CustomMinimumSize = SubMenuNode.CustomMinimumSize;
+        Size = SubMenuNode.Size;
     }
 
     private bool ShouldDisableButton(ButtonDefinition btn)

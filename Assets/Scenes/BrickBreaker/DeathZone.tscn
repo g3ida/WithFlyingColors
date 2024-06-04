@@ -1,7 +1,7 @@
 [gd_scene load_steps=2 format=2]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 622, 10.5 )
+size = Vector2( 622, 10.5 )
 
 [node name="DeathZone" type="Area2D" groups=["death_zone"]]
 collision_mask = 768

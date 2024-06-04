@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerJumpingState : PlayerBaseState
+public partial class PlayerJumpingState : PlayerBaseState
 {    
     private const float TIME_UNTIL_FULL_JUMP_IS_CONSIDERED = 0.15f;
     private const float PERMISSIVENESS = 0.09f;
@@ -49,7 +49,7 @@ public class PlayerJumpingState : PlayerBaseState
         if (entred)
         {
             entred = false;
-            player.velocity.y -= JUMP_FORCE * touchJumpPower;
+            player.velocity.Y -= JUMP_FORCE * touchJumpPower;
         }
         else if (player.IsOnFloor())
         {
@@ -71,9 +71,9 @@ public class PlayerJumpingState : PlayerBaseState
         if (jumpTimer.IsRunning() && Input.IsActionJustReleased("jump"))
         {
             jumpTimer.Stop();
-            if (player.velocity.y < 0)
+            if (player.velocity.Y < 0)
             {
-                player.velocity.y *= 0.5f;
+                player.velocity.X *= 0.5f;
             }
         }
 

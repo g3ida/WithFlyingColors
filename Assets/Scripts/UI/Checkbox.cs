@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class Checkbox : CheckBox
+public partial class Checkbox : CheckBox
 {
     public override void _Ready()
     {

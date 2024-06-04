@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://Assets/Sprites/BrickBreaker/speed.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Sprites/BrickBreaker/speed.png" type="Texture2D" id=2]
 [ext_resource path="res://Assets/Scenes/BrickBreaker/Powerups/PowerUp.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/Scenes/BrickBreaker/Powerups/FastPowerUpScript.tscn" type="PackedScene" id=4]
 

@@ -1,24 +1,24 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Assets/Scripts/Menus/SubMenu/SubMenu.cs" type="Script" id=1]
-[ext_resource path="res://Assets/Sprites/MainMenu/sub-menu-top.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Sprites/MainMenu/sub-menu-top.png" type="Texture2D" id=2]
 
 [node name="SubMenu" type="Control"]
-margin_left = 1.0
-margin_right = 638.0
-margin_bottom = 30.0
-rect_min_size = Vector2( 637, 30 )
+offset_left = 1.0
+offset_right = 638.0
+offset_bottom = 30.0
+custom_minimum_size = Vector2( 637, 30 )
 script = ExtResource( 1 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-rect_min_size = Vector2( 637, 30 )
-custom_constants/separation = 0
+custom_minimum_size = Vector2( 637, 30 )
+theme_override_constants/separation = 0
 
 [node name="Top" type="TextureRect" parent="VBoxContainer"]
 modulate = Color( 0, 0, 0, 0 )
-margin_right = 637.0
-margin_bottom = 30.0
-rect_min_size = Vector2( 637, 30 )
+offset_right = 637.0
+offset_bottom = 30.0
+custom_minimum_size = Vector2( 637, 30 )
 texture = ExtResource( 2 )

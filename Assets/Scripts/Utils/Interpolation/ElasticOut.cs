@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class ElasticOut : ElasticInterpolation
+public partial class ElasticOut : ElasticInterpolation
 {
 
     private float _value;

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-public class SaveGame : Node2D
+public partial class SaveGame : Node2D
 {
     private const string SAVE_FILE_PATH = "user://save_slot_{0}.save";
     private const string SAVE_IMAGE_PATH = "user://save_slot_img_{0}.png";
@@ -53,11 +53,11 @@ public class SaveGame : Node2D
     }
 
     public void ConnectSignals() {
-        Event.Instance().Connect("checkpoint_reached", this, nameof(OnCheckpoint));
+        Event.Instance().Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpoint)));
     }
 
     public void DisconnectSignals() {
-        Event.Instance().Disconnect("checkpoint_reached", this, nameof(OnCheckpoint));
+        Event.Instance().Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpoint)));
     }
 
     public override void _ExitTree()
@@ -91,12 +91,11 @@ public class SaveGame : Node2D
     private void InitCheckFilledSlots()
     {
         isSlotFilledArray.Clear();
-        var file = new File();
         hasFilledSlots = false;
 
         foreach (var slotPath in SAVE_SLOTS)
         {
-            bool exists = file.FileExists(slotPath);
+            bool exists = FileAccess.FileExists(slotPath);
             hasFilledSlots = exists || hasFilledSlots;
             isSlotFilledArray.Add(exists);
         }
@@ -110,8 +109,7 @@ public class SaveGame : Node2D
         {
             if (IsSlotFilled(slotIdx))
             {
-                var saveFile = new File();
-                saveFile.Open(GetSaveSlotFilePath(slotIdx), File.ModeFlags.Read);
+                var saveFile = FileAccess.Open(GetSaveSlotFilePath(slotIdx), FileAccess.ModeFlags.Read);
                 var metaData = JsonConvert.DeserializeObject<Dictionary<string, object>>(saveFile.GetLine());
                 slotMetaData.Add(metaData);
                 saveFile.Close();
@@ -137,7 +135,7 @@ public class SaveGame : Node2D
 
     private ulong GetUnixTimestamp()
     {
-        return OS.GetUnixTime();
+        return (ulong)Time.GetUnixTimeFromSystem();
     }
 
     private Dictionary<string, object> GenerateSaveMetaData(int saveSlotIndex)
@@ -146,7 +144,7 @@ public class SaveGame : Node2D
         {
             { "image_path", GetSaveSlotImagePath(saveSlotIndex) },
             { "save_time", GetUnixTimestamp() },
-            { "scene_path", GetTree().CurrentScene.GetChild(0).Filename },
+            { "scene_path", GetTree().CurrentScene.GetChild(0).SceneFilePath },
             { "progress", 0 } // TODO: calculate progress
         };
     }
@@ -154,8 +152,7 @@ public class SaveGame : Node2D
     public void Save(int saveSlotIndex, bool newEmptySlot = false)
     {
         var filePath = GetSaveSlotFilePath(saveSlotIndex);
-        var saveFile = new File();
-        saveFile.Open(filePath, File.ModeFlags.Write);
+        var saveFile = FileAccess.Open(filePath, FileAccess.ModeFlags.Write);
 
         var saveMetaData = GenerateSaveMetaData(saveSlotIndex);
         SaveScreenshot(saveMetaData["image_path"].ToString());
@@ -166,7 +163,7 @@ public class SaveGame : Node2D
             var saveNodes = GetTree().GetNodesInGroup("persist");
             foreach (Node node in saveNodes)
             {
-                if (node.Filename.Empty())
+                if (node.SceneFilePath.Length == 0)
                 {
                     GD.PushError($"persistent node '{node.Name}' is not an instanced scene, skipped");
                     continue;
@@ -192,7 +189,6 @@ public class SaveGame : Node2D
     private void LoadLevel(int saveSlotIndex)
     {
         var filePath = GetSaveSlotFilePath(saveSlotIndex);
-        var saveGame = new File();
 
         if (!IsSlotFilled(saveSlotIndex))
         {
@@ -200,10 +196,10 @@ public class SaveGame : Node2D
             return; // Error! We don't have a save to load.
         }
 
-        saveGame.Open(filePath, File.ModeFlags.Read);
+        var saveGame = FileAccess.Open(filePath, FileAccess.ModeFlags.Read);
         var metaData = JsonConvert.DeserializeObject<Dictionary<string, object>>(saveGame.GetLine()); // the metadata is ignored
 
-        while (saveGame.GetPosition() < saveGame.GetLen())
+        while (saveGame.GetPosition() < saveGame.GetLength())
         {
             var nodeData = JsonConvert.DeserializeObject<Dictionary<string, object>>(saveGame.GetLine());
             var nodePath = nodeData[NODE_PATH_VAR].ToString();
@@ -284,9 +280,8 @@ public class SaveGame : Node2D
     {
         if (IsSlotFilled(saveSlotIndex))
         {
-            var dir = new Directory();
-            dir.Remove(GetSaveSlotFilePath(saveSlotIndex));
-            dir.Remove(GetSaveSlotImagePath(saveSlotIndex));
+            DirAccess.RemoveAbsolute(GetSaveSlotFilePath(saveSlotIndex));
+            DirAccess.RemoveAbsolute(GetSaveSlotImagePath(saveSlotIndex));
 
             // reset currently selected slot
             if (currentSlotIndex == saveSlotIndex)
@@ -306,7 +301,7 @@ public class SaveGame : Node2D
 
     private void SaveScreenshot(string filePath)
     {
-        var image = GetViewport().GetTexture().GetData();
+        var image = GetViewport().GetTexture().GetImage();
         image.FlipY();
         image.ShrinkX2(); // TODO: resize image to fixed size
         image.SavePng(filePath);
@@ -314,13 +309,11 @@ public class SaveGame : Node2D
 
     private ImageTexture LoadImage(string filePath)
     {
-        var file = new File();
-        if (file.FileExists(filePath))
+        if (FileAccess.FileExists(filePath))
         {
-            var texture = new ImageTexture();
             var image = new Image();
             image.Load(filePath);
-            texture.CreateFromImage(image);
+            var texture = ImageTexture.CreateFromImage(image);
             return texture;
         }
 
@@ -385,18 +378,16 @@ public class SaveGame : Node2D
             { "slot_last_load_date", slotLastLoadDate }
         };
 
-        var saveFile = new File();
-        saveFile.Open(SAVE_INFO_PATH, File.ModeFlags.Write);
+        var saveFile = FileAccess.Open(SAVE_INFO_PATH, FileAccess.ModeFlags.Write);
         saveFile.StoreLine(JsonConvert.SerializeObject(data));
         saveFile.Close();
     }
 
     private bool _LoadGameInfo()
     {
-        var loadFile = new File();
-        if (loadFile.FileExists(SAVE_INFO_PATH))
+        if (FileAccess.FileExists(SAVE_INFO_PATH))
         {
-            loadFile.Open(SAVE_INFO_PATH, File.ModeFlags.Read);
+            var loadFile = FileAccess.Open(SAVE_INFO_PATH, FileAccess.ModeFlags.Read);
             var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(loadFile.GetLine());
             slotLastLoadDate = JsonConvert.DeserializeObject<List<long?>>(data["slot_last_load_date"].ToString());
             loadFile.Close();

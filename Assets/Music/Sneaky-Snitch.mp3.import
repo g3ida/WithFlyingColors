@@ -2,14 +2,18 @@
 
 importer="mp3"
 type="AudioStreamMP3"
-path="res://.import/Sneaky-Snitch.mp3-4f9a96173cc79c689420e9104da54784.mp3str"
+uid="uid://b8cqao8ncjgtj"
+path="res://.godot/imported/Sneaky-Snitch.mp3-4f9a96173cc79c689420e9104da54784.mp3str"
 
 [deps]
 
 source_file="res://Assets/Music/Sneaky-Snitch.mp3"
-dest_files=[ "res://.import/Sneaky-Snitch.mp3-4f9a96173cc79c689420e9104da54784.mp3str" ]
+dest_files=["res://.godot/imported/Sneaky-Snitch.mp3-4f9a96173cc79c689420e9104da54784.mp3str"]
 
 [params]
 
 loop=true
 loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

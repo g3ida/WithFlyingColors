@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class SettingsMenu : GameMenu
+public partial class SettingsMenu : GameMenu
 {
     private TabContainer tabContainer;
     private int tabsCount;
@@ -15,9 +15,9 @@ public class SettingsMenu : GameMenu
         DialogContainerNode = GetNode<DialogContainer>("DialogContainer");
     }
 
-    public override void _Input(InputEvent @event)
+    public override void _Input(InputEvent ev)
     {
-        base._Input(@event);
+        base._Input(ev);
         if (Input.IsActionJustPressed("ui_left"))
         {
             tabContainer.CurrentTab = Mathf.Clamp(tabContainer.CurrentTab - 1, 0, tabsCount - 1);

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class UISelect : Button
+public partial class UISelect : Button
 {
     public UISelectDriver select_driver;
 
@@ -17,10 +17,10 @@ public class UISelect : Button
     private bool is_in_edit_mode = false;
 
     [Signal]
-    public delegate void Value_changed(Vector2 value); //FIXME: must work with any type. c# migration.
+    public delegate void Value_changedEventHandler(Vector2 value); //FIXME: must work with any type. c# migration.
 
     [Signal]
-    public delegate void selection_changed(bool is_edit);
+    public delegate void selection_changedEventHandler(bool is_edit);
 
     public override void _Ready()
     {
@@ -37,7 +37,7 @@ public class UISelect : Button
         is_ready = true;
     }
 
-    public override void _Input(InputEvent @event)
+    public override void _Input(InputEvent ev)
     {
         if (HasFocus())
         {
@@ -46,24 +46,24 @@ public class UISelect : Button
                 if (Input.IsActionJustPressed("ui_left"))
                 {
                     _on_Left_pressed();
-                    GetTree().SetInputAsHandled();
+                    GetViewport().SetInputAsHandled();
                 }
                 else if (Input.IsActionJustPressed("ui_right"))
                 {
                     _on_Right_pressed();
-                    GetTree().SetInputAsHandled();
+                    GetViewport().SetInputAsHandled();
                 }
             }
 
             if (Input.IsActionJustPressed("ui_accept"))
             {
                 SetEditMode(!is_in_edit_mode);
-                GetTree().SetInputAsHandled();
+                GetViewport().SetInputAsHandled();
             }
             else if (Input.IsActionJustPressed("ui_cancel") && is_in_edit_mode)
             {
                 SetEditMode(false);
-                GetTree().SetInputAsHandled();
+                GetViewport().SetInputAsHandled();
             }
         }
     }
@@ -90,7 +90,7 @@ public class UISelect : Button
         GrabFocus();
         index = (index + 1) % (int)select_driver.items.Count;
         UpdateSelectedItem();
-        EmitSignal(nameof(Value_changed), (Vector2)select_driver.item_values[index]);
+        EmitSignal(nameof(Value_changedEventHandler), (Vector2)select_driver.item_values[index]);
     }
 
     private void _on_Right_pressed()
@@ -98,7 +98,7 @@ public class UISelect : Button
         GrabFocus();
         index = (index - 1 + select_driver.items.Count) % select_driver.items.Count;
         UpdateSelectedItem();
-        EmitSignal(nameof(Value_changed), (Vector2)select_driver.item_values[index]);
+        EmitSignal(nameof(Value_changedEventHandler), (Vector2)select_driver.item_values[index]);
     }
 
     private void UpdateSelectedItem()
@@ -111,13 +111,13 @@ public class UISelect : Button
 
     private void UpdateRectSize()
     {
-        SetDeferred("rect_min_size", ChildContainerNode.RectSize);
-        SetDeferred("rect_size", ChildContainerNode.RectSize);
+        SetDeferred("rect_min_size", ChildContainerNode.Size);
+        SetDeferred("rect_size", ChildContainerNode.Size);
     }
 
     private void EmitSelectionChangedSignal()
     {
-        EmitSignal(nameof(selection_changed), is_in_edit_mode);
+        EmitSignal(nameof(selection_changedEventHandler), is_in_edit_mode);
     }
 
     private void _on_Button_mouse_entered()

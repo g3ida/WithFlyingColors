@@ -2,9 +2,9 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class PlayerSpriteGenerator : Node
+public partial class PlayerSpriteGenerator : Node
 {
-    public static readonly Vector2 SPRITE_SIZE = new Vector2(96, 96);
+    public static readonly Vector2I SPRITE_SIZE = new Vector2I(96, 96);
 
     public enum ImageAlignment
     {
@@ -19,7 +19,7 @@ public class PlayerSpriteGenerator : Node
         {
             "left", new Dictionary<string, object>
             {
-                { "texture", GD.Load<Texture>("res://Assets/Sprites/Player/player-left.png") },
+                { "texture", GD.Load<Texture2D>("res://Assets/Sprites/Player/player-left.png") },
                 { "color", "3-basic" },
                 { "align", ImageAlignment.TopLeft }
             }
@@ -27,7 +27,7 @@ public class PlayerSpriteGenerator : Node
         {
             "top", new Dictionary<string, object>
             {
-                { "texture", GD.Load<Texture>("res://Assets/Sprites/Player/player-top.png") },
+                { "texture", GD.Load<Texture2D>("res://Assets/Sprites/Player/player-top.png") },
                 { "color", "2-basic" },
                 { "align", ImageAlignment.TopRight }
             }
@@ -35,7 +35,7 @@ public class PlayerSpriteGenerator : Node
         {
             "bottom", new Dictionary<string, object>
             {
-                { "texture", GD.Load<Texture>("res://Assets/Sprites/Player/player-bottom.png") },
+                { "texture", GD.Load<Texture2D>("res://Assets/Sprites/Player/player-bottom.png") },
                 { "color", "0-basic" },
                 { "align", ImageAlignment.BottomRight }
             }
@@ -43,7 +43,7 @@ public class PlayerSpriteGenerator : Node
         {
             "right", new Dictionary<string, object>
             {
-                { "texture", GD.Load<Texture>("res://Assets/Sprites/Player/player-right.png") },
+                { "texture", GD.Load<Texture2D>("res://Assets/Sprites/Player/player-right.png") },
                 { "color", "1-basic" },
                 { "align", ImageAlignment.TopRight }
             }
@@ -51,7 +51,7 @@ public class PlayerSpriteGenerator : Node
         {
             "left-edge", new Dictionary<string, object>
             {
-                { "texture", GD.Load<Texture>("res://Assets/Sprites/Player/player-left-edge.png") },
+                { "texture", GD.Load<Texture2D>("res://Assets/Sprites/Player/player-left-edge.png") },
                 { "color", "3-dark" },
                 { "align", ImageAlignment.TopLeft }
             }
@@ -59,7 +59,7 @@ public class PlayerSpriteGenerator : Node
         {
             "right-edge", new Dictionary<string, object>
             {
-                { "texture", GD.Load<Texture>("res://Assets/Sprites/Player/player-right-edge.png") },
+                { "texture", GD.Load<Texture2D>("res://Assets/Sprites/Player/player-right-edge.png") },
                 { "color", "1-dark" },
                 { "align", ImageAlignment.TopRight }
             }
@@ -67,7 +67,7 @@ public class PlayerSpriteGenerator : Node
         {
             "bottom-edge", new Dictionary<string, object>
             {
-                { "texture", GD.Load<Texture>("res://Assets/Sprites/Player/player-bottom-edge.png") },
+                { "texture", GD.Load<Texture2D>("res://Assets/Sprites/Player/player-bottom-edge.png") },
                 { "color", "0-dark" },
                 { "align", ImageAlignment.BottomLeft }
             }
@@ -75,14 +75,14 @@ public class PlayerSpriteGenerator : Node
         {
             "top-edge", new Dictionary<string, object>
             {
-                { "texture", GD.Load<Texture>("res://Assets/Sprites/Player/player-top-edge.png") },
+                { "texture", GD.Load<Texture2D>("res://Assets/Sprites/Player/player-top-edge.png") },
                 { "color", "2-dark" },
                 { "align", ImageAlignment.TopLeft }
             }
         }
     };
 
-    public static Texture GetTexture()
+    public static Texture2D GetTexture()
     {
         if (Global.Instance().GetSelectedSkin() == null)
         {
@@ -92,49 +92,46 @@ public class PlayerSpriteGenerator : Node
         return MergeIntoSingleTexture();
     }
 
-    private static Texture MergeIntoSingleTexture()
+    private static Texture2D MergeIntoSingleTexture()
     {
-        var imageTexture = new ImageTexture();
         var image = MergeIntoSingleImage();
         // FIXME: flag filter is 4 ?? could be a bug introduced after c# migration ?
-        imageTexture.CreateFromImage(image, (uint)Texture.FlagsEnum.Filter); // Flag 5 corresponds to the FILTER flag, as FLAG_REPEAT is not needed
-        return imageTexture;
+        return ImageTexture.CreateFromImage(image);//, (uint)Texture2D.FlagsEnum.Filter); Flag 5 corresponds to the FILTER flag, as FLAG_REPEAT is not needed
     }
 
     private static Image MergeIntoSingleImage()
     {
-        var image = new Image();
         var format = Image.Format.Rgba8;
-        image.Create((int)SPRITE_SIZE.x, (int)SPRITE_SIZE.y, false, format);
+        var image = Image.Create((int)SPRITE_SIZE.X, (int)SPRITE_SIZE.Y, false, format);
         image.Fill(new Color(0, 0, 0, 0));
 
         foreach (var entry in FACES_TEXTURES)
         {
             var value = entry.Value;
-            var texture = (Texture)value["texture"];
+            var texture = (Texture2D)value["texture"];
             var color = ColorUtils.GetColor((string)value["color"]);
             var alignment = (ImageAlignment)value["align"];
-            var img = CreateColoredCopyFromImage(texture.GetData(), color);
+            var img = CreateColoredCopyFromImage(texture.GetImage(), color);
             var pos = GetPositionFromAlignment(texture, alignment);
             ImageUtils.BlitTexture(image, img, pos);
         }
         return image;
     }
 
-    private static Vector2 GetPositionFromAlignment(Texture texture, ImageAlignment alignment)
+    private static Vector2I GetPositionFromAlignment(Texture2D texture, ImageAlignment alignment)
     {
         switch (alignment)
         {
             case ImageAlignment.TopLeft:
-                return Vector2.Zero;
+                return Vector2I.Zero;
             case ImageAlignment.TopRight:
-                return new Vector2(SPRITE_SIZE.x - texture.GetWidth(), 0);
+                return new Vector2I(SPRITE_SIZE.X - texture.GetWidth(), 0);
             case ImageAlignment.BottomLeft:
-                return new Vector2(0, SPRITE_SIZE.y - texture.GetHeight());
+                return new Vector2I(0, SPRITE_SIZE.Y - texture.GetHeight());
             case ImageAlignment.BottomRight:
-                return SPRITE_SIZE - new Vector2(texture.GetWidth(), texture.GetHeight());
+                return SPRITE_SIZE - new Vector2I(texture.GetWidth(), texture.GetHeight());
             default:
-                return Vector2.Zero;
+                return Vector2I.Zero;
         }
     }
 
@@ -142,24 +139,17 @@ public class PlayerSpriteGenerator : Node
     {
         int width = srcImage.GetWidth();
         int height = srcImage.GetHeight();
-        var image = new Image();
         var format = srcImage.GetFormat();
-        image.Create(width, height, false, format);
-        srcImage.Lock();
-        image.Lock();
-
+        var image = Image.Create(width, height, false, format);
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
                 var pix = srcImage.GetPixel(i, j);
-                var col = new Color(color.r, color.g, color.b, pix.a);
+                var col = new Color(color.R, color.G, color.B, pix.A);
                 image.SetPixel(i, j, col);
             }
         }
-
-        srcImage.Unlock();
-        image.Unlock();
         return image;
     }
 }

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class SlowPowerUp : PowerUpScript
+public partial class SlowPowerUp : PowerUpScript
 {
     public override void _EnterTree()
     {

@@ -1,15 +1,19 @@
 [remap]
 
-importer="ogg_vorbis"
-type="AudioStreamOGGVorbis"
-path="res://.import/shooting.ogg-8ebca355fd39f9631f61bef3042bd82e.oggstr"
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bpom2wb1y45g2"
+path="res://.godot/imported/shooting.ogg-8ebca355fd39f9631f61bef3042bd82e.oggvorbisstr"
 
 [deps]
 
 source_file="res://Assets/sfx/shooting.ogg"
-dest_files=[ "res://.import/shooting.ogg-8ebca355fd39f9631f61bef3042bd82e.oggstr" ]
+dest_files=["res://.godot/imported/shooting.ogg-8ebca355fd39f9631f61bef3042bd82e.oggvorbisstr"]
 
 [params]
 
 loop=false
 loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

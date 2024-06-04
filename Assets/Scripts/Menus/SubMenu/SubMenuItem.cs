@@ -2,20 +2,20 @@ using Godot;
 using System;
 
 [Tool]
-public class SubMenuItem : Control
+public partial class SubMenuItem : Control
 {
     [Export] public string text = "";
     [Export] public int id = 0;
     [Export] public Color color;
-    [Export] public MenuButtons @event;
-    private bool _disabled = false;
+    [Export] public MenuButtons ev;
     [Export] public bool disabled
     {
         get { return _disabled; }
         set { SetDisabled(value); }
     }
+    private bool _disabled = false;
 
-    private Button ButtonNode;
+    private Button ButtonNode { get; set; }
 
     public override void _Ready()
     {
@@ -27,7 +27,7 @@ public class SubMenuItem : Control
         SetProcess(false);
     }
 
-    // public override void _Process(float delta)
+    // public override void _Process(double delta)
     // {
     //     if (ButtonNode.HasFocus())
     //     {
@@ -55,7 +55,7 @@ public class SubMenuItem : Control
 
     private void _on_Button_pressed()
     {
-        Event.Instance().EmitMenuButtonPressed(@event);
+        Event.Instance().EmitMenuButtonPressed(ev);
     }
 
     private void _on_Button_mouse_entered()

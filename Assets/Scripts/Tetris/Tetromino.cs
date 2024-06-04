@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class Tetromino : Node2D
+public partial class Tetromino : Node2D
 {
     private const int DIRECTIONS = 4;
 
@@ -55,7 +55,7 @@ public class Tetromino : Node2D
                 Vector2 pos = rotationMap[rotateIndex][i];
                 Vector2 oldPos = rotationMap[oldIdx][i];
                 Vector2 dDist = pos - oldPos;
-                block.MoveBy((int)dDist.x, (int)dDist.y);
+                block.MoveBy((int)dDist.X, (int)dDist.Y);
                 i++;
             }
         }
@@ -88,7 +88,7 @@ public class Tetromino : Node2D
                 Vector2 pos = rotationMap[rotateIndex][i];
                 Vector2 oldPos = rotationMap[oldIdx][i];
                 Vector2 dDist = pos - oldPos;
-                if (!block.CanMoveBy((int)dDist.x, (int)dDist.y))
+                if (!block.CanMoveBy((int)dDist.X, (int)dDist.Y))
                 {
                     MoveRotateIndexBy(-dir);
                     return false;

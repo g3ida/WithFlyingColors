@@ -1,6 +1,6 @@
 using Godot;
 
-public class GemStatesStore : BaseStatesStore<Gem, GemStatesEnum>
+public partial class GemStatesStore : BaseStatesStore<Gem, GemStatesEnum>
 {
     public readonly GemBaseState NotCollected;
     public readonly GemBaseState Collecting;

@@ -1,22 +1,22 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Assets/Sprites/Buttons/key_btn.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Sprites/Buttons/key_btn.png" type="Texture2D" id=1]
 [ext_resource path="res://Assets/Scripts/Tutorial/KeyboardButton.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Fonts/KeyboardButton.tres" type="DynamicFont" id=3]
-[ext_resource path="res://Assets/Sprites/Buttons/btn_arrow.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Fonts/KeyboardButton.tres" type="FontFile" id=3]
+[ext_resource path="res://Assets/Sprites/Buttons/btn_arrow.png" type="Texture2D" id=4]
 
 [node name="KeyboardButton" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -1817.0
-margin_bottom = -972.0
-rect_min_size = Vector2( 103, 108 )
+offset_right = -1817.0
+offset_bottom = -972.0
+custom_minimum_size = Vector2( 103, 108 )
 script = ExtResource( 2 )
 
 [node name="NinePatchRect" type="NinePatchRect" parent="."]
-margin_right = 103.0
-margin_bottom = 108.0
-rect_min_size = Vector2( 103, 108 )
+offset_right = 103.0
+offset_bottom = 108.0
+custom_minimum_size = Vector2( 103, 108 )
 texture = ExtResource( 1 )
 region_rect = Rect2( 2.55844, 0.0449333, 237.75, 159.599 )
 patch_margin_left = 52
@@ -25,14 +25,14 @@ patch_margin_right = 51
 patch_margin_bottom = 54
 
 [node name="Label" type="Label" parent="."]
-margin_left = 23.76
-margin_top = 28.0
-margin_right = 93.76
-margin_bottom = 79.0
-custom_fonts/font = ExtResource( 3 )
+offset_left = 23.76
+offset_top = 28.0
+offset_right = 93.76
+offset_bottom = 79.0
+theme_override_fonts/font = ExtResource( 3 )
 text = "ALT"
 
-[node name="Arrow" type="Sprite" parent="."]
+[node name="Arrow" type="Sprite2D" parent="."]
 visible = false
 position = Vector2( 54, 51 )
 texture = ExtResource( 4 )

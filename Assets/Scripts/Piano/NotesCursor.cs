@@ -1,10 +1,10 @@
 using Godot;
 
-public class NotesCursor : Sprite
+public partial class NotesCursor : Sprite2D
 {
     private const float SPEED = 10f * Constants.WORLD_TO_SCREEN;
 
-    private SceneTreeTween tweener;
+    private Tween tweener;
 
     public override void _Ready()
     {

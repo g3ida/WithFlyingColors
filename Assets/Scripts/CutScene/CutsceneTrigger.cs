@@ -1,9 +1,9 @@
 using Godot;
 using System.Collections.Generic;
 
-public class CutsceneTrigger : Area2D
+public partial class CutsceneTrigger : Area2D
 {
-    private Position2D followChild = null;
+    private Marker2D followChild = null;
     private bool triggered = false;
 
     public override void _Ready()
@@ -11,7 +11,7 @@ public class CutsceneTrigger : Area2D
         var children = GetChildren();
         foreach (var ch in children)
         {
-            if (ch is Position2D position2D)
+            if (ch is Marker2D position2D)
             {
                 followChild = position2D;
             }

@@ -13,18 +13,18 @@ public static class Helpers
     {
         Vector2 circleDist = new Vector2
         {
-            x = Math.Abs(circlePos.x - rectPos.x),
-            y = Math.Abs(circlePos.y - rectPos.y)
+            X = Math.Abs(circlePos.X - rectPos.X),
+            Y = Math.Abs(circlePos.Y - rectPos.Y)
         };
 
-        if (circleDist.x > (rect.x / 2.0f + circleRadius)) return false;
-        if (circleDist.y > (rect.y / 2.0f + circleRadius)) return false;
+        if (circleDist.X > (rect.X / 2.0f + circleRadius)) return false;
+        if (circleDist.Y > (rect.Y / 2.0f + circleRadius)) return false;
 
-        if (circleDist.x <= (rect.x / 2.0f)) return true;
-        if (circleDist.y <= (rect.y / 2.0f)) return true;
+        if (circleDist.X <= (rect.X / 2.0f)) return true;
+        if (circleDist.Y <= (rect.Y / 2.0f)) return true;
 
-        float cornerDistanceSq = Mathf.Pow(circleDist.x - rect.x / 2.0f, 2) +
-                                 Mathf.Pow(circleDist.y - rect.y / 2.0f, 2);
+        float cornerDistanceSq = Mathf.Pow(circleDist.X - rect.X / 2.0f, 2) +
+                                 Mathf.Pow(circleDist.Y - rect.Y / 2.0f, 2);
         return (cornerDistanceSq <= (circleRadius * circleRadius));
     }
 
@@ -42,7 +42,7 @@ public static class Helpers
 
     // FIXME: make this extension function
     public static void SetLooping(AudioStream stream, bool looping) {
-        if (stream is AudioStreamOGGVorbis oggStream)
+        if (stream is AudioStreamOggVorbis oggStream)
         {
             oggStream.Loop = looping;
         }
@@ -50,12 +50,12 @@ public static class Helpers
         {
             mp3Stream.Loop = looping;
         }
-        else if (stream is AudioStreamSample sampleStream)
+        else if (stream is AudioStreamWav sampleStream)
         {
             if (looping) {
-                sampleStream.LoopMode = AudioStreamSample.LoopModeEnum.Forward;
+                sampleStream.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
             } else {
-                sampleStream.LoopMode = AudioStreamSample.LoopModeEnum.Disabled;
+                sampleStream.LoopMode = AudioStreamWav.LoopModeEnum.Disabled;
             }
         }
     }

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class ProtectionAreaPowerUp : PowerUpScript
+public partial class ProtectionAreaPowerUp : PowerUpScript
 {
     private PackedScene ProtectionArea = GD.Load<PackedScene>("res://Assets/Scenes/BrickBreaker/Powerups/ProtectionArea.tscn");
 
@@ -11,11 +11,11 @@ public class ProtectionAreaPowerUp : PowerUpScript
     public override void _Ready()
     {
         SetProcess(false);
-        protectionArea = (Node2D)ProtectionArea.Instance();
+        protectionArea = ProtectionArea.Instantiate<Node2D>();
         protectionArea.Position = BrickBreakerNode.ProtectionAreaSpawnerPositionNode.Position;
         BrickBreakerNode.CallDeferred("add_child", protectionArea);
         protectionArea.CallDeferred("set_owner", BrickBreakerNode);
-        protectionArea.Connect("tree_exited", this, nameof(_OnProtectionAreaDestroyed));
+        protectionArea.Connect("tree_exited", new Callable(this, nameof(_OnProtectionAreaDestroyed)));
     }
 
     public override void _ExitTree()

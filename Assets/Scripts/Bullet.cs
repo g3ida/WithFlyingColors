@@ -1,14 +1,14 @@
 using Godot;
 using System;
 
-public class Bullet : Node2D, IBullet
+public partial class Bullet : Node2D, IBullet
 {
     private const float SPEED = 10.0f * Constants.WORLD_TO_SCREEN;
     private const float MAX_DISTANCE = 5000.0f;
     private const float MAX_DISTANCE_SQUARED = MAX_DISTANCE * MAX_DISTANCE;
 
-    private KinematicBody2D bodyNode;
-    private Sprite spriteNode;
+    private CharacterBody2D bodyNode;
+    private Sprite2D spriteNode;
     private Area2D colorAreaNode;
 
     private float gravity = 1.0f * Constants.WORLD_TO_SCREEN;
@@ -17,9 +17,9 @@ public class Bullet : Node2D, IBullet
 
     public override void _Ready()
     {
-        bodyNode = GetNode<KinematicBody2D>("KinematicBody2D");
-        spriteNode = GetNode<Sprite>("KinematicBody2D/BulletSpr");
-        colorAreaNode = GetNode<Area2D>("KinematicBody2D/ColorArea");
+        bodyNode = GetNode<CharacterBody2D>("CharacterBody2D");
+        spriteNode = GetNode<Sprite2D>("CharacterBody2D/BulletSpr");
+        colorAreaNode = GetNode<Area2D>("CharacterBody2D/ColorArea");
 
         initialPosition = GlobalPosition;
     }
@@ -36,10 +36,11 @@ public class Bullet : Node2D, IBullet
         spriteNode.Modulate = ColorUtils.GetBasicColor(colorIndex);
     }
 
-    public override void _PhysicsProcess(float delta)
+    public override void _PhysicsProcess(double delta)
     {
-        movement.y += delta * gravity;
-        bodyNode.MoveAndSlide(movement);
+        movement.Y += (float)delta * gravity;
+        bodyNode.Velocity = movement;
+        bodyNode.MoveAndSlide();
 
         if ((GlobalPosition - initialPosition).LengthSquared() > MAX_DISTANCE_SQUARED)
         {
@@ -52,7 +53,7 @@ public class Bullet : Node2D, IBullet
         QueueFree();
     }
 
-    private void _on_ColorArea_body_shape_entered(RID bodyRid, Node body, uint bodyShapeIndex, int localShapeIndex)
+    private void _on_ColorArea_body_shape_entered(Rid bodyRid, Node body, uint bodyShapeIndex, int localShapeIndex)
     {
         if (body != Global.Instance().Player)
         {

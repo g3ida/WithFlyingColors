@@ -15,52 +15,52 @@ __meta__ = {
 }
 
 [node name="GridContainer" type="GridContainer" parent="."]
-margin_right = 392.0
-margin_bottom = 210.0
+offset_right = 392.0
+offset_bottom = 210.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_constants/vseparation = 15
-custom_constants/hseparation = 50
+theme_override_constants/v_separation = 15
+theme_override_constants/h_separation = 50
 columns = 2
 
 [node name="ResolutionLabel" type="Label" parent="GridContainer"]
-margin_right = 484.0
-margin_bottom = 60.0
+offset_right = 484.0
+offset_bottom = 60.0
 size_flags_horizontal = 3
 text = "SCREEN Resolution"
 
 [node name="AutoResolutionLabel" type="Label" parent="GridContainer"]
 visible = false
-margin_left = 534.0
-margin_right = 828.0
-margin_bottom = 60.0
-rect_min_size = Vector2( 294, 0 )
+offset_left = 534.0
+offset_right = 828.0
+offset_bottom = 60.0
+custom_minimum_size = Vector2( 294, 0 )
 text = "auto"
 
 [node name="ResolutionUISelect" parent="GridContainer" instance=ExtResource( 1 )]
-margin_left = 534.0
-margin_right = 834.0
-margin_bottom = 60.0
+offset_left = 534.0
+offset_right = 834.0
+offset_bottom = 60.0
 
 [node name="FullscreenLabel" type="Label" parent="GridContainer"]
-margin_top = 75.0
-margin_right = 484.0
-margin_bottom = 135.0
+offset_top = 75.0
+offset_right = 484.0
+offset_bottom = 135.0
 text = "Fullscreen"
 
 [node name="FullscreenCheckbox" parent="GridContainer" instance=ExtResource( 5 )]
-margin_right = 834.0
+offset_right = 834.0
 
 [node name="VsyncLabel" type="Label" parent="GridContainer"]
-margin_top = 150.0
-margin_right = 484.0
-margin_bottom = 210.0
+offset_top = 150.0
+offset_right = 484.0
+offset_bottom = 210.0
 text = "VSYNC"
 
 [node name="VsyncCheckbox" parent="GridContainer" instance=ExtResource( 5 )]
-margin_top = 150.0
-margin_right = 834.0
-margin_bottom = 210.0
+offset_top = 150.0
+offset_right = 834.0
+offset_bottom = 210.0
 
 [connection signal="Value_changed" from="GridContainer/ResolutionUISelect" to="." method="_on_UISelect_Value_changed"]
 [connection signal="selection_changed" from="GridContainer/ResolutionUISelect" to="." method="_on_ResolutionUISelect_selection_changed"]

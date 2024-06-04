@@ -1,15 +1,19 @@
 [remap]
 
-importer="ogg_vorbis"
-type="AudioStreamOGGVorbis"
-path="res://.import/do.ogg-97f65ee49814ddc25824da00ab23e3cb.oggstr"
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://cupv4iysfw2rv"
+path="res://.godot/imported/do.ogg-97f65ee49814ddc25824da00ab23e3cb.oggvorbisstr"
 
 [deps]
 
 source_file="res://Assets/sfx/piano/do.ogg"
-dest_files=[ "res://.import/do.ogg-97f65ee49814ddc25824da00ab23e3cb.oggstr" ]
+dest_files=["res://.godot/imported/do.ogg-97f65ee49814ddc25824da00ab23e3cb.oggvorbisstr"]
 
 [params]
 
 loop=true
 loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
