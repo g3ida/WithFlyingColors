@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class BrickPowerUpHandler : Node2D
+public class BrickPowerUpHandler : Node2D, IPowerUpHandler
 {
     private const float COLDDOWN = 1.5f;
     private const int ITEM_INV_PROBA = 4;
@@ -81,7 +81,7 @@ public class BrickPowerUpHandler : Node2D
         return powerup;
     }
 
-    private void RemoveActivePowerups()
+    public void RemoveActivePowerups()
     {
         foreach (var el in activePowerupNodes)
         {
@@ -90,7 +90,7 @@ public class BrickPowerUpHandler : Node2D
         activePowerupNodes.Clear();
     }
 
-    private void RemoveFallingPowerups()
+    public void RemoveFallingPowerups()
     {
         foreach (Node2D el in fallingPowerUpsContainer.GetChildren())
         {
@@ -179,5 +179,10 @@ public class BrickPowerUpHandler : Node2D
     public override void _Process(float delta)
     {
         SetProcess(false);
+    }
+
+    public void SetActive(bool active)
+    {
+        isActive = active;
     }
 }

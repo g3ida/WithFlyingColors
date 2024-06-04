@@ -13,7 +13,6 @@ public class UISelect : Button
 
     private int index;
     public object selected_value;
-    private bool focus = false;
     private bool is_ready = false;
     private bool is_in_edit_mode = false;
 

@@ -22,7 +22,6 @@ public class BouncingBall : KinematicBody2D
     private const float PLAYER_SIDE_HIT_PUSH_VELOCITY = 250.0f;
     private const float SPEED_UNIT = 60.0f;
 
-    private Vector2 spawn_position;
     public Vector2 velocity = Vector2.Up * SPEED;
     private float speed = SPEED;
     public Area2D DeathZone = null; // FIXME: this is set in breakBreaker. better logic ?
@@ -362,7 +361,6 @@ public override void _PhysicsProcess(float delta)
 
     private void reset()
     {
-        GlobalPosition = spawn_position;
         float randomness = (float)GD.RandRange(-SPAWN_DIRECTION_RANDOM_DEGREES, SPAWN_DIRECTION_RANDOM_DEGREES);
         velocity = SPAWN_DIRECTION.Rotated(Mathf.Deg2Rad(randomness)) * SPEED;
     }
@@ -381,6 +379,7 @@ public override void _PhysicsProcess(float delta)
     private void _on_Area2D_body_shape_entered(RID _body_rid, Node body, int body_shape_index, int _local_shape_index)
     {
         if (body != Global.Instance().Player) return;
+        // FIXME: fix this dynamic call after c# migration
         body.Call("OnFastAreaCollidingWithPlayerShape", body_shape_index, AreaNode, Constants.EntityType.BALL);
     }
 

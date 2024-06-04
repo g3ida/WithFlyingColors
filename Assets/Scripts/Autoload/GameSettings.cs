@@ -9,8 +9,6 @@ public class GameSettings : Node2D
     private const float MaxVolume = 0f;
     private const float MinVolume = -50f;
 
-    private bool _isReady = false;
-
     public bool Vsync
     {
         get => OS.VsyncEnabled;
@@ -52,7 +50,7 @@ public class GameSettings : Node2D
         _instance = GetTree().Root.GetNode<GameSettings>("GameSettings");
         SetProcess(false);
         LoadGameSettings();
-        _isReady = true;
+
     }
 
     private float GetVolumeInDb(float volume)

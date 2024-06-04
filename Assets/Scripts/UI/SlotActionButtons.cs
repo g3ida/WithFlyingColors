@@ -3,8 +3,6 @@ using System;
 
 public class SlotActionButtons : HBoxContainer
 {
-    public enum State { HIDDEN, HIDING, SHOWING, SHOWN }
-
     [Signal]
     public delegate void select_button_pressed(int slotIndex);
     [Signal]
@@ -15,7 +13,6 @@ public class SlotActionButtons : HBoxContainer
     private SlotButton _deleteButtonNode;
     private SlotButton _confirmButtonNode;
     private Control _spaceNode;
-    private State _currentState = State.HIDDEN;
 
     public override void _Ready()
     {

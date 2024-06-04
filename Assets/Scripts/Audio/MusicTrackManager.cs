@@ -281,9 +281,12 @@ public class MusicTrackManager : Node2D, IPersistant
     // FIXME: rename to Reset after C# migration
     public void reset()
     {
-        var track = save_data["track"] as string;
-        if (track != null && current_track != null && track != current_track.Name)
+        var track = Convert.ToString(save_data["track"]);
+        if (track != null)
         {
+            if (current_track != null && track == current_track.Name) {
+                return;   
+            }
             LoadTrack(track);
             PlayTrack(track);
         }

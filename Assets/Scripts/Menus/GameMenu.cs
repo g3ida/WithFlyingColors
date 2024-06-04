@@ -14,7 +14,6 @@ public class GameMenu : Control
 
     protected MenuScreenState screenState;
     private MenuManager.Menus destination_screen;
-    private string destination_scene_path;
     private Node current_focus = null;
     public bool HandleBackEvent = true;
 

@@ -17,7 +17,6 @@ public class Block : Node2D
     public delegate void BlockDestroyed();
 
     public const float BLINK_ANIMATION_DURATION = 0.5f;
-    private bool isActive = true;
     public List<List<Block>> grid;
 
     private BlockSprite spriteNode;

@@ -16,10 +16,11 @@ public partial class BrickBreaker : Node2D, IPersistant
     private Area2D DeathZoneNode;
     private Node2D BricksTileMapNode = null;
     public Node2D BallsContainer;
+    private Position2D BallsSpawnPos;
     private Position2D BallSpawnPosNode;
     private Position2D BricksSpawnPosNode;
     private Timer BricksTimerNode;
-    private Node2D BricksPowerUpHandler;
+    private IPowerUpHandler bricksPowerUpHandler;
     private Area2D Checkpoint;
     private Area2D TriggerEnterAreaNode;
     private Node2D SlidingFloorNode;
@@ -44,10 +45,11 @@ public partial class BrickBreaker : Node2D, IPersistant
     {
         DeathZoneNode = GetNode<Area2D>("DeathZone");
         BallsContainer = GetNode<Node2D>("BallsContainer");
+        BallsSpawnPos = GetNode<Position2D>("BallsContainer/BallSpawnPos");
         BallSpawnPosNode = GetNode<Position2D>("BallsContainer/BallSpawnPos");
         BricksSpawnPosNode = GetNode<Position2D>("BricksContainer/BricksSpawnPos");
         BricksTimerNode = GetNode<Timer>("BricksContainer/LevelUpTimer");
-        BricksPowerUpHandler = GetNode<Node2D>("BricksContainer/BrickPowerUpHandler");
+        bricksPowerUpHandler = GetNode<IPowerUpHandler>("BricksContainer/BrickPowerUpHandler");
         Checkpoint = GetNode<Area2D>("CheckpointArea");
         TriggerEnterAreaNode = GetNode<Area2D>("TriggerEnterArea");
         SlidingFloorNode = GetNode<Node2D>("SlidingFloor");
@@ -66,6 +68,7 @@ public partial class BrickBreaker : Node2D, IPersistant
         bouncingBall.CallDeferred("set_position", BallSpawnPosNode.Position);
         bouncingBall.CallDeferred("set_owner", BallsContainer);
         bouncingBall.CallDeferred(nameof(BouncingBall.SetColor), color);
+        bouncingBall.GlobalPosition = BallsSpawnPos.GlobalPosition;
         num_balls += 1;
         return bouncingBall;
     }
@@ -304,9 +307,9 @@ public partial class BrickBreaker : Node2D, IPersistant
     private void CleanUpGame()
     {
         RemoveBalls();
-        BricksPowerUpHandler.Set("is_active", false); // FIXME: remove circular dependency from BrickPowerUpHandler (c# migration)
-        BricksPowerUpHandler.CallDeferred("RemoveActivePowerups");
-        BricksPowerUpHandler.CallDeferred("RemoveFallingPowerups");
+        bricksPowerUpHandler.SetActive(false);
+        bricksPowerUpHandler.RemoveActivePowerups();
+        bricksPowerUpHandler.RemoveFallingPowerups();
     }
 
     private void ChangeCameraViewAfterWin()

@@ -18,7 +18,7 @@ public class SaveSlot : PanelContainer
     private int _timestamp = -1;
     private string _description = "";
     private Color _bgColor = FOCUS_OFF_BG_COLOR;
-    private bool _hasFocus;
+    private bool _hasFocus = false;
     private bool _isDisabled = false;
     public int _id = 0;
     private State _currentState = State.INIT;

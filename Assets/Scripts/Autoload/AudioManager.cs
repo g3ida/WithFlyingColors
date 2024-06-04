@@ -7,6 +7,8 @@ public class AudioManager : Node
     [Signal]
     public delegate void PlaySfx(string sfxName);
 
+    private readonly PackedScene MusicTrackManagerScene = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Audio/MusicTrackManager.tscn");
+
     private const string BasePath = "res://Assets/sfx/";
 
     private Dictionary<string, Dictionary<string, object>> sfxData = new Dictionary<string, Dictionary<string, object>>()
@@ -51,17 +53,22 @@ public class AudioManager : Node
       return _instance;
     }
 
+    public override void _EnterTree()
+    {
+        base._EnterTree();
+        _instance = GetTree().Root.GetNode<AudioManager>("AudioManagerCS");
+        MusicTrackManager = MusicTrackManagerScene.Instance<MusicTrackManager>();
+        ConnectSignals();
+    }
+
     public override void _Ready()
     {
-        _instance = GetTree().Root.GetNode<AudioManager>("AudioManagerCS");
         PauseMode = PauseModeEnum.Process;
         SetProcess(false);
         /// FIXME: make this an extension function and use all over any node CreateChild<NodeType>()
-        MusicTrackManager = new MusicTrackManager();
         AddChild(MusicTrackManager);
         MusicTrackManager.Owner = this;
         ///
-        ConnectSignals();
         FillSfxPool();
     }
 
@@ -169,12 +176,6 @@ public class AudioManager : Node
         Event.Instance().Disconnect("gem_temple_triggered", this, nameof(_OnGemTempleTriggered));
         Event.Instance().Disconnect("gem_engine_started", this, nameof(_OnGemEngineStarted));
         Event.Instance().Disconnect("gem_put_in_temple", this, nameof(_OnGemPutInTemple));
-    }
-
-    public override void _EnterTree()
-    {
-        base._EnterTree();
-        // ConnectSignals();
     }
 
     public override void _ExitTree()

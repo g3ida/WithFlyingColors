@@ -38,7 +38,7 @@ public class Checkpoint : Area2D, IPersistant
             _isChecked = true;
             save_data["is_checked"] = true;
             GetNode<AnimationPlayer>("CheckHole/CheckDot/AnimationPlayer").Play("Checkpoint");
-            GetNode("/root/Event").EmitSignal("checkpoint_reached", this);
+            Event.Instance().EmitCheckpointReached(this);
         }
     }
 

@@ -3,8 +3,6 @@ using System;
 
 public class GemCollectingState : GemBaseState
 {
-    private bool isActive = false;
-
     public GemCollectingState() : base()
     {
     }
