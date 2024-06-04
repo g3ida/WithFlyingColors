@@ -63,17 +63,17 @@ public partial class SlotsContainer : Control
 
     private void _on_SaveSlot1_pressed(string action)
     {
-        EmitSignal(nameof(slot_pressedEventHandler), 0, action);
+        EmitSignal(nameof(slot_pressed), 0, action);
     }
 
     private void _on_SaveSlot2_pressed(string action)
     {
-        EmitSignal(nameof(slot_pressedEventHandler), 1, action);
+        EmitSignal(nameof(slot_pressed), 1, action);
     }
 
     private void _on_SaveSlot3_pressed(string action)
     {
-        EmitSignal(nameof(slot_pressedEventHandler), 2, action);
+        EmitSignal(nameof(slot_pressed), 2, action);
     }
 
     public void UpdateSlots()

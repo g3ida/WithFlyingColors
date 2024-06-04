@@ -22,7 +22,7 @@ public partial class KeyBindingController : Control, IUITab
         else
         {
             GameSettings.Instance().BindActionToKeyboardKey(action, key);
-            EmitSignal(nameof(on_action_bound_signalEventHandler), action, key);
+            EmitSignal(nameof(on_action_bound_signal), action, key);
             Event.Instance().EmitOnActionBound(action, key);
         }
     }

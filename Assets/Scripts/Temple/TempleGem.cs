@@ -78,7 +78,7 @@ public partial class TempleGem : Node2D
         if (currentState == State.MOVING)
         {
             currentState = State.MOVED;
-            EmitSignal(nameof(MoveCompletedEventHandler), this);
+            EmitSignal(nameof(MoveCompleted), this);
             lightNode.Visible = true;
         }
     }

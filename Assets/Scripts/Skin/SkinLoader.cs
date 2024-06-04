@@ -34,7 +34,9 @@ public static class SkinLoader
             string jsonData = file.GetLine();
             file.Close();
 
-            var data = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonData);
+            JsonSerializerOptions _serialisationOptions = new JsonSerializerOptions();
+            _serialisationOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
+            var data = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonData, _serialisationOptions);
             if (HasAllKeys(data))
             {
                 return ConvertToDictionary(data);

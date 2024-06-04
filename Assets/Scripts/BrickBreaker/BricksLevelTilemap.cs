@@ -50,7 +50,7 @@ public partial class BricksLevelTilemap : TileMap
         _bricksCount--;
         if (_bricksCount == 0)
         {
-            EmitSignal(nameof(level_bricks_clearedEventHandler), id);
+            EmitSignal(nameof(level_bricks_cleared), id);
         }
     }
 }

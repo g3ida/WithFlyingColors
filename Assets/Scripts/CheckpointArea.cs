@@ -39,7 +39,7 @@ public partial class CheckpointArea : Area2D, IPersistant
         {
             _isChecked = true;
             _save_data["is_checked"] = true;
-            EmitSignal(nameof(checkpoint_hitEventHandler));
+            EmitSignal(nameof(checkpoint_hit));
             Event.Instance().EmitCheckpointReached(this);
         }
     }

@@ -74,7 +74,7 @@ public partial class SolfegeBoard : Node2D
         if (currentPage >= NUM_PAGES)
         {
             currentState = BoardState.FINISHED;
-            EmitSignal(nameof(board_notes_playedEventHandler));
+            EmitSignal(nameof(board_notes_played));
             _SetFlipPageShader(MusicPaperRectTexture);
             _InitState();
         }
@@ -208,7 +208,7 @@ public partial class SolfegeBoard : Node2D
         else
         {
             currentNoteIndex = 0;
-            EmitSignal(nameof(wrong_note_playedEventHandler));
+            EmitSignal(nameof(wrong_note_played));
         }
 
         _SetNotesCursorPosition();
@@ -220,14 +220,14 @@ public partial class SolfegeBoard : Node2D
     {
         if (currentState == BoardState.PLAYING)
         {
-            EmitSignal(nameof(expected_note_changedEventHandler), PAGES[currentPage][currentNoteIndex]);
+            EmitSignal(nameof(expected_note_changed), PAGES[currentPage][currentNoteIndex]);
         }
     }
 
     private void EmitWrongNoteEvent()
     {
         Event.Instance().EmitWrongPianoNotePlayed();
-        EmitSignal(nameof(wrong_note_playedEventHandler));
+        EmitSignal(nameof(wrong_note_played));
     }
 
     public string GetExpectedNote()

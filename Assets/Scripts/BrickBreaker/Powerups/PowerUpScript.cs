@@ -16,7 +16,7 @@ public partial class PowerUpScript : Node2D
 
     public void EmitIsDestroyed()
     {
-        EmitSignal(nameof(is_destroyedEventHandler), this);
+        EmitSignal(nameof(is_destroyed), this);
     }
 
     public virtual bool IsStillRelevant()

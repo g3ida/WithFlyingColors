@@ -1,4 +1,5 @@
 using Godot;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -144,11 +145,11 @@ public partial class GameSettings : Node2D
 
     private List<string> GetGameActions()
     {
-        var actions = InputMap.GetActions().Cast<string>();
+        var actions = InputMap.GetActions().Cast<StringName>();
         var gameActions = new List<string>();
         foreach (var action in actions)
         {
-            if (action.Find("ui_") == -1)
+            if (action.ToString().Find("ui_") == -1)
             {
                 gameActions.Add(action);
             }
@@ -183,7 +184,7 @@ public partial class GameSettings : Node2D
             var keyValue = InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList);
             if (keyValue != null)
             {
-                configFile.SetValue("keyboard", key, (int)keyValue.Keycode);
+                configFile.SetValue("keyboard", key, Variant.From<int>((int)keyValue.Keycode));
             }
             else
             {
@@ -211,9 +212,9 @@ public partial class GameSettings : Node2D
             foreach (string key in configFile.GetSectionKeys("keyboard"))
             {
                 var keyValue = configFile.GetValue("keyboard", key);
-                if (keyValue.ToString() != "")
+                if ((keyValue.VariantType != Variant.Type.String) || keyValue.As<string>() != "")
                 {
-                    BindActionToKeyboardKey(key, (int)keyValue);
+                    BindActionToKeyboardKey(key, keyValue.As<int>());
                 }
             }
 
@@ -222,15 +223,15 @@ public partial class GameSettings : Node2D
                 var keyValue = configFile.GetValue("display", key);
                 if (key == "fullscreen")
                 {
-                    Fullscreen = Convert.ToBoolean(keyValue);
+                    Fullscreen = keyValue.As<bool>();
                 }
                 else if (key == "vsync")
                 {
-                    Vsync = Convert.ToBoolean(keyValue);
+                    Vsync = keyValue.As<bool>();
                 }
                 else if (key == "resolution")
                 {
-                    var values = keyValue.ToString().Split('x');
+                    var values = keyValue.As<string>().Split('x');
                     if (values.Length == 2)
                     {
                         WindowSize = new Vector2I(int.Parse(values[0]), int.Parse(values[1]));
@@ -244,11 +245,11 @@ public partial class GameSettings : Node2D
                 var keyValue = configFile.GetValue("audio", key);
                 if (key == "sfx_volume")
                 {
-                    SfxVolume = float.Parse(keyValue.ToString());
+                    SfxVolume = keyValue.As<float>();
                 }
                 else if (key == "music_volume")
                 {
-                    MusicVolume = float.Parse(keyValue.ToString());
+                    MusicVolume = keyValue.As<float>();
                 }
             }
         }

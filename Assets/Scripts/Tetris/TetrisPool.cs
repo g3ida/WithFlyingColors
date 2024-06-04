@@ -160,7 +160,7 @@ public partial class TetrisPool : Node2D
         if (!shape.CanMoveDown())
         {
             isPaused = true;
-            EmitSignal(nameof(game_overEventHandler));
+            EmitSignal(nameof(game_over));
         }
     }
 
@@ -201,7 +201,7 @@ public partial class TetrisPool : Node2D
         var lines = DetectLines();
         if (lines.Count > 0)
         {
-            EmitSignal(nameof(lines_removedEventHandler), lines.Count);
+            EmitSignal(nameof(lines_removed), lines.Count);
             Event.Instance().EmitTetrisLinesRemoved();
         }
         foreach (var line in lines)

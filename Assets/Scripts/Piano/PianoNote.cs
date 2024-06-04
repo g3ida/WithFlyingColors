@@ -169,12 +169,12 @@ public partial class PianoNote : CharacterBody2D
         if (current_state == NoteStates.PRESSING)
         {
             current_state = NoteStates.PRESSED;
-            EmitSignal(nameof(on_note_pressedEventHandler), this);
+            EmitSignal(nameof(on_note_pressed), this);
         }
         else if (current_state == NoteStates.RELEASING)
         {
             current_state = NoteStates.RELEASED;
-            EmitSignal(nameof(on_note_releasedEventHandler), this);
+            EmitSignal(nameof(on_note_released), this);
         }
     }
 

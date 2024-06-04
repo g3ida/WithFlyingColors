@@ -95,7 +95,7 @@ public partial class Block : Node2D
     {
         spriteAnimationNode.Play("Blink");
         await ToSignal(spriteAnimationNode, "animation_finished");
-        EmitSignal(nameof(BlockDestroyedEventHandler));
+        EmitSignal(nameof(BlockDestroyed));
         QueueFree();
     }
 

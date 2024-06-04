@@ -157,7 +157,7 @@ public partial class SlotButton : ColorRect
 
     private void _on_Button_pressed()
     {
-        EmitSignal(nameof(pressedEventHandler));
+        EmitSignal(nameof(pressed));
     }
 
     private void _on_Button_mouse_entered()

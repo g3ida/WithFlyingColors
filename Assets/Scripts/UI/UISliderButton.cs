@@ -105,11 +105,11 @@ public partial class UISliderButton : Button
 
     private void EmitValueChangedSignal()
     {
-        EmitSignal(nameof(value_changedEventHandler), SliderNode.Value);
+        EmitSignal(nameof(value_changed), SliderNode.Value);
     }
 
     private void EmitSelectionChangedSignal()
     {
-        EmitSignal(nameof(selection_changedEventHandler), isEditing);
+        EmitSignal(nameof(selection_changed), isEditing);
     }
 }

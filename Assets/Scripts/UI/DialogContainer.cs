@@ -18,10 +18,10 @@ public partial class DialogContainer : Control
 
     private ColorRect ColorRectNode;
     private Control GameMenuNode;
-    private Control DialogNode;
+    private AcceptDialog DialogNode;
 
-    private float shownPosY;
-    private float hiddenPosY;
+    private int shownPosY;
+    private int hiddenPosY;
 
     private DialogStates currentState = DialogStates.HIDDEN;
     private List<Button> dialogButtons = new List<Button>();
@@ -33,20 +33,20 @@ public partial class DialogContainer : Control
         ProcessMode = ProcessModeEnum.Always;
         ColorRectNode = GetNode<ColorRect>("ColorRect");
         GameMenuNode = GetParent<Control>();
-        DialogNode = GetNode<Control>(DialogNodePath);
+        DialogNode = GetNode<AcceptDialog>(DialogNodePath);
 
         shownPosY = DialogNode.Position.Y;
         hiddenPosY = shownPosY - 1000;
 
         HideDialog();
-        DialogNode.Connect("hide", new Callable(this, nameof(StartHidingDialog)));
+        DialogNode.Connect("close_requested", new Callable(this, nameof(StartHidingDialog)));
         DialogNode.Connect("confirmed", new Callable(this, nameof(StartHidingDialog)));
         dialogButtons = GetDialogButtons();
     }
 
     public override void _ExitTree()
     {
-        DialogNode.Disconnect("hide", new Callable(this, nameof(StartHidingDialog)));
+        DialogNode.Disconnect("close_requested", new Callable(this, nameof(StartHidingDialog)));
         DialogNode.Disconnect("confirmed", new Callable(this, nameof(StartHidingDialog)));
     }
 
@@ -74,7 +74,7 @@ public partial class DialogContainer : Control
 
     private void HideDialog()
     {
-        DialogNode.Position = new Vector2(DialogNode.Position.X, hiddenPosY);
+        DialogNode.Position = new Vector2I(DialogNode.Position.X, hiddenPosY);
         HideNodes();
         GetTree().Paused = false;
         lastFocusOwner?.GrabFocus();
@@ -103,7 +103,7 @@ public partial class DialogContainer : Control
         tweener = CreateTween();
         tweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);
 
-        tweener.TweenProperty(DialogNode, "rect_position:y", targetPosY, TWEEN_DURATION)
+        tweener.TweenProperty(DialogNode, "position:y", targetPosY, TWEEN_DURATION)
                .SetTrans(Tween.TransitionType.Linear)
                .SetEase(Tween.EaseType.InOut);
     }

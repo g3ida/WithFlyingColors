@@ -132,7 +132,7 @@ public partial class SaveSlot : PanelContainer
         else if (_currentState == State.ACTIONS_SHOWN)
         {
             SetState(State.FOCUS);
-            EmitSignal(nameof(pressedEventHandler), "focus");
+            EmitSignal(nameof(pressed), "focus");
         }
     }
 
@@ -241,12 +241,12 @@ public partial class SaveSlot : PanelContainer
 
     private void _on_ActionButtons_clear_button_pressed(int slotIndex)
     {
-        EmitSignal(nameof(pressedEventHandler), "delete");
+        EmitSignal(nameof(pressed), "delete");
     }
 
     private void _on_ActionButtons_select_button_pressed(int slotIndex)
     {
-        EmitSignal(nameof(pressedEventHandler), "select");
+        EmitSignal(nameof(pressed), "select");
         HideActionButtons();
     }
 

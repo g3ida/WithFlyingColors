@@ -49,7 +49,7 @@ public partial class PowerUp : Node2D
             {
                 AreaNode.SetDeferred("monitorable", false);
                 AreaNode.SetDeferred("monitoring", false);
-                EmitSignal(nameof(on_player_hitEventHandler), this, on_hit_script);
+                EmitSignal(nameof(on_player_hit), this, on_hit_script);
                 QueueFree();
             }
         }

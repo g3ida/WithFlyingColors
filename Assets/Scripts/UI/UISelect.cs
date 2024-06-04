@@ -90,7 +90,7 @@ public partial class UISelect : Button
         GrabFocus();
         index = (index + 1) % (int)select_driver.items.Count;
         UpdateSelectedItem();
-        EmitSignal(nameof(Value_changedEventHandler), (Vector2)select_driver.item_values[index]);
+        EmitSignal(nameof(Value_changed), (Vector2)select_driver.item_values[index]);
     }
 
     private void _on_Right_pressed()
@@ -98,7 +98,7 @@ public partial class UISelect : Button
         GrabFocus();
         index = (index - 1 + select_driver.items.Count) % select_driver.items.Count;
         UpdateSelectedItem();
-        EmitSignal(nameof(Value_changedEventHandler), (Vector2)select_driver.item_values[index]);
+        EmitSignal(nameof(Value_changed), (Vector2)select_driver.item_values[index]);
     }
 
     private void UpdateSelectedItem()
@@ -117,7 +117,7 @@ public partial class UISelect : Button
 
     private void EmitSelectionChangedSignal()
     {
-        EmitSignal(nameof(selection_changedEventHandler), is_in_edit_mode);
+        EmitSignal(nameof(selection_changed), is_in_edit_mode);
     }
 
     private void _on_Button_mouse_entered()

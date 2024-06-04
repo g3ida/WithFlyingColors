@@ -106,8 +106,8 @@ public partial class AudioManager : Node
 
     private void ConnectSignals()
     {
-        Connect(nameof(PlaySfxEventHandler), new Callable(this, nameof(_OnPlaySfx)));
-        Event.Instance().Connect(nameof(Event.player_jumpedEventHandler), new Callable(this, nameof(_OnPlayerJumped)));
+        PlaySfx += _OnPlaySfx;
+        Event.Instance().Connect(nameof(Event.player_jumped), new Callable(this, nameof(_OnPlayerJumped)));
         Event.Instance().Connect("player_rotate", new Callable(this, nameof(_OnPlayerRotate)));
         Event.Instance().Connect("player_land", new Callable(this, nameof(_OnPlayerLand)));
         Event.Instance().Connect("gem_collected", new Callable(this, nameof(_OnGemCollected)));
@@ -213,7 +213,7 @@ public partial class AudioManager : Node
 
     public void EmitPlaySfx(string sfxName)
     {
-        EmitSignal(nameof(PlaySfxEventHandler), sfxName);
+        EmitSignal(nameof(PlaySfx), sfxName);
     }
 
     public void PauseAllSfx()

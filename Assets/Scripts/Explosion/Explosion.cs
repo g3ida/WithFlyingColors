@@ -182,6 +182,6 @@ public partial class Explosion : Node2D
             //child.Mode = RigidBody2D.ModeEnum.Static;
             SetRigidBodyMode(child, true);
         }
-        EmitSignal(nameof(ObjectDetonatedEventHandler), this);
+        EmitSignal(nameof(ObjectDetonated), this);
     }
 }

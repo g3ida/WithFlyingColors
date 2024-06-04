@@ -60,11 +60,11 @@ public partial class BricksTileMap : Node2D
 
     private void _EmitLevelCleared(int newUnclearedLevel)
     {
-        EmitSignal(nameof(level_clearedEventHandler), newUnclearedLevel);
+        EmitSignal(nameof(level_cleared), newUnclearedLevel);
     }
 
     private void _EmitBricksCleared()
     {
-        EmitSignal(nameof(bricks_clearedEventHandler));
+        EmitSignal(nameof(bricks_cleared));
     }
 }

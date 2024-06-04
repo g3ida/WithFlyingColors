@@ -78,10 +78,10 @@ public partial class UITransition : Control
     {
         tweener?.Kill();
         tweener = CreateTween();
-        tweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);
-        tweener.TweenProperty(parent, "rect_position", destinationPos, duration)
+        tweener.TweenProperty(parent, "position", destinationPos, duration)
               .SetTrans(Tween.TransitionType.Quad)
               .SetEase(Tween.EaseType.InOut);
+        tweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);
     }
 
     private void _prepare()
@@ -96,7 +96,7 @@ public partial class UITransition : Control
         if (currentState == TransitionStates.ENTER_DELAY)
         {
             ReallyEnter();
-            EmitSignal(nameof(enteredEventHandler));
+            EmitSignal(nameof(entered));
         }
         else if (currentState == TransitionStates.ENTERING)
         {
@@ -109,7 +109,7 @@ public partial class UITransition : Control
         else if (currentState == TransitionStates.EXITING)
         {
             currentState = TransitionStates.EXITED;
-            EmitSignal(nameof(exitedEventHandler));
+            EmitSignal(nameof(exited));
         }
     }
 }

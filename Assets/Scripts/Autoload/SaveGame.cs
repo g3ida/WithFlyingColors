@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 
 public partial class SaveGame : Node2D
@@ -24,9 +25,12 @@ public partial class SaveGame : Node2D
 
     private List<bool> isSlotFilledArray = new List<bool>();
     private List<Dictionary<string, object>> slotMetaData = new List<Dictionary<string, object>>();
-    private List<long?> slotLastLoadDate = new List<long?>();
+    private List<ulong?> slotLastLoadDate = new List<ulong?>();
     private bool hasFilledSlots = false;
     public int currentSlotIndex = 0;
+
+    private readonly JsonSerializerOptions _serialisationOptions = new JsonSerializerOptions();
+
 
     private const string NODE_PATH_VAR = "_node_path_";
     private const string SAVE_DATE_VAR = "_save_date_";
@@ -40,7 +44,9 @@ public partial class SaveGame : Node2D
     public override void _Ready()
     {
         base._Ready();
+        _serialisationOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
         _instance = GetTree().Root.GetNode<SaveGame>("SaveGameCS");
+        
         SetProcess(false);
         ConnectSignals(); // FIXME: move this to _EnterTree after preload scripts full migation to c#
         Init();
@@ -110,7 +116,7 @@ public partial class SaveGame : Node2D
             if (IsSlotFilled(slotIdx))
             {
                 var saveFile = FileAccess.Open(GetSaveSlotFilePath(slotIdx), FileAccess.ModeFlags.Read);
-                var metaData = JsonSerializer.Deserialize<Dictionary<string, object>>(saveFile.GetLine());
+                var metaData = JsonSerializer.Deserialize<Dictionary<string, object>>(saveFile.GetLine(), _serialisationOptions);
                 slotMetaData.Add(metaData);
                 saveFile.Close();
             }
@@ -201,7 +207,7 @@ public partial class SaveGame : Node2D
 
         while (saveGame.GetPosition() < saveGame.GetLength())
         {
-            var nodeData = JsonSerializer.Deserialize<Dictionary<string, object>>(saveGame.GetLine());
+            var nodeData = JsonSerializer.Deserialize<Dictionary<string, object>>(saveGame.GetLine(), _serialisationOptions);
             var nodePath = nodeData[NODE_PATH_VAR].ToString();
             var obj = GetNode(nodePath) as Node;
             if (obj is IPersistant persistant)
@@ -333,7 +339,7 @@ public partial class SaveGame : Node2D
     private int GetMostRecentlyLoadedSlotIndex()
     {
         int maxSlotIndex = 0;
-        long maxSlotTime = -1;
+        ulong maxSlotTime = 0;
 
         for (int slotIdx = 0; slotIdx < NUM_SLOTS; slotIdx++)
         {
@@ -388,8 +394,9 @@ public partial class SaveGame : Node2D
         if (FileAccess.FileExists(SAVE_INFO_PATH))
         {
             var loadFile = FileAccess.Open(SAVE_INFO_PATH, FileAccess.ModeFlags.Read);
-            var data = JsonSerializer.Deserialize<Dictionary<string, object>>(loadFile.GetLine());
-            slotLastLoadDate = JsonSerializer.Deserialize<List<long?>>(data["slot_last_load_date"].ToString());
+            var data = JsonSerializer.Deserialize<Dictionary<string, object>>(loadFile.GetLine(), _serialisationOptions);
+            var list = (List<object>)data["slot_last_load_date"];
+            slotLastLoadDate = list.Select<object, ulong?>(el => (el == null)? null : Convert.ToUInt64(el) ).ToList();
             loadFile.Close();
             return true;
         }
@@ -399,7 +406,7 @@ public partial class SaveGame : Node2D
 
     public void UpdateSlotLoadDate(int slotIndex)
     {
-        slotLastLoadDate[slotIndex] = (long)GetUnixTimestamp();
+        slotLastLoadDate[slotIndex] = GetUnixTimestamp();
         _SaveGameInfo();
     }
 }

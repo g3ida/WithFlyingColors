@@ -66,7 +66,7 @@ public partial class SlotActionButtons : HBoxContainer
 
     private void _on_DeleteButton_pressed()
     {
-        EmitSignal(nameof(clear_button_pressedEventHandler), SlotIndex);
+        EmitSignal(nameof(clear_button_pressed), SlotIndex);
     }
 
     private bool ShouldShowDeleteButton()
@@ -81,6 +81,6 @@ public partial class SlotActionButtons : HBoxContainer
 
     private void _on_ConfirmButton_pressed()
     {
-        EmitSignal(nameof(select_button_pressedEventHandler), SlotIndex);
+        EmitSignal(nameof(select_button_pressed), SlotIndex);
     }
 }

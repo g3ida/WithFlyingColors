@@ -54,7 +54,7 @@ public partial class KeyBindingButton : Button
         {
           value = eventKey.Keycode;
           Text = OS.GetKeycodeString(value.Value);
-          EmitSignal(nameof(keyboard_action_boundEventHandler), key, (long)value);
+          EmitSignal(nameof(keyboard_action_bound), key, (long)value);
           handled = true;
         }
         else if (ev is InputEventMouse eventMouse)
@@ -89,7 +89,7 @@ public partial class KeyBindingButton : Button
         }
         value = null;
         Text = DefaultText;
-        EmitSignal(nameof(keyboard_action_boundEventHandler), action, -1);
+        EmitSignal(nameof(keyboard_action_bound), action, -1);
     }
 
     private void _on_KeyBindingButton_pressed()

@@ -58,7 +58,7 @@ public partial class MenuBoxButton : Control
     {
         LabelNode.Modulate = LABEL_COLOR_CLICK;
         BlinkTimer.Start();
-        EmitSignal(nameof(pressedEventHandler));
+        EmitSignal(nameof(pressed));
     }
 
     private void _on_TextureButton_mouse_entered()
