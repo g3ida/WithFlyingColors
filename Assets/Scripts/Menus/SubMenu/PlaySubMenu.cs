@@ -2,7 +2,6 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-[Tool]
 public partial class PlaySubMenu : Control
 {
     private PackedScene SubMenuScene = (PackedScene)GD.Load("res://Assets/Scenes/MainMenu/SubMenu.tscn");

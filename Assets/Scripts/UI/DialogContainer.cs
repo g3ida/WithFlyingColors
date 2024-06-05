@@ -24,7 +24,7 @@ public partial class DialogContainer : Control
     private int hiddenPosY;
 
     private DialogStates currentState = DialogStates.HIDDEN;
-    private List<Button> dialogButtons = new List<Button>();
+    //private List<Button> dialogButtons = new List<Button>();
     private Control lastFocusOwner = null;
     private Tween tweener;
 
@@ -41,7 +41,7 @@ public partial class DialogContainer : Control
         HideDialog();
         DialogNode.Connect("close_requested", new Callable(this, nameof(StartHidingDialog)));
         DialogNode.Connect("confirmed", new Callable(this, nameof(StartHidingDialog)));
-        dialogButtons = GetDialogButtons();
+        //dialogButtons = GetDialogButtons();
     }
 
     public override void _ExitTree()
@@ -60,7 +60,7 @@ public partial class DialogContainer : Control
         currentState = DialogStates.SHOWING;
         ShowNodes();
         lastFocusOwner = GetViewport().GuiGetFocusOwner();
-        dialogButtons[0].GrabFocus();
+        //dialogButtons[0].GrabFocus();
     }
 
     private void ShowNodes()
@@ -146,23 +146,23 @@ public partial class DialogContainer : Control
         return currentState == DialogStates.HIDDEN || currentState == DialogStates.HIDING;
     }
 
-    private List<Button> GetDialogButtons()
-    {
-        var buttons = new List<Button>();
-        foreach (Node child in DialogNode.GetChildren())
-        {
-            if (child is HBoxContainer hbox)
-            {
-                foreach (Node subChild in hbox.GetChildren())
-                {
-                    if (subChild is Button button)
-                    {
-                        buttons.Add(button);
-                    }
-                }
-                break;
-            }
-        }
-        return buttons;
-    }
+    // private List<Button> GetDialogButtons()
+    // {
+    //     var buttons = new List<Button>();
+    //     foreach (Node child in DialogNode.GetChildren())
+    //     {
+    //         if (child is HBoxContainer hbox)
+    //         {
+    //             foreach (Node subChild in hbox.GetChildren())
+    //             {
+    //                 if (subChild is Button button)
+    //                 {
+    //                     buttons.Add(button);
+    //                 }
+    //             }
+    //             break;
+    //         }
+    //     }
+    //     return buttons;
+    // }
 }

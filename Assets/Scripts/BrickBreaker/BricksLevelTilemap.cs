@@ -26,7 +26,7 @@ public partial class BricksLevelTilemap : TileMap
     {
         for (int i = 0; i < Constants.COLOR_GROUPS.Length; i++)
         {
-            foreach (Vector2I cell in GetUsedCellsById(i))
+            foreach (Vector2I cell in GetUsedCellsById(0, i))
             {
                 Vector2 pos = MapToLocal(cell);
                 SetCell(0, cell, -1); //Layer cell value
@@ -37,7 +37,7 @@ public partial class BricksLevelTilemap : TileMap
                     brick.color_group = Constants.COLOR_GROUPS[i];
                     _parent.CallDeferred("add_child", brick);
                     brick.CallDeferred("set_owner", _parent);
-                    brick.Connect(nameof(Brick.brick_brokenEventHandler), new Callable(this, nameof(OnBrickBroken)));
+                    brick.Connect(nameof(Brick.brick_broken), new Callable(this, nameof(OnBrickBroken)));
                     brick.Position = pos;
                     _bricksCount++;
                 }

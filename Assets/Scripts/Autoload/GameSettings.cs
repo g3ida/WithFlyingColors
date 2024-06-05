@@ -74,8 +74,9 @@ public partial class GameSettings : Node2D
     {
         _instance = GetTree().Root.GetNode<GameSettings>("GameSettings");
         SetProcess(false);
+        // ProjectSettings.SetSetting("display/window/size/viewport_width", 1920);
+        // ProjectSettings.SetSetting("display/window/size/viewport_height", 1080);
         LoadGameSettings();
-
     }
 
     private float GetVolumeInDb(float volume)

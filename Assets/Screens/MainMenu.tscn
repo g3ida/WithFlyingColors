@@ -1,8 +1,8 @@
 [gd_scene load_steps=9 format=3 uid="uid://cy5vdq71nl27c"]
 
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="1"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/MainMenu/MenuBox.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://e4osajb7jluk" path="res://Assets/Scenes/MainMenu/MenuBox.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" id="3"]
 [ext_resource type="Script" path="res://Assets/Scripts/Menus/MainMenu/MainMenu.cs" id="4"]
 [ext_resource type="PackedScene" path="res://Assets/Scenes/UI/UITransition.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://Assets/Scenes/UI/DialogContainer.tscn" id="6"]
@@ -73,7 +73,6 @@ delay = 0.75
 hidden_relative_position = Vector2(-900, 0)
 
 [node name="MenuBox" parent="." instance=ExtResource("2")]
-anchors_preset = 0
 offset_left = 1224.0
 offset_top = 985.0
 offset_right = 1264.0
@@ -85,7 +84,8 @@ delay = 0.5
 hidden_relative_position = Vector2(0, 950)
 
 [node name="ResetDialogContainer" parent="." instance=ExtResource("6")]
-anchors_preset = 0
+layout_mode = 1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

@@ -143,7 +143,7 @@ public partial class AudioManager : Node
 
     private void DisconnectSignals()
     {
-        Disconnect(nameof(PlaySfxEventHandler), new Callable(this, nameof(_OnPlaySfx)));
+        Disconnect(nameof(PlaySfx), new Callable(this, nameof(_OnPlaySfx)));
         Event.Instance().Disconnect("player_jumped", new Callable(this, nameof(_OnPlayerJumped)));
         Event.Instance().Disconnect("player_rotate", new Callable(this, nameof(_OnPlayerRotate)));
         Event.Instance().Disconnect("player_land", new Callable(this, nameof(_OnPlayerLand)));

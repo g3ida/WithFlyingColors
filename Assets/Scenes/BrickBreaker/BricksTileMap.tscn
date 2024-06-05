@@ -1,33 +1,30 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://cmitplat3raxy"]
 
-[ext_resource path="res://Assets/Tilesets/BricksTileMap.tres" type="TileSet" id=1]
-[ext_resource path="res://Assets/Scripts/BrickBreaker/BricksLevelTilemap.cs" type="Script" id=3]
-[ext_resource path="res://Assets/Scripts/BrickBreaker/BricksTileMap.cs" type="Script" id=4]
+[ext_resource type="TileSet" path="res://Assets/Tilesets/BricksTileMap.tres" id="1"]
+[ext_resource type="Script" path="res://Assets/Scripts/BrickBreaker/BricksLevelTilemap.cs" id="3"]
+[ext_resource type="Script" path="res://Assets/Scripts/BrickBreaker/BricksTileMap.cs" id="4"]
 
 [node name="BricksTileMap" type="Node2D"]
-script = ExtResource( 4 )
+script = ExtResource("4")
 
 [node name="level0" type="TileMap" parent="."]
-tile_set = ExtResource( 1 )
-cell_size = Vector2( 108, 36 )
-format = 1
-tile_data = PackedInt32Array( 262147, 4, 0, 262151, 4, 0, 458755, 3, 0, 458756, 3, 0, 458757, 3, 0, 458759, 3, 0, 524290, 4, 0, 524291, 3, 0, 524292, 2, 0, 524293, 1, 0, 524294, 0, 0, 524295, 2, 0, 524296, 4, 0 )
-script = ExtResource( 3 )
+tile_set = ExtResource("1")
+format = 2
+layer_0/tile_data = PackedInt32Array(262147, 4, 0, 262151, 4, 0, 458755, 3, 0, 458756, 3, 0, 458757, 3, 0, 458759, 3, 0, 524290, 4, 0, 524291, 3, 0, 524292, 2, 0, 524293, 1, 0, 524294, 0, 0, 524295, 2, 0, 524296, 4, 0)
+script = ExtResource("3")
 
 [node name="level1" type="TileMap" parent="."]
-tile_set = ExtResource( 1 )
-cell_size = Vector2( 108, 36 )
-format = 1
-tile_data = PackedInt32Array( 7, 0, 0, 65541, 4, 0 )
-script = ExtResource( 3 )
+tile_set = ExtResource("1")
+format = 2
+layer_0/tile_data = PackedInt32Array(7, 0, 0, 65541, 4, 0)
+script = ExtResource("3")
 id = 1
 
 [node name="level2" type="TileMap" parent="."]
-tile_set = ExtResource( 1 )
-cell_size = Vector2( 108, 36 )
-format = 1
-tile_data = PackedInt32Array( -655355, 4, 0, -262142, 4, 0, -262139, 0, 0, -262136, 4, 0 )
-script = ExtResource( 3 )
+tile_set = ExtResource("1")
+format = 2
+layer_0/tile_data = PackedInt32Array(-655355, 4, 0, -262142, 4, 0, -262139, 0, 0, -262136, 4, 0)
+script = ExtResource("3")
 id = 2
 
 [connection signal="level_bricks_cleared" from="level0" to="." method="_on_level_bricks_cleared"]

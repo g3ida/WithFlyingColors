@@ -88,7 +88,7 @@ public partial class Explosion : Node2D
         }
     }
 
-    private void Setup() {
+    public void Setup() {
         _explosionInfo = new ExplosionInfo();
         if (_isRandomizeSeed) {
             GD.Randomize();

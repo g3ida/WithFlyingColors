@@ -135,7 +135,7 @@ public partial class SlotButton : ColorRect
     {
         _buttonTween?.Kill();
         _buttonTween = CreateTween();
-        _buttonTween.TweenProperty(_buttonNode, "rect_min_size:x", sizeX, MOVE_DURATION)
+        _buttonTween.TweenProperty(_buttonNode, "custom_minimum_size:x", sizeX, MOVE_DURATION)
             .SetEase(Tween.EaseType.InOut)
             .SetTrans(Tween.TransitionType.Linear);
         _buttonTween.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);

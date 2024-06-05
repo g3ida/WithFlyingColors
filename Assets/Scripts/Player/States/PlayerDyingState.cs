@@ -73,16 +73,13 @@ public partial class PlayerDyingState : PlayerBaseState
         var explosion = ExplosionScene.Instantiate<Explosion>();
         explosion.player = player;
         explosion.playerTexture = Global.Instance().GetPlayerSprite();
-        explosion.Connect(nameof(Explosion.ObjectDetonatedEventHandler), new Callable(this, nameof(OnObjectDetonated)), flags: (uint)ConnectFlags.OneShot);
-        explosion.Connect("ready", new Callable(this, nameof(OnExplosionReady)), (uint)ConnectFlags.OneShot);
+        explosion.Connect(nameof(Explosion.ObjectDetonated), new Callable(this, nameof(OnObjectDetonated)), flags: (uint)ConnectFlags.OneShot);
+        explosion.Connect("ready", Callable.From(() => {
+            explosion.Setup();
+            explosion.FireExplosion();
+        }), (uint)ConnectFlags.OneShot);
         player.AddChild(explosion);
         explosion.Owner = player;
-    }
-
-    private void OnExplosionReady(Node explosion)
-    {
-        explosion.Call("Setup");
-        explosion.Call("FireExplosion");
     }
 
     private void OnObjectDetonated(Node explosion)

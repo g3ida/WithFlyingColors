@@ -1,45 +1,47 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://cxa4nf011mofs"]
 
-[ext_resource path="res://Assets/Fonts/TitleFontt.tres" type="FontFile" id=1]
-[ext_resource path="res://Assets/Scripts/Menus/MainMenu/TitleLabel.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Sprites/MainMenu/underline.png" type="Texture2D" id=3]
+[ext_resource type="FontFile" path="res://Assets/Fonts/TitleFontt.tres" id="1"]
+[ext_resource type="Script" path="res://Assets/Scripts/Menus/MainMenu/TitleLabel.cs" id="2"]
+[ext_resource type="Texture2D" uid="uid://0m7r4fip6tsa" path="res://Assets/Sprites/MainMenu/underline.png" id="3"]
 
 [node name="Title" type="Label"]
 offset_left = 50.0
 offset_top = 60.0
 offset_right = 378.0
 offset_bottom = 260.0
-theme_override_colors/font_color = Color( 0.176471, 0.176471, 0.176471, 1 )
-theme_override_fonts/font = ExtResource( 1 )
-script = ExtResource( 2 )
-__meta__ = {
-"_edit_group_": true
-}
+theme_override_colors/font_color = Color(0.176471, 0.176471, 0.176471, 1)
+theme_override_fonts/font = ExtResource("1")
+theme_override_font_sizes/font_size = 200
+script = ExtResource("2")
 
 [node name="Shadow" type="Label" parent="."]
 show_behind_parent = true
+layout_mode = 0
 offset_left = 6.0
 offset_right = 334.0
 offset_bottom = 200.0
-theme_override_colors/font_color = Color( 0, 0.168627, 0.184314, 0.188235 )
-theme_override_fonts/font = ExtResource( 1 )
+theme_override_colors/font_color = Color(0, 0.168627, 0.184314, 0.188235)
+theme_override_fonts/font = ExtResource("1")
+theme_override_font_sizes/font_size = 200
 
 [node name="UnderlineShadow" type="TextureRect" parent="."]
-modulate = Color( 0, 0, 0, 1 )
+modulate = Color(0, 0, 0, 0)
+layout_mode = 0
 offset_left = 6.0
 offset_top = 157.0
 offset_right = 536.0
 offset_bottom = 181.0
-scale = Vector2( 1e-05, 1 )
-texture = ExtResource( 3 )
-expand = true
+scale = Vector2(0.00188679, 1)
+texture = ExtResource("3")
+expand_mode = 1
 
 [node name="Underline" type="TextureRect" parent="."]
-modulate = Color( 0, 0, 0, 1 )
+modulate = Color(0, 0, 0, 0)
+layout_mode = 0
 offset_left = 6.0
 offset_top = 154.0
 offset_right = 536.0
 offset_bottom = 178.0
-scale = Vector2( 1e-05, 1 )
-texture = ExtResource( 3 )
-expand = true
+scale = Vector2(0.00188679, 1)
+texture = ExtResource("3")
+expand_mode = 1

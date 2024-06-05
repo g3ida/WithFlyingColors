@@ -17,7 +17,7 @@ public partial class UISelect : Button
     private bool is_in_edit_mode = false;
 
     [Signal]
-    public delegate void Value_changedEventHandler(Vector2 value); //FIXME: must work with any type. c# migration.
+    public delegate void Value_changedEventHandler(Vector2I value); //FIXME: must work with any type. c# migration.
 
     [Signal]
     public delegate void selection_changedEventHandler(bool is_edit);
@@ -98,7 +98,7 @@ public partial class UISelect : Button
         GrabFocus();
         index = (index - 1 + select_driver.items.Count) % select_driver.items.Count;
         UpdateSelectedItem();
-        EmitSignal(nameof(Value_changed), (Vector2)select_driver.item_values[index]);
+        EmitSignal(nameof(Value_changed), (Vector2I)select_driver.item_values[index]);
     }
 
     private void UpdateSelectedItem()
@@ -111,7 +111,7 @@ public partial class UISelect : Button
 
     private void UpdateRectSize()
     {
-        SetDeferred("rect_min_size", ChildContainerNode.Size);
+        SetDeferred("custom_minimum_size", ChildContainerNode.Size);
         SetDeferred("rect_size", ChildContainerNode.Size);
     }
 

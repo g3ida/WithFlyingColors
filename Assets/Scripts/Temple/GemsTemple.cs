@@ -88,7 +88,7 @@ public partial class GemsTemple : Node2D
         templeGem.SetColorGroup(colorGroup);
         var waitTime = delay;
         templeGem.MoveToPosition(destination, waitTime, easeType);
-        templeGem.Connect(nameof(TempleGem.MoveCompletedEventHandler), new Callable(this, nameof(OnGemCollected)), (uint)ConnectFlags.OneShot);
+        templeGem.Connect(nameof(TempleGem.MoveCompleted), new Callable(this, nameof(OnGemCollected)), (uint)ConnectFlags.OneShot);
         return templeGem;
     }
 

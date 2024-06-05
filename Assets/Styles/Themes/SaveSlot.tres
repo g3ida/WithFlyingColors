@@ -1,7 +1,10 @@
-[gd_resource type="Theme" load_steps=2 format=2]
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://dsajhxb3mxvf0"]
 
-[ext_resource path="res://Assets/Styles/greyPanelBackground.tres" type="StyleBox" id=1]
+[ext_resource type="StyleBox" path="res://Assets/Styles/greyPanelBackground.tres" id="1"]
+[ext_resource type="FontFile" path="res://Assets/Fonts/SaveSlotFont.tres" id="2_vd4r1"]
 
 [resource]
-Panel/styles/panel = ExtResource( 1 )
-PanelContainer/styles/panel = ExtResource( 1 )
+default_font = ExtResource("2_vd4r1")
+default_font_size = 55
+Panel/styles/panel = ExtResource("1")
+PanelContainer/styles/panel = ExtResource("1")

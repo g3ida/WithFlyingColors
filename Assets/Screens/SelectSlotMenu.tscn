@@ -1,138 +1,144 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=14 format=3 uid="uid://b8us5vgfv1cnh"]
 
-[ext_resource path="res://Assets/Scenes/UI/DialogContainer.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Assets/Scenes/UI/ResetSlotDialog.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Assets/Scenes/UI/SlotsContainer.tscn" type="PackedScene" id=4]
-[ext_resource path="res://Assets/Sprites/MainMenu/ArrowBack.png" type="Texture2D" id=5]
-[ext_resource path="res://Assets/Sprites/MainMenu/MenuBkg.png" type="Texture2D" id=6]
-[ext_resource path="res://Assets/Styles/MenuButtonPressedStyle.tres" type="StyleBox" id=7]
-[ext_resource path="res://Assets/Scripts/Menus/SelectSlotMenu/SelectSlotMenu.cs" type="Script" id=8]
-[ext_resource path="res://Assets/Scripts/Menus/MainMenu/BackButton.cs" type="Script" id=9]
-[ext_resource path="res://Assets/Styles/Themes/Dialog.tres" type="Theme" id=10]
-[ext_resource path="res://Assets/Scenes/UI/UITransition.tscn" type="PackedScene" id=11]
-[ext_resource path="res://Assets/Styles/Themes/MenuTheme.tres" type="Theme" id=12]
+[ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://Assets/Scenes/UI/DialogContainer.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/ResetSlotDialog.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://ca46a088ioysj" path="res://Assets/Scenes/UI/SlotsContainer.tscn" id="4"]
+[ext_resource type="Texture2D" uid="uid://ccjrqyrj01x5f" path="res://Assets/Sprites/MainMenu/ArrowBack.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="6"]
+[ext_resource type="StyleBox" path="res://Assets/Styles/MenuButtonPressedStyle.tres" id="7"]
+[ext_resource type="Script" path="res://Assets/Scripts/Menus/SelectSlotMenu/SelectSlotMenu.cs" id="8"]
+[ext_resource type="Script" path="res://Assets/Scripts/Menus/MainMenu/BackButton.cs" id="9"]
+[ext_resource type="Theme" uid="uid://cd37bkdhivqji" path="res://Assets/Styles/Themes/Dialog.tres" id="10"]
+[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/UITransition.tscn" id="11"]
+[ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="12"]
 
-[sub_resource type="StyleBoxEmpty" id=1]
+[sub_resource type="StyleBoxEmpty" id="1"]
 
 [node name="SelectSlotMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = ExtResource( 8 )
+script = ExtResource("8")
 
 [node name="Background" type="TextureRect" parent="."]
+layout_mode = 0
 offset_left = -270.0
 offset_right = 2370.0
 offset_bottom = 1080.0
-texture = ExtResource( 6 )
+texture = ExtResource("6")
 
 [node name="BackButton" type="Button" parent="."]
+layout_mode = 0
 offset_left = 50.0
 offset_top = 900.0
 offset_right = 180.0
 offset_bottom = 997.0
 focus_mode = 0
-theme_override_styles/pressed = ExtResource( 7 )
-theme_override_styles/focus = SubResource( 1 )
-focus_mode = 0
-icon = ExtResource( 5 )
+theme_override_styles/pressed = ExtResource("7")
+theme_override_styles/focus = SubResource("1")
+icon = ExtResource("5")
 flat = true
-script = ExtResource( 9 )
+script = ExtResource("9")
 
-[node name="UITransition" parent="BackButton" instance=ExtResource( 11 )]
+[node name="UITransition" parent="BackButton" instance=ExtResource("11")]
+anchors_preset = 0
 delay = 0.5
-hidden_relative_position = Vector2( -900, 0 )
+hidden_relative_position = Vector2(-900, 0)
 
-[node name="SlotsContainer" parent="." instance=ExtResource( 4 )]
+[node name="SlotsContainer" parent="." instance=ExtResource("4")]
+anchors_preset = 0
 offset_left = 734.0
 offset_right = 734.0
 centered_on_screen_v = true
 
-[node name="UITransition" parent="SlotsContainer" instance=ExtResource( 11 )]
+[node name="UITransition" parent="SlotsContainer" instance=ExtResource("11")]
+anchors_preset = 0
 offset_left = 240.0
 offset_top = 417.0
 offset_right = 240.0
 offset_bottom = 417.0
 time = 0.5
 delay = 0.5
-hidden_relative_position = Vector2( 0, 1000 )
+hidden_relative_position = Vector2(0, 1000)
 
-[node name="SELECT" parent="." instance=ExtResource( 3 )]
+[node name="SELECT" parent="." instance=ExtResource("3")]
+layout_mode = 0
 text = "SLOT"
 content = "SLOT"
-underline_color = Color( 0.0627451, 0.92549, 1, 1 )
-underline_shadow_color = Color( 0, 0.776471, 0.843137, 1 )
+underline_color = Color(0.0627451, 0.92549, 1, 1)
+underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
 
-[node name="UITransition" parent="SELECT" instance=ExtResource( 11 )]
-hidden_relative_position = Vector2( -900, 0 )
+[node name="UITransition" parent="SELECT" instance=ExtResource("11")]
+anchors_preset = 0
+hidden_relative_position = Vector2(-900, 0)
 
-[node name="SLOT" parent="." instance=ExtResource( 3 )]
+[node name="SLOT" parent="." instance=ExtResource("3")]
+layout_mode = 0
 offset_top = 250.0
 offset_right = 935.0
 offset_bottom = 450.0
 text = "SELECT"
 content = "SELECT"
-underline_color = Color( 0.843137, 1, 0.219608, 1 )
-underline_shadow_color = Color( 0.717647, 0.898039, 0, 1 )
+underline_color = Color(0.843137, 1, 0.219608, 1)
+underline_shadow_color = Color(0.717647, 0.898039, 0, 1)
 
-[node name="UITransition" parent="SLOT" instance=ExtResource( 11 )]
+[node name="UITransition" parent="SLOT" instance=ExtResource("11")]
+anchors_preset = 0
 delay = 0.5
-hidden_relative_position = Vector2( -900, 0 )
+hidden_relative_position = Vector2(-900, 0)
 
-[node name="ResetDialogContainer" parent="." instance=ExtResource( 1 )]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -960.0
-offset_top = -540.0
-offset_right = 960.0
-offset_bottom = 540.0
+[node name="ResetDialogContainer" parent="." instance=ExtResource("1")]
+layout_mode = 1
 DialogNodePath = NodePath("ResetSlotDialog")
 
-[node name="ResetSlotDialog" parent="ResetDialogContainer" instance=ExtResource( 2 )]
+[node name="ResetSlotDialog" parent="ResetDialogContainer" instance=ExtResource("2")]
+initial_position = 2
+size = Vector2i(1000, 209)
+visible = true
+borderless = true
+content_scale_mode = 2
+content_scale_aspect = 3
+ok_button_text = "confirm"
 
-[node name="NoSelectedSlotDialogContainer" parent="." instance=ExtResource( 1 )]
+[node name="NoSelectedSlotDialogContainer" parent="." instance=ExtResource("1")]
+layout_mode = 1
 DialogNodePath = NodePath("AcceptDialog")
 
 [node name="AcceptDialog" type="AcceptDialog" parent="NoSelectedSlotDialogContainer"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -576.5
-offset_top = -205.5
-offset_right = 576.5
-offset_bottom = 205.5
-theme = ExtResource( 10 )
-window_title = ""
+size = Vector2i(186, 265)
+theme = ExtResource("10")
 dialog_text = "Please select a save slot to continue."
 dialog_autowrap = true
 
 [node name="CurrentSlotLabel" type="Label" parent="."]
+layout_mode = 0
 offset_left = 1767.0
 offset_top = 31.0
 offset_right = 1886.0
 offset_bottom = 91.0
 size_flags_horizontal = 3
-theme = ExtResource( 12 )
+theme = ExtResource("12")
 text = "NONE"
 
-[node name="UITransition" parent="CurrentSlotLabel" instance=ExtResource( 11 )]
+[node name="UITransition" parent="CurrentSlotLabel" instance=ExtResource("11")]
+anchors_preset = 0
 offset_left = 240.0
 offset_top = 417.0
 offset_right = 240.0
 offset_bottom = 417.0
 time = 0.5
 delay = 0.7
-hidden_relative_position = Vector2( 2000, 0 )
+hidden_relative_position = Vector2(2000, 0)
 
 [node name="CurrentSlotLabel2" type="Label" parent="CurrentSlotLabel"]
+layout_mode = 0
 offset_left = -384.0
 offset_right = 100.0
 offset_bottom = 60.0
 size_flags_horizontal = 3
-theme = ExtResource( 12 )
+theme = ExtResource("12")
 text = "Current slot:"
 
 [connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]

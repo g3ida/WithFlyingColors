@@ -123,7 +123,7 @@ public partial class GameCamera : Camera2D, IPersistant
         RestoreDragMargins();
     }
 
-    private void _OnPlayerDying(object area, Vector2 position, int entityType)
+    private void _OnPlayerDying(Node area, Vector2 position, int entityType)
     {
         RestoreDragMargins();
     }
@@ -187,7 +187,7 @@ public partial class GameCamera : Camera2D, IPersistant
     {
         PositionSmoothingEnabled = false;
         GlobalPosition = pos;
-        await ToSignal(GetTree(), "idle_frame");
+        await ToSignal(GetTree(), "process_frame");
         SetDeferred("smoothing_enabled", true);
     }
 

@@ -111,7 +111,7 @@ public partial class Cutscene : Node2D
 
     private void StartTween(Control controlNode, float destSize)
     {
-        tweener.TweenProperty(controlNode, "rect_size:y", destSize, DURATION)
+        tweener.TweenProperty(controlNode, "size:y", destSize, DURATION)
                .SetTrans(Tween.TransitionType.Quad)
                .SetEase(Tween.EaseType.InOut);
     }

@@ -1,41 +1,57 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://b7n42mqeet15h"]
 
-[ext_resource path="res://Assets/Fonts/HeavyEquipment.ttf" type="FontFile" id=1]
-[ext_resource path="res://Assets/Sprites/MainMenu/button-click-mask.png" type="BitMap" id=2]
-[ext_resource path="res://Assets/Scripts/Menus/MainMenu/MenuBoxButton.cs" type="Script" id=3]
+[ext_resource type="FontFile" uid="uid://e6iodry72ny8" path="res://Assets/Fonts/HeavyEquipment.ttf" id="1"]
+[ext_resource type="BitMap" uid="uid://ejc50sxuiwg0" path="res://Assets/Sprites/MainMenu/button-click-mask.png" id="2"]
+[ext_resource type="Script" path="res://Assets/Scripts/Menus/MainMenu/MenuBoxButton.cs" id="3"]
 
-[sub_resource type="FontFile" id=1]
-size = 155
-font_data = ExtResource( 1 )
+[sub_resource type="FontFile" id="1"]
+fallbacks = Array[Font]([ExtResource("1")])
+face_index = null
+embolden = null
+transform = null
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/200/0 = Vector2(0, 0)
+cache/0/200/0/ascent = 0.0
+cache/0/200/0/descent = 0.0
+cache/0/200/0/underline_position = 0.0
+cache/0/200/0/underline_thickness = 0.0
+cache/0/200/0/scale = 1.0
+cache/0/200/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/200/0/kerning_overrides/200/0 = Vector2(0, 0)
 
 [node name="MenuBoxButton" type="Control"]
-script = ExtResource( 3 )
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("3")
 
 [node name="CenterLabel" type="CenterContainer" parent="."]
+layout_mode = 0
 offset_top = -80.0
 offset_right = 40.0
 offset_bottom = -40.0
 use_top_left = true
 
 [node name="Label" type="Label" parent="CenterLabel"]
-modulate = Color( 0.27451, 0.27451, 0.27451, 0.588235 )
-offset_top = -78.0
-offset_bottom = 78.0
-theme_override_fonts/font = SubResource( 1 )
+modulate = Color(0.27451, 0.27451, 0.27451, 0.588235)
+layout_mode = 2
+theme_override_fonts/font = SubResource("1")
+theme_override_font_sizes/font_size = 200
 
 [node name="CenterTexture" type="CenterContainer" parent="."]
+layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 use_top_left = true
 
 [node name="TextureButton" type="TextureButton" parent="CenterTexture"]
-offset_left = -457.0
-offset_top = -238.0
-offset_right = 456.0
-offset_bottom = 238.0
+layout_mode = 2
 focus_mode = 0
-focus_mode = 0
-texture_click_mask = ExtResource( 2 )
+texture_click_mask = ExtResource("2")
 
 [node name="BlinkTimer" type="Timer" parent="."]
 wait_time = 0.2
