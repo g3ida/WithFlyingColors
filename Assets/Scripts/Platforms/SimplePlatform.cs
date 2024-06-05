@@ -24,6 +24,7 @@ public partial class SimplePlatform : StaticBody2D
 
     public override void _Ready()
     {
+        base._Ready();
         ninePatchRectNode = GetNode<NinePatchRect>("NinePatchRect");
         areaNode = GetNode<Area2D>("Area2D");
 
@@ -47,11 +48,13 @@ public partial class SimplePlatform : StaticBody2D
 
     public override void _EnterTree()
     {
+        base._EnterTree();
         ConnectSignals();
     }
 
     public override void _ExitTree()
     {
+        base._ExitTree();
         DisconnectSignals();
     }
 
@@ -73,9 +76,7 @@ public partial class SimplePlatform : StaticBody2D
 
         if (ninePatchRectNode.Material is ShaderMaterial shaderMaterial)
         {
-            // FIXME: Migration 4.0 - Viewport
-            //Vector2 resolution = GetViewport().GetSize2dOverride();
-            Vector2 resolution = new Vector2(1, 1);
+            Vector2 resolution = GetViewport().GetVisibleRect().Size; // must be 1920x1080
 
             Camera2D cam = Global.Instance().Camera;
 
@@ -110,11 +111,15 @@ public partial class SimplePlatform : StaticBody2D
 
     private void ConnectSignals()
     {
+        if (Engine.IsEditorHint())
+            return;
         Event.Instance().Connect("player_landed", new Callable(this, nameof(OnPlayerLanded)));
     }
 
     private void DisconnectSignals()
     {
+        if (Engine.IsEditorHint())
+            return;
         Event.Instance().Disconnect("player_landed", new Callable(this, nameof(OnPlayerLanded)));
     }
 }

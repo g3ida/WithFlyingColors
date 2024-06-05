@@ -24,6 +24,7 @@ public partial class Platform : CharacterBody2D
 
     public override void _Ready()
     {
+        base._Ready();
         ninePatchRectNode = GetNode<NinePatchRect>("NinePatchRect");
         areaNode = GetNode<Area2D>("Area2D");
 
@@ -40,6 +41,7 @@ public partial class Platform : CharacterBody2D
 
     public override void _EnterTree()
     {
+        base._EnterTree();
         ConnectSignals();
     }
 
@@ -103,11 +105,16 @@ public partial class Platform : CharacterBody2D
 
     private void ConnectSignals()
     {
+        if (Engine.IsEditorHint())
+            return;
         Event.Instance().Connect("player_landed", new Callable(this, nameof(OnPlayerLanded)));
     }
 
     private void DisconnectSignals()
     {
+        base._ExitTree();
+        if (Engine.IsEditorHint())
+            return;
         Event.Instance().Disconnect("player_landed", new Callable(this, nameof(OnPlayerLanded)));
     }
 }

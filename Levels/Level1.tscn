@@ -3,14 +3,14 @@
 [ext_resource type="PackedScene" path="res://Assets/Scenes/CutScene/Cutscene.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://nvn44bv2puaj" path="res://Assets/Scenes/Player.tscn" id="2"]
 [ext_resource type="Script" path="res://Assets/Scripts/Level.cs" id="3"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/Camera.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://c34ryx01v1y06" path="res://Assets/Scenes/Camera.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://Assets/Scenes/Platforms/SimplePlatform.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://Assets/Scenes/Fallzone.tscn" id="9"]
 [ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://Assets/Scenes/Gem.tscn" id="10"]
 [ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="11"]
 [ext_resource type="PackedScene" path="res://Assets/Scenes/HUD/GemsHUDContainer.tscn" id="16"]
 [ext_resource type="PackedScene" uid="uid://cblfcag52yydu" path="res://Assets/Scenes/Checkpoint.tscn" id="18"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/PauseScreen.tscn" id="19"]
+[ext_resource type="PackedScene" uid="uid://bijboehpv0gsh" path="res://Assets/Scenes/PauseScreen.tscn" id="19"]
 [ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" id="20"]
 [ext_resource type="PackedScene" uid="uid://dhoxs1h5dhijp" path="res://Assets/Scenes/Platforms/Platform.tscn" id="21"]
 [ext_resource type="PackedScene" uid="uid://cgut5po1y8ibm" path="res://Assets/Scenes/LazerBeam.tscn" id="22"]
@@ -46,6 +46,7 @@ centered = false
 
 [node name="Camera2D" parent="." instance=ExtResource("6")]
 position = Vector2(472, -489)
+limit_left = -1000
 limit_top = -2500
 limit_right = 10000
 limit_bottom = 1000
@@ -55,6 +56,7 @@ drag_bottom_margin = 0.05
 follow_path = NodePath("../Player")
 
 [node name="PauseMenu" parent="Camera2D" instance=ExtResource("19")]
+process_mode = 3
 
 [node name="CameraShake" parent="Camera2D" instance=ExtResource("30")]
 
@@ -94,7 +96,7 @@ scale = Vector2(1000, 4.788)
 
 [node name="YellowGem" parent="." instance=ExtResource("10")]
 z_index = 100
-position = Vector2(-117, -218)
+position = Vector2(10, -440)
 group_name = "yellow"
 
 [node name="BuleGem" parent="." instance=ExtResource("10")]

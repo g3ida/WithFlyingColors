@@ -1,20 +1,19 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://c34ryx01v1y06"]
 
-[ext_resource path="res://Assets/Scripts/GameCamera.cs" type="Script" id=1]
+[ext_resource type="Script" path="res://Assets/Scripts/GameCamera.cs" id="1"]
 
 [node name="Camera2D" type="Camera2D" groups=["persist"]]
-current = true
 limit_left = 0
 limit_top = 0
 limit_right = 2000
 limit_bottom = 1024
 limit_smoothed = true
-drag_vertical_enabled = true
 position_smoothing_enabled = true
+drag_vertical_enabled = true
 drag_left_margin = 0.27
 drag_top_margin = 0.27
 drag_right_margin = 0.27
 drag_bottom_margin = 0.27
 editor_draw_limits = true
 editor_draw_drag_margin = true
-script = ExtResource( 1 )
+script = ExtResource("1")

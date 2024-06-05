@@ -163,8 +163,6 @@ public partial class Explosion : Node2D
             child.CollisionLayer = GD.Randf() < 0.08f ? 0 : player.CollisionLayer;
             child.CollisionMask = GD.Randf() < 0.08f ? 0 : player.CollisionMask;
             child.ZIndex = GD.Randf() < 0.5f ? 0 : -1;
-            // FIXME: Migration 4.0 - is this ok to comment ?
-            // child.Mode = RigidBody2D.ModeEnum.Rigid;
             SetRigidBodyMode(child, isStatic: false);
 
             child.GetCollider().Disabled = false;
@@ -177,9 +175,6 @@ public partial class Explosion : Node2D
         var container = _explosionInfo.BlocksContainer;
         for (int i = 0; i < container.GetChildCount(); i++) {
             var child = (RigidBody2D)container.GetChild(i);
-            // FIXME: Migration 4.0 - I followed this
-            // https://www.reddit.com/r/godot/comments/150z2se/do_rigidbody2d_modes_still_exist_in_version_41/
-            //child.Mode = RigidBody2D.ModeEnum.Static;
             SetRigidBodyMode(child, isStatic: true);
         }
         EmitSignal(nameof(ObjectDetonated), this);

@@ -43,7 +43,7 @@ public partial class TetrisPool : Node2D
     private Timer removeLinesDurationTimerNode;
     private NextPiece nextPieceNode;
     private Marker2D levelUpPositionNode;
-    private Node2D slidingFloorSliderNode; // FIXME: change type after c# migration
+    private SlidingPlatform slidingFloorSliderNode;
     private Area2D triggerEnterAreaNode;
 
     public override void _Ready()
@@ -54,7 +54,7 @@ public partial class TetrisPool : Node2D
         removeLinesDurationTimerNode = GetNode<Timer>("RemoveLinesDurationTimer");
         nextPieceNode = GetNode<NextPiece>("NextPiece");
         levelUpPositionNode = GetNode<Marker2D>("LevelUpPosition");
-        slidingFloorSliderNode = GetNode<Node2D>("SlidingFloor/SlidingPlatform");
+        slidingFloorSliderNode = GetNode<SlidingPlatform>("SlidingFloor/SlidingPlatform");
         triggerEnterAreaNode = GetNode<Area2D>("TriggerEnterArea");
 
         GD.Randomize();
@@ -337,8 +337,8 @@ public partial class TetrisPool : Node2D
         if (body != Global.Instance().Player) return;
 
         isPaused = false;
-        slidingFloorSliderNode.Call("set_looping", false);
-        slidingFloorSliderNode.Call("stop_slider", false);
+        slidingFloorSliderNode.SetLooping(false);
+        slidingFloorSliderNode.StopSlider(false);
         isVirgin = false;
 
         AudioManager.Instance().MusicTrackManager.LoadTrack("tetris");

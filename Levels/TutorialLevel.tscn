@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://Assets/Scenes/Gem.tscn" id="5"]
 [ext_resource type="PackedScene" path="res://Assets/Scenes/Tutorial/TutorialText.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://bwd2mkbkstvp8" path="res://Assets/Scenes/Tutorial/KeyboardButton.tscn" id="7"]
-[ext_resource type="TileSet" path="res://Assets/Tilesets/TutorialLevel.tres" id="8"]
+[ext_resource type="TileSet" uid="uid://dsverl2jjlm71" path="res://Assets/Tilesets/TutorialLevel.tres" id="8"]
 [ext_resource type="PackedScene" uid="uid://blkbqb8j6rnda" path="res://Assets/Scenes/Temple/GemsTemple.tscn" id="9"]
 [ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="10"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://Assets/Scenes/CheckpointArea.tscn" id="11"]
