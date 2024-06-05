@@ -31,7 +31,7 @@ size = Vector2(29, 92)
 script = ExtResource("3")
 
 [node name="Checkpoint" parent="." instance=ExtResource("18")]
-position = Vector2(1057, 327)
+position = Vector2(-425, -141)
 color_group = "purple"
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="."]

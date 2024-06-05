@@ -94,10 +94,8 @@ public partial class KeyBindingButton : Button
 
     private void _on_KeyBindingButton_pressed()
     {
-        GD.Print("KeyBindingButton pressed");
         if (ButtonPressed)
         {
-            GD.Print("ButtonPressed");
             ButtonPressed = true;
             isListening = true;
             Event.Instance().EmitKeyboardActionBiding();
@@ -110,7 +108,6 @@ public partial class KeyBindingButton : Button
     {
         if (!GetTree().Paused)
         {
-            GD.Print("KeyBindingButton mouse entered");
             GrabFocus();
         }
     }

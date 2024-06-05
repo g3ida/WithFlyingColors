@@ -38,7 +38,7 @@ public partial class Explosion : Node2D
     public Texture2D playerTexture;
     private const int BLOCKS_PER_SIDE = 6;
     private const int BLOCKS_IMPULSE = 400;
-    private const int BLOCKS_GRAVITY_SCALE = 20;
+    private const int BLOCKS_GRAVITY_SCALE = 3;
     private const float DEBRIS_MAX_TIME = 1.5f;
 
     private PackedScene ExplosionElementScene = (PackedScene)ResourceLoader.Load("res://Assets/Scenes/Explosion/ExplosionElement.tscn");
@@ -70,7 +70,7 @@ public partial class Explosion : Node2D
             Size = _explosionInfo.CollisionExtents,
         };
         // explosionElement.Mode = RigidBody2D.ModeEnum.Static;
-        SetRigidBodyMode(explosionElement, true);
+        SetRigidBodyMode(explosionElement, isStatic: true);
         explosionElement.SetupSprite(playerTexture, _explosionInfo.VFrames, _explosionInfo.HFrames, n);
         explosionElement.SetColliderShape(shape);
         explosionElement.GetCollider().Disabled = true;
@@ -160,12 +160,12 @@ public partial class Explosion : Node2D
             float childScale = (float)GD.RandRange(0.5, 1.5);
             child.Scale = new Vector2(childScale, childScale);
             child.Mass = childScale;
-            child.CollisionLayer = GD.Randf() < 0.5f ? 0 : player.CollisionLayer;
-            child.CollisionMask = GD.Randf() < 0.5f ? 0 : player.CollisionMask;
+            child.CollisionLayer = GD.Randf() < 0.08f ? 0 : player.CollisionLayer;
+            child.CollisionMask = GD.Randf() < 0.08f ? 0 : player.CollisionMask;
             child.ZIndex = GD.Randf() < 0.5f ? 0 : -1;
             // FIXME: Migration 4.0 - is this ok to comment ?
             // child.Mode = RigidBody2D.ModeEnum.Rigid;
-            SetRigidBodyMode(child, false);
+            SetRigidBodyMode(child, isStatic: false);
 
             child.GetCollider().Disabled = false;
             child.Visible = true;
@@ -180,7 +180,7 @@ public partial class Explosion : Node2D
             // FIXME: Migration 4.0 - I followed this
             // https://www.reddit.com/r/godot/comments/150z2se/do_rigidbody2d_modes_still_exist_in_version_41/
             //child.Mode = RigidBody2D.ModeEnum.Static;
-            SetRigidBodyMode(child, true);
+            SetRigidBodyMode(child, isStatic: true);
         }
         EmitSignal(nameof(ObjectDetonated), this);
     }
