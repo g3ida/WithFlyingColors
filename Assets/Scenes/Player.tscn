@@ -1,94 +1,85 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=12 format=3 uid="uid://nvn44bv2puaj"]
 
-[ext_resource path="res://Assets/Animations/player_frames.tres" type="SpriteFrames" id=1]
-[ext_resource path="res://Assets/Scripts/Player/Player.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Scenes/BoxFace.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Assets/Scenes/FaceSeparator.tscn" type="PackedScene" id=4]
-[ext_resource path="res://Assets/Scenes/Player/FaceCollisionShape.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Assets/Scenes/Player/CornerCollisionShape.tscn" type="PackedScene" id=6]
+[ext_resource type="SpriteFrames" path="res://Assets/Animations/player_frames.tres" id="1"]
+[ext_resource type="Script" path="res://Assets/Scripts/Player/Player.cs" id="2"]
+[ext_resource type="PackedScene" uid="uid://bcrcp4q2theea" path="res://Assets/Scenes/BoxFace.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://byaynnxa1dwb6" path="res://Assets/Scenes/FaceSeparator.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://l65bdg6xvfrs" path="res://Assets/Scenes/Player/FaceCollisionShape.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://c7s2e6euryym8" path="res://Assets/Scenes/Player/CornerCollisionShape.tscn" id="6"]
 
-[sub_resource type="Curve" id=6]
+[sub_resource type="Curve" id="6"]
 max_value = 45.0
-_data = [ Vector2( 0.0126984, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.984127, 22.7292 ), 0.0, 0.0, 0, 0 ]
+_data = [Vector2(0.0126984, 0), 0.0, 0.0, 0, 0, Vector2(0.984127, 22.7292), 0.0, 0.0, 0, 0]
+point_count = 2
 
-[sub_resource type="Curve" id=4]
+[sub_resource type="Curve" id="4"]
 max_value = 2.0
-_data = [ Vector2( 0, 0.801536 ), 0.0, 0.0, 0, 0, Vector2( 0.984127, 0.324058 ), 0.0, 0.0, 0, 0 ]
+_data = [Vector2(0, 0.801536), 0.0, 0.0, 0, 0, Vector2(0.984127, 0.324058), 0.0, 0.0, 0, 0]
+point_count = 2
 
-[sub_resource type="Gradient" id=5]
-colors = PackedColorArray( 1, 1, 1, 0.454902, 1, 1, 1, 0.113725 )
+[sub_resource type="Gradient" id="5"]
+colors = PackedColorArray(1, 1, 1, 0.454902, 1, 1, 1, 0.113725)
 
-[sub_resource type="OccluderPolygon2D" id=2]
-polygon = PackedVector2Array( -47, -47, 47, -47, 47, 47, -47, 47 )
+[sub_resource type="OccluderPolygon2D" id="2"]
+polygon = PackedVector2Array(-47, -47, 47, -47, 47, 47, -47, 47)
 
-[sub_resource type="RectangleShape2D" id=1]
-size = Vector2( 43.5, 43.5 )
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(87, 87)
 
 [node name="Player" type="CharacterBody2D" groups=["persist"]]
 collision_layer = 2
 collision_mask = 9
-script = ExtResource( 2 )
-__meta__ = {
-"_edit_group_": true
-}
+script = ExtResource("2")
 
 [node name="JumpParticles" type="CPUParticles2D" parent="."]
 emitting = false
 amount = 2
 lifetime = 0.5
-local_coords = false
 emission_shape = 2
-emission_rect_extents = Vector2( 1, 1 )
-gravity = Vector2( 0, 0 )
-angle_curve = SubResource( 6 )
-scale_amount = 75.0
-scale_amount_curve = SubResource( 4 )
-color_ramp = SubResource( 5 )
+emission_sphere_radius = 1.0
+gravity = Vector2(0, 0)
+angle_curve = SubResource("6")
+scale_amount_curve = SubResource("4")
+color_ramp = SubResource("5")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-frames = ExtResource( 1 )
-animation = "idle"
-__meta__ = {
-"_edit_lock_": true
-}
+sprite_frames = ExtResource("1")
+animation = &"idle"
 
 [node name="LightOccluder2D" type="LightOccluder2D" parent="AnimatedSprite2D"]
-occluder = SubResource( 2 )
+occluder = SubResource("2")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource( 1 )
-__meta__ = {
-"_edit_lock_": true
-}
+shape = SubResource("1")
 
-[node name="FaceSeparatorBR" parent="." groups=["blue", "pink"] instance=ExtResource( 4 )]
-position = Vector2( 46.5, 46.5 )
+[node name="FaceSeparatorBR" parent="." groups=["blue", "pink"] instance=ExtResource("4")]
+position = Vector2(46.5, 46.5)
 priority = 1.0
 
-[node name="FaceSeparatorBL" parent="." groups=["blue", "yellow"] instance=ExtResource( 4 )]
-position = Vector2( -46.5, 46.5 )
+[node name="FaceSeparatorBL" parent="." groups=["blue", "yellow"] instance=ExtResource("4")]
+position = Vector2(-46.5, 46.5)
 priority = 1.0
 
-[node name="FaceSeparatorTL" parent="." groups=["purple", "yellow"] instance=ExtResource( 4 )]
-position = Vector2( -46.5, -46.5 )
+[node name="FaceSeparatorTL" parent="." groups=["purple", "yellow"] instance=ExtResource("4")]
+position = Vector2(-46.5, -46.5)
 priority = 1.0
 
-[node name="FaceSeparatorTR" parent="." groups=["pink", "purple"] instance=ExtResource( 4 )]
-position = Vector2( 46.5, -46.5 )
+[node name="FaceSeparatorTR" parent="." groups=["pink", "purple"] instance=ExtResource("4")]
+position = Vector2(46.5, -46.5)
 priority = 1.0
 
-[node name="BottomFace" parent="." groups=["blue"] instance=ExtResource( 3 )]
-position = Vector2( 0, 45.9 )
+[node name="BottomFace" parent="." groups=["blue"] instance=ExtResource("3")]
+position = Vector2(0, 45.9)
 
-[node name="TopFace" parent="." groups=["purple"] instance=ExtResource( 3 )]
-position = Vector2( 0, -45.9 )
+[node name="TopFace" parent="." groups=["purple"] instance=ExtResource("3")]
+position = Vector2(0, -45.9)
 
-[node name="LeftFace" parent="." groups=["yellow"] instance=ExtResource( 3 )]
-position = Vector2( -45.9, 0 )
+[node name="LeftFace" parent="." groups=["yellow"] instance=ExtResource("3")]
+position = Vector2(-45.9, 0)
 rotation = 1.5708
 
-[node name="RightFace" parent="." groups=["pink"] instance=ExtResource( 3 )]
-position = Vector2( 45.9, 0 )
+[node name="RightFace" parent="." groups=["pink"] instance=ExtResource("3")]
+position = Vector2(45.9, 0)
 rotation = -1.5708
 
 [node name="FallTimer" type="Timer" parent="."]
@@ -97,28 +88,28 @@ wait_time = 1.5
 [node name="DashGhostTimer" type="Timer" parent="."]
 wait_time = 0.1
 
-[node name="FaceCollisionShapeL" parent="." instance=ExtResource( 5 )]
-position = Vector2( -45.7, 0 )
+[node name="FaceCollisionShapeL" parent="." instance=ExtResource("5")]
+position = Vector2(-45.7, 0)
 
-[node name="FaceCollisionShapeR" parent="." instance=ExtResource( 5 )]
-position = Vector2( 45.7, 0 )
+[node name="FaceCollisionShapeR" parent="." instance=ExtResource("5")]
+position = Vector2(45.7, 0)
 
-[node name="FaceCollisionShapeT" parent="." instance=ExtResource( 5 )]
-position = Vector2( 0, -45.7 )
+[node name="FaceCollisionShapeT" parent="." instance=ExtResource("5")]
+position = Vector2(0, -45.7)
 rotation = 1.5708
 
-[node name="FaceCollisionShapeB" parent="." instance=ExtResource( 5 )]
-position = Vector2( 0, 45.7 )
+[node name="FaceCollisionShapeB" parent="." instance=ExtResource("5")]
+position = Vector2(0, 45.7)
 rotation = 1.5708
 
-[node name="FaceCollisionShapeTL" parent="." instance=ExtResource( 6 )]
-position = Vector2( -45.7, -45.7 )
+[node name="FaceCollisionShapeTL" parent="." instance=ExtResource("6")]
+position = Vector2(-45.7, -45.7)
 
-[node name="FaceCollisionShapeBL" parent="." instance=ExtResource( 6 )]
-position = Vector2( -45.7, 45.7 )
+[node name="FaceCollisionShapeBL" parent="." instance=ExtResource("6")]
+position = Vector2(-45.7, 45.7)
 
-[node name="FaceCollisionShapeTR" parent="." instance=ExtResource( 6 )]
-position = Vector2( 45.7, -45.7 )
+[node name="FaceCollisionShapeTR" parent="." instance=ExtResource("6")]
+position = Vector2(45.7, -45.7)
 
-[node name="FaceCollisionShapeBR" parent="." instance=ExtResource( 6 )]
-position = Vector2( 45.7, 45.7 )
+[node name="FaceCollisionShapeBR" parent="." instance=ExtResource("6")]
+position = Vector2(45.7, 45.7)

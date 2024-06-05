@@ -34,6 +34,8 @@ bin
 *.gen.*
 compile_commands.json
 platform/windows/godot_res.res
+.godot/
+.mono/
 
 # Ninja build files
 build.ninja

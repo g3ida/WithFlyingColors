@@ -1,102 +1,109 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=3 uid="uid://dgx873koyipf1"]
 
-[ext_resource path="res://Assets/Sprites/Canons/canon-stand.png" type="Texture2D" id=1]
-[ext_resource path="res://Assets/Sprites/Canons/canon.png" type="Texture2D" id=2]
-[ext_resource path="res://Assets/Scripts/Canon.cs" type="Script" id=3]
-[ext_resource path="res://Assets/sfx/shooting.ogg" type="AudioStream" id=4]
+[ext_resource type="Texture2D" uid="uid://c5okwit2w3v14" path="res://Assets/Sprites/Canons/canon-stand.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://dp06clfvxi4hb" path="res://Assets/Sprites/Canons/canon.png" id="2"]
+[ext_resource type="Script" path="res://Assets/Scripts/Canon.cs" id="3"]
+[ext_resource type="AudioStream" uid="uid://bpom2wb1y45g2" path="res://Assets/sfx/shooting.ogg" id="4"]
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id="3"]
 length = 0.001
 tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
 tracks/0/path = NodePath(".:scale")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
 tracks/0/keys = {
-"times": PackedFloat32Array( 0 ),
-"transitions": PackedFloat32Array( 1 ),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [ Vector2( 1, 1 ) ]
+"values": [Vector2(1, 1)]
 }
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id="4"]
 resource_name = "Shoot"
 length = 0.3
 step = 0.05
 tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
 tracks/0/path = NodePath(".:scale")
 tracks/0/interp = 2
 tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
 tracks/0/keys = {
-"times": PackedFloat32Array( 0, 0.15, 0.3 ),
-"transitions": PackedFloat32Array( 1, 1, 1 ),
+"times": PackedFloat32Array(0, 0.15, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [ Vector2( 1, 1 ), Vector2( 1.1, 1.1 ), Vector2( 1, 1 ) ]
+"values": [Vector2(1, 1), Vector2(1.1, 1.1), Vector2(1, 1)]
 }
 
-[sub_resource type="RectangleShape2D" id=1]
-size = Vector2( 24, 15.5 )
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fl6vi"]
+_data = {
+"RESET": SubResource("3"),
+"Shoot": SubResource("4")
+}
 
-[sub_resource type="CircleShape2D" id=2]
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(48, 31)
+
+[sub_resource type="CircleShape2D" id="2"]
 radius = 28.0179
 
-[sub_resource type="RectangleShape2D" id=5]
-size = Vector2( 25, 16.5 )
+[sub_resource type="RectangleShape2D" id="5"]
+size = Vector2(50, 33)
 
-[sub_resource type="CircleShape2D" id=6]
+[sub_resource type="CircleShape2D" id="6"]
 radius = 29.4279
 
 [node name="FiringCanon" type="Node2D"]
-script = ExtResource( 3 )
+script = ExtResource("3")
 
 [node name="Stand" type="Sprite2D" parent="."]
-position = Vector2( 0, 20 )
-texture = ExtResource( 1 )
+position = Vector2(0, 20)
+texture = ExtResource("1")
 
 [node name="Canon" type="Sprite2D" parent="."]
-position = Vector2( 0, 47 )
-texture = ExtResource( 2 )
-offset = Vector2( 0, 5.4 )
+position = Vector2(0, 47)
+texture = ExtResource("2")
+offset = Vector2(0, 5.4)
 
 [node name="Muzzle" type="Marker2D" parent="Canon"]
-position = Vector2( 0, 40 )
+position = Vector2(0, 40)
 
 [node name="ShootAnimation" type="AnimationPlayer" parent="Canon"]
-anims/RESET = SubResource( 3 )
-anims/Shoot = SubResource( 4 )
+libraries = {
+"": SubResource("AnimationLibrary_fl6vi")
+}
 
 [node name="Body" type="CharacterBody2D" parent="."]
 
 [node name="StandShape" type="CollisionShape2D" parent="Body"]
-position = Vector2( 0, 16.5 )
-shape = SubResource( 1 )
+position = Vector2(0, 16.5)
+shape = SubResource("1")
 
 [node name="CanonShape" type="CollisionShape2D" parent="Body"]
-position = Vector2( 0, 46 )
-shape = SubResource( 2 )
+position = Vector2(0, 46)
+shape = SubResource("2")
 
 [node name="StandColorArea" type="Area2D" parent="Body"]
 collision_layer = 4
 collision_mask = 86
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Body/StandColorArea"]
-position = Vector2( 0, 16.5 )
-shape = SubResource( 5 )
+position = Vector2(0, 16.5)
+shape = SubResource("5")
 
 [node name="CanonColorArea" type="Area2D" parent="Body"]
 collision_layer = 4
 collision_mask = 86
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Body/CanonColorArea"]
-position = Vector2( 0, 46 )
-shape = SubResource( 6 )
+position = Vector2(0, 46)
+shape = SubResource("6")
 
 [node name="ShoutSound" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource( 4 )
-bus = "sfx2d"
+stream = ExtResource("4")
+bus = &"sfx2d"
 
 [node name="CooldownTimer" type="Timer" parent="."]
 wait_time = 1.5

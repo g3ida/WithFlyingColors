@@ -1,52 +1,52 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://bhd5qa1cqyrq0"]
 
-[ext_resource path="res://Assets/Sprites/Piano/piano.png" type="Texture2D" id=1]
-[ext_resource path="res://Assets/Sprites/Piano/piano-leg-front.png" type="Texture2D" id=2]
-[ext_resource path="res://Assets/Sprites/Piano/piano-leg-back.png" type="Texture2D" id=3]
+[ext_resource type="Texture2D" uid="uid://u4kmc45865qj" path="res://Assets/Sprites/Piano/piano.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://br7ca5poxu2el" path="res://Assets/Sprites/Piano/piano-leg-front.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://beyhndfeo56i1" path="res://Assets/Sprites/Piano/piano-leg-back.png" id="3"]
 
-[sub_resource type="RectangleShape2D" id=1]
-size = Vector2( 600, 19.5 )
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(1200, 39)
 
-[sub_resource type="RectangleShape2D" id=2]
-size = Vector2( 45, 134 )
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(90, 268)
 
 [node name="PianoBase" type="StaticBody2D"]
 
 [node name="Base" type="Sprite2D" parent="."]
-position = Vector2( 0, -327 )
 z_index = -1
-texture = ExtResource( 1 )
+position = Vector2(0, -327)
+texture = ExtResource("1")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 offset_left = -591.0
 offset_top = -4.0
 offset_right = 591.0
 offset_bottom = 41.0
-color = Color( 0.305882, 0.337255, 0.384314, 1 )
+color = Color(0.305882, 0.337255, 0.384314, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 2, 20.5 )
-shape = SubResource( 1 )
+position = Vector2(2, 20.5)
+shape = SubResource("1")
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
-position = Vector2( -557, -94 )
-shape = SubResource( 2 )
+position = Vector2(-557, -94)
+shape = SubResource("2")
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="."]
-position = Vector2( 562.5, -94 )
-shape = SubResource( 2 )
+position = Vector2(562.5, -94)
+shape = SubResource("2")
 
 [node name="FrontLeg1" type="Sprite2D" parent="."]
-position = Vector2( -509, 200 )
 z_index = 1
-texture = ExtResource( 2 )
+position = Vector2(-509, 200)
+texture = ExtResource("2")
 
 [node name="FrontLeg2" type="Sprite2D" parent="."]
-position = Vector2( 509, 200 )
 z_index = 1
-texture = ExtResource( 2 )
+position = Vector2(509, 200)
+texture = ExtResource("2")
 
 [node name="Spr" type="Sprite2D" parent="."]
-position = Vector2( 0, 56 )
 z_index = -2
-texture = ExtResource( 3 )
+position = Vector2(0, 56)
+texture = ExtResource("3")

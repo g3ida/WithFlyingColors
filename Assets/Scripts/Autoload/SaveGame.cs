@@ -231,7 +231,7 @@ public partial class SaveGame : Node2D
         Global.Instance().Camera.update_position(Global.Instance().Player.GlobalPosition);
     }
 
-    private void OnCheckpoint(object checkpoint)
+    private void OnCheckpoint(Node checkpoint)
     {
         CallDeferred(nameof(SaveToCurrentSlot));
     }

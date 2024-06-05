@@ -1,40 +1,48 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://bwd2mkbkstvp8"]
 
-[ext_resource path="res://Assets/Sprites/Buttons/key_btn.png" type="Texture2D" id=1]
-[ext_resource path="res://Assets/Scripts/Tutorial/KeyboardButton.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Fonts/KeyboardButton.tres" type="FontFile" id=3]
-[ext_resource path="res://Assets/Sprites/Buttons/btn_arrow.png" type="Texture2D" id=4]
+[ext_resource type="Texture2D" uid="uid://bx60edihdd4eg" path="res://Assets/Sprites/Buttons/key_btn.png" id="1"]
+[ext_resource type="Script" path="res://Assets/Scripts/Tutorial/KeyboardButton.cs" id="2"]
+[ext_resource type="FontFile" path="res://Assets/Fonts/KeyboardButton.tres" id="3"]
+[ext_resource type="Texture2D" uid="uid://d2wrxtj85sdf6" path="res://Assets/Sprites/Buttons/btn_arrow.png" id="4"]
 
 [node name="KeyboardButton" type="Control"]
+custom_minimum_size = Vector2(106, 108)
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -1817.0
+offset_right = -1814.0
 offset_bottom = -972.0
-custom_minimum_size = Vector2( 103, 108 )
-script = ExtResource( 2 )
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2")
 
 [node name="NinePatchRect" type="NinePatchRect" parent="."]
-offset_right = 103.0
+custom_minimum_size = Vector2(106, 108)
+layout_mode = 0
+offset_right = 106.0
 offset_bottom = 108.0
-custom_minimum_size = Vector2( 103, 108 )
-texture = ExtResource( 1 )
-region_rect = Rect2( 2.55844, 0.0449333, 237.75, 159.599 )
+texture = ExtResource("1")
+region_rect = Rect2(2.55844, 0.0449333, 237.75, 159.599)
 patch_margin_left = 52
 patch_margin_top = 54
 patch_margin_right = 51
 patch_margin_bottom = 54
 
 [node name="Label" type="Label" parent="."]
-offset_left = 23.76
+layout_mode = 0
+offset_left = 16.56
 offset_top = 28.0
-offset_right = 93.76
-offset_bottom = 79.0
-theme_override_fonts/font = ExtResource( 3 )
+offset_right = 99.56
+offset_bottom = 91.0
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 50
 text = "ALT"
+horizontal_alignment = 1
 
 [node name="Arrow" type="Sprite2D" parent="."]
 visible = false
-position = Vector2( 54, 51 )
-texture = ExtResource( 4 )
+position = Vector2(54, 51)
+texture = ExtResource("4")
 
 [connection signal="resized" from="Label" to="." method="_on_Label_resized"]

@@ -1,66 +1,55 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://bptfom5y0pb5l"]
 
-[ext_resource path="res://Assets/Scenes/UI/UISelect.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Assets/Styles/Themes/MenuTheme.tres" type="Theme" id=3]
-[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/GameSettingsUI.cs" type="Script" id=4]
-[ext_resource path="res://Assets/Scenes/UI/Checkbox.tscn" type="PackedScene" id=5]
+[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/UISelect.tscn" id="1"]
+[ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="3"]
+[ext_resource type="Script" path="res://Assets/Scripts/Menus/SettingsMenu/GameSettingsUI.cs" id="4"]
+[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/Checkbox.tscn" id="5"]
 
 [node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme = ExtResource( 3 )
-script = ExtResource( 4 )
-__meta__ = {
-"_edit_group_": true
-}
+theme = ExtResource("3")
+script = ExtResource("4")
 
 [node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 0
 offset_right = 392.0
 offset_bottom = 210.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/v_separation = 15
 theme_override_constants/h_separation = 50
+theme_override_constants/v_separation = 15
 columns = 2
 
 [node name="ResolutionLabel" type="Label" parent="GridContainer"]
-offset_right = 484.0
-offset_bottom = 60.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "SCREEN Resolution"
 
 [node name="AutoResolutionLabel" type="Label" parent="GridContainer"]
 visible = false
-offset_left = 534.0
-offset_right = 828.0
-offset_bottom = 60.0
-custom_minimum_size = Vector2( 294, 0 )
+custom_minimum_size = Vector2(294, 0)
+layout_mode = 2
 text = "auto"
 
-[node name="ResolutionUISelect" parent="GridContainer" instance=ExtResource( 1 )]
-offset_left = 534.0
-offset_right = 834.0
-offset_bottom = 60.0
+[node name="ResolutionUISelect" parent="GridContainer" instance=ExtResource("1")]
+layout_mode = 2
 
 [node name="FullscreenLabel" type="Label" parent="GridContainer"]
-offset_top = 75.0
-offset_right = 484.0
-offset_bottom = 135.0
+layout_mode = 2
 text = "Fullscreen"
 
-[node name="FullscreenCheckbox" parent="GridContainer" instance=ExtResource( 5 )]
-offset_right = 834.0
+[node name="FullscreenCheckbox" parent="GridContainer" instance=ExtResource("5")]
+layout_mode = 2
 
 [node name="VsyncLabel" type="Label" parent="GridContainer"]
-offset_top = 150.0
-offset_right = 484.0
-offset_bottom = 210.0
+layout_mode = 2
 text = "VSYNC"
 
-[node name="VsyncCheckbox" parent="GridContainer" instance=ExtResource( 5 )]
-offset_top = 150.0
-offset_right = 834.0
-offset_bottom = 210.0
+[node name="VsyncCheckbox" parent="GridContainer" instance=ExtResource("5")]
+layout_mode = 2
 
 [connection signal="Value_changed" from="GridContainer/ResolutionUISelect" to="." method="_on_UISelect_Value_changed"]
 [connection signal="selection_changed" from="GridContainer/ResolutionUISelect" to="." method="_on_ResolutionUISelect_selection_changed"]

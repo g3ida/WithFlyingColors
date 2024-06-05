@@ -90,7 +90,7 @@ public partial class UISelect : Button
         GrabFocus();
         index = (index + 1) % (int)select_driver.items.Count;
         UpdateSelectedItem();
-        EmitSignal(nameof(Value_changed), (Vector2)select_driver.item_values[index]);
+        EmitSignal(nameof(Value_changed), (Vector2I)select_driver.item_values[index]);
     }
 
     private void _on_Right_pressed()

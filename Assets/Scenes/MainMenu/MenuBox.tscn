@@ -36,34 +36,26 @@ position = Vector2(-4, -3)
 texture = ExtResource("1")
 
 [node name="PlayBoxButton" parent="MenuBox/Spr" instance=ExtResource("8")]
-layout_mode = 3
-anchors_preset = 0
 offset_top = -234.0
 offset_bottom = -234.0
 text = "PLAY"
 
 [node name="QuitBoxButton" parent="MenuBox/Spr" instance=ExtResource("8")]
-layout_mode = 3
-anchors_preset = 0
 offset_left = -234.0
 offset_right = -234.0
-rotation = -90.0
+rotation = -1.5708
 text = "QUIT"
 
 [node name="SettingsBoxButton" parent="MenuBox/Spr" instance=ExtResource("8")]
-layout_mode = 3
-anchors_preset = 0
 offset_left = 234.0
 offset_right = 234.0
-rotation = 90.0
+rotation = 1.5708
 text = "SETTINGS"
 
 [node name="StatsBoxButton" parent="MenuBox/Spr" instance=ExtResource("8")]
-layout_mode = 3
-anchors_preset = 0
 offset_top = 234.0
 offset_bottom = 234.0
-rotation = 180.0
+rotation = 3.14159
 text = "STATS"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MenuBox"]

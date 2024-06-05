@@ -63,7 +63,7 @@ public partial class GameCamera : Camera2D, IPersistant
         }
     }
 
-    private void _OnCheckpointHit(object checkpoint)
+    private void _OnCheckpointHit(Node checkpoint)
     {
         // FIXME: better save data as json after migration
         save_data = new Dictionary<string, object>();

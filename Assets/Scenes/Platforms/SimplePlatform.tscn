@@ -1,57 +1,48 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=7 format=3 uid="uid://cohdtrmk2ecl6"]
 
-[ext_resource path="res://Assets/Shaders/ColorSplash.tres" type="Shader" id=1]
-[ext_resource path="res://Assets/Scripts/Platforms/SimplePlatform.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Sprites/Platforms/geared-platform.png" type="Texture2D" id=3]
+[ext_resource type="Shader" uid="uid://dhb7ksqjukmfx" path="res://Assets/Shaders/ColorSplash.tres" id="1"]
+[ext_resource type="Script" path="res://Assets/Scripts/Platforms/SimplePlatform.cs" id="2"]
+[ext_resource type="Texture2D" uid="uid://bubaelcflani1" path="res://Assets/Sprites/Platforms/geared-platform.png" id="3"]
 
-[sub_resource type="ShaderMaterial" id=1]
+[sub_resource type="ShaderMaterial" id="1"]
 resource_local_to_scene = true
-shader = ExtResource( 1 )
-shader_param/u_aspect_ratio = 0.5
-shader_param/u_timer = -10.0
-shader_param/u_contact_pos = Vector2( 0.5, 0.5 )
-shader_param/propagation_speed = 1.0
-shader_param/darkness = 0.78
+shader = ExtResource("1")
+shader_parameter/u_aspect_ratio = 0.5
+shader_parameter/u_timer = -10.0
+shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
+shader_parameter/propagation_speed = 1.0
+shader_parameter/darkness = 0.78
 
-[sub_resource type="RectangleShape2D" id=2]
-size = Vector2( 39.925, 39.925 )
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(79.85, 79.85)
 
-[sub_resource type="RectangleShape2D" id=3]
-size = Vector2( 40, 40 )
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(80, 80)
 
 [node name="SimplePlatform" type="StaticBody2D"]
 collision_layer = 4
 collision_mask = 2
-script = ExtResource( 2 )
-__meta__ = {
-"_edit_group_": true
-}
+script = ExtResource("2")
 
 [node name="NinePatchRect" type="NinePatchRect" parent="."]
-material = SubResource( 1 )
+material = SubResource("1")
 offset_left = -40.0
 offset_top = -40.0
 offset_right = 40.0
 offset_bottom = 40.0
-pivot_offset = Vector2( 40, 40 )
-texture = ExtResource( 3 )
+pivot_offset = Vector2(40, 40)
+texture = ExtResource("3")
 patch_margin_left = 40
 patch_margin_top = 40
 patch_margin_right = 40
 patch_margin_bottom = 40
-__meta__ = {
-"_edit_lock_": true
-}
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource( 2 )
-__meta__ = {
-"_edit_lock_": true
-}
+shape = SubResource("2")
 
 [node name="Area2D" type="Area2D" parent="."]
 collision_layer = 4
 collision_mask = 16
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="Area2D"]
-shape = SubResource( 3 )
+shape = SubResource("3")

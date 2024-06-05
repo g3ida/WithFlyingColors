@@ -1,78 +1,81 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=3 uid="uid://bmm6ljhdxphee"]
 
-[ext_resource path="res://Assets/Animations/gem_yellow_frames.tres" type="SpriteFrames" id=1]
-[ext_resource path="res://Assets/Scripts/Gems/Gem.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Sprites/Lightmaps/shine_light.png" type="Texture2D" id=3]
-[ext_resource path="res://Assets/sfx/shine.ogg" type="AudioStream" id=4]
+[ext_resource type="SpriteFrames" path="res://Assets/Animations/gem_yellow_frames.tres" id="1"]
+[ext_resource type="Script" path="res://Assets/Scripts/Gems/Gem.cs" id="2"]
+[ext_resource type="Texture2D" uid="uid://chvqjbfg518w8" path="res://Assets/Sprites/Lightmaps/shine_light.png" id="3"]
+[ext_resource type="AudioStream" uid="uid://dtik2lxephkbn" path="res://Assets/sfx/shine.ogg" id="4"]
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id="4"]
 length = 0.001
 tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
 tracks/0/path = NodePath(".:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
 tracks/0/keys = {
-"times": PackedFloat32Array( 0 ),
-"transitions": PackedFloat32Array( 1 ),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [ Vector2( 0, 0 ) ]
+"values": [Vector2(0, 0)]
 }
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id="3"]
 resource_name = "gem_collected_animation"
 length = 0.09
 step = 0.01
 tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
 tracks/0/path = NodePath(".:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
 tracks/0/keys = {
-"times": PackedFloat32Array( 0.02, 0.06, 0.09 ),
-"transitions": PackedFloat32Array( 1, 1, 1 ),
+"times": PackedFloat32Array(0.02, 0.06, 0.09),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [ Vector2( 0, 0 ), Vector2( 0, 40 ), Vector2( 0, 90 ) ]
+"values": [Vector2(0, 0), Vector2(0, 40), Vector2(0, 90)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_7562j"]
+_data = {
+"RESET": SubResource("4"),
+"gem_collected_animation": SubResource("3")
 }
 
 [node name="Gem" type="Area2D" groups=["persist"]]
 collision_layer = 32
 collision_mask = 2
-script = ExtResource( 2 )
-__meta__ = {
-"_edit_group_": true
-}
+script = ExtResource("2")
 
 [node name="CollisionShape2D" type="CollisionPolygon2D" parent="."]
-polygon = PackedVector2Array( 0, 24, 26, -8, 17, -23, -17, -23, -26, -8 )
+polygon = PackedVector2Array(0, 24, 26, -8, 17, -23, -17, -23, -26, -8)
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 z_index = 101
-frames = ExtResource( 1 )
+sprite_frames = ExtResource("1")
 frame = 2
-playing = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="AnimatedSprite2D"]
-anims/RESET = SubResource( 4 )
-anims/gem_collected_animation = SubResource( 3 )
+libraries = {
+"": SubResource("AnimationLibrary_7562j")
+}
 
 [node name="PointLight2D" type="PointLight2D" parent="."]
-texture = ExtResource( 3 )
-texture_scale = 1.25
 range_z_max = 90
 range_layer_min = -100
 range_layer_max = 10
 shadow_enabled = true
 shadow_item_cull_mask = 31
+texture = ExtResource("3")
+texture_scale = 1.25
 
 [node name="ShineSfx" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource( 4 )
+stream = ExtResource("4")
 volume_db = -5.0
 autoplay = true
 max_distance = 800.0
-bus = "sfx2d"
+bus = &"sfx2d"
 
 [connection signal="area_entered" from="." to="." method="_on_Gem_area_entered"]
 [connection signal="animation_finished" from="AnimatedSprite2D/AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

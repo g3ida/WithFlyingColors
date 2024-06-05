@@ -7,6 +7,7 @@ public partial class PlayerDyingState : PlayerBaseState
 
     public DeathAnimationType deathAnimationType = DeathAnimationType.DYING_EXPLOSION;
     private int lightMask;
+    private bool fallTimerTriggered = false;
 
     public PlayerDyingState() : base()
     {
@@ -15,6 +16,7 @@ public partial class PlayerDyingState : PlayerBaseState
 
     protected override void _Enter(Player player)
     {
+        fallTimerTriggered = false;
         lightMask = player.lightOccluder.LightMask;
         player.HideColorAreas();
         player.SetCollisionShapesDisabledFlagDeferred(true);
@@ -36,7 +38,9 @@ public partial class PlayerDyingState : PlayerBaseState
         {
             Event.Instance().EmitPlayerFall();
             player.fallTimerNode.Start();
-            player.fallTimerNode.Connect("timeout", new Callable(this, nameof(OnFallTimeout)), (uint)ConnectFlags.OneShot);
+            player.fallTimerNode.Timeout += OnFallTimeout;
+            fallTimerTriggered = true;
+            //player.fallTimerNode.Connect("timeout", new Callable(this, nameof(OnFallTimeout)), (uint)ConnectFlags.OneShot);
         }
     }
 
@@ -64,6 +68,10 @@ public partial class PlayerDyingState : PlayerBaseState
 
     protected override void _Exit(Player player)
     {
+        if (fallTimerTriggered) {
+            fallTimerTriggered = false;
+            player.fallTimerNode.Timeout -= OnFallTimeout;
+        }
         player.ShowColorAreas();
         player.SetCollisionShapesDisabledFlagDeferred(false);
     }

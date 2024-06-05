@@ -136,7 +136,7 @@ public partial class GemHUD : Node2D, IPersistant
         }
     }
 
-    private void OnCheckpointHit(object checkpoint)
+    private void OnCheckpointHit(Node checkpoint)
     {
         save_data["state"] = (int)(currentState != State.COLLECTING ? currentState : State.EMPTY);
     }

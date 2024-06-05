@@ -1,92 +1,106 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=16 format=3 uid="uid://dcpksfp42dvrh"]
 
-[ext_resource path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/SettingsMenu.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Sprites/MainMenu/MenuBkg.png" type="Texture2D" id=3]
-[ext_resource path="res://Assets/Sprites/MainMenu/ArrowBack.png" type="Texture2D" id=4]
-[ext_resource path="res://Assets/Scripts/Menus/MainMenu/BackButton.cs" type="Script" id=5]
-[ext_resource path="res://Assets/Styles/MenuButtonPressedStyle.tres" type="StyleBox" id=6]
-[ext_resource path="res://Assets/Scenes/MainMenu/GameSettingsUI.tscn" type="PackedScene" id=7]
-[ext_resource path="res://Assets/Styles/Themes/MenuTheme.tres" type="Theme" id=8]
-[ext_resource path="res://Assets/Scenes/MainMenu/ControllerSettingsUI.tscn" type="PackedScene" id=9]
-[ext_resource path="res://Assets/Scenes/UI/DialogContainer.tscn" type="PackedScene" id=11]
-[ext_resource path="res://Assets/Styles/Themes/Dialog.tres" type="Theme" id=12]
-[ext_resource path="res://Assets/Scenes/UI/UITransition.tscn" type="PackedScene" id=13]
-[ext_resource path="res://Assets/Scenes/MainMenu/AudioSettingsUI.tscn" type="PackedScene" id=14]
-[ext_resource path="res://Assets/Scripts/UI/TabLogic.cs" type="Script" id=15]
+[ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" id="1"]
+[ext_resource type="Script" path="res://Assets/Scripts/Menus/SettingsMenu/SettingsMenu.cs" id="2"]
+[ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://ccjrqyrj01x5f" path="res://Assets/Sprites/MainMenu/ArrowBack.png" id="4"]
+[ext_resource type="Script" path="res://Assets/Scripts/Menus/MainMenu/BackButton.cs" id="5"]
+[ext_resource type="StyleBox" path="res://Assets/Styles/MenuButtonPressedStyle.tres" id="6"]
+[ext_resource type="PackedScene" uid="uid://bptfom5y0pb5l" path="res://Assets/Scenes/MainMenu/GameSettingsUI.tscn" id="7"]
+[ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="8"]
+[ext_resource type="PackedScene" uid="uid://d4myhmdcwutwd" path="res://Assets/Scenes/MainMenu/ControllerSettingsUI.tscn" id="9"]
+[ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://Assets/Scenes/UI/DialogContainer.tscn" id="11"]
+[ext_resource type="Theme" uid="uid://cd37bkdhivqji" path="res://Assets/Styles/Themes/Dialog.tres" id="12"]
+[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/UITransition.tscn" id="13"]
+[ext_resource type="PackedScene" path="res://Assets/Scenes/MainMenu/AudioSettingsUI.tscn" id="14"]
+[ext_resource type="Script" path="res://Assets/Scripts/UI/TabLogic.cs" id="15"]
 
-[sub_resource type="StyleBoxEmpty" id=1]
+[sub_resource type="StyleBoxEmpty" id="1"]
 
 [node name="Settings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-pivot_offset = Vector2( -1987, -585 )
-script = ExtResource( 2 )
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(-1987, -585)
+script = ExtResource("2")
 
 [node name="Background" type="TextureRect" parent="."]
+layout_mode = 0
 offset_left = -270.0
 offset_right = 2370.0
 offset_bottom = 1080.0
-texture = ExtResource( 3 )
+texture = ExtResource("3")
 
-[node name="GAME" parent="." instance=ExtResource( 1 )]
+[node name="GAME" parent="." instance=ExtResource("1")]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 328.0
+offset_bottom = 200.0
 text = "GAME"
 content = "GAME"
-underline_color = Color( 0.0627451, 0.92549, 1, 1 )
-underline_shadow_color = Color( 0, 0.776471, 0.843137, 1 )
+underline_color = Color(0.0627451, 0.92549, 1, 1)
+underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
 
-[node name="UITransition" parent="GAME" instance=ExtResource( 13 )]
-hidden_relative_position = Vector2( -900, 0 )
+[node name="UITransition" parent="GAME" instance=ExtResource("13")]
+anchors_preset = 0
+hidden_relative_position = Vector2(-900, 0)
 
-[node name="SETTINGS" parent="." instance=ExtResource( 1 )]
+[node name="SETTINGS" parent="." instance=ExtResource("1")]
+layout_mode = 0
+offset_left = 0.0
 offset_top = 250.0
 offset_right = 935.0
 offset_bottom = 274.0
 text = "SETTINGS"
 content = "SETTINGS"
-underline_color = Color( 0.843137, 1, 0.219608, 1 )
-underline_shadow_color = Color( 0.717647, 0.898039, 0, 1 )
+underline_color = Color(0.843137, 1, 0.219608, 1)
+underline_shadow_color = Color(0.717647, 0.898039, 0, 1)
 
-[node name="UITransition" parent="SETTINGS" instance=ExtResource( 13 )]
+[node name="UITransition" parent="SETTINGS" instance=ExtResource("13")]
+anchors_preset = 0
 delay = 0.5
-hidden_relative_position = Vector2( -900, 0 )
+hidden_relative_position = Vector2(-900, 0)
 
 [node name="BackButton" type="Button" parent="."]
+layout_mode = 0
 offset_left = 50.0
 offset_top = 900.0
 offset_right = 180.0
 offset_bottom = 997.0
 focus_mode = 0
-theme_override_styles/pressed = ExtResource( 6 )
-theme_override_styles/focus = SubResource( 1 )
-focus_mode = 0
-icon = ExtResource( 4 )
+theme_override_styles/pressed = ExtResource("6")
+theme_override_styles/focus = SubResource("1")
+icon = ExtResource("4")
 flat = true
-script = ExtResource( 5 )
+script = ExtResource("5")
 
-[node name="UITransition" parent="BackButton" instance=ExtResource( 13 )]
+[node name="UITransition" parent="BackButton" instance=ExtResource("13")]
+anchors_preset = 0
 delay = 0.75
-hidden_relative_position = Vector2( -900, 0 )
+hidden_relative_position = Vector2(-900, 0)
 
 [node name="TabContainer" type="TabContainer" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 900.0
 offset_top = 90.0
 offset_right = -120.0
 offset_bottom = -90.0
-theme = ExtResource( 8 )
+theme = ExtResource("8")
 theme_override_constants/side_margin = 0
 tab_alignment = 2
 
 [node name="Display" type="TabBar" parent="TabContainer"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 80.0
+layout_mode = 2
 focus_neighbor_right = NodePath("../Controller")
-script = ExtResource( 15 )
+script = ExtResource("15")
 
-[node name="SettingsUI" parent="TabContainer/Display" instance=ExtResource( 7 )]
+[node name="SettingsUI" parent="TabContainer/Display" instance=ExtResource("7")]
 offset_left = 20.0
 offset_top = 50.0
 offset_right = 20.0
@@ -94,16 +108,11 @@ offset_bottom = 50.0
 
 [node name="Controller" type="TabBar" parent="TabContainer"]
 visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 90.0
-offset_right = -20.0
-offset_bottom = -10.0
+layout_mode = 2
 focus_neighbor_left = NodePath("../Display")
-script = ExtResource( 15 )
+script = ExtResource("15")
 
-[node name="ControllerSettings" parent="TabContainer/Controller" instance=ExtResource( 9 )]
+[node name="ControllerSettings" parent="TabContainer/Controller" instance=ExtResource("9")]
 offset_left = 20.0
 offset_top = 50.0
 offset_right = 734.0
@@ -111,34 +120,22 @@ offset_bottom = 485.0
 
 [node name="Audio" type="TabBar" parent="TabContainer"]
 visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 90.0
-offset_right = -20.0
-offset_bottom = 10.0
-script = ExtResource( 15 )
+layout_mode = 2
+script = ExtResource("15")
 
-[node name="AudioSettings" parent="TabContainer/Audio" instance=ExtResource( 14 )]
+[node name="AudioSettings" parent="TabContainer/Audio" instance=ExtResource("14")]
+anchors_preset = 0
 offset_left = 20.0
 offset_top = 50.0
 offset_right = 734.0
 offset_bottom = 485.0
 
-[node name="DialogContainer" parent="." instance=ExtResource( 11 )]
+[node name="DialogContainer" parent="." instance=ExtResource("11")]
+layout_mode = 1
 DialogNodePath = NodePath("AcceptDialog")
 
 [node name="AcceptDialog" type="AcceptDialog" parent="DialogContainer"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -576.5
-offset_top = -205.5
-offset_right = 576.5
-offset_bottom = 205.5
-theme = ExtResource( 12 )
-window_title = ""
+theme = ExtResource("12")
 dialog_text = "Please Make sure all input keys are bound correctly."
 dialog_autowrap = true
 

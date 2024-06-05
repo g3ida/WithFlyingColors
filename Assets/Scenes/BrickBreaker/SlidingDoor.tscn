@@ -1,26 +1,25 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://jvha6yhkab4s"]
 
-[ext_resource path="res://Assets/Sprites/Tetris/platform.png" type="Texture2D" id=1]
+[ext_resource type="Texture2D" uid="uid://m88dr5bhgqc4" path="res://Assets/Sprites/Tetris/platform.png" id="1"]
 
-[sub_resource type="RectangleShape2D" id=1]
-size = Vector2( 107.5, 36 )
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(215, 72)
 
 [node name="SlidingDoor" type="CharacterBody2D"]
 collision_layer = 4
 collision_mask = 595
-motion/sync_to_physics = true
 
 [node name="Spr" type="Sprite2D" parent="."]
-texture = ExtResource( 1 )
+texture = ExtResource("1")
 
 [node name="Spr3" type="Sprite2D" parent="."]
-texture = ExtResource( 1 )
-offset = Vector2( 72, 0 )
+texture = ExtResource("1")
+offset = Vector2(72, 0)
 
 [node name="Spr2" type="Sprite2D" parent="."]
-texture = ExtResource( 1 )
-offset = Vector2( -72, 0 )
+texture = ExtResource("1")
+offset = Vector2(-72, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( -0.5, 0 )
-shape = SubResource( 1 )
+position = Vector2(-0.5, 0)
+shape = SubResource("1")
