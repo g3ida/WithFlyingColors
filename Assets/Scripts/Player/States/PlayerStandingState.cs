@@ -4,7 +4,7 @@ using System;
 public partial class PlayerStandingState : PlayerBaseState
 {
     private const float RAYCAST_LENGTH = 10.0f;
-    private const float RAYCAST_Y_OFFSET = -3.0f; // https://godotengine.org/qa/63336/raycast2d-doesnt-collide-with-tilemap
+    private const float RAYCAST_Y_OFFSET = -5.0f; // https://godotengine.org/qa/63336/raycast2d-doesnt-collide-with-tilemap
     private const float SLIPPERING_LIMIT = 0.42f; // higher is less slippering
 
     public PlayerStandingState() : base()
@@ -73,14 +73,14 @@ public partial class PlayerStandingState : PlayerBaseState
             var physicsRayQueryParameters = PhysicsRayQueryParameters2D.Create(
                 from, to, exclude: new Godot.Collections.Array<Rid> { player.GetRid() }
             );
+
             var result = spaceState.IntersectRay(physicsRayQueryParameters);
-            if (result.Count != 0)
+            if (result.ContainsKey("collider"))
             {
                 combination += i;
             }
             i *= 2;
         }
-
         if (combination == 1 || combination == 8) // flag values
         {
             var slipperingState = player.states_store.GetState(PlayerStatesEnum.SLIPPERING) as PlayerSlipperingState;

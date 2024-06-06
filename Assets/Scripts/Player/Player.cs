@@ -362,7 +362,7 @@ private void PrepareChildrenNodes()
     public Vector2 GetCollisionShapeSize()
     {
         var extra_w = (FaceCollisionShapeL_node.Shape as RectangleShape2D).Size.X;
-        return ((collisionShapeNode.Shape as RectangleShape2D).Size + 2.0f * new Vector2(extra_w, extra_w)) * 2.0f;
+        return ((collisionShapeNode.Shape as RectangleShape2D).Size * 0.5f + 2.0f * new Vector2(extra_w, extra_w)) * 2.0f;
     }
 
     public bool ContainsNode(Node node)

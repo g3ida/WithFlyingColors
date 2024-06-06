@@ -15,6 +15,7 @@ public partial class PlayerBaseState : BaseState<Player>
     public sealed override void Enter(Player player)
     {
         player.ScaleCornersBy(player.CurrentDefaultCornerScaleFactor);
+        playerMoved = false;
         _Enter(player);
     }
 

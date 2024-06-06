@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" path="res://Assets/Scenes/UI/PauseMenuButtons.tscn" id="5"]
 
 [node name="PauseScreen" type="CanvasLayer"]
-process_mode = 2
+process_mode = 3
 layer = 100
 script = ExtResource("4")
 
