@@ -6,7 +6,7 @@
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(216, 72)
 
-[node name="SlidingFloor" type="CharacterBody2D"]
+[node name="SlidingFloor" type="AnimatableBody2D"]
 collision_layer = 4
 collision_mask = 595
 

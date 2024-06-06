@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class PianoNote : CharacterBody2D
+public partial class PianoNote : AnimatableBody2D
 {
     private enum NoteStates
     {
@@ -28,7 +28,7 @@ public partial class PianoNote : CharacterBody2D
 
     private static readonly Vector2 PRESS_OFFSET = new Vector2(0, 25);
     private const float PRESS_SPEED = 2.5f * Constants.WORLD_TO_SCREEN;
-    private const float RAYCAST_Y_OFFSET = 3.0f;
+    private const float RAYCAST_Y_OFFSET = 2.5f;
     private const float RAYCAST_LENGTH = 20.0f;
     private const float RESPONSIVENESS = 0.06f;
 
@@ -211,9 +211,10 @@ public partial class PianoNote : CharacterBody2D
             note_half_size.X * 0.5f,
             note_half_size.X
         };
+        var spriteHeight = SpriteNode.Texture.GetHeight();
         foreach (float offset in from_offset_x)
         {
-            var from = GlobalPosition + new Vector2(offset, -GetCollisionShapeSize().Y * 0.5f + RAYCAST_Y_OFFSET);
+            var from = GlobalPosition + new Vector2(offset, -spriteHeight * 0.5f - RAYCAST_Y_OFFSET);
             var to = from + new Vector2(0.0f, -RAYCAST_LENGTH);
             rays.Add(new Dictionary<string, Vector2> { { "from", from }, { "to", to } });
         }
@@ -230,8 +231,7 @@ public partial class PianoNote : CharacterBody2D
             var to = ray["to"];
             var physicsRayQueryParameters = PhysicsRayQueryParameters2D.Create(from, to, exclude: new Godot.Collections.Array<Rid> { GetRid() });
             var result = spaceState.IntersectRay(physicsRayQueryParameters);
-            if (result.Count > 0 && result["collider_id"].As<Rid>() == Global.Instance().Player.GetRid())
-            {
+            if (result.ContainsKey("collider") && result["collider"].As<Node>().Name == Global.Instance().Player.Name) {
                 return true;
             }
         }
@@ -261,7 +261,7 @@ public partial class PianoNote : CharacterBody2D
     //         var from = ray["from"] - GlobalPosition;
     //         var to = ray["to"] - GlobalPosition;
     //         var color = new Color(GD.Randf(), GD.Randf(), GD.Randf());
-    //         DrawLine(from, to, color, 3.0f);
+    //         DrawLine(from, to, color, 4.0f);
     //     }
     // }
 

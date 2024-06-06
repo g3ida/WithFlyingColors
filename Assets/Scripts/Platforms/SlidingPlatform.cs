@@ -21,7 +21,7 @@ public partial class SlidingPlatform : Node2D, IPersistant
     [Export] public bool show_gear { get; set; } = true;
     [Export] public bool restore_delayed_stop { get; set; } = false;
 
-    private CharacterBody2D _platform;
+    private AnimatableBody2D _platform;
     private Node2D _gearNone;
     private Vector2 _follow;
     private Vector2 _destination;
@@ -49,7 +49,7 @@ public partial class SlidingPlatform : Node2D, IPersistant
 
     public override void _Ready()
     {
-        _platform = GetParent<CharacterBody2D>();
+        _platform = GetParent<AnimatableBody2D>();
         _gearNone = GetNode<Node2D>("Gear");
         _follow = _platform.GlobalPosition;
         _destination = ParseDestination();

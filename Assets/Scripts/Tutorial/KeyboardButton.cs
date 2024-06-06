@@ -35,7 +35,7 @@ public partial class KeyboardButton : Control
             var key = InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList.Cast<InputEventKey>());
             if (key != null)
             {
-                var index = Array.IndexOf(ArrowKeys, key.Keycode);
+                var index = Array.IndexOf(ArrowKeys, (uint)key.Keycode);
                 if (index != -1)
                 {
                     _arrowSpriteNode.Visible = true;
@@ -59,7 +59,7 @@ public partial class KeyboardButton : Control
 
         _buttonTextureNode.Size = new Vector2(width, height);
         _buttonTextureNode.CustomMinimumSize = _buttonTextureNode.Size;
-        Size = _buttonTextureNode.Size;
+        SetDeferred(nameof(Size), _buttonTextureNode.Size);
         CustomMinimumSize = _buttonTextureNode.Size;
         _labelNode.Position = new Vector2((width - _labelNode.Size.X) * 0.72f, _labelNode.Position.Y);
     }

@@ -1,30 +1,35 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://cg6b6t5i0bpj3"]
 
-[ext_resource path="res://Assets/Sprites/MainMenu/MenuBkg.png" type="Texture2D" id=1]
-[ext_resource path="res://Assets/Scripts/Menus/LevelClearedMenu/LevelClearedMenu.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Scenes/UI/UITransition.tscn" type="PackedScene" id=4]
-[ext_resource path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" type="PackedScene" id=5]
+[ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="1"]
+[ext_resource type="Script" path="res://Assets/Scripts/Menus/LevelClearedMenu/LevelClearedMenu.cs" id="2"]
+[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/UITransition.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" id="5"]
 
 [node name="LevelClearedMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="Background" type="TextureRect" parent="."]
+layout_mode = 0
 offset_left = -270.0
 offset_right = 2370.0
 offset_bottom = 1080.0
-texture = ExtResource( 1 )
+texture = ExtResource("1")
 
-[node name="LevelClearedLabel" parent="." instance=ExtResource( 5 )]
+[node name="LevelClearedLabel" parent="." instance=ExtResource("5")]
+layout_mode = 0
 offset_left = 357.0
 offset_top = 39.0
 offset_right = 1605.0
 offset_bottom = 239.0
 text = "Level Cleared!"
 content = "Level Cleared!"
-underline_color = Color( 0.0627451, 0.92549, 1, 1 )
-underline_shadow_color = Color( 0, 0.776471, 0.843137, 1 )
+underline_color = Color(0.0627451, 0.92549, 1, 1)
+underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
 
-[node name="UITransition" parent="LevelClearedLabel" instance=ExtResource( 4 )]
-hidden_relative_position = Vector2( 0, -500 )
+[node name="UITransition" parent="LevelClearedLabel" instance=ExtResource("4")]
+anchors_preset = 0
+hidden_relative_position = Vector2(0, -500)

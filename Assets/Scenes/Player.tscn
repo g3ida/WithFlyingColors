@@ -29,7 +29,6 @@ size = Vector2(87, 87)
 [node name="Player" type="CharacterBody2D" groups=["persist"]]
 collision_layer = 2
 collision_mask = 9
-safe_margin = 1.5
 script = ExtResource("2")
 
 [node name="JumpParticles" type="CPUParticles2D" parent="."]

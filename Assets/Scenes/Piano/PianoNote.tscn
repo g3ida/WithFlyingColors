@@ -1,16 +1,20 @@
-[gd_scene load_steps=6 format=3 uid="uid://2w3xtnwrrjwt"]
+[gd_scene load_steps=7 format=3 uid="uid://2w3xtnwrrjwt"]
 
 [ext_resource type="Texture2D" uid="uid://b5b60j64q8i1g" path="res://Assets/Sprites/Piano/note_1.png" id="1"]
 [ext_resource type="Script" path="res://Assets/Scripts/Piano/PianoNote.cs" id="2"]
 [ext_resource type="Texture2D" uid="uid://c73kp5mvh1o62" path="res://Assets/Sprites/Piano/note_edge.png" id="3"]
 
 [sub_resource type="RectangleShape2D" id="1"]
-size = Vector2(144, 83)
+size = Vector2(144, 17)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e4stb"]
+size = Vector2(140, 9)
 
 [sub_resource type="RectangleShape2D" id="2"]
 size = Vector2(140, 7)
 
-[node name="PianoNote" type="CharacterBody2D"]
+[node name="PianoNote" type="AnimatableBody2D"]
+collision_mask = 18
 script = ExtResource("2")
 
 [node name="NoteSpr" type="Sprite2D" parent="."]
@@ -20,16 +24,15 @@ texture = ExtResource("1")
 texture = ExtResource("3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 0.5)
+position = Vector2(0, -32.5)
 shape = SubResource("1")
 
 [node name="Area2D" type="Area2D" parent="."]
 collision_mask = 18
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(0, -41.75)
-shape = SubResource("2")
-debug_color = Color(0.988235, 0, 0.286275, 0.419608)
+position = Vector2(0, -41.5)
+shape = SubResource("RectangleShape2D_e4stb")
 
 [node name="ColorArea" type="Area2D" parent="."]
 collision_layer = 4

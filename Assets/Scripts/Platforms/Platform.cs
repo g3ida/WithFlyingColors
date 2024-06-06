@@ -2,7 +2,7 @@ using Godot;
 using System;
 
 [Tool]
-public partial class Platform : CharacterBody2D
+public partial class Platform : AnimatableBody2D
 {
     private static readonly Texture2D GearedTexture = (Texture2D)GD.Load("res://Assets/Sprites/Platforms/geared-platform.png");
     private static readonly Texture2D SimpleTexture = (Texture2D)GD.Load("res://Assets/Sprites/Platforms/platform.png");

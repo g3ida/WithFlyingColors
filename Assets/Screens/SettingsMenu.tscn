@@ -36,10 +36,7 @@ texture = ExtResource("3")
 
 [node name="GAME" parent="." instance=ExtResource("1")]
 layout_mode = 0
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 328.0
-offset_bottom = 200.0
+offset_right = 429.0
 text = "GAME"
 content = "GAME"
 underline_color = Color(0.0627451, 0.92549, 1, 1)
@@ -51,10 +48,9 @@ hidden_relative_position = Vector2(-900, 0)
 
 [node name="SETTINGS" parent="." instance=ExtResource("1")]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 250.0
-offset_right = 935.0
-offset_bottom = 274.0
+offset_right = 985.0
+offset_bottom = 450.0
 text = "SETTINGS"
 content = "SETTINGS"
 underline_color = Color(0.843137, 1, 0.219608, 1)

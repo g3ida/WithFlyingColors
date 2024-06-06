@@ -20,6 +20,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("8")
 
 [node name="Background" type="TextureRect" parent="."]
@@ -48,7 +50,6 @@ delay = 0.5
 hidden_relative_position = Vector2(-900, 0)
 
 [node name="SlotsContainer" parent="." instance=ExtResource("4")]
-anchors_preset = 0
 offset_left = 734.0
 offset_right = 734.0
 centered_on_screen_v = true
@@ -65,6 +66,7 @@ hidden_relative_position = Vector2(0, 1000)
 
 [node name="SELECT" parent="." instance=ExtResource("3")]
 layout_mode = 0
+offset_right = 431.0
 text = "SLOT"
 content = "SLOT"
 underline_color = Color(0.0627451, 0.92549, 1, 1)
@@ -77,7 +79,7 @@ hidden_relative_position = Vector2(-900, 0)
 [node name="SLOT" parent="." instance=ExtResource("3")]
 layout_mode = 0
 offset_top = 250.0
-offset_right = 935.0
+offset_right = 985.0
 offset_bottom = 450.0
 text = "SELECT"
 content = "SELECT"

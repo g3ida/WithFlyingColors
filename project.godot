@@ -37,6 +37,11 @@ window/stretch/aspect="keep_height"
 
 project/assembly_name="WithFlyingColors"
 
+[filesystem]
+
+import/blender/enabled=false
+import/fbx/enabled=false
+
 [gdnative]
 
 singletons=["res://addons/godot-git-plugin/git_api.gdnlib"]
@@ -121,4 +126,5 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+renderer/rendering_method="gl_compatibility"
 environment/defaults/default_environment="res://default_env.tres"
