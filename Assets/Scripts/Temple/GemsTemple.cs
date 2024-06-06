@@ -176,7 +176,7 @@ public partial class GemsTemple : Node2D
     private void GoToWalkPhase()
     {
         currentState = States.WALK_PHASE;
-        Global.Instance().Player.velocity = new Vector2(0, Global.Instance().Player.velocity.Y);
+        Global.Instance().Player.Velocity = new Vector2(0, Global.Instance().Player.Velocity.Y);
         Event.Instance().EmitGemTempleTriggered();
         Global.Instance().Cutscene.ShowSomeNode(Global.Instance().Player, 10.0f, 3.2f);
     }
@@ -192,7 +192,7 @@ public partial class GemsTemple : Node2D
     private void GoToCollectPhase()
     {
         currentState = States.COLLECT_PHASE;
-        Global.Instance().Player.velocity = new Vector2(0, Global.Instance().Player.velocity.Y);
+        Global.Instance().Player.Velocity = new Vector2(0, Global.Instance().Player.Velocity.Y);
         if (!CreateTempleGems())
         {
             OnGemCollected(null);

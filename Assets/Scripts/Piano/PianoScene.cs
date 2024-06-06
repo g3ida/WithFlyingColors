@@ -10,7 +10,7 @@ public partial class PianoScene : Node2D
         PianoNodeScene = GetNode<Piano>("Piano");
     }
 
-    private void _on_TriggerArea_body_entered(Node body)
+    private void _on_TriggerArea_body_entered(Node2D body)
     {
         if (body != Global.Instance().Player)
             return;

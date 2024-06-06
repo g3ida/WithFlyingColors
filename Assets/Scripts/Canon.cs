@@ -91,10 +91,6 @@ public partial class Canon : Node2D
         canShoot = true;
     }
 
-    private float SignOf(float x)
-    {
-        return x < 0 ? -1.0f : 1.0f;
-    }
 
     private bool CanFollow(float targetAngle, float distanceSquared)
     {

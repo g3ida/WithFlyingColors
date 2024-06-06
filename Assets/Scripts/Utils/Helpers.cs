@@ -4,11 +4,6 @@ using System.Collections.Generic;
 
 public static class Helpers
 {
-    public static float SignOf(float x)
-    {
-        return x < 0 ? -1.0f : 1.0f;
-    }
-
     public static bool Intersects(Vector2 circlePos, float circleRadius, Vector2 rectPos, Vector2 rect)
     {
         Vector2 circleDist = new Vector2

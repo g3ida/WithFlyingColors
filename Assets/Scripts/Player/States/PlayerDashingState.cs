@@ -47,7 +47,7 @@ public partial class PlayerDashingState : PlayerBaseState
     {
         if (dashDone)
         {
-            player.velocity.X = 0;
+            player.Velocity = new Vector2(0, player.Velocity.Y);
         }
         dashTimer.Stop();
         permissivenessTimer.Stop();
@@ -76,11 +76,11 @@ public partial class PlayerDashingState : PlayerBaseState
         {
             if (Mathf.Abs(direction.X) > 0.01f)
             {
-                player.velocity.X = DASH_SPEED * direction.X;
+                player.Velocity = new Vector2(DASH_SPEED * direction.X, player.Velocity.Y);
             }
             if (Mathf.Abs(direction.Y) > 0.01f)
             {
-                player.velocity.Y = DASH_SPEED * direction.Y;
+                player.Velocity = new Vector2(player.Velocity.X, DASH_SPEED * direction.Y);
             }
         }
 
@@ -90,7 +90,7 @@ public partial class PlayerDashingState : PlayerBaseState
         }
         else
         {
-            player.velocity.Y = 0;
+            player.Velocity = new Vector2(player.Velocity.X, 0);
         }
 
         dashTimer.Step(delta);
@@ -114,9 +114,9 @@ public partial class PlayerDashingState : PlayerBaseState
         {
             direction.X = 1;
         }
-        else if (Mathf.Abs(player.velocity.X) > 0.1f)
+        else if (Mathf.Abs(player.Velocity.X) > 0.1f)
         {
-            direction.X = 1 * Mathf.Sign(player.velocity.X);
+            direction.X = 1 * Mathf.Sign(player.Velocity.X);
         }
         else
         {

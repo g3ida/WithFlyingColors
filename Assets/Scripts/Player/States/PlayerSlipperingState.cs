@@ -126,7 +126,7 @@ public partial class PlayerSlipperingState : PlayerBaseState
     {
         if (CheckIfGroundIsNear(player))
         {
-            player.velocity.X -= player.Scale.X * direction * PLAYER_SPEED_THRESHOLD_TO_STAND;
+            player.Velocity = new Vector2(player.Velocity.X - player.Scale.X * direction * PLAYER_SPEED_THRESHOLD_TO_STAND, player.Velocity.Y);
             return player.states_store.GetState(PlayerStatesEnum.STANDING);
         }
         return null;

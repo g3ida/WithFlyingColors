@@ -58,6 +58,8 @@ public partial class PianoNote : CharacterBody2D
 
     private Tween tweener;
 
+    private bool isPlayerAboveTheNote = false;
+
     public override void _Ready()
     {
         SpriteNode = GetNode<Sprite2D>("NoteSpr");
@@ -75,6 +77,11 @@ public partial class PianoNote : CharacterBody2D
     public override void _PhysicsProcess(double delta)
     {
         Position = calculated_position;
+        isPlayerAboveTheNote = false;
+        if (IsPressingOrPressedState())
+        {
+            isPlayerAboveTheNote = RaycastPlayer();
+        }
         StartReleasingNoteTimerIfRelevant();
     }
 
@@ -180,18 +187,22 @@ public partial class PianoNote : CharacterBody2D
 
     private Vector2 GetDetectionAreaShapeSize()
     {
-        return (AreaCollisionShapeNode.Shape as RectangleShape2D).Size * 2.0f;
+        return (AreaCollisionShapeNode.Shape as RectangleShape2D).Size;
     }
 
     private Vector2 GetCollisionShapeSize()
     {
-        return (CollisionShapeNode.Shape as RectangleShape2D).Size * 2.0f;
+        return (CollisionShapeNode.Shape as RectangleShape2D).Size;
     }
 
     private List<Dictionary<string, Vector2>> GetRayLinesInGlobalPosition()
     {
         var rays = new List<Dictionary<string, Vector2>>();
+
+
+
         Vector2 note_half_size = GetDetectionAreaShapeSize() * 0.5f * Scale;
+
         var from_offset_x = new float[]
         {
             -note_half_size.X,
@@ -237,8 +248,9 @@ public partial class PianoNote : CharacterBody2D
 
     private bool CheckIfPlayerIsAboveTheNote()
     {
-        return RaycastPlayer() && IsPlayerStandingOrFalling();
+        return isPlayerAboveTheNote && IsPlayerStandingOrFalling();
     }
+
 
     // Uncomment this code to debug draw raycast rays
     // public override void _Draw()
@@ -248,7 +260,8 @@ public partial class PianoNote : CharacterBody2D
     //     {
     //         var from = ray["from"] - GlobalPosition;
     //         var to = ray["to"] - GlobalPosition;
-    //         DrawLine(from, to, Colors.Red, 2.0f);
+    //         var color = new Color(GD.Randf(), GD.Randf(), GD.Randf());
+    //         DrawLine(from, to, color, 3.0f);
     //     }
     // }
 

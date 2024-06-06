@@ -49,7 +49,7 @@ public partial class PlayerJumpingState : PlayerBaseState
         if (entred)
         {
             entred = false;
-            player.velocity.Y -= JUMP_FORCE * touchJumpPower;
+            player.Velocity = new Vector2(player.Velocity.X, player.Velocity.Y - JUMP_FORCE * touchJumpPower);
         }
         else if (player.IsOnFloor())
         {
@@ -71,9 +71,9 @@ public partial class PlayerJumpingState : PlayerBaseState
         if (jumpTimer.IsRunning() && Input.IsActionJustReleased("jump"))
         {
             jumpTimer.Stop();
-            if (player.velocity.Y < 0)
+            if (player.Velocity.Y < 0)
             {
-                player.velocity.X *= 0.5f;
+                player.Velocity = new Vector2(player.Velocity.X * 0.5f, player.Velocity.Y);
             }
         }
 

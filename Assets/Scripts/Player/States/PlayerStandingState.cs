@@ -43,7 +43,7 @@ public partial class PlayerStandingState : PlayerBaseState
         }
         else
         {
-            if (Math.Abs(player.velocity.X) < player.speed_unit
+            if (Math.Abs(player.Velocity.X) < player.speed_unit
                 && player.player_rotation_state.baseState == PlayerStatesEnum.IDLE)
             {
                 return RaycastFloor(player);

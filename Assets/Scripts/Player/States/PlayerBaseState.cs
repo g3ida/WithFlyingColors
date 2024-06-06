@@ -55,26 +55,25 @@ public partial class PlayerBaseState : BaseState<Player>
                     if (Input.IsActionPressed("move_right"))
                     {
                         playerMoved = true;
-                        player.velocity.X = Mathf.Clamp(player.velocity.X + player.speed_unit, 0, player.speed_limit);
+                        player.Velocity = new Vector2(Mathf.Clamp(player.Velocity.X + player.speed_unit, 0, player.speed_limit), player.Velocity.Y);
+
                     }
                     else if (Input.IsActionPressed("move_left"))
                     {
                         playerMoved = true;
-                        player.velocity.X = Mathf.Clamp(player.velocity.X - player.speed_unit, -player.speed_limit, 0);
+                        player.Velocity = new Vector2(Mathf.Clamp(player.Velocity.X - player.speed_unit, -player.speed_limit, 0), player.Velocity.Y);
+
                     }
                 }
             }
 
-            player.velocity.Y += GRAVITY * delta * FALL_FACTOR;
+            player.Velocity = new Vector2(player.Velocity.X, player.Velocity.Y + GRAVITY * delta * FALL_FACTOR);
         }
 
         var newState = _PhysicsUpdate(player, delta);
 
-        // FIXME: cleanup this logic after c# migration
-        player.Velocity = player.velocity; // set the velocity to the player
         player.MoveAndSlide();
-        player.velocity = player.Velocity; // get the velocity forom player
-        player.velocity.X = Mathf.Lerp(player.velocity.X, 0, 0.25f);
+        player.Velocity = new Vector2(Mathf.Lerp(player.Velocity.X, 0, 0.25f), player.Velocity.Y);
         player.current_animation.Step(player, player.animatedSpriteNode, delta);
 
         if (newState != null)
@@ -105,7 +104,7 @@ public partial class PlayerBaseState : BaseState<Player>
     {
         if (entityType != Constants.EntityType.FALLZONE)
         {
-            player.velocity = Vector2.Zero;
+            player.Velocity = Vector2.Zero;
         }
 
         var dyingState = (PlayerDyingState)player.states_store.GetState(PlayerStatesEnum.DYING);

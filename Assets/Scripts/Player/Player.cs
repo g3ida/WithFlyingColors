@@ -12,7 +12,6 @@ public partial class Player : CharacterBody2D, IPersistant
     public float speed_limit = SPEED;
     public float speed_unit = SPEED_UNIT;
 
-    public Vector2 velocity = Vector2.Zero;
     public PlayerRotationAction playerRotationAction;
 
     public TransformAnimation scale_animation;
@@ -141,6 +140,7 @@ private void PrepareChildrenNodes()
 
     public override void _Ready()
     {
+        base._Ready();
         PrepareChildrenNodes();
         playerRotationAction = new PlayerRotationAction();
         playerRotationAction.Set(this);
@@ -148,6 +148,7 @@ private void PrepareChildrenNodes()
         sprite_size = animatedSpriteNode.SpriteFrames.GetFrameTexture("idle", 0).GetWidth();
         InitSpriteAnimation();
         was_on_floor = IsOnFloor();
+        UpDirection = Vector2.Up;
         InitFacesAreas();
         InitState();
 
@@ -230,7 +231,7 @@ private void PrepareChildrenNodes()
         animatedSpriteNode.Play("idle");
         animatedSpriteNode.Stop();
         GlobalPosition = new Vector2(Convert.ToSingle(save_data["position_x"]), Convert.ToSingle(save_data["position_y"]));
-        velocity = Vector2.Zero;
+        Velocity = Vector2.Zero;
         var angle_rot = Convert.ToSingle(save_data["angle"]);
         Rotate(angle_rot - Rotation);
         CurrentDefaultCornerScaleFactor = Convert.ToSingle(save_data["default_corner_scale_factor"]);
@@ -473,7 +474,7 @@ private void PrepareChildrenNodes()
 
     public bool IsFalling()
     {
-        return velocity.Y >= -Constants.EPSILON;
+        return Velocity.Y >= -Constants.EPSILON;
     }
 
     public bool IsRotationIdle() {
@@ -490,7 +491,7 @@ private void PrepareChildrenNodes()
     }
 
     public void SetMaxSpeed() {
-        velocity.X = SPEED;
+        Velocity = new Vector2(SPEED, Velocity.Y);
     }
 
     public void load(Dictionary<string, object> save_data)

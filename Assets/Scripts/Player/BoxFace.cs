@@ -18,8 +18,8 @@ public partial class BoxFace : BaseFace
         Scale = new Vector2(scaleFactor, scaleFactor);
 
         Position = new Vector2(
-            positionX + extents.Y * (scaleFactor - 1.0f) * Helpers.SignOf(Position.Y) * Mathf.Sin(Rotation),
-            positionY - extents.Y * (scaleFactor - 1.0f) * Helpers.SignOf(Position.Y) * Mathf.Cos(Rotation)
+            positionX + extents.Y * (scaleFactor - 1.0f) * Math.Sign(Position.Y) * Mathf.Sin(Rotation),
+            positionY - extents.Y * (scaleFactor - 1.0f) * Math.Sign(Position.Y) * Mathf.Cos(Rotation)
         );
     }
 

@@ -41,8 +41,8 @@ public partial class BaseFace : Area2D
         float scaleFactor = factor;
         Scale = new Vector2(scaleFactor, scaleFactor);
         Position = new Vector2(
-            positionX - extents.X * (scaleFactor - 1.0f) * Helpers.SignOf(Position.X),
-            positionY - extents.Y * (scaleFactor - 1.0f) * Helpers.SignOf(Position.Y)
+            positionX - extents.X * (scaleFactor - 1.0f) * Math.Sign(Position.X) * 0.5f,
+            positionY - extents.Y * (scaleFactor - 1.0f) * Math.Sign(Position.Y) * 0.5f
         );
     }
 }

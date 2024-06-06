@@ -133,8 +133,8 @@ public partial class BouncingBall : CharacterBody2D
                         velocity.Y = -velocity.Y;
                 }
                 // avoid player sticking to the ball
-                if (player.velocity.X * info.n.X >= 0)
-                    player.velocity.X = -info.n.X * PLAYER_SIDE_HIT_PUSH_VELOCITY;
+                if (player.Velocity.X * info.n.X >= 0)
+                    player.Velocity = new Vector2(-info.n.X * PLAYER_SIDE_HIT_PUSH_VELOCITY, player.Velocity.Y);
             }
             return true;
         }
@@ -175,9 +175,9 @@ public partial class BouncingBall : CharacterBody2D
 
     private void _SetPlayerLastDirection()
     {
-        if (Global.Instance().Player.velocity.X > 0.0f)
+        if (Global.Instance().Player.Velocity.X > 0.0f)
             player_last_direction = 1;
-        else if (Global.Instance().Player.velocity.X < 0.0f)
+        else if (Global.Instance().Player.Velocity.X < 0.0f)
             player_last_direction = -1;
     }
 
@@ -255,11 +255,11 @@ public override void _PhysicsProcess(double delta)
     private bool IsPlayerFollowingTheBall()
     {
         var player = Global.Instance().Player;
-        if (player.velocity.X > Constants.EPSILON)
+        if (player.Velocity.X > Constants.EPSILON)
         {
             return player.GlobalPosition.X < GlobalPosition.X;
         }
-        else if (player.velocity.X < -Constants.EPSILON)
+        else if (player.Velocity.X < -Constants.EPSILON)
         {
             return player.GlobalPosition.X > GlobalPosition.X;
         }
@@ -271,13 +271,13 @@ public override void _PhysicsProcess(double delta)
 
     private bool IsPlayerFallingOverTheFallingBall()
     {
-        bool bothFalling = Global.Instance().Player.velocity.Y >= 0.0f;
+        bool bothFalling = Global.Instance().Player.Velocity.Y >= 0.0f;
         return bothFalling && IsBallUnderPlayer();
     }
 
     private bool IsPlayerPushingAFlyingBall()
     {
-        bool bothUp = Global.Instance().Player.velocity.Y < -Constants.EPSILON && velocity.Y < -Constants.EPSILON;
+        bool bothUp = Global.Instance().Player.Velocity.Y < -Constants.EPSILON && velocity.Y < -Constants.EPSILON;
         return bothUp && IsBallOverThePlayer();
     }
 
@@ -386,11 +386,11 @@ public override void _PhysicsProcess(double delta)
     // Add the missing methods here
     private void SetPlayerLastDirection()
     {
-        if (Global.Instance().Player.velocity.X > 0.0f)
+        if (Global.Instance().Player.Velocity.X > 0.0f)
         {
             player_last_direction = 1;
         }
-        else if (Global.Instance().Player.velocity.X < 0.0f)
+        else if (Global.Instance().Player.Velocity.X < 0.0f)
         {
             player_last_direction = -1;
         }
