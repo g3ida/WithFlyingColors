@@ -56,7 +56,6 @@ drag_bottom_margin = 0.05
 follow_path = NodePath("../Player")
 
 [node name="PauseMenu" parent="Camera2D" instance=ExtResource("19")]
-process_mode = 3
 
 [node name="CameraShake" parent="Camera2D" instance=ExtResource("30")]
 

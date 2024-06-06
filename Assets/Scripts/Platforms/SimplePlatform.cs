@@ -19,31 +19,43 @@ public partial class SimplePlatform : StaticBody2D
     private float animationTimer = 10;
     private Vector2 contactPosition = new Vector2(0, 0);
 
-    private NinePatchRect ninePatchRectNode;
-    private Area2D areaNode;
+    private NinePatchRect _ninePatchRectNode;
+    private Area2D _areaNode;
+    private CollisionShape2D _collisionShape;
+    private CollisionShape2D _colorAreaShape;
 
     public override void _Ready()
     {
         base._Ready();
-        ninePatchRectNode = GetNode<NinePatchRect>("NinePatchRect");
-        areaNode = GetNode<Area2D>("Area2D");
+        _ninePatchRectNode = GetNode<NinePatchRect>("NinePatchRect");
+        _areaNode = GetNode<Area2D>("Area2D");
+        _collisionShape = GetNode<CollisionShape2D>("CollisionShape");
+        _colorAreaShape = GetNode<CollisionShape2D>("Area2D/ColorAreaShape");
 
         SetPlatformTexture();
-        NinePatchTextureUtils.ScaleTexture(ninePatchRectNode, Scale);
+        NinePatchTextureUtils.ScaleTexture(_ninePatchRectNode, Scale);
+        correctAreaSize();
 
         if (!string.IsNullOrEmpty(group))
         {
             int colorIndex = ColorUtils.GetGroupColorIndex(group);
-            ninePatchRectNode.Modulate = ColorUtils.GetBasicColor(colorIndex);
-            areaNode.AddToGroup(group);
+            _ninePatchRectNode.Modulate = ColorUtils.GetBasicColor(colorIndex);
+            _areaNode.AddToGroup(group);
         }
         else
         {
             foreach (var colorGroup in Constants.COLOR_GROUPS)
             {
-                areaNode.AddToGroup(colorGroup);
+                _areaNode.AddToGroup(colorGroup);
             }
         }
+    }
+
+    public void correctAreaSize() {
+        var A = (_colorAreaShape.Shape as RectangleShape2D).Size;
+        var B = (_collisionShape.Shape as RectangleShape2D).Size;
+        var scaleCoffecient = (A + (B - A)/Scale) / B;
+        (_collisionShape.Shape as RectangleShape2D).Size *= scaleCoffecient;
     }
 
     public override void _EnterTree()
@@ -60,7 +72,7 @@ public partial class SimplePlatform : StaticBody2D
 
     public void OnPlayerLanded(Node area, Vector2 position)
     {
-        if (area == areaNode)
+        if (area == _areaNode)
         {
             animationTimer = 0;
             contactPosition = position;
@@ -74,12 +86,10 @@ public partial class SimplePlatform : StaticBody2D
 
         animationTimer += (float)delta;
 
-        if (ninePatchRectNode.Material is ShaderMaterial shaderMaterial)
+        if (_ninePatchRectNode.Material is ShaderMaterial shaderMaterial)
         {
             Vector2 resolution = GetViewport().GetVisibleRect().Size; // must be 1920x1080
-
             Camera2D cam = Global.Instance().Camera;
-
             if (cam != null)
             {
                 Vector2 camPos = cam.GetScreenCenterPosition();
@@ -87,7 +97,8 @@ public partial class SimplePlatform : StaticBody2D
                     contactPosition.X + (resolution.X / 2) - camPos.X,
                     contactPosition.Y + (resolution.Y / 2) - camPos.Y);
                 Vector2 pos = new Vector2(currentPos.X / resolution.X, currentPos.Y / resolution.Y);
-                Vector2 positionInShaderCoords = new Vector2(pos.X, 1 - pos.Y);
+                // Position in shader coords is now Y instead of 1-Y as it was in Godot 3.x
+                Vector2 positionInShaderCoords = new Vector2(pos.X, pos.Y);
 
                 shaderMaterial.SetShaderParameter("u_contact_pos", positionInShaderCoords);
                 shaderMaterial.SetShaderParameter("u_timer", animationTimer);
@@ -101,11 +112,11 @@ public partial class SimplePlatform : StaticBody2D
     {
         if (geared)
         {
-            NinePatchTextureUtils.SetTexture(ninePatchRectNode, GearedTexture);
+            NinePatchTextureUtils.SetTexture(_ninePatchRectNode, GearedTexture);
         }
         else
         {
-            NinePatchTextureUtils.SetTexture(ninePatchRectNode, SimpleTexture);
+            NinePatchTextureUtils.SetTexture(_ninePatchRectNode, SimpleTexture);
         }
     }
 
