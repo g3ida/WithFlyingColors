@@ -42,6 +42,7 @@ hidden_relative_position = Vector2(-900, 0)
 
 [node name="FLYING" parent="." instance=ExtResource("3")]
 layout_mode = 0
+offset_left = 0.0
 offset_top = 250.0
 offset_right = 985.0
 offset_bottom = 450.0
@@ -57,6 +58,7 @@ hidden_relative_position = Vector2(-900, 0)
 
 [node name="COLORS" parent="." instance=ExtResource("3")]
 layout_mode = 0
+offset_left = 0.0
 offset_top = 450.0
 offset_right = 985.0
 offset_bottom = 650.0

@@ -3,122 +3,122 @@ using System;
 
 public partial class GameSettingsUI : Control, IUITab
 {
-    private CheckBox vsyncCheckbox;
-    private CheckBox fscreenCheckbox;
-    private Label autoResolutionLabel;
-    private UISelect resolutionSelect;
+  private CheckBox vsyncCheckbox;
+  private CheckBox fscreenCheckbox;
+  private Label autoResolutionLabel;
+  private UISelect resolutionSelect;
 
-    private bool is_ready = false;
+  private bool is_ready = false;
 
 
-    public override void _EnterTree()
+  public override void _EnterTree()
+  {
+    base._EnterTree();
+    // Fixme: make better logic to intitalize the resolution select driver. C# migration.
+    resolutionSelect = GetNode<UISelect>("GridContainer/ResolutionUISelect");
+    resolutionSelect.select_driver = new ResolutionSelectDriver();
+
+  }
+
+  public override void _Ready()
+  {
+    vsyncCheckbox = GetNode<CheckBox>("GridContainer/VsyncCheckbox");
+    fscreenCheckbox = GetNode<CheckBox>("GridContainer/FullscreenCheckbox");
+    autoResolutionLabel = GetNode<Label>("GridContainer/AutoResolutionLabel");
+
+    vsyncCheckbox.ButtonPressed = GameSettings.Instance().Vsync;
+    fscreenCheckbox.ButtonPressed = GameSettings.Instance().Fullscreen;
+    ToggleAutoResolution();
+    on_gain_focus();
+    is_ready = true;
+
+    // vsyncCheckbox.Connect("toggled", this, nameof(_on_VsyncCheckbox_toggled));
+    // fscreenCheckbox.Connect("toggled", this, nameof(_on_FullscreenCheckbox_toggled));
+    // resolutionSelect.Connect("Value_changed", this, nameof(_on_UISelect_Value_changed));
+    // resolutionSelect.Connect("selection_changed", this, nameof(_on_ResolutionUISelect_selection_changed));
+
+
+  }
+
+  private void _on_VsyncCheckbox_toggled(bool buttonPressed)
+  {
+    GameSettings.Instance().Vsync = buttonPressed;
+    if (is_ready)
     {
-        base._EnterTree();
-        // Fixme: make better logic to intitalize the resolution select driver. C# migration.
-        resolutionSelect = GetNode<UISelect>("GridContainer/ResolutionUISelect");
-        resolutionSelect.select_driver = new ResolutionSelectDriver();
-
+      Event.Instance.EmitVsyncToggled(buttonPressed);
     }
+  }
 
-    public override void _Ready()
+  private void _on_FullscreenCheckbox_toggled(bool buttonPressed)
+  {
+    GameSettings.Instance().Fullscreen = buttonPressed;
+    if (is_ready)
     {
-        vsyncCheckbox = GetNode<CheckBox>("GridContainer/VsyncCheckbox");
-        fscreenCheckbox = GetNode<CheckBox>("GridContainer/FullscreenCheckbox");
-        autoResolutionLabel = GetNode<Label>("GridContainer/AutoResolutionLabel");
-
-        vsyncCheckbox.ButtonPressed = GameSettings.Instance().Vsync;
-        fscreenCheckbox.ButtonPressed = GameSettings.Instance().Fullscreen;
-        ToggleAutoResolution();
-        on_gain_focus();
-        is_ready = true;
-
-        // vsyncCheckbox.Connect("toggled", this, nameof(_on_VsyncCheckbox_toggled));
-        // fscreenCheckbox.Connect("toggled", this, nameof(_on_FullscreenCheckbox_toggled));
-        // resolutionSelect.Connect("Value_changed", this, nameof(_on_UISelect_Value_changed));
-        // resolutionSelect.Connect("selection_changed", this, nameof(_on_ResolutionUISelect_selection_changed));
-    
-    
+      Event.Instance.EmitFullscreenToggled(buttonPressed);
     }
+    ToggleAutoResolution();
+  }
 
-    private void _on_VsyncCheckbox_toggled(bool buttonPressed)
+  private void ToggleAutoResolution()
+  {
+    if (GameSettings.Instance().Fullscreen)
     {
-        GameSettings.Instance().Vsync = buttonPressed;
-        if (is_ready)
-        {
-            Event.Instance().EmitVsyncToggled(buttonPressed);
-        }
+      autoResolutionLabel.Visible = true;
+      resolutionSelect.Visible = false;
     }
-
-    private void _on_FullscreenCheckbox_toggled(bool buttonPressed)
+    else
     {
-        GameSettings.Instance().Fullscreen = buttonPressed;
-        if (is_ready)
-        {
-            Event.Instance().EmitFullscreenToggled(buttonPressed);
-        }
-        ToggleAutoResolution();
+      autoResolutionLabel.Visible = false;
+      resolutionSelect.Visible = true;
+      LaunchScheduledRescale();
     }
+  }
 
-    private void ToggleAutoResolution()
+  private void _on_UISelect_Value_changed(Vector2I value)
+  {
+    //var resolution = (Vector2)GD.Convert(value, Variant.Type.Vector2);
+    var resolution = value;
+    GameSettings.Instance().WindowSize = resolution;
+    if (is_ready)
     {
-        if (GameSettings.Instance().Fullscreen)
-        {
-            autoResolutionLabel.Visible = true;
-            resolutionSelect.Visible = false;
-        }
-        else
-        {
-            autoResolutionLabel.Visible = false;
-            resolutionSelect.Visible = true;
-            LaunchScheduledRescale();
-        }
+      Event.Instance.EmitScreenSizeChanged(resolution);
     }
+  }
 
-    private void _on_UISelect_Value_changed(Vector2I value)
+  private void LaunchScheduledRescale()
+  {
+    Timer rescaleTimer = new Timer
     {
-        //var resolution = (Vector2)GD.Convert(value, Variant.Type.Vector2);
-        var resolution = value;
-        GameSettings.Instance().WindowSize = resolution;
-        if (is_ready)
-        {
-            Event.Instance().EmitScreenSizeChanged(resolution);
-        }
-    }
+      WaitTime = 0.4f,
+      OneShot = true
+    };
+    rescaleTimer.Connect("timeout", new Callable(this, nameof(on_rescale_timeout)));
+    AddChild(rescaleTimer, true);
+    rescaleTimer.Start();
+  }
 
-    private void LaunchScheduledRescale()
-    {
-        Timer rescaleTimer = new Timer
-        {
-            WaitTime = 0.4f,
-            OneShot = true
-        };
-        rescaleTimer.Connect("timeout", new Callable(this, nameof(on_rescale_timeout)));
-        AddChild(rescaleTimer, true);
-        rescaleTimer.Start();
-    }
+  private void on_rescale_timeout()
+  {
+    GameSettings.Instance().WindowSize = (Vector2I)resolutionSelect.selected_value;
+  }
 
-    private void on_rescale_timeout()
+  public void on_gain_focus()
+  {
+    if (resolutionSelect.Visible)
     {
-        GameSettings.Instance().WindowSize = (Vector2I)resolutionSelect.selected_value;
+      resolutionSelect.GrabFocus();
     }
+    else
+    {
+      fscreenCheckbox.GrabFocus();
+    }
+  }
 
-    public void on_gain_focus()
+  private void _on_ResolutionUISelect_selection_changed(bool isEdit)
+  {
+    if (is_ready)
     {
-        if (resolutionSelect.Visible)
-        {
-            resolutionSelect.GrabFocus();
-        }
-        else
-        {
-            fscreenCheckbox.GrabFocus();
-        }
+      Event.Instance.EmitScreenSizeChanged(GameSettings.Instance().WindowSize);
     }
-
-    private void _on_ResolutionUISelect_selection_changed(bool isEdit)
-    {
-        if (is_ready)
-        {
-            Event.Instance().EmitScreenSizeChanged(GameSettings.Instance().WindowSize);
-        }
-    }
+  }
 }

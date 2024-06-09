@@ -1,24 +1,27 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://c8dkvkto8ut48"]
 
-[ext_resource path="res://Assets/Scripts/Menus/SubMenu/SubMenu.cs" type="Script" id=1]
-[ext_resource path="res://Assets/Sprites/MainMenu/sub-menu-top.png" type="Texture2D" id=2]
+[ext_resource type="Script" path="res://Assets/Scripts/Wfc/Entities/Ui/Menubox/SubMenuScene.cs" id="1_s507m"]
+[ext_resource type="Texture2D" uid="uid://ba6ixdl4ihitg" path="res://Assets/Sprites/MainMenu/sub-menu-top.png" id="2"]
 
 [node name="SubMenu" type="Control"]
+z_as_relative = false
+custom_minimum_size = Vector2(637, 30)
+layout_mode = 3
+anchors_preset = 0
 offset_left = 1.0
 offset_right = 638.0
 offset_bottom = 30.0
-custom_minimum_size = Vector2( 637, 30 )
-script = ExtResource( 1 )
+script = ExtResource("1_s507m")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(637, 30)
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_minimum_size = Vector2( 637, 30 )
 theme_override_constants/separation = 0
 
 [node name="Top" type="TextureRect" parent="VBoxContainer"]
-modulate = Color( 0, 0, 0, 0 )
-offset_right = 637.0
-offset_bottom = 30.0
-custom_minimum_size = Vector2( 637, 30 )
-texture = ExtResource( 2 )
+modulate = Color(0, 0, 0, 0)
+custom_minimum_size = Vector2(637, 30)
+layout_mode = 2
+texture = ExtResource("2")

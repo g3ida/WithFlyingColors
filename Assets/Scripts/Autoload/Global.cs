@@ -27,7 +27,7 @@ public partial class Global : Node2D
 
     public Texture2D _playerSprite;
     
-    private Dictionary<string, string[]> selectedSkin = SkinLoader.DEFAULT_SKIN;
+    private Dictionary<string, string[]> selectedSkin = SkinLoader.GOOGL_SKIN;
 
     public Texture2D GetPlayerSprite()
     {
