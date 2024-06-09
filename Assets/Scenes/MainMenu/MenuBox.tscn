@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://e4osajb7jluk"]
 
 [ext_resource type="Texture2D" uid="uid://xou2h1cnhhfl" path="res://Assets/Sprites/MainMenu/menu_cube.png" id="1"]
-[ext_resource type="Script" path="res://Assets/Scripts/Menus/MainMenu/MenuBox.cs" id="2"]
+[ext_resource type="Script" path="res://Assets/Scripts/Wfc/Entities/Ui/Menubox/MenuboxScene.cs" id="1_xah6c"]
 [ext_resource type="Texture2D" uid="uid://o7v5wnvga4uj" path="res://Assets/Sprites/MainMenu/arrow_left.png" id="3"]
 [ext_resource type="Texture2D" uid="uid://wi5gn4n5ktwd" path="res://Assets/Sprites/MainMenu/arrow_right.png" id="4"]
 [ext_resource type="StyleBox" path="res://Assets/Styles/MenuButtonPressedStyle.tres" id="6"]
@@ -14,11 +14,12 @@
 [sub_resource type="StyleBoxEmpty" id="7"]
 
 [node name="Control" type="Control"]
+z_index = 1
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-script = ExtResource("2")
+script = ExtResource("1_xah6c")
 
 [node name="OutsideButton" type="Button" parent="."]
 modulate = Color(1, 1, 1, 0)
