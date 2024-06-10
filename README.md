@@ -1,6 +1,6 @@
 # WithFlyingColors
 
-[![Chickensoft Badge][chickensoft-badge]][chickensoft-website] [![Discord][discord-badge]][discord] [![Read the docs][read-the-docs-badge]][docs] ![line coverage][line-coverage] ![branch coverage][branch-coverage]
+![line coverage][line-coverage] ![branch coverage][branch-coverage]
 
 2D Platform Game
 

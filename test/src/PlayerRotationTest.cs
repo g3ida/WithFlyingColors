@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Godot;
 using Chickensoft.GoDotTest;
 using GodotTestDriver;
-using GodotTestDriver.Drivers;
 using Shouldly;
 using Wfc.Entities.World.Player;
 
@@ -31,7 +30,10 @@ public class PlayerRotationActionTest : TestClass {
     _playerRotationParent.Rotation.ShouldBe(0);
     var duration = 0.1f;
     _playerRotation.Fire(Mathf.Pi, duration);
-    await _playerRotation.GetTree().CreateTimer(duration).ToSignal(_playerRotation, "timeout");
+    await _playerRotation
+      .GetTree()
+      .CreateTimer(duration + Mathf.Epsilon)
+      .ToSignal(_playerRotation, nameof(PlayerRotation.RotationCompleted));
     _playerRotationParent.Rotation.ShouldBe(Mathf.Pi);
   }
 }
