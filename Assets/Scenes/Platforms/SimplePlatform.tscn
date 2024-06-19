@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://cohdtrmk2ecl6"]
 
 [ext_resource type="Shader" uid="uid://dhb7ksqjukmfx" path="res://Assets/Shaders/ColorSplash.tres" id="1"]
-[ext_resource type="Script" path="res://Assets/Scripts/Platforms/SimplePlatform.cs" id="2"]
+[ext_resource type="Script" path="res://src/Scripts/Platforms/SimplePlatform.cs" id="2"]
 [ext_resource type="Texture2D" uid="uid://b2i4wa7oa8r67" path="res://Assets/Sprites/Platforms/platform.png" id="3_w8dnu"]
 
 [sub_resource type="ShaderMaterial" id="1"]

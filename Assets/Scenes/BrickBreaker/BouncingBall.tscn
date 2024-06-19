@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://clsvtu46oebwr"]
 
 [ext_resource type="Texture2D" uid="uid://b0kyc45v5uitr" path="res://Assets/Sprites/BrickBreaker/bouncing_ball.png" id="1"]
-[ext_resource type="Script" path="res://Assets/Scripts/BrickBreaker/BouncingBall.cs" id="2"]
-[ext_resource type="Script" path="res://Assets/Scripts/BrickBreaker/BouncingBallSprite.cs" id="3"]
+[ext_resource type="Script" path="res://src/Scripts/BrickBreaker/BouncingBall.cs" id="2"]
+[ext_resource type="Script" path="res://src/Scripts/BrickBreaker/BouncingBallSprite.cs" id="3"]
 
 [sub_resource type="CircleShape2D" id="2"]
 radius = 13.0

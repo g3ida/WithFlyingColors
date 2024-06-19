@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://2w3xtnwrrjwt"]
 
 [ext_resource type="Texture2D" uid="uid://b5b60j64q8i1g" path="res://Assets/Sprites/Piano/note_1.png" id="1"]
-[ext_resource type="Script" path="res://Assets/Scripts/Piano/PianoNote.cs" id="2"]
+[ext_resource type="Script" path="res://src/Scripts/Piano/PianoNote.cs" id="2"]
 [ext_resource type="Texture2D" uid="uid://c73kp5mvh1o62" path="res://Assets/Sprites/Piano/note_edge.png" id="3"]
 
 [sub_resource type="RectangleShape2D" id="1"]

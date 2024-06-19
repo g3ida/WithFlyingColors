@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://Assets/Scripts/Audio/MusicTrackManager.cs" type="Script" id=1]
+[ext_resource type="Script" path="res://src/Scripts/Audio/MusicTrackManager.cs" id="1"]
 
 [node name="MusicTrackManager" type="Node2D" groups=["persist"]]
 script = ExtResource( 1 )

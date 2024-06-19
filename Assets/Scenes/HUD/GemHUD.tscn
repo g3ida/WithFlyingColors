@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://Assets/Scripts/HUD/GemHUD.cs" type="Script" id=1]
-[ext_resource path="res://Assets/Sprites/HUD/gem_hud.png" type="Texture2D" id=2]
-[ext_resource path="res://Assets/Sprites/HUD/gem_hud_bg.png" type="Texture2D" id=3]
+[ext_resource type="Script" path="res://src/Scripts/HUD/GemHUD.cs" id="1"]
+[ext_resource type="Texture2D" uid="uid://byanyd350jh3d" path="res://Assets/Sprites/HUD/gem_hud.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://d1iyb40rpw538" path="res://Assets/Sprites/HUD/gem_hud_bg.png" id="3"]
 
 [sub_resource type="Animation" id=3]
 length = 0.001

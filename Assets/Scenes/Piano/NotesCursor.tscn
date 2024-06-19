@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Assets/Sprites/Piano/cursor.png" type="Texture2D" id=1]
-[ext_resource path="res://Assets/Scripts/Piano/NotesCursor.cs" type="Script" id=2]
+[ext_resource type="Texture2D" uid="uid://mkps13aiq3r0" path="res://Assets/Sprites/Piano/cursor.png" id="1"]
+[ext_resource type="Script" path="res://src/Scripts/Piano/NotesCursor.cs" id="2"]
 
 [sub_resource type="Animation" id=1]
 resource_name = "Blink"

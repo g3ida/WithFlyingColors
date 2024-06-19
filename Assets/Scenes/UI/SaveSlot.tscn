@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://c8elugdxs5gwv"]
 
-[ext_resource type="Script" path="res://Assets/Scripts/UI/SaveSlot.cs" id="1"]
+[ext_resource type="Script" path="res://src/Scripts/UI/SaveSlot.cs" id="1"]
 [ext_resource type="Theme" uid="uid://dsajhxb3mxvf0" path="res://Assets/Styles/Themes/SaveSlot.tres" id="2"]
 [ext_resource type="FontFile" path="res://Assets/Fonts/SaveSlotFont.tres" id="3"]
 [ext_resource type="Theme" uid="uid://dl05mrk646cas" path="res://Assets/Styles/Themes/SaveSlotBg.tres" id="4"]

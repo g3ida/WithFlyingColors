@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=3 uid="uid://cgut5po1y8ibm"]
 
-[ext_resource type="Script" path="res://Assets/Scripts/LazerBeam.cs" id="1"]
+[ext_resource type="Script" path="res://src/Scripts/LazerBeam.cs" id="1"]
 [ext_resource type="Texture2D" uid="uid://bifub54irtuvc" path="res://Assets/Sprites/Particles/glow_circle.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://bh5d30238xeru" path="res://Assets/Sprites/Platforms/lazer.png" id="3"]
 [ext_resource type="Shader" path="res://Assets/Shaders/LazerBeam.gdshader" id="4"]

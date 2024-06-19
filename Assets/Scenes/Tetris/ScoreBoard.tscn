@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://Assets/Fonts/pixel_scoreboard.tres" type="FontFile" id=1]
-[ext_resource path="res://Assets/Scripts/Tetris/ScoreBoard.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Scenes/Tetris/ScoreBlinkingLabel.tscn" type="PackedScene" id=3]
+[ext_resource type="FontFile" path="res://Assets/Fonts/pixel_scoreboard.tres" id="1"]
+[ext_resource type="Script" path="res://src/Scripts/Tetris/ScoreBoard.cs" id="2"]
+[ext_resource type="PackedScene" path="res://Assets/Scenes/Tetris/ScoreBlinkingLabel.tscn" id="3"]
 
 [node name="ScoreBoard" type="Node2D"]
 script = ExtResource( 2 )

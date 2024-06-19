@@ -1,7 +1,7 @@
 [gd_scene load_steps=11 format=3 uid="uid://geq5rxi44eiy"]
 
 [ext_resource type="TileSet" path="res://Assets/Tilesets/Tetrisl.tres" id="1"]
-[ext_resource type="Script" path="res://Assets/Scripts/Tetris/TetrisPool.cs" id="2"]
+[ext_resource type="Script" path="res://src/Scripts/Tetris/TetrisPool.cs" id="2"]
 [ext_resource type="PackedScene" path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://Assets/Scenes/Tetris/ScoreBoard.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://Assets/Scenes/CheckpointArea.tscn" id="5"]

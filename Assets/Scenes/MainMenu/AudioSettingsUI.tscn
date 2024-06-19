@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://Assets/Styles/Themes/MenuTheme.tres" type="Theme" id=1]
-[ext_resource path="res://Assets/Scripts/Menus/SettingsMenu/AudioSettingsUI.cs" type="Script" id=2]
-[ext_resource path="res://Assets/Scenes/UI/UISliderButton.tscn" type="PackedScene" id=3]
+[ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="1"]
+[ext_resource type="Script" path="res://src/Scripts/Menus/SettingsMenu/AudioSettingsUI.cs" id="2"]
+[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/UISliderButton.tscn" id="3"]
 
 [node name="AudioSettings" type="Control"]
 offset_right = 1920.0

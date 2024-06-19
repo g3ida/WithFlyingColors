@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://6ijyjb4sawd4"]
 
-[ext_resource type="Script" path="res://Assets/Scripts/Piano/SolfegeBoard.cs" id="1"]
+[ext_resource type="Script" path="res://src/Scripts/Piano/SolfegeBoard.cs" id="1"]
 [ext_resource type="Texture2D" uid="uid://vjord6qrwefq" path="res://Assets/Sprites/Piano/music-paper-rect.png" id="2"]
 [ext_resource type="Shader" path="res://Assets/Shaders/FlipPage.gdshader" id="3"]
 

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://Assets/Scripts/Tetris/I_Block.cs" type="Script" id=1]
-[ext_resource path="res://Assets/Scenes/Tetris/Block.tscn" type="PackedScene" id=3]
+[ext_resource type="Script" path="res://src/Scripts/Tetris/I_Block.cs" id="1"]
+[ext_resource type="PackedScene" uid="uid://da8nidklmg0v" path="res://Assets/Scenes/Tetris/Block.tscn" id="3"]
 
 [node name="I_Block" type="Node2D"]
 script = ExtResource( 1 )

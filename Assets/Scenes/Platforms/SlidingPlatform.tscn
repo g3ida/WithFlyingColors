@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://dgak5j6mp4yuv"]
 
 [ext_resource type="Texture2D" uid="uid://7cisdwkrrxri" path="res://Assets/Sprites/Platforms/gear.png" id="1"]
-[ext_resource type="Script" path="res://Assets/Scripts/Platforms/SlidingPlatform.cs" id="2"]
-[ext_resource type="Script" path="res://Assets/Scripts/Platforms/SlidingPlatformGear.cs" id="3"]
+[ext_resource type="Script" path="res://src/Scripts/Platforms/SlidingPlatform.cs" id="2"]
+[ext_resource type="Script" path="res://src/Scripts/Platforms/SlidingPlatformGear.cs" id="3"]
 
 [node name="SlidingPlatform" type="Node2D" groups=["persist"]]
 script = ExtResource("2")

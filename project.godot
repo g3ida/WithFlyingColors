@@ -18,12 +18,12 @@ config/icon="res://icon.png"
 
 [autoload]
 
-GlobalCS="*res://Assets/Scripts/Autoload/Global.cs"
-EventCS="*res://Assets/Scripts/Autoload/Event.cs"
-MenuManagerCS="*res://Assets/Scripts/Autoload/MenuManager.cs"
-AudioManagerCS="*res://Assets/Scripts/Autoload/AudioManager.cs"
-SaveGameCS="*res://Assets/Scripts/Autoload/SaveGame.cs"
-GameSettings="*res://Assets/Scripts/Autoload/GameSettings.cs"
+GlobalCS="*res://src/Scripts/Autoload/Global.cs"
+EventCS="*res://src/Scripts/Autoload/Event.cs"
+MenuManagerCS="*res://src/Scripts/Autoload/MenuManager.cs"
+AudioManagerCS="*res://src/Scripts/Autoload/AudioManager.cs"
+SaveGameCS="*res://src/Scripts/Autoload/SaveGame.cs"
+GameSettings="*res://src/Scripts/Autoload/GameSettings.cs"
 
 [display]
 

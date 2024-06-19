@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c34ryx01v1y06"]
 
-[ext_resource type="Script" path="res://Assets/Scripts/GameCamera.cs" id="1"]
+[ext_resource type="Script" path="res://src/Scripts/GameCamera.cs" id="1"]
 
 [node name="Camera2D" type="Camera2D" groups=["persist"]]
 limit_left = 0

@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://cwe6lhu1oclyc" path="res://Assets/Sprites/Checkpoint/checkopint.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://dembt1hsn6nas" path="res://Assets/Sprites/Checkpoint/checkdot.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://1f5nn2l0gb0p" path="res://Assets/Sprites/Checkpoint/checkpoint_liftter.png" id="3"]
-[ext_resource type="Script" path="res://Assets/Scripts/Checkpoint.cs" id="4"]
+[ext_resource type="Script" path="res://src/Scripts/Checkpoint.cs" id="4"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(7, 64)

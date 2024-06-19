@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=3 uid="uid://bmemjogxagwn1"]
 
-[ext_resource type="Script" path="res://Assets/Scripts/ScreenShaders.cs" id="1"]
+[ext_resource type="Script" path="res://src/Scripts/ScreenShaders.cs" id="1"]
 [ext_resource type="Shader" path="res://Assets/Shaders/SimpleBlur.gdshader" id="2"]
 [ext_resource type="Shader" path="res://Assets/Scenes/DarkerShader.gdshader" id="3"]
 

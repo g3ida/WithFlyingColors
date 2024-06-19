@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://ca46a088ioysj"]
 
 [ext_resource type="PackedScene" uid="uid://c8elugdxs5gwv" path="res://Assets/Scenes/UI/SaveSlot.tscn" id="1"]
-[ext_resource type="Script" path="res://Assets/Scripts/UI/SlotsContainer.cs" id="2"]
+[ext_resource type="Script" path="res://src/Scripts/UI/SlotsContainer.cs" id="2"]
 
 [node name="SlotsContainer" type="Control"]
 layout_mode = 3

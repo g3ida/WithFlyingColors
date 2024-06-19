@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cttbplyquxbal"]
 
-[ext_resource type="Script" path="res://Assets/Scripts/Explosion/ExplosionElement.cs" id="1"]
+[ext_resource type="Script" path="res://src/Scripts/Explosion/ExplosionElement.cs" id="1"]
 
 [node name="ExplosionElement" type="RigidBody2D"]
 inertia = 9.8

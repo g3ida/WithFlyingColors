@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://Assets/Scenes/HUD/GemHUD.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Assets/Scripts/HUD/GemsHUDContainer.cs" type="Script" id=2]
-[ext_resource path="res://Assets/StyleBorderHUD.tres" type="StyleBox" id=10]
+[ext_resource type="PackedScene" path="res://Assets/Scenes/HUD/GemHUD.tscn" id="1"]
+[ext_resource type="Script" path="res://src/Scripts/HUD/GemsHUDContainer.cs" id="2"]
+[ext_resource type="StyleBox" path="res://Assets/StyleBorderHUD.tres" id="10"]
 
 [node name="GemContainerHUD" type="Panel"]
 light_mask = 0

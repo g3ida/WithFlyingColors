@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://c8dkvkto8ut48"]
 
-[ext_resource type="Script" path="res://Assets/Scripts/Wfc/Entities/Ui/Menubox/SubMenuScene.cs" id="1_s507m"]
+[ext_resource type="Script" path="res://src/Wfc/Entities/Ui/Menubox/SubMenuScene.cs" id="1_s507m"]
 [ext_resource type="Texture2D" uid="uid://ba6ixdl4ihitg" path="res://Assets/Sprites/MainMenu/sub-menu-top.png" id="2"]
 
 [node name="SubMenu" type="Control"]
