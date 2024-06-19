@@ -1,9 +1,7 @@
 using Godot;
-using System;
 using System.Collections.Generic;
 
-public partial class BricksTileMap : Node2D
-{
+public partial class BricksTileMap : Node2D {
     [Signal]
     public delegate void bricks_clearedEventHandler();
 
@@ -17,54 +15,43 @@ public partial class BricksTileMap : Node2D
     private List<bool> _isLevelCleared;
     private int _leastUnclearedLevel = 0;
 
-    public override void _Ready()
-    {
+    public override void _Ready() {
         _levels = GetChildren();
         _InitIsLevelCleared();
     }
 
-    private void _InitIsLevelCleared()
-    {
+    private void _InitIsLevelCleared() {
         _isLevelCleared = new List<bool>();
-        for (int i = 0; i < _levels.Count; i++)
-        {
+        for (int i = 0; i < _levels.Count; i++) {
             _isLevelCleared.Add(!should_instance_bricks);
         }
     }
 
-    private int _GetLeastUnclearedLevel()
-    {
-        for (int i = 0; i < _isLevelCleared.Count; i++)
-        {
-            if (!_isLevelCleared[i])
-            {
+    private int _GetLeastUnclearedLevel() {
+        for (int i = 0; i < _isLevelCleared.Count; i++) {
+            if (!_isLevelCleared[i]) {
                 return i;
             }
         }
         return -1;
     }
 
-    private void _on_level_bricks_cleared(int id)
-    {
+    private void _on_level_bricks_cleared(int id) {
         _isLevelCleared[id] = true;
         int newUnclearedLevel = _GetLeastUnclearedLevel();
-        if (newUnclearedLevel == -1)
-        {
+        if (newUnclearedLevel == -1) {
             CallDeferred(nameof(_EmitBricksCleared));
         }
-        else if (newUnclearedLevel != _leastUnclearedLevel)
-        {
+        else if (newUnclearedLevel != _leastUnclearedLevel) {
             CallDeferred(nameof(_EmitLevelCleared), newUnclearedLevel);
         }
     }
 
-    private void _EmitLevelCleared(int newUnclearedLevel)
-    {
+    private void _EmitLevelCleared(int newUnclearedLevel) {
         EmitSignal(nameof(level_cleared), newUnclearedLevel);
     }
 
-    private void _EmitBricksCleared()
-    {
+    private void _EmitBricksCleared() {
         EmitSignal(nameof(bricks_cleared));
     }
 }
