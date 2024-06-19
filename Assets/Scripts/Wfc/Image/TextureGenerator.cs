@@ -2,35 +2,28 @@ using System.Collections.Generic;
 using Godot;
 using Wfc.Skin;
 
-namespace Wfc.Image
-{
-  public static partial class TextureGenerator
-  {
+namespace Wfc.Image {
+  public static partial class TextureGenerator {
 
-    public static Texture2D GenerateTexture(Vector2I outTextureSize, IEnumerable<TextureGenRecepie> recepie)
-    {
-      if (SkinManager.Instance.CurrentSkin == null)
-      {
+    public static Texture2D GenerateTexture(Vector2I outTextureSize, IEnumerable<TextureGenRecipe> recipe) {
+      if (SkinManager.Instance.CurrentSkin == null) {
         GD.PushError("There are no selected skin!!!");
       }
-      return TransformRecepieIntoTexture(outTextureSize, recepie);
+      return TransformRecipeIntoTexture(outTextureSize, recipe);
     }
 
-    private static Texture2D TransformRecepieIntoTexture(Vector2I outTextureSize, IEnumerable<TextureGenRecepie> recepie)
-    {
-      var image = TransformRecepieIntoImage(outTextureSize, recepie);
+    private static Texture2D TransformRecipeIntoTexture(Vector2I outTextureSize, IEnumerable<TextureGenRecipe> recipe) {
+      var image = TransformRecipeIntoImage(outTextureSize, recipe);
       return ImageTexture.CreateFromImage(image);
     }
 
-    private static Godot.Image TransformRecepieIntoImage(Vector2I outTextureSize, IEnumerable<TextureGenRecepie> recepie)
-    {
+    private static Godot.Image TransformRecipeIntoImage(Vector2I outTextureSize, IEnumerable<TextureGenRecipe> recipe) {
       var format = Godot.Image.Format.Rgba8;
       var image = Godot.Image.Create(outTextureSize.X, outTextureSize.Y, false, format);
       var skin = SkinManager.Instance.CurrentSkin;
       image.Fill(new Color(0, 0, 0, 0)); // Transparent background
 
-      foreach (var ingredient in recepie)
-      {
+      foreach (var ingredient in recipe) {
         var texture = (Texture2D)ingredient.Texture;
         var color = skin.GetColor(ingredient.Color, ingredient.ColorIntensity);
         var alignment = ingredient.Alignment;
@@ -41,11 +34,9 @@ namespace Wfc.Image
       return image;
     }
 
-    private static Vector2I GetPositionFromAlignment(Texture2D texture, ImageAlignment alignment, Vector2I outTextureSize)
-    {
+    private static Vector2I GetPositionFromAlignment(Texture2D texture, ImageAlignment alignment, Vector2I outTextureSize) {
       var inTextureSize = new Vector2I(texture.GetWidth(), texture.GetHeight());
-      switch (alignment)
-      {
+      switch (alignment) {
         case ImageAlignment.TopLeft:
           return Vector2I.Zero;
         case ImageAlignment.TopRight:
@@ -69,16 +60,13 @@ namespace Wfc.Image
       }
     }
 
-    private static Godot.Image CreateColoredCopyFromImage(Godot.Image srcImage, Godot.Color color)
-    {
+    private static Godot.Image CreateColoredCopyFromImage(Godot.Image srcImage, Godot.Color color) {
       int width = srcImage.GetWidth();
       int height = srcImage.GetHeight();
       var format = srcImage.GetFormat();
       var image = Godot.Image.Create(width, height, false, format);
-      for (int i = 0; i < width; i++)
-      {
-        for (int j = 0; j < height; j++)
-        {
+      for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
           var pix = srcImage.GetPixel(i, j);
           var col = new Color(color.R, color.G, color.B, pix.A);
           image.SetPixel(i, j, col);

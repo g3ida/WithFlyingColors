@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 
-public partial class SaveGame : Node2D
-{
+public partial class SaveGame : Node2D {
   private const string SAVE_FILE_PATH = "user://save_slot_{0}.save";
   private const string SAVE_IMAGE_PATH = "user://save_slot_img_{0}.png";
   private const string SAVE_INFO_PATH = "user://save_info.save";
@@ -29,7 +28,7 @@ public partial class SaveGame : Node2D
   private bool hasFilledSlots = false;
   public int currentSlotIndex = 0;
 
-  private readonly JsonSerializerOptions _serialisationOptions = new JsonSerializerOptions();
+  private readonly JsonSerializerOptions _serializationOptions = new JsonSerializerOptions();
 
 
   private const string NODE_PATH_VAR = "_node_path_";
@@ -37,118 +36,98 @@ public partial class SaveGame : Node2D
 
   private static SaveGame _instance = null;
 
-  public static SaveGame Instance()
-  {
+  public static SaveGame Instance() {
     return _instance;
   }
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     base._Ready();
-    _serialisationOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
+    _serializationOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
     _instance = GetTree().Root.GetNode<SaveGame>("SaveGameCS");
 
     SetProcess(false);
-    ConnectSignals(); // FIXME: move this to _EnterTree after preload scripts full migation to c#
+    ConnectSignals(); // FIXME: move this to _EnterTree after preload scripts full migration to c#
     Init();
   }
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     //Event.Instance.Connect("checkpoint_reached", this, nameof(OnCheckpoint));
     //ConnectSignals();
   }
 
-  public void ConnectSignals()
-  {
+  public void ConnectSignals() {
     Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpoint)));
   }
 
-  public void DisconnectSignals()
-  {
+  public void DisconnectSignals() {
     Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpoint)));
   }
 
-  public override void _ExitTree()
-  {
+  public override void _ExitTree() {
     DisconnectSignals();
   }
 
-  public void Init(bool createSlotIfEmpty = true)
-  {
+  public void Init(bool createSlotIfEmpty = true) {
     Refresh();
     currentSlotIndex = GetMostRecentlyLoadedSlotIndex();
 
     // Uncomment to reset the game then comment it back
     // RemoveAllSaveSlots();
 
-    if (createSlotIfEmpty && !hasFilledSlots)
-    {
+    if (createSlotIfEmpty && !hasFilledSlots) {
       currentSlotIndex = 0;
       Save(currentSlotIndex, true);
       Init();
     }
   }
 
-  public void Refresh()
-  {
+  public void Refresh() {
     InitCheckFilledSlots();
     InitSaveSlotMetaData();
     InitSlotLastLoadDate();
   }
 
-  private void InitCheckFilledSlots()
-  {
+  private void InitCheckFilledSlots() {
     isSlotFilledArray.Clear();
     hasFilledSlots = false;
 
-    foreach (var slotPath in SAVE_SLOTS)
-    {
+    foreach (var slotPath in SAVE_SLOTS) {
       bool exists = FileAccess.FileExists(slotPath);
       hasFilledSlots = exists || hasFilledSlots;
       isSlotFilledArray.Add(exists);
     }
   }
 
-  private void InitSaveSlotMetaData()
-  {
+  private void InitSaveSlotMetaData() {
     slotMetaData.Clear();
 
-    for (int slotIdx = 0; slotIdx < NUM_SLOTS; slotIdx++)
-    {
-      if (IsSlotFilled(slotIdx))
-      {
+    for (int slotIdx = 0; slotIdx < NUM_SLOTS; slotIdx++) {
+      if (IsSlotFilled(slotIdx)) {
         var saveFile = FileAccess.Open(GetSaveSlotFilePath(slotIdx), FileAccess.ModeFlags.Read);
-        var metaData = JsonSerializer.Deserialize<Dictionary<string, object>>(saveFile.GetLine(), _serialisationOptions);
+        var metaData = JsonSerializer.Deserialize<Dictionary<string, object>>(saveFile.GetLine(), _serializationOptions);
         slotMetaData.Add(metaData);
         saveFile.Close();
       }
-      else
-      {
+      else {
         slotMetaData.Add(null);
       }
     }
   }
 
-  private void InitSlotLastLoadDate()
-  {
-    if (!_LoadGameInfo())
-    {
+  private void InitSlotLastLoadDate() {
+    if (!_LoadGameInfo()) {
       slotLastLoadDate.Clear();
-      for (int i = 0; i < NUM_SLOTS; i++)
-      {
+      for (int i = 0; i < NUM_SLOTS; i++) {
         slotLastLoadDate.Add(null);
       }
     }
   }
 
-  private ulong GetUnixTimestamp()
-  {
+  private ulong GetUnixTimestamp() {
     return (ulong)Time.GetUnixTimeFromSystem();
   }
 
-  private Dictionary<string, object> GenerateSaveMetaData(int saveSlotIndex)
-  {
+  private Dictionary<string, object> GenerateSaveMetaData(int saveSlotIndex) {
     return new Dictionary<string, object>
         {
             { "image_path", GetSaveSlotImagePath(saveSlotIndex) },
@@ -158,8 +137,7 @@ public partial class SaveGame : Node2D
         };
   }
 
-  public void Save(int saveSlotIndex, bool newEmptySlot = false)
-  {
+  public void Save(int saveSlotIndex, bool newEmptySlot = false) {
     var filePath = GetSaveSlotFilePath(saveSlotIndex);
     var saveFile = FileAccess.Open(filePath, FileAccess.ModeFlags.Write);
 
@@ -167,24 +145,20 @@ public partial class SaveGame : Node2D
     SaveScreenshot(saveMetaData["image_path"].ToString());
     saveFile.StoreLine(JsonSerializer.Serialize(saveMetaData));
 
-    if (!newEmptySlot)
-    {
+    if (!newEmptySlot) {
       var saveNodes = GetTree().GetNodesInGroup("persist");
-      foreach (Node node in saveNodes)
-      {
-        if (node.SceneFilePath.Length == 0)
-        {
+      foreach (Node node in saveNodes) {
+        if (node.SceneFilePath.Length == 0) {
           GD.PushError($"persistent node '{node.Name}' is not an instanced scene, skipped");
           continue;
         }
-        var persistant = node as IPersistant;
-        if (persistant == null)
-        {
-          GD.PushError($"persistent node '{node.Name}' does not implement IPersistant, skipped");
+        var persistent = node as IPersistent;
+        if (persistent == null) {
+          GD.PushError($"persistent node '{node.Name}' does not implement IPersistent, skipped");
           continue;
         }
 
-        var nodeData = persistant.save();
+        var nodeData = persistent.save();
         nodeData[NODE_PATH_VAR] = node.GetPath().ToString();
         saveFile.StoreLine(JsonSerializer.Serialize(nodeData));
       }
@@ -195,12 +169,10 @@ public partial class SaveGame : Node2D
     UpdateSlotLoadDate(saveSlotIndex);
   }
 
-  private void LoadLevel(int saveSlotIndex)
-  {
+  private void LoadLevel(int saveSlotIndex) {
     var filePath = GetSaveSlotFilePath(saveSlotIndex);
 
-    if (!IsSlotFilled(saveSlotIndex))
-    {
+    if (!IsSlotFilled(saveSlotIndex)) {
       GD.PushError("FILE NOT FOUND"); // need to recover
       return; // Error! We don't have a save to load.
     }
@@ -208,17 +180,14 @@ public partial class SaveGame : Node2D
     var saveGame = FileAccess.Open(filePath, FileAccess.ModeFlags.Read);
     var metaData = JsonSerializer.Deserialize<Dictionary<string, object>>(saveGame.GetLine()); // the metadata is ignored
 
-    while (saveGame.GetPosition() < saveGame.GetLength())
-    {
-      var nodeData = JsonSerializer.Deserialize<Dictionary<string, object>>(saveGame.GetLine(), _serialisationOptions);
+    while (saveGame.GetPosition() < saveGame.GetLength()) {
+      var nodeData = JsonSerializer.Deserialize<Dictionary<string, object>>(saveGame.GetLine(), _serializationOptions);
       var nodePath = nodeData[NODE_PATH_VAR].ToString();
       var obj = GetNode(nodePath) as Node;
-      if (obj is IPersistant persistant)
-      {
-        persistant.load(nodeData);
+      if (obj is IPersistent persistent) {
+        persistent.load(nodeData);
       }
-      else
-      {
+      else {
         GD.PushError($"Node '{nodePath}' not found, skipping");
         continue;
       }
@@ -235,50 +204,40 @@ public partial class SaveGame : Node2D
     Global.Instance().Camera.update_position(Global.Instance().Player.GlobalPosition);
   }
 
-  private void OnCheckpoint(Node checkpoint)
-  {
+  private void OnCheckpoint(Node checkpoint) {
     CallDeferred(nameof(SaveToCurrentSlot));
   }
 
-  private string GetSaveSlotFilePath(int saveSlotIndex)
-  {
+  private string GetSaveSlotFilePath(int saveSlotIndex) {
     return SAVE_SLOTS[saveSlotIndex];
   }
 
-  private string GetSaveSlotImagePath(int saveSlotIndex)
-  {
+  private string GetSaveSlotImagePath(int saveSlotIndex) {
     return SAVE_IMAGE_SLOTS[saveSlotIndex];
   }
 
-  public bool IsSlotFilled(int saveSlotIndex)
-  {
+  public bool IsSlotFilled(int saveSlotIndex) {
     return isSlotFilledArray[saveSlotIndex];
   }
 
-  public bool DoesSlotHaveProgress(int saveSlotIndex)
-  {
+  public bool DoesSlotHaveProgress(int saveSlotIndex) {
     return IsSlotFilled(saveSlotIndex) && Convert.ToSingle(slotMetaData[saveSlotIndex]["progress"]) > Constants.EPSILON2;
   }
 
-  public Dictionary<string, object> GetSlotMetaData(int saveSlotIndex)
-  {
+  public Dictionary<string, object> GetSlotMetaData(int saveSlotIndex) {
     return slotMetaData[saveSlotIndex];
   }
 
-  public Dictionary<string, object> GetCurrentSlotMetaData()
-  {
+  public Dictionary<string, object> GetCurrentSlotMetaData() {
     return GetSlotMetaData(currentSlotIndex);
   }
 
-  public void SaveToCurrentSlot()
-  {
+  public void SaveToCurrentSlot() {
     Save(currentSlotIndex);
   }
 
-  public bool LoadIfNeeded()
-  {
-    if (IsSlotFilled(currentSlotIndex))
-    {
+  public bool LoadIfNeeded() {
+    if (IsSlotFilled(currentSlotIndex)) {
       LoadLevel(currentSlotIndex);
       return true;
     }
@@ -286,41 +245,33 @@ public partial class SaveGame : Node2D
     return false;
   }
 
-  public void RemoveSaveSlot(int saveSlotIndex)
-  {
-    if (IsSlotFilled(saveSlotIndex))
-    {
+  public void RemoveSaveSlot(int saveSlotIndex) {
+    if (IsSlotFilled(saveSlotIndex)) {
       DirAccess.RemoveAbsolute(GetSaveSlotFilePath(saveSlotIndex));
       DirAccess.RemoveAbsolute(GetSaveSlotImagePath(saveSlotIndex));
 
       // reset currently selected slot
-      if (currentSlotIndex == saveSlotIndex)
-      {
+      if (currentSlotIndex == saveSlotIndex) {
         currentSlotIndex = -1;
       }
     }
   }
 
-  private void RemoveAllSaveSlots()
-  {
-    for (int slotIdx = 0; slotIdx < isSlotFilledArray.Count; slotIdx++)
-    {
+  private void RemoveAllSaveSlots() {
+    for (int slotIdx = 0; slotIdx < isSlotFilledArray.Count; slotIdx++) {
       RemoveSaveSlot(slotIdx);
     }
   }
 
-  private void SaveScreenshot(string filePath)
-  {
+  private void SaveScreenshot(string filePath) {
     var image = GetViewport().GetTexture().GetImage();
     image.FlipY();
     image.ShrinkX2(); // TODO: resize image to fixed size
     image.SavePng(filePath);
   }
 
-  private ImageTexture LoadImage(string filePath)
-  {
-    if (FileAccess.FileExists(filePath))
-    {
+  private ImageTexture LoadImage(string filePath) {
+    if (FileAccess.FileExists(filePath)) {
       var image = new Image();
       image.Load(filePath);
       var texture = ImageTexture.CreateFromImage(image);
@@ -330,27 +281,21 @@ public partial class SaveGame : Node2D
     return null;
   }
 
-  public ImageTexture LoadSlotImage(int saveSlotIndex)
-  {
-    if (IsSlotFilled(saveSlotIndex))
-    {
+  public ImageTexture LoadSlotImage(int saveSlotIndex) {
+    if (IsSlotFilled(saveSlotIndex)) {
       return LoadImage(GetSaveSlotImagePath(saveSlotIndex));
     }
 
     return null;
   }
 
-  private int GetMostRecentlyLoadedSlotIndex()
-  {
+  private int GetMostRecentlyLoadedSlotIndex() {
     int maxSlotIndex = 0;
     ulong maxSlotTime = 0;
 
-    for (int slotIdx = 0; slotIdx < NUM_SLOTS; slotIdx++)
-    {
-      if (IsSlotFilled(slotIdx))
-      {
-        if (slotLastLoadDate[slotIdx] > maxSlotTime)
-        {
+    for (int slotIdx = 0; slotIdx < NUM_SLOTS; slotIdx++) {
+      if (IsSlotFilled(slotIdx)) {
+        if (slotLastLoadDate[slotIdx] > maxSlotTime) {
           maxSlotTime = slotLastLoadDate[slotIdx].Value;
           maxSlotIndex = slotIdx;
         }
@@ -360,18 +305,14 @@ public partial class SaveGame : Node2D
     return maxSlotIndex;
   }
 
-  private int GetMostRecentSavedSlotIndex()
-  {
+  private int GetMostRecentSavedSlotIndex() {
     int maxSlotIndex = 0;
     long maxSlotTime = -1;
 
-    for (int slotIdx = 0; slotIdx < NUM_SLOTS; slotIdx++)
-    {
-      if (IsSlotFilled(slotIdx))
-      {
+    for (int slotIdx = 0; slotIdx < NUM_SLOTS; slotIdx++) {
+      if (IsSlotFilled(slotIdx)) {
         var saveTime = Convert.ToInt64(slotMetaData[slotIdx]["save_time"]);
-        if (saveTime > maxSlotTime)
-        {
+        if (saveTime > maxSlotTime) {
           maxSlotTime = saveTime;
           maxSlotIndex = slotIdx;
         }
@@ -381,8 +322,7 @@ public partial class SaveGame : Node2D
     return maxSlotIndex;
   }
 
-  private void _SaveGameInfo()
-  {
+  private void _SaveGameInfo() {
     var data = new Dictionary<string, object>
         {
             { "slot_last_load_date", slotLastLoadDate }
@@ -393,12 +333,10 @@ public partial class SaveGame : Node2D
     saveFile.Close();
   }
 
-  private bool _LoadGameInfo()
-  {
-    if (FileAccess.FileExists(SAVE_INFO_PATH))
-    {
+  private bool _LoadGameInfo() {
+    if (FileAccess.FileExists(SAVE_INFO_PATH)) {
       var loadFile = FileAccess.Open(SAVE_INFO_PATH, FileAccess.ModeFlags.Read);
-      var data = JsonSerializer.Deserialize<Dictionary<string, object>>(loadFile.GetLine(), _serialisationOptions);
+      var data = JsonSerializer.Deserialize<Dictionary<string, object>>(loadFile.GetLine(), _serializationOptions);
       var list = (List<object>)data["slot_last_load_date"];
       slotLastLoadDate = list.Select<object, ulong?>(el => (el == null) ? null : Convert.ToUInt64(el)).ToList();
       loadFile.Close();
@@ -408,8 +346,7 @@ public partial class SaveGame : Node2D
     return false;
   }
 
-  public void UpdateSlotLoadDate(int slotIndex)
-  {
+  public void UpdateSlotLoadDate(int slotIndex) {
     slotLastLoadDate[slotIndex] = GetUnixTimestamp();
     _SaveGameInfo();
   }

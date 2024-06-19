@@ -2,8 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class GameCamera : Camera2D, IPersistant
-{
+public partial class GameCamera : Camera2D, IPersistent {
   public const float CAMERA_DRAG_JUMP = 0.45f;
 
   [Export] public NodePath follow_path { get; set; }
@@ -22,8 +21,7 @@ public partial class GameCamera : Camera2D, IPersistant
   private float cachedDragMarginLeft;
   private float cachedDragMarginRight;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     defaultSaveData = new Dictionary<string, object>()
         {
             {"zoom_factor", 1.0f},
@@ -40,31 +38,25 @@ public partial class GameCamera : Camera2D, IPersistant
 
     follow = GetNode<Node2D>(follow_path);
     save_data = new Dictionary<string, object>(defaultSaveData);
-    if (IsCurrent())
-    {
+    if (IsCurrent()) {
       Global.Instance().Camera = this;
     }
     CacheDragMargins();
   }
 
-  public override void _Process(double delta)
-  {
-    if (IsCurrent())
-    {
+  public override void _Process(double delta) {
+    if (IsCurrent()) {
       Global.Instance().Camera = this;
     }
   }
 
-  public override void _PhysicsProcess(double delta)
-  {
-    if (follow != null)
-    {
+  public override void _PhysicsProcess(double delta) {
+    if (follow != null) {
       GlobalPosition = follow.GlobalPosition;
     }
   }
 
-  private void _OnCheckpointHit(Node checkpoint)
-  {
+  private void _OnCheckpointHit(Node checkpoint) {
     // FIXME: better save data as json after migration
     save_data = new Dictionary<string, object>();
     save_data["zoom_factor"] = targetZoom;
@@ -79,10 +71,8 @@ public partial class GameCamera : Camera2D, IPersistant
     save_data["follow_path"] = follow.GetPath().ToString();
   }
 
-  public void reset()
-  {
-    if (save_data != null)
-    {
+  public void reset() {
+    if (save_data != null) {
       zoom_by(Convert.ToSingle(save_data["zoom_factor"]));
 
       LimitBottom = Helpers.ParseSaveDataInt(save_data, "bottom_limit");
@@ -100,129 +90,108 @@ public partial class GameCamera : Camera2D, IPersistant
     }
   }
 
-  public Dictionary<string, object> save()
-  {
+  public Dictionary<string, object> save() {
     return save_data != null ? save_data : new Dictionary<string, object>(defaultSaveData);
   }
 
-  private void _OnPlayerJump()
-  {
+  private void _OnPlayerJump() {
     CacheDragMargins();
-    if (DragBottomMargin < CAMERA_DRAG_JUMP)
-    {
+    if (DragBottomMargin < CAMERA_DRAG_JUMP) {
       DragBottomMargin = CAMERA_DRAG_JUMP;
     }
-    if (DragTopMargin < CAMERA_DRAG_JUMP)
-    {
+    if (DragTopMargin < CAMERA_DRAG_JUMP) {
       DragTopMargin = CAMERA_DRAG_JUMP;
     }
   }
 
-  private void _OnPlayerLand()
-  {
+  private void _OnPlayerLand() {
     RestoreDragMargins();
   }
 
-  private void _OnPlayerDying(Node area, Vector2 position, int entityType)
-  {
+  private void _OnPlayerDying(Node area, Vector2 position, int entityType) {
     RestoreDragMargins();
   }
 
-  private void CacheDragMargins()
-  {
+  private void CacheDragMargins() {
     cachedDragMarginBottom = DragBottomMargin;
     cachedDragMarginTop = DragTopMargin;
     cachedDragMarginLeft = DragLeftMargin;
     cachedDragMarginRight = DragRightMargin;
   }
 
-  private void RestoreDragMargins()
-  {
+  private void RestoreDragMargins() {
     DragBottomMargin = cachedDragMarginBottom;
     DragTopMargin = cachedDragMarginTop;
     DragLeftMargin = cachedDragMarginLeft;
     DragRightMargin = cachedDragMarginRight;
   }
 
-  public void zoom_by(float factor)
-  {
+  public void zoom_by(float factor) {
     targetZoom = factor;
-    if (zoomTweener != null)
-    {
+    if (zoomTweener != null) {
       zoomTweener.Kill();
     }
     zoomTweener = CreateTween();
     zoomTweener.TweenProperty(this, "zoom", new Vector2(factor, factor), 1.0f);
   }
 
-  private void ConnectSignals()
-  {
+  private void ConnectSignals() {
     Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
     Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
     Event.Instance.Connect("player_jumped", new Callable(this, nameof(_OnPlayerJump)));
     Event.Instance.Connect("player_land", new Callable(this, nameof(_OnPlayerLand)));
-    Event.Instance.Connect("player_diying", new Callable(this, nameof(_OnPlayerDying)));
+    Event.Instance.Connect("player_dying", new Callable(this, nameof(_OnPlayerDying)));
   }
 
-  private void DisconnectSignals()
-  {
+  private void DisconnectSignals() {
     Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
     Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
     Event.Instance.Disconnect("player_jumped", new Callable(this, nameof(_OnPlayerJump)));
     Event.Instance.Disconnect("player_land", new Callable(this, nameof(_OnPlayerLand)));
-    Event.Instance.Disconnect("player_diying", new Callable(this, nameof(_OnPlayerDying)));
+    Event.Instance.Disconnect("player_dying", new Callable(this, nameof(_OnPlayerDying)));
   }
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     ConnectSignals();
   }
 
-  public override void _ExitTree()
-  {
+  public override void _ExitTree() {
     DisconnectSignals();
   }
 
-  public async void update_position(Vector2 pos)
-  {
+  public async void update_position(Vector2 pos) {
     PositionSmoothingEnabled = false;
     GlobalPosition = pos;
     await ToSignal(GetTree(), "process_frame");
     SetDeferred("smoothing_enabled", true);
   }
 
-  public void set_follow_node(Node2D followNode)
-  {
+  public void set_follow_node(Node2D followNode) {
     follow = followNode;
     follow_path = followNode.GetPath();
   }
 
-  public void set_drag_margin_top(float value)
-  {
+  public void set_drag_margin_top(float value) {
     DragTopMargin = value;
     cachedDragMarginTop = value;
   }
 
-  public void set_drag_margin_bottom(float value)
-  {
+  public void set_drag_margin_bottom(float value) {
     DragBottomMargin = value;
     cachedDragMarginBottom = value;
   }
 
-  public void set_drag_margin_left(float value)
-  {
+  public void set_drag_margin_left(float value) {
     DragLeftMargin = value;
     cachedDragMarginLeft = value;
   }
 
-  public void set_drag_margin_right(float value)
-  {
+  public void set_drag_margin_right(float value) {
     DragRightMargin = value;
     cachedDragMarginRight = value;
   }
 
-  public void load(Dictionary<string, object> save_data)
-  {
+  public void load(Dictionary<string, object> save_data) {
     this.save_data = save_data;
     reset();
   }

@@ -2,13 +2,12 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class BrickBreaker : Node2D, IPersistant
-{
+public partial class BrickBreaker : Node2D, IPersistent {
   private const float FACE_SEPARATOR_SCALE_FACTOR = 3.5f;
   private const int NUM_LEVELS = 2;
   private const float LEVELS_Y_GAP = 36 * 4;
   private const float LEVELS_WIN_GAP = 2.5f * LEVELS_Y_GAP;
-  private const float BRIKS_TRANSLATION_Y_AMOUNT = 500.0f;
+  private const float BRICKS_TRANSLATION_Y_AMOUNT = 500.0f;
 
   private PackedScene BricksTileMap = (PackedScene)GD.Load("res://Assets/Scenes/BrickBreaker/BricksTileMap.tscn");
   private PackedScene BouncingBallScene = (PackedScene)GD.Load("res://Assets/Scenes/BrickBreaker/BouncingBall.tscn");
@@ -41,8 +40,7 @@ public partial class BrickBreaker : Node2D, IPersistant
 
   private Tween bricksMoveTweener;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     DeathZoneNode = GetNode<Area2D>("DeathZone");
     BallsContainer = GetNode<Node2D>("BallsContainer");
     BallsSpawnPos = GetNode<Marker2D>("BallsContainer/BallSpawnPos");
@@ -59,8 +57,7 @@ public partial class BrickBreaker : Node2D, IPersistant
     CameraLocalizerNode = GetNode<CameraLocalizer>("CameraLocalizer");
   }
 
-  public Node2D SpawnBall(string color = "blue")
-  {
+  public Node2D SpawnBall(string color = "blue") {
     var bouncingBall = BouncingBallScene.Instantiate<BouncingBall>();
     bouncingBall.DeathZone = DeathZoneNode;
     bouncingBall.color_group = color;
@@ -73,10 +70,8 @@ public partial class BrickBreaker : Node2D, IPersistant
     return bouncingBall;
   }
 
-  private void RemoveBricks()
-  {
-    if (BricksTileMapNode != null)
-    {
+  private void RemoveBricks() {
+    if (BricksTileMapNode != null) {
       BricksTileMapNode.Disconnect("bricks_cleared", new Callable(this, nameof(_OnBricksCleared)));
       BricksTileMapNode.Disconnect("level_cleared", new Callable(this, nameof(_OnLevelCleared)));
       BricksTileMapNode.QueueFree();
@@ -84,131 +79,105 @@ public partial class BrickBreaker : Node2D, IPersistant
     }
   }
 
-  private Node2D SpawnBricks(bool shouldInstanceBricks = true, bool shouldTranslateDown = true)
-  {
+  private Node2D SpawnBricks(bool shouldInstanceBricks = true, bool shouldTranslateDown = true) {
     var bricks = BricksTileMap.Instantiate<BricksTileMap>();
     bricks.should_instance_bricks = shouldInstanceBricks;
-    bricks.Position = BricksSpawnPosNode.Position + (shouldTranslateDown ? Vector2.Up * BRIKS_TRANSLATION_Y_AMOUNT : Vector2.Zero);
+    bricks.Position = BricksSpawnPosNode.Position + (shouldTranslateDown ? Vector2.Up * BRICKS_TRANSLATION_Y_AMOUNT : Vector2.Zero);
     CallDeferred("add_child", bricks);
     bricks.CallDeferred("set_owner", this);
-    if (shouldTranslateDown)
-    {
+    if (shouldTranslateDown) {
       CreateBricksMoveTweener();
-      CallDeferred(nameof(MoveBricksDownBy), BRIKS_TRANSLATION_Y_AMOUNT, 5.0f);
+      CallDeferred(nameof(MoveBricksDownBy), BRICKS_TRANSLATION_Y_AMOUNT, 5.0f);
     }
     return bricks;
   }
 
-  private void ConnectSignals()
-  {
+  private void ConnectSignals() {
     Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
     Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
-    Event.Instance.Connect("player_diying", new Callable(this, nameof(_OnPlayerDying)));
+    Event.Instance.Connect("player_dying", new Callable(this, nameof(_OnPlayerDying)));
     Event.Instance.Connect("bouncing_ball_removed", new Callable(this, nameof(_OnBouncingBallRemoved)));
   }
 
-  private void DisconnectSignals()
-  {
+  private void DisconnectSignals() {
     Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
     Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
-    Event.Instance.Disconnect("player_diying", new Callable(this, nameof(_OnPlayerDying)));
+    Event.Instance.Disconnect("player_dying", new Callable(this, nameof(_OnPlayerDying)));
     Event.Instance.Disconnect("bouncing_ball_removed", new Callable(this, nameof(_OnBouncingBallRemoved)));
   }
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     ConnectSignals();
   }
 
-  public override void _ExitTree()
-  {
+  public override void _ExitTree() {
     DisconnectSignals();
   }
 
-  private void IncrementBallsSpeed()
-  {
-    foreach (Node2D b in BallsContainer.GetChildren())
-    {
-      if (b is BouncingBall ball)
-      {
+  private void IncrementBallsSpeed() {
+    foreach (Node2D b in BallsContainer.GetChildren()) {
+      if (b is BouncingBall ball) {
         ball.IncrementSpeed();
       }
     }
   }
 
-  private void RemoveBalls()
-  {
-    foreach (Node2D b in BallsContainer.GetChildren())
-    {
-      if (b is BouncingBall)
-      {
+  private void RemoveBalls() {
+    foreach (Node2D b in BallsContainer.GetChildren()) {
+      if (b is BouncingBall) {
         b.QueueFree();
       }
     }
     num_balls = 0;
   }
 
-  public Dictionary<string, object> save()
-  {
+  public Dictionary<string, object> save() {
     return save_data;
   }
 
-  private void reset()
-  {
+  private void reset() {
     current_state = (BrickBreakerState)Helpers.ParseSaveDataInt(save_data, "state");
-    if (current_state == BrickBreakerState.INIT_PLAYING)
-    {
+    if (current_state == BrickBreakerState.INIT_PLAYING) {
       AudioManager.Instance().MusicTrackManager.SetPitchScale(1);
       Play();
     }
-    else if (current_state == BrickBreakerState.WIN)
-    {
-      if (BricksTileMapNode == null)
-      {
+    else if (current_state == BrickBreakerState.WIN) {
+      if (BricksTileMapNode == null) {
         BricksTileMapNode = (Node2D)SpawnBricks(false, false);
         BricksTileMapNode.Position += new Vector2(0, LEVELS_Y_GAP * NUM_LEVELS + LEVELS_WIN_GAP);
       }
     }
   }
 
-  private BrickBreakerState GetSaveStateFromCurrentState()
-  {
-    if (current_state == BrickBreakerState.LOSE || current_state == BrickBreakerState.PLAYING)
-    {
+  private BrickBreakerState GetSaveStateFromCurrentState() {
+    if (current_state == BrickBreakerState.LOSE || current_state == BrickBreakerState.PLAYING) {
       return BrickBreakerState.INIT_PLAYING;
     }
     return current_state;
   }
 
-  private void _OnCheckpointHit(Node _checkpoint)
-  {
+  private void _OnCheckpointHit(Node _checkpoint) {
     save_data["state"] = (int)GetSaveStateFromCurrentState();
-    if (Checkpoint == _checkpoint)
-    {
+    if (Checkpoint == _checkpoint) {
       // nothing to do for now
     }
   }
 
-  private void _OnPlayerDying(Node _area, Vector2 _position, int _entityType)
-  {
-    if (current_state == BrickBreakerState.PLAYING)
-    {
+  private void _OnPlayerDying(Node _area, Vector2 _position, int _entityType) {
+    if (current_state == BrickBreakerState.PLAYING) {
       current_state = BrickBreakerState.LOSE;
       Stop();
     }
   }
 
-  private void Stop()
-  {
+  private void Stop() {
     RemoveBalls();
     RemoveBricks();
     BricksTimerNode.Stop();
   }
 
-  private async void Play()
-  {
-    if (current_state != BrickBreakerState.PLAYING)
-    {
+  private async void Play() {
+    if (current_state != BrickBreakerState.PLAYING) {
       current_state = BrickBreakerState.PLAYING;
       current_level = 0;
       BricksTileMapNode = (Node2D)SpawnBricks();
@@ -222,20 +191,17 @@ public partial class BrickBreaker : Node2D, IPersistant
     }
   }
 
-  private void _OnBouncingBallRemoved(Node2D _ball)
-  {
+  private void _OnBouncingBallRemoved(Node2D _ball) {
     num_balls -= 1;
-    if (num_balls <= 0)
-    {
-      Event.Instance.EmitPlayerDiying(DeathZoneNode, _ball.GlobalPosition, Constants.EntityType.BRICK_BREAKER);
+    if (num_balls <= 0) {
+      Event.Instance.EmitPlayerDying(DeathZoneNode, _ball.GlobalPosition, Constants.EntityType.BRICK_BREAKER);
     }
   }
 
-  private void _on_TriggerEnterArea_body_entered(Node body)
-  {
-    if (body != Global.Instance().Player) return;
-    if (current_state == BrickBreakerState.STOPPED)
-    {
+  private void _on_TriggerEnterArea_body_entered(Node body) {
+    if (body != Global.Instance().Player)
+      return;
+    if (current_state == BrickBreakerState.STOPPED) {
       CallDeferred("Play");
       SlidingFloorSliderNode.SetLooping(false);
       SlidingFloorSliderNode.StopSlider(false);
@@ -243,23 +209,19 @@ public partial class BrickBreaker : Node2D, IPersistant
       AudioManager.Instance().MusicTrackManager.PlayTrack("brickBreaker");
     }
 
-    if (current_state == BrickBreakerState.WIN)
-    {
+    if (current_state == BrickBreakerState.WIN) {
       ChangeCameraViewAfterWin();
     }
 
-    if (TriggerEnterAreaNode != null)
-    {
+    if (TriggerEnterAreaNode != null) {
       TriggerEnterAreaNode.QueueFree();
       TriggerEnterAreaNode = null;
     }
   }
 
-  private void _on_LevelUpTimer_timeout()
-  {
+  private void _on_LevelUpTimer_timeout() {
     current_level += 1;
-    if (current_level == NUM_LEVELS)
-    {
+    if (current_level == NUM_LEVELS) {
       BricksTimerNode.Stop();
     }
     CreateBricksMoveTweener();
@@ -268,17 +230,14 @@ public partial class BrickBreaker : Node2D, IPersistant
     IncrementBallsSpeed();
   }
 
-  private void CreateBricksMoveTweener()
-  {
-    if (bricksMoveTweener != null)
-    {
+  private void CreateBricksMoveTweener() {
+    if (bricksMoveTweener != null) {
       bricksMoveTweener.Kill();
     }
     bricksMoveTweener = CreateTween();
   }
 
-  private void MoveBricksDownBy(float value, float duration = 0.25f)
-  {
+  private void MoveBricksDownBy(float value, float duration = 0.25f) {
     bricksMoveTweener.TweenProperty(
         BricksTileMapNode,
         "position:y",
@@ -286,10 +245,8 @@ public partial class BrickBreaker : Node2D, IPersistant
         duration).From(BricksTileMapNode.Position.Y);
   }
 
-  private async void _OnBricksCleared()
-  {
-    if (current_state == BrickBreakerState.PLAYING)
-    {
+  private async void _OnBricksCleared() {
+    if (current_state == BrickBreakerState.PLAYING) {
       current_state = BrickBreakerState.WIN;
       BricksTimerNode.Stop();
       Event.Instance.EmitBreakBreakerWin();
@@ -304,28 +261,23 @@ public partial class BrickBreaker : Node2D, IPersistant
     }
   }
 
-  private void CleanUpGame()
-  {
+  private void CleanUpGame() {
     RemoveBalls();
     bricksPowerUpHandler.SetActive(false);
     bricksPowerUpHandler.RemoveActivePowerups();
     bricksPowerUpHandler.RemoveFallingPowerups();
   }
 
-  private void ChangeCameraViewAfterWin()
-  {
+  private void ChangeCameraViewAfterWin() {
     CameraLocalizerNode.position_clipping_mode = CameraLimit.LIMIT_ALL_BUT_TOP;
     CameraLocalizerNode.full_viewport_drag_margin = false;
     CameraLocalizerNode.SetCameraLimits();
     CameraLocalizerNode.ApplyCameraChanges();
   }
 
-  private void _OnLevelCleared(int level)
-  {
-    if (current_state == BrickBreakerState.PLAYING)
-    {
-      if (current_level != NUM_LEVELS && current_level + 1 <= level && BricksTimerNode.TimeLeft > 2.0f)
-      {
+  private void _OnLevelCleared(int level) {
+    if (current_state == BrickBreakerState.PLAYING) {
+      if (current_level != NUM_LEVELS && current_level + 1 <= level && BricksTimerNode.TimeLeft > 2.0f) {
         BricksTimerNode.Stop();
         BricksTimerNode.Start();
         _on_LevelUpTimer_timeout();
@@ -333,8 +285,7 @@ public partial class BrickBreaker : Node2D, IPersistant
     }
   }
 
-  public void load(Dictionary<string, object> save_data)
-  {
+  public void load(Dictionary<string, object> save_data) {
     this.save_data = save_data;
     this.reset();
   }

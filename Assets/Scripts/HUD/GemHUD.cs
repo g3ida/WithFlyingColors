@@ -3,8 +3,7 @@ using System;
 using System.Collections.Generic;
 
 [Tool]
-public partial class GemHUD : Node2D, IPersistant
-{
+public partial class GemHUD : Node2D, IPersistent {
   private const string TextureCollectedPath = "res://Assets/Sprites/HUD/gem_hud_collected.png";
   private const string TextureEmptyPath = "res://Assets/Sprites/HUD/gem_hud.png";
 
@@ -30,8 +29,7 @@ public partial class GemHUD : Node2D, IPersistant
   private AnimatedSprite2D animation;
   private SlideAnimation collectedAnimation;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     textureRectNode = GetNode<TextureRect>("TextureRect");
     textureRectAnimationNode = GetNode<AnimationPlayer>("TextureRect/AnimationPlayer");
     backgroundNode = GetNode<TextureRect>("Background");
@@ -46,30 +44,24 @@ public partial class GemHUD : Node2D, IPersistant
     textureRectNode.Modulate = ColorUtils.GetBasicColor(colorIndex);
   }
 
-  private void ConnectSignals()
-  {
-    if (!Engine.IsEditorHint())
-    {
+  private void ConnectSignals() {
+    if (!Engine.IsEditorHint()) {
       Event.Instance.Connect("gem_collected", new Callable(this, nameof(OnGemCollected)));
       Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
       Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
     }
   }
 
-  private void DisconnectSignals()
-  {
-    if (!Engine.IsEditorHint())
-    {
+  private void DisconnectSignals() {
+    if (!Engine.IsEditorHint()) {
       Event.Instance.Disconnect("gem_collected", new Callable(this, nameof(OnGemCollected)));
       Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
       Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
     }
   }
 
-  private void OnGemCollected(string col, Vector2 position, SpriteFrames frames)
-  {
-    if (this.Color == col)
-    {
+  private void OnGemCollected(string col, Vector2 position, SpriteFrames frames) {
+    if (this.Color == col) {
       currentState = State.COLLECTING;
       animation = new AnimatedSprite2D();
       animation.SpriteFrames = frames;
@@ -85,17 +77,13 @@ public partial class GemHUD : Node2D, IPersistant
     }
   }
 
-  private void OnSlideAnimEnded(string animName)
-  {
-    if (animName == "gem_slide")
-    {
-      if (animation != null)
-      {
+  private void OnSlideAnimEnded(string animName) {
+    if (animName == "gem_slide") {
+      if (animation != null) {
         RemoveChild(animation);
       }
 
-      if (currentState == State.COLLECTING)
-      {
+      if (currentState == State.COLLECTING) {
         textureRectNode.Texture = textureCollected;
         textureRectAnimationNode.Play("coin_collected_HUD");
         backgroundNode.Visible = true;
@@ -107,47 +95,38 @@ public partial class GemHUD : Node2D, IPersistant
     }
   }
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     ConnectSignals();
   }
 
-  public override void _ExitTree()
-  {
+  public override void _ExitTree() {
     DisconnectSignals();
   }
 
-  public override void _Process(double delta)
-  {
+  public override void _Process(double delta) {
     collectedAnimation?.Update((float)delta);
   }
 
-  public void reset()
-  {
-    if ((State)Helpers.ParseSaveDataInt(save_data, "state") == State.EMPTY)
-    {
+  public void reset() {
+    if ((State)Helpers.ParseSaveDataInt(save_data, "state") == State.EMPTY) {
       textureRectNode.Texture = textureEmpty;
       backgroundNode.Visible = false;
     }
-    else
-    {
+    else {
       textureRectNode.Texture = textureCollected;
       backgroundNode.Visible = true;
     }
   }
 
-  private void OnCheckpointHit(Node checkpoint)
-  {
+  private void OnCheckpointHit(Node checkpoint) {
     save_data["state"] = (int)(currentState != State.COLLECTING ? currentState : State.EMPTY);
   }
 
-  public Dictionary<string, object> save()
-  {
+  public Dictionary<string, object> save() {
     return save_data;
   }
 
-  public void load(Dictionary<string, object> save_data)
-  {
+  public void load(Dictionary<string, object> save_data) {
     this.save_data = save_data;
     reset();
   }

@@ -1,8 +1,7 @@
 using Godot;
 using System;
 
-public partial class SelectSlotMenu : GameMenu
-{
+public partial class SelectSlotMenu : GameMenu {
   private Button BackButtonNode;
   private SlotsContainer SlotsContainer;
   private DialogContainer ResetDialogContainerNode;
@@ -11,8 +10,7 @@ public partial class SelectSlotMenu : GameMenu
   private int currentSlotOnFocus;
   private int deleteTmpId = 0; // Used to save the currently deleting slot
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     base._Ready();
     BackButtonNode = GetNode<Button>("BackButton");
     SlotsContainer = GetNode<SlotsContainer>("SlotsContainer");
@@ -25,23 +23,18 @@ public partial class SelectSlotMenu : GameMenu
     SetSelectedSlotLabel();
   }
 
-  private void _on_BackButton_pressed()
-  {
-    if (SaveGame.Instance().currentSlotIndex == -1)
-    {
+  private void _on_BackButton_pressed() {
+    if (SaveGame.Instance().currentSlotIndex == -1) {
       Event.Instance.EmitMenuButtonPressed(MenuButtons.SHOW_DIALOG);
     }
-    else
-    {
+    else {
       Event.Instance.EmitMenuButtonPressed(MenuButtons.BACK);
     }
   }
 
-  public override bool on_menu_button_pressed(MenuButtons menuButton)
-  {
+  public override bool on_menu_button_pressed(MenuButtons menuButton) {
     base.on_menu_button_pressed(menuButton);
-    switch (menuButton)
-    {
+    switch (menuButton) {
       case MenuButtons.SHOW_DIALOG:
         NoSelectedSlotDialogContainer.ShowDialog();
         return true;
@@ -50,51 +43,43 @@ public partial class SelectSlotMenu : GameMenu
       case MenuButtons.SELECT_SLOT:
         return true;
       case MenuButtons.BACK:
-        return false; // We don't return true here because we want the default behaviour to be called
+        return false; // We don't return true here because we want the default behavior to be called
       default:
         return false;
     }
   }
 
-  private void UpdateSlotsYPos(float posY)
-  {
+  private void UpdateSlotsYPos(float posY) {
     SlotsContainer.Position = new Vector2(SlotsContainer.Position.X, posY);
   }
 
-  private void _on_SlotsContainer_slot_pressed(int id, string action)
-  {
+  private void _on_SlotsContainer_slot_pressed(int id, string action) {
     currentSlotOnFocus = id;
-    if (action == "select")
-    {
+    if (action == "select") {
       SaveGame.Instance().currentSlotIndex = id;
       _on_confirm_slot_button_selected(id);
       SlotsContainer.SetGameCurrentSelectedSlot(id);
       Event.Instance.EmitMenuButtonPressed(MenuButtons.SELECT_SLOT);
     }
-    else if (action == "delete")
-    {
+    else if (action == "delete") {
       deleteTmpId = id;
       ResetDialogContainerNode.ShowDialog();
       Event.Instance.EmitMenuButtonPressed(MenuButtons.DELETE_SLOT);
     }
   }
 
-  private void _on_confirm_slot_button_selected(int slotIndex)
-  {
-    if (SaveGame.Instance().IsSlotFilled(slotIndex))
-    {
+  private void _on_confirm_slot_button_selected(int slotIndex) {
+    if (SaveGame.Instance().IsSlotFilled(slotIndex)) {
       SaveGame.Instance().currentSlotIndex = slotIndex;
     }
-    else
-    {
+    else {
       SaveGame.Instance().Save(slotIndex, true);
       SaveGame.Instance().Refresh();
     }
     SetSelectedSlotLabel();
   }
 
-  private void _on_ResetSlotDialog_confirmed()
-  {
+  private void _on_ResetSlotDialog_confirmed() {
     SaveGame.Instance().RemoveSaveSlot(currentSlotOnFocus);
     SaveGame.Instance().Refresh();
     SlotsContainer.UpdateSlot(deleteTmpId, true);
@@ -102,14 +87,11 @@ public partial class SelectSlotMenu : GameMenu
     SetSelectedSlotLabel();
   }
 
-  private void SetSelectedSlotLabel()
-  {
-    if (SaveGame.Instance().currentSlotIndex != -1)
-    {
+  private void SetSelectedSlotLabel() {
+    if (SaveGame.Instance().currentSlotIndex != -1) {
       CurrentSlotLabelNode.Text = $"{SaveGame.Instance().currentSlotIndex + 1}";
     }
-    else
-    {
+    else {
       CurrentSlotLabelNode.Text = "None";
     }
   }

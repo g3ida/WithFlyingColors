@@ -1,8 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-public partial class CheckpointArea : Area2D, IPersistant
-{
+public partial class CheckpointArea : Area2D, IPersistent {
   [Signal]
   public delegate void checkpoint_hitEventHandler();
 
@@ -15,28 +14,22 @@ public partial class CheckpointArea : Area2D, IPersistant
         { "is_checked", false }
     };
 
-  public override void _Ready()
-  {
-    if (string.IsNullOrEmpty(color_group))
-    {
+  public override void _Ready() {
+    if (string.IsNullOrEmpty(color_group)) {
       GD.PushError("ColorGroup cannot be null or empty");
     }
   }
 
-  public void Reset()
-  {
+  public void Reset() {
     _isChecked = (bool)_save_data["is_checked"];
   }
 
-  public Dictionary<string, object> Save()
-  {
+  public Dictionary<string, object> Save() {
     return _save_data;
   }
 
-  public void _on_CheckpointArea_body_entered(Node2D body)
-  {
-    if (body == Global.Instance().Player && !_isChecked)
-    {
+  public void _on_CheckpointArea_body_entered(Node2D body) {
+    if (body == Global.Instance().Player && !_isChecked) {
       _isChecked = true;
       _save_data["is_checked"] = true;
       EmitSignal(nameof(checkpoint_hit));
@@ -44,13 +37,11 @@ public partial class CheckpointArea : Area2D, IPersistant
     }
   }
 
-  public Dictionary<string, object> save()
-  {
+  public Dictionary<string, object> save() {
     return _save_data;
   }
 
-  public void load(Dictionary<string, object> save_data)
-  {
+  public void load(Dictionary<string, object> save_data) {
     _save_data = save_data;
     Reset();
   }

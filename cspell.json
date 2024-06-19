@@ -14,7 +14,10 @@
     "**/*.mp3",
     "**/*.ogg",
     "**/*.wav",
-    "**/*.png"
+    "**/*.png",
+    "**/*.godot",
+    "**/PresetSkins.cs",
+    "Assets/Scripts/Skin/SkinLoader.cs"
   ],
   "words": [
     "assemblyfilters",
@@ -71,6 +74,34 @@
     "Vsync",
     "Mathf",
     "Autoload",
-    "vsync"
+    "vsync",
+    "slippering",
+    "orchester",
+    "monitorable",
+    "Randf",
+    "LAZER",
+    "menubox",
+    "RAYCAST",
+    "blit",
+    "Animatable",
+    "Occluder",
+    "Lerp",
+    "tetromino",
+    "tetrominos",
+    "Datetime",
+    "Stylebox",
+    "Pixelv",
+    "fract",
+    "powerup",
+    "powerups",
+    "cutscene",
+    "tilemap",
+    "cooldown",
+    "Vframes",
+    "Hframes",
+    "instantiator",
+    "fallzone",
+    "gameplay",
+    "Vorbis"
   ]
 }

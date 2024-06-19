@@ -2,8 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class Player : CharacterBody2D, IPersistant
-{
+public partial class Player : CharacterBody2D, IPersistent {
   public const float SQUEEZE_ANIM_DURATION = 0.17f;
   public const float SCALE_ANIM_DURATION = 0.17f;
 
@@ -32,10 +31,10 @@ public partial class Player : CharacterBody2D, IPersistant
   public CpuParticles2D jumpParticlesNode;
   public Timer fallTimerNode;
 
-  private BoxCorner faceSparatorBR_node;
-  private BoxCorner faceSparatorBL_node;
-  private BoxCorner faceSparatorTL_node;
-  private BoxCorner faceSparatorTR_node;
+  private BoxCorner faceSeparatorBR_node;
+  private BoxCorner faceSeparatorBL_node;
+  private BoxCorner faceSeparatorTL_node;
+  private BoxCorner faceSeparatorTR_node;
 
   private BoxFace bottomFaceNode;
   private BoxFace topFaceNode;
@@ -74,16 +73,15 @@ public partial class Player : CharacterBody2D, IPersistant
   public LightOccluder2D lightOccluder;
 
 
-  private void PrepareChildrenNodes()
-  {
+  private void PrepareChildrenNodes() {
     lightOccluder = GetNode<LightOccluder2D>("AnimatedSprite2D/LightOccluder2D");
     jumpParticlesNode = GetNode<CpuParticles2D>("JumpParticles");
     fallTimerNode = GetNode<Timer>("FallTimer");
 
-    faceSparatorBR_node = GetNode<BoxCorner>("FaceSeparatorBR");
-    faceSparatorBL_node = GetNode<BoxCorner>("FaceSeparatorBL");
-    faceSparatorTL_node = GetNode<BoxCorner>("FaceSeparatorTL");
-    faceSparatorTR_node = GetNode<BoxCorner>("FaceSeparatorTR");
+    faceSeparatorBR_node = GetNode<BoxCorner>("FaceSeparatorBR");
+    faceSeparatorBL_node = GetNode<BoxCorner>("FaceSeparatorBL");
+    faceSeparatorTL_node = GetNode<BoxCorner>("FaceSeparatorTL");
+    faceSeparatorTR_node = GetNode<BoxCorner>("FaceSeparatorTR");
 
     bottomFaceNode = GetNode<BoxFace>("BottomFace");
     topFaceNode = GetNode<BoxFace>("TopFace");
@@ -106,10 +104,10 @@ public partial class Player : CharacterBody2D, IPersistant
 
     faceSeparatorNodes = new List<BoxCorner>
         {
-            faceSparatorBR_node,
-            faceSparatorBL_node,
-            faceSparatorTL_node,
-            faceSparatorTR_node
+            faceSeparatorBR_node,
+            faceSeparatorBL_node,
+            faceSeparatorTL_node,
+            faceSeparatorTR_node
         };
 
     faceNodes = new List<BoxFace>
@@ -138,8 +136,7 @@ public partial class Player : CharacterBody2D, IPersistant
   }
 
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     base._Ready();
     PrepareChildrenNodes();
     playerRotationAction = new PlayerRotationAction();
@@ -161,15 +158,13 @@ public partial class Player : CharacterBody2D, IPersistant
         };
   }
 
-  private void InitSpriteAnimation()
-  {
+  private void InitSpriteAnimation() {
     idle_animation = new TransformAnimation(0, new ElasticOut(1, 1, 1, 0.1f), 0);
     scale_animation = new TransformAnimation(SCALE_ANIM_DURATION, new ElasticOut(1, 1, 1, 0.1f), sprite_size * 0.5f);
     current_animation = idle_animation;
   }
 
-  private void InitState()
-  {
+  private void InitState() {
     states_store = new PlayerStatesStore(this);
     player_state = states_store.fallingState;
     player_state.Enter(this);
@@ -177,20 +172,15 @@ public partial class Player : CharacterBody2D, IPersistant
     player_rotation_state.Enter(this);
   }
 
-  private void InitFacesAreas()
-  {
-    for (int i = 0; i < faceCollisionNodes.Count; i++)
-    {
-      foreach (string grp in faceNodes[i].GetGroups())
-      {
+  private void InitFacesAreas() {
+    for (int i = 0; i < faceCollisionNodes.Count; i++) {
+      foreach (string grp in faceNodes[i].GetGroups()) {
         faceCollisionNodes[i].AddToGroup(grp);
       }
     }
 
-    for (int i = 0; i < faceCornerCollisionNodes.Count; i++)
-    {
-      foreach (string grp in faceSeparatorNodes[i].GetGroups())
-      {
+    for (int i = 0; i < faceCornerCollisionNodes.Count; i++) {
+      foreach (string grp in faceSeparatorNodes[i].GetGroups()) {
         faceCornerCollisionNodes[i].AddToGroup(grp);
       }
     }
@@ -199,35 +189,30 @@ public partial class Player : CharacterBody2D, IPersistant
     FillFaceSeparatorsBackup();
   }
 
-  public override void _Input(InputEvent ev)
-  {
+  public override void _Input(InputEvent ev) {
     player_state._Input(ev);
     player_rotation_state._Input(ev);
   }
 
-  public override void _PhysicsProcess(double delta)
-  {
+  public override void _PhysicsProcess(double delta) {
     var next_state = (PlayerBaseState)player_rotation_state.PhysicsUpdate(this, (float)delta);
     SwitchRotationState(next_state);
 
     var next_player_state = (PlayerBaseState)player_state.PhysicsUpdate(this, (float)delta);
     SwitchState(next_player_state);
 
-    if (IsJustHitTheFloor())
-    {
+    if (IsJustHitTheFloor()) {
       OnLand();
     }
 
     was_on_floor = IsOnFloor();
   }
 
-  public Dictionary<string, object> save()
-  {
+  public Dictionary<string, object> save() {
     return save_data;
   }
 
-  public void reset()
-  {
+  public void reset() {
     animatedSpriteNode.Play("idle");
     animatedSpriteNode.Stop();
     GlobalPosition = new Vector2(Convert.ToSingle(save_data["position_x"]), Convert.ToSingle(save_data["position_y"]));
@@ -241,27 +226,21 @@ public partial class Player : CharacterBody2D, IPersistant
     handle_input_is_disabled = false;
   }
 
-  private void OnCheckpointHit(CheckpointArea checkpoint_object)
-  {
-    if (bottomFaceNode.GetGroups().Contains(checkpoint_object.color_group))
-    {
+  private void OnCheckpointHit(CheckpointArea checkpoint_object) {
+    if (bottomFaceNode.GetGroups().Contains(checkpoint_object.color_group)) {
       save_data["angle"] = 0f;
     }
-    else if (leftFaceNode.GetGroups().Contains(checkpoint_object.color_group))
-    {
+    else if (leftFaceNode.GetGroups().Contains(checkpoint_object.color_group)) {
       save_data["angle"] = -Mathf.Pi / 2f;
     }
-    else if (rightFaceNode.GetGroups().Contains(checkpoint_object.color_group))
-    {
+    else if (rightFaceNode.GetGroups().Contains(checkpoint_object.color_group)) {
       save_data["angle"] = Mathf.Pi / 2f;
     }
-    else if (topFaceNode.GetGroups().Contains(checkpoint_object.color_group))
-    {
+    else if (topFaceNode.GetGroups().Contains(checkpoint_object.color_group)) {
       save_data["angle"] = Mathf.Pi;
     }
 
-    if (checkpoint_object.IsInsideTree())
-    {
+    if (checkpoint_object.IsInsideTree()) {
       save_data["position_x"] = checkpoint_object.GlobalPosition.X;
       save_data["position_y"] = checkpoint_object.GlobalPosition.Y;
     }
@@ -269,87 +248,72 @@ public partial class Player : CharacterBody2D, IPersistant
     save_data["default_corner_scale_factor"] = CurrentDefaultCornerScaleFactor;
   }
 
-  private void ConnectSignals()
-  {
-    Event.Instance.Connect("player_diying", new Callable(this, nameof(OnPlayerDiying)));
+  private void ConnectSignals() {
+    Event.Instance.Connect("player_dying", new Callable(this, nameof(OnPlayerDying)));
     Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
     Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
   }
 
-  private void DisconnectSignals()
-  {
-    Event.Instance.Disconnect("player_diying", new Callable(this, nameof(OnPlayerDiying)));
+  private void DisconnectSignals() {
+    Event.Instance.Disconnect("player_dying", new Callable(this, nameof(OnPlayerDying)));
     Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
     Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
   }
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     Global.Instance().Player = this;
     ConnectSignals();
   }
 
-  public override void _ExitTree()
-  {
+  public override void _ExitTree() {
     DisconnectSignals();
   }
 
-  private void OnPlayerDiying(Node area, Vector2 position, int entity_type)
-  {
+  private void OnPlayerDying(Node area, Vector2 position, int entity_type) {
     var next_state = (player_state).OnPlayerDying(this, area, position, (Constants.EntityType)entity_type);
     SwitchState(next_state);
   }
 
-  private bool IsJustHitTheFloor()
-  {
+  private bool IsJustHitTheFloor() {
     return !was_on_floor && IsOnFloor();
   }
 
-  private void OnLand()
-  {
+  private void OnLand() {
     var next_player_state = player_state.OnLand(this);
     SwitchState(next_player_state);
   }
 
-  private void SwitchState(PlayerBaseState new_state)
-  {
-    if (new_state != null)
-    {
+  private void SwitchState(PlayerBaseState new_state) {
+    if (new_state != null) {
       player_state.Exit(this);
       player_state = new_state;
       player_state.Enter(this);
     }
   }
 
-  private void SwitchRotationState(PlayerBaseState new_state)
-  {
-    if (new_state != null)
-    {
+  private void SwitchRotationState(PlayerBaseState new_state) {
+    if (new_state != null) {
       player_rotation_state.Exit(this);
       player_rotation_state = new_state;
       player_rotation_state.Enter(this);
     }
   }
 
-  private void ScaleFaceSeparatorsBy(float factor)
-  {
-    foreach (var face_sep in faceSeparatorNodes)
-    {
+  private void ScaleFaceSeparatorsBy(float factor) {
+    foreach (var face_sep in faceSeparatorNodes) {
       face_sep.ScaleBy(factor);
     }
   }
 
-  private void ScaleFacesBy(float factor)
-  {
-    foreach (var face_sep in faceNodes)
-    {
+  private void ScaleFacesBy(float factor) {
+    foreach (var face_sep in faceNodes) {
       face_sep.ScaleBy(factor);
     }
   }
 
-  public void ScaleCornersBy(float factor)
-  {
-    if (current_scale_factor == factor) return;
+  public void ScaleCornersBy(float factor) {
+    if (current_scale_factor == factor)
+      return;
     current_scale_factor = factor;
     var edge = faceSeparatorNodes[0].edgeLength;
     var face = faceNodes[0].edgeLength;
@@ -359,44 +323,36 @@ public partial class Player : CharacterBody2D, IPersistant
     ScaleFacesBy(reverse_factor);
   }
 
-  public Vector2 GetCollisionShapeSize()
-  {
+  public Vector2 GetCollisionShapeSize() {
     var extra_w = (FaceCollisionShapeL_node.Shape as RectangleShape2D).Size.X;
     return ((collisionShapeNode.Shape as RectangleShape2D).Size * 0.5f + 2.0f * new Vector2(extra_w, extra_w)) * 2.0f;
   }
 
-  public bool ContainsNode(Node node)
-  {
+  public bool ContainsNode(Node node) {
     return GetChildren().Contains(node);
   }
 
   // This function is a hack for bullets and fast moving objects because of this Godot issue:
   // https://github.com/godotengine/godot/issues/43743
-  public void OnFastAreaCollidingWithPlayerShape(uint body_shape_index, Area2D color_area, Constants.EntityType entity_type)
-  {
+  public void OnFastAreaCollidingWithPlayerShape(uint body_shape_index, Area2D color_area, Constants.EntityType entity_type) {
     var collision_shape = (CollisionShape2D)ShapeOwnerGetOwner(body_shape_index);
     var shape_groups = collision_shape.GetGroups();
     var group_found = false;
-    foreach (string group in shape_groups)
-    {
-      if (color_area.IsInGroup(group))
-      {
+    foreach (string group in shape_groups) {
+      if (color_area.IsInGroup(group)) {
         group_found = true;
         break;
       }
     }
-    if (!group_found)
-    {
-      Event.Instance.EmitPlayerDiying(color_area, GlobalPosition, entity_type);
+    if (!group_found) {
+      Event.Instance.EmitPlayerDying(color_area, GlobalPosition, entity_type);
     }
   }
 
   // Face areas backup
-  private void FillFaceNodesBackup()
-  {
+  private void FillFaceNodesBackup() {
     _face_nodes_mask_backup.Clear();
-    foreach (var face in faceNodes)
-    {
+    foreach (var face in faceNodes) {
       _face_nodes_mask_backup.Add(new Dictionary<string, int>
             {
                 { "layer", (int)face.CollisionLayer },
@@ -405,11 +361,9 @@ public partial class Player : CharacterBody2D, IPersistant
     }
   }
 
-  private void FillFaceSeparatorsBackup()
-  {
+  private void FillFaceSeparatorsBackup() {
     _face_separators_mask_backup.Clear();
-    foreach (var face in faceSeparatorNodes)
-    {
+    foreach (var face in faceSeparatorNodes) {
       _face_separators_mask_backup.Add(new Dictionary<string, int>
             {
                 { "layer", (int)face.CollisionLayer },
@@ -418,88 +372,71 @@ public partial class Player : CharacterBody2D, IPersistant
     }
   }
 
-  public void HideColorAreas()
-  {
+  public void HideColorAreas() {
     FillFaceSeparatorsBackup();
-    foreach (var face in faceSeparatorNodes)
-    {
+    foreach (var face in faceSeparatorNodes) {
       face.CollisionLayer = 0;
       face.CollisionMask = 0;
     }
     FillFaceNodesBackup();
-    foreach (var face in faceNodes)
-    {
+    foreach (var face in faceNodes) {
       face.CollisionLayer = 0;
       face.CollisionMask = 0;
     }
   }
 
-  public void SetCollisionShapesDisabledFlagDeferred(bool disable)
-  {
+  public void SetCollisionShapesDisabledFlagDeferred(bool disable) {
     CallDeferred(nameof(SetCollisionShapesDisabledFlag), disable);
   }
 
-  private void SetCollisionShapesDisabledFlag(bool disable)
-  {
-    foreach (var face in faceCollisionNodes)
-    {
+  private void SetCollisionShapesDisabledFlag(bool disable) {
+    foreach (var face in faceCollisionNodes) {
       face.Disabled = disable;
     }
-    foreach (var face in faceCornerCollisionNodes)
-    {
+    foreach (var face in faceCornerCollisionNodes) {
       face.Disabled = disable;
     }
     collisionShapeNode.Disabled = disable;
   }
 
-  public void ShowColorAreas()
-  {
-    for (int i = 0; i < faceSeparatorNodes.Count; i++)
-    {
+  public void ShowColorAreas() {
+    for (int i = 0; i < faceSeparatorNodes.Count; i++) {
       faceSeparatorNodes[i].CollisionLayer = (uint)_face_separators_mask_backup[i]["layer"];
       faceSeparatorNodes[i].CollisionMask = (uint)_face_separators_mask_backup[i]["mask"];
     }
-    for (int i = 0; i < faceNodes.Count; i++)
-    {
+    for (int i = 0; i < faceNodes.Count; i++) {
       faceNodes[i].CollisionLayer = (uint)_face_nodes_mask_backup[i]["layer"];
       faceNodes[i].CollisionMask = (uint)_face_nodes_mask_backup[i]["mask"];
     }
   }
 
   // Methods added to convert PianoNote to C#
-  public bool IsJumpingState()
-  {
+  public bool IsJumpingState() {
     return player_state.baseState == PlayerStatesEnum.JUMPING;
   }
 
-  public bool IsFalling()
-  {
+  public bool IsFalling() {
     return Velocity.Y >= -Constants.EPSILON;
   }
 
-  public bool IsRotationIdle()
-  {
+  public bool IsRotationIdle() {
     return player_rotation_state.baseState == PlayerStatesEnum.IDLE;
   }
 
 
-  public bool IsStanding()
-  {
+  public bool IsStanding() {
     return player_state.baseState == PlayerStatesEnum.STANDING;
   }
 
-  public bool IsDying()
-  {
+  public bool IsDying() {
     return player_state.baseState == PlayerStatesEnum.DYING;
   }
 
-  public void SetMaxSpeed()
-  {
+  public void SetMaxSpeed() {
     Velocity = new Vector2(SPEED, Velocity.Y);
   }
 
-  public void load(Dictionary<string, object> save_data)
-  {
+  public void load(Dictionary<string, object> save_data) {
     this.save_data = save_data;
     reset();
   }

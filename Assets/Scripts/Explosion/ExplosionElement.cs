@@ -1,18 +1,17 @@
 using Godot;
 using System;
 
-public partial class ExplosionElement : RigidBody2D
-{
+public partial class ExplosionElement : RigidBody2D {
     private bool _shouldDetonate = false;
     private float _impulse = 0.0f;
 
-    public override void _Ready() {}
+    public override void _Ready() { }
 
-    public void SetupSprite(Texture2D texture, int vframes, int hframes, int currentFrame) {
+    public void SetupSprite(Texture2D texture, int vFrames, int hFrames, int currentFrame) {
         var sprite = GetNode<Sprite2D>("Sprite2D");
         sprite.Texture = texture;
-        sprite.Vframes = vframes;
-        sprite.Hframes = hframes;
+        sprite.Vframes = vFrames;
+        sprite.Hframes = hFrames;
         sprite.Frame = currentFrame;
     }
 

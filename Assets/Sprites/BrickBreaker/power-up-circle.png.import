@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dcosdtmurf2w2"
-path="res://.godot/imported/powerup_circle.png-0c039b3f056c51e2fb7d1945e216f71e.ctex"
+path="res://.godot/imported/power-up-circle.png-8b8de26b849e8bb58871a3bf21268785.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Sprites/BrickBreaker/powerup_circle.png"
-dest_files=["res://.godot/imported/powerup_circle.png-0c039b3f056c51e2fb7d1945e216f71e.ctex"]
+source_file="res://Assets/Sprites/BrickBreaker/power-up-circle.png"
+dest_files=["res://.godot/imported/power-up-circle.png-8b8de26b849e8bb58871a3bf21268785.ctex"]
 
 [params]
 

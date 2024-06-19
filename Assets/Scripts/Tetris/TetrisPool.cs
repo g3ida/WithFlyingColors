@@ -2,8 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class TetrisPool : Node2D
-{
+public partial class TetrisPool : Node2D {
   [Signal]
   public delegate void lines_removedEventHandler(int count);
 
@@ -34,7 +33,7 @@ public partial class TetrisPool : Node2D
   private TetrisAI ai;
   private bool shapeIsInWaitTime = false;
   private Tetromino shape;
-  private List<List<Block>> grid; // FIXME: convert this to godot navtive list
+  private List<List<Block>> grid; // FIXME: convert this to godot native list
   private bool isVirgin = true;
 
   private Marker2D spawnPosNode;
@@ -46,8 +45,7 @@ public partial class TetrisPool : Node2D
   private SlidingPlatform slidingFloorSliderNode;
   private Area2D triggerEnterAreaNode;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     spawnPosNode = GetNode<Marker2D>("SpawnPosition");
     scoreBoardNode = GetNode<ScoreBoard>("ScoreBoard");
     shapeWaitTimerNode = GetNode<Timer>("ShapeWaitTimer");
@@ -63,26 +61,19 @@ public partial class TetrisPool : Node2D
     reset(true);
   }
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     ConnectSignals();
   }
 
-  public override void _ExitTree()
-  {
+  public override void _ExitTree() {
     DisconnectSignals();
   }
 
-  private void ClearGrid()
-  {
-    if (grid != null)
-    {
-      for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++)
-      {
-        for (int j = 0; j < Constants.TETRIS_POOL_HEIGHT; j++)
-        {
-          if (grid[i][j] != null)
-          {
+  private void ClearGrid() {
+    if (grid != null) {
+      for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++) {
+        for (int j = 0; j < Constants.TETRIS_POOL_HEIGHT; j++) {
+          if (grid[i][j] != null) {
             grid[i][j].QueueFree();
           }
         }
@@ -91,37 +82,30 @@ public partial class TetrisPool : Node2D
     }
   }
 
-  private void InitGrid()
-  {
+  private void InitGrid() {
     grid = new List<List<Block>>();
-    for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++)
-    {
+    for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++) {
       var list_i = new List<Block>();
-      for (int j = 0; j < Constants.TETRIS_POOL_HEIGHT; j++)
-      {
+      for (int j = 0; j < Constants.TETRIS_POOL_HEIGHT; j++) {
         list_i.Add(null);
       }
       grid.Add(list_i);
     }
   }
 
-  private Dictionary<string, PackedScene> GetRandomTetrominoWithNext()
-  {
-    if (randomBag.Count > 1)
-    {
+  private Dictionary<string, PackedScene> GetRandomTetrominoWithNext() {
+    if (randomBag.Count > 1) {
       var current = randomBag[randomBag.Count - 1];
       randomBag.RemoveAt(randomBag.Count - 1);
       var next = randomBag[randomBag.Count - 1];
       return new Dictionary<string, PackedScene> { { "current", current }, { "next", next } };
     }
-    else if (randomBag.Count == 0)
-    {
+    else if (randomBag.Count == 0) {
       randomBag = new Godot.Collections.Array<PackedScene>(Tetrominos);
       randomBag.Shuffle();
       return GetRandomTetrominoWithNext();
     }
-    else
-    {
+    else {
       var current = randomBag[randomBag.Count - 1];
       randomBag.RemoveAt(randomBag.Count - 1);
       randomBag = new Godot.Collections.Array<PackedScene>(Tetrominos);
@@ -131,8 +115,7 @@ public partial class TetrisPool : Node2D
     }
   }
 
-  private Tetromino AiSpawnBlock()
-  {
+  private Tetromino AiSpawnBlock() {
     var pick = GetRandomTetrominoWithNext();
     var currentTetromino = pick["current"];
     nextPieceNode.SetNextPiece(pick["next"]);
@@ -144,51 +127,43 @@ public partial class TetrisPool : Node2D
     shape.MoveBy(pos, Constants.TETRIS_SPAWN_J);
     AddChild(shape);
     shape.Owner = this;
-    for (int i = 0; i < rot; i++)
-    {
+    for (int i = 0; i < rot; i++) {
       shape.RotateLeft();
     }
     shape.Position = spawnPosNode.Position + new Vector2(Constants.TETRIS_BLOCK_SIZE * (pos - Constants.TETRIS_SPAWN_I), 0);
     return shape;
   }
 
-  private void GenerateBlocks()
-  {
+  private void GenerateBlocks() {
     haveActiveBlock = true;
     shape = AiSpawnBlock();
 
-    if (!shape.CanMoveDown())
-    {
+    if (!shape.CanMoveDown()) {
       isPaused = true;
       EmitSignal(nameof(game_over));
     }
   }
 
-  public override void _PhysicsProcess(double delta)
-  {
-    if (isPaused || nbQueuedLinesToRemove > 0) return;
+  public override void _PhysicsProcess(double delta) {
+    if (isPaused || nbQueuedLinesToRemove > 0)
+      return;
 
-    if (!haveActiveBlock)
-    {
+    if (!haveActiveBlock) {
       GenerateBlocks();
     }
 
-    if (shape != null && !shapeIsInWaitTime)
-    {
+    if (shape != null && !shapeIsInWaitTime) {
       MoveShapeDown();
     }
   }
 
-  private async void MoveShapeDown()
-  {
+  private async void MoveShapeDown() {
     shapeIsInWaitTime = true;
-    if (shape.MoveDownSafe())
-    {
+    if (shape.MoveDownSafe()) {
       shapeWaitTimerNode.Start();
       await ToSignal(shapeWaitTimerNode, "timeout");
     }
-    else
-    {
+    else {
       shape.AddToGrid();
       RemoveLines();
       haveActiveBlock = false;
@@ -196,26 +171,21 @@ public partial class TetrisPool : Node2D
     shapeIsInWaitTime = false;
   }
 
-  private void RemoveLines()
-  {
+  private void RemoveLines() {
     var lines = DetectLines();
-    if (lines.Count > 0)
-    {
+    if (lines.Count > 0) {
       EmitSignal(nameof(lines_removed), lines.Count);
       Event.Instance.EmitTetrisLinesRemoved();
     }
-    foreach (var line in lines)
-    {
+    foreach (var line in lines) {
       RemoveLineCells(line);
     }
   }
 
-  private async void RemoveLineCells(int line)
-  {
+  private async void RemoveLineCells(int line) {
     nbQueuedLinesToRemove += 1;
     removeLinesDurationTimerNode.WaitTime = Block.BLINK_ANIMATION_DURATION;
-    for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++)
-    {
+    for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++) {
       grid[i][line].Destroy();
       grid[i][line] = null;
     }
@@ -225,19 +195,14 @@ public partial class TetrisPool : Node2D
     nbQueuedLinesToRemove -= 1;
   }
 
-  private void MoveDownLinesAbove(int line)
-  {
-    for (int j = line - 1; j >= 0; j--)
-    {
-      for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++)
-      {
-        if (grid[i][j] != null)
-        {
+  private void MoveDownLinesAbove(int line) {
+    for (int j = line - 1; j >= 0; j--) {
+      for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++) {
+        if (grid[i][j] != null) {
           grid[i][j].J += 1;
           grid[i][j].Position += new Vector2(0, Constants.TETRIS_BLOCK_SIZE);
         }
-        if (grid[i][j + 1] != null)
-        {
+        if (grid[i][j + 1] != null) {
           grid[i][j + 1].QueueFree();
         }
         grid[i][j + 1] = grid[i][j];
@@ -246,36 +211,30 @@ public partial class TetrisPool : Node2D
     }
   }
 
-  private List<int> DetectLines()
-  {
+  private List<int> DetectLines() {
     var linesToRemove = new List<int>();
-    for (int j = 0; j < Constants.TETRIS_POOL_HEIGHT; j++)
-    {
+    for (int j = 0; j < Constants.TETRIS_POOL_HEIGHT; j++) {
       bool completeLine = true;
-      for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++)
-      {
-        if (grid[i][j] == null)
-        {
+      for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++) {
+        if (grid[i][j] == null) {
           completeLine = false;
           break;
         }
       }
-      if (completeLine)
-      {
+      if (completeLine) {
         linesToRemove.Add(j);
       }
     }
     return linesToRemove;
   }
 
-  public void reset()
-  { // FIXME: use optional params after c# migration.
+  public void reset() { // FIXME: use optional params after c# migration.
     reset(false);
   }
 
-  public void reset(bool firstTime)
-  {
-    if (isVirgin && !firstTime) return;
+  public void reset(bool firstTime) {
+    if (isVirgin && !firstTime)
+      return;
 
     isPaused = true;
     nbQueuedLinesToRemove = 0;
@@ -286,8 +245,7 @@ public partial class TetrisPool : Node2D
     randomBag.Clear();
     shape?.QueueFree();
     shape = null;
-    if (!firstTime)
-    {
+    if (!firstTime) {
       ClearGrid();
       isPaused = false;
     }
@@ -295,20 +253,17 @@ public partial class TetrisPool : Node2D
     UpdateScoreboard();
   }
 
-  private void UpdateScoreboard()
-  {
+  private void UpdateScoreboard() {
     scoreBoardNode.SetHighScore(highScore);
     scoreBoardNode.SetScore(score);
     int oldLevel = level;
     level = score / 10 + 1;
-    if (oldLevel != level)
-    {
+    if (oldLevel != level) {
       scoreBoardNode.SetLevel(level);
       int speed = Math.Min(level, Constants.TETRIS_MAX_LEVELS);
       shapeWaitTimerNode.WaitTime = Constants.TETRIS_SPEEDS[speed];
       AudioManager.Instance().MusicTrackManager.SetPitchScale(1 + (speed - 1) * 0.1f);
-      if (level > 1)
-      {
+      if (level > 1) {
         var levelUpNode = LevelUp.Instantiate<Node2D>();
         AddChild(levelUpNode);
         levelUpNode.Owner = this;
@@ -317,25 +272,22 @@ public partial class TetrisPool : Node2D
     }
   }
 
-  private void _on_player_diying(Node area, Vector2 position, int entityType)
-  {
+  private void _on_player_dying(Node area, Vector2 position, int entityType) {
     isPaused = true;
   }
 
-  private void _on_TetrixPool_lines_removed(int count)
-  {
+  private void _on_TetrisPool_lines_removed(int count) {
     score += count;
     UpdateScoreboard();
   }
 
-  private void _on_TetrixPool_game_over()
-  {
+  private void _on_TetrisPool_game_over() {
     // Handle game over logic
   }
 
-  private void _on_TriggerEnterArea_body_entered(Node body)
-  {
-    if (body != Global.Instance().Player) return;
+  private void _on_TriggerEnterArea_body_entered(Node body) {
+    if (body != Global.Instance().Player)
+      return;
 
     isPaused = false;
     slidingFloorSliderNode.SetLooping(false);
@@ -345,26 +297,23 @@ public partial class TetrisPool : Node2D
     AudioManager.Instance().MusicTrackManager.LoadTrack("tetris");
     AudioManager.Instance().MusicTrackManager.PlayTrack("tetris");
 
-    if (triggerEnterAreaNode != null)
-    {
+    if (triggerEnterAreaNode != null) {
       triggerEnterAreaNode.QueueFree();
       triggerEnterAreaNode = null;
     }
   }
 
-  private void ConnectSignals()
-  {
-    Event.Instance.Connect("player_diying", new Callable(this, nameof(_on_player_diying)));
+  private void ConnectSignals() {
+    Event.Instance.Connect("player_dying", new Callable(this, nameof(_on_player_dying)));
     Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
-    //Connect(nameof(lines_removed), this, nameof(_on_TetrixPool_lines_removed));
-    //Connect(nameof(game_over), this, nameof(_on_TetrixPool_game_over));
+    //Connect(nameof(lines_removed), this, nameof(_on_TetrisPool_lines_removed));
+    //Connect(nameof(game_over), this, nameof(_on_TetrisPool_game_over));
   }
 
-  private void DisconnectSignals()
-  {
-    Event.Instance.Disconnect("player_diying", new Callable(this, nameof(_on_player_diying)));
+  private void DisconnectSignals() {
+    Event.Instance.Disconnect("player_dying", new Callable(this, nameof(_on_player_dying)));
     Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
-    //Disconnect(nameof(lines_removed), this, nameof(_on_TetrixPool_lines_removed));
-    //Disconnect(nameof(game_over), this, nameof(_on_TetrixPool_game_over));
+    //Disconnect(nameof(lines_removed), this, nameof(_on_TetrisPool_lines_removed));
+    //Disconnect(nameof(game_over), this, nameof(_on_TetrisPool_game_over));
   }
 }

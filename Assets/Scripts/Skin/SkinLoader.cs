@@ -2,8 +2,7 @@ using Godot;
 using System.Text.Json;
 using System.Collections.Generic;
 
-public static class SkinLoader
-{
+public static class SkinLoader {
     public static readonly string[] KEYS = { "basic", "dark", "light", "dark2", "light2", "background" };
 
     public static readonly Dictionary<string, string[]> DEFAULT_SKIN = new Dictionary<string, string[]>
@@ -26,46 +25,37 @@ public static class SkinLoader
         { "background", new string[] { "8cd1ff", "6ec784", "ffd78c", "f29285" } }
     };
 
-    public static Dictionary<string, List<string>> LoadSkin(string fileName)
-    {
-        if (FileAccess.FileExists(fileName))
-        {
+    public static Dictionary<string, List<string>> LoadSkin(string fileName) {
+        if (FileAccess.FileExists(fileName)) {
             var file = FileAccess.Open(fileName, FileAccess.ModeFlags.Read);
             string jsonData = file.GetLine();
             file.Close();
 
-            JsonSerializerOptions _serialisationOptions = new JsonSerializerOptions();
-            _serialisationOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
-            var data = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonData, _serialisationOptions);
-            if (HasAllKeys(data))
-            {
+            JsonSerializerOptions _serializationOptions = new JsonSerializerOptions();
+            _serializationOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
+            var data = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonData, _serializationOptions);
+            if (HasAllKeys(data)) {
                 return ConvertToDictionary(data);
             }
         }
         return null;
     }
 
-    private static bool HasAllKeys(Dictionary<string, object> data)
-    {
-        foreach (string key in KEYS)
-        {
-            if (!data.ContainsKey(key))
-            {
+    private static bool HasAllKeys(Dictionary<string, object> data) {
+        foreach (string key in KEYS) {
+            if (!data.ContainsKey(key)) {
                 return false;
             }
         }
         return true;
     }
 
-    private static Dictionary<string, List<string>> ConvertToDictionary(Dictionary<string, object> data)
-    {
+    private static Dictionary<string, List<string>> ConvertToDictionary(Dictionary<string, object> data) {
         var result = new Dictionary<string, List<string>>();
-        foreach (var key in data.Keys)
-        {
+        foreach (var key in data.Keys) {
             var colorArray = data[key] as Godot.Collections.Array;
             var colorList = new List<string>();
-            foreach (var color in colorArray)
-            {
+            foreach (var color in colorArray) {
                 colorList.Add(color.ToString());
             }
             result[key] = colorList;
