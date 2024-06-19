@@ -41,7 +41,7 @@ points = PackedVector2Array(0, 0, 67, 0)
 width = 6.0
 default_color = Color(0, 0.921569, 1, 1)
 
-[node name="Line2Dbackground" type="Line2D" parent="."]
+[node name="Line2DBackground" type="Line2D" parent="."]
 show_behind_parent = true
 position = Vector2(0.3, 0)
 points = PackedVector2Array(0, 0, 67, 0)

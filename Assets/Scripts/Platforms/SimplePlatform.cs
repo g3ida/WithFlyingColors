@@ -2,8 +2,7 @@ using Godot;
 using System;
 
 [Tool]
-public partial class SimplePlatform : StaticBody2D
-{
+public partial class SimplePlatform : StaticBody2D {
   private static readonly Texture2D GearedTexture = (Texture2D)GD.Load("res://Assets/Sprites/Platforms/geared-platform.png");
   private static readonly Texture2D SimpleTexture = (Texture2D)GD.Load("res://Assets/Sprites/Platforms/platform.png");
 
@@ -24,8 +23,7 @@ public partial class SimplePlatform : StaticBody2D
   private CollisionShape2D _collisionShape;
   private CollisionShape2D _colorAreaShape;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     base._Ready();
     _ninePatchRectNode = GetNode<NinePatchRect>("NinePatchRect");
     _areaNode = GetNode<Area2D>("Area2D");
@@ -36,63 +34,52 @@ public partial class SimplePlatform : StaticBody2D
     NinePatchTextureUtils.ScaleTexture(_ninePatchRectNode, Scale);
     correctAreaSize();
 
-    if (!string.IsNullOrEmpty(group))
-    {
+    if (!string.IsNullOrEmpty(group)) {
       int colorIndex = ColorUtils.GetGroupColorIndex(group);
       _ninePatchRectNode.Modulate = ColorUtils.GetBasicColor(colorIndex);
       _areaNode.AddToGroup(group);
     }
-    else
-    {
-      foreach (var colorGroup in Constants.COLOR_GROUPS)
-      {
+    else {
+      foreach (var colorGroup in Constants.COLOR_GROUPS) {
         _areaNode.AddToGroup(colorGroup);
       }
     }
   }
 
-  public void correctAreaSize()
-  {
+  public void correctAreaSize() {
     var A = (_colorAreaShape.Shape as RectangleShape2D).Size;
     var B = (_collisionShape.Shape as RectangleShape2D).Size;
-    var scaleCoffecient = (A + (B - A) / Scale) / B;
-    (_collisionShape.Shape as RectangleShape2D).Size *= scaleCoffecient;
+    var scaleCoefficient = (A + (B - A) / Scale) / B;
+    (_collisionShape.Shape as RectangleShape2D).Size *= scaleCoefficient;
   }
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     base._EnterTree();
     ConnectSignals();
   }
 
-  public override void _ExitTree()
-  {
+  public override void _ExitTree() {
     base._ExitTree();
     DisconnectSignals();
   }
 
-  public void OnPlayerLanded(Node area, Vector2 position)
-  {
-    if (area == _areaNode)
-    {
+  public void OnPlayerLanded(Node area, Vector2 position) {
+    if (area == _areaNode) {
       animationTimer = 0;
       contactPosition = position;
     }
   }
 
-  public override void _Process(double delta)
-  {
+  public override void _Process(double delta) {
     if (Engine.IsEditorHint())
       return;
 
     animationTimer += (float)delta;
 
-    if (_ninePatchRectNode.Material is ShaderMaterial shaderMaterial)
-    {
+    if (_ninePatchRectNode.Material is ShaderMaterial shaderMaterial) {
       Vector2 resolution = GetViewport().GetVisibleRect().Size; // must be 1920x1080
       Camera2D cam = Global.Instance().Camera;
-      if (cam != null)
-      {
+      if (cam != null) {
         Vector2 camPos = cam.GetScreenCenterPosition();
         Vector2 currentPos = new Vector2(
             contactPosition.X + (resolution.X / 2) - camPos.X,
@@ -109,27 +96,22 @@ public partial class SimplePlatform : StaticBody2D
     }
   }
 
-  private void SetPlatformTexture()
-  {
-    if (geared)
-    {
+  private void SetPlatformTexture() {
+    if (geared) {
       NinePatchTextureUtils.SetTexture(_ninePatchRectNode, GearedTexture);
     }
-    else
-    {
+    else {
       NinePatchTextureUtils.SetTexture(_ninePatchRectNode, SimpleTexture);
     }
   }
 
-  private void ConnectSignals()
-  {
+  private void ConnectSignals() {
     if (Engine.IsEditorHint())
       return;
     Event.Instance.Connect("player_landed", new Callable(this, nameof(OnPlayerLanded)));
   }
 
-  private void DisconnectSignals()
-  {
+  private void DisconnectSignals() {
     if (Engine.IsEditorHint())
       return;
     Event.Instance.Disconnect("player_landed", new Callable(this, nameof(OnPlayerLanded)));

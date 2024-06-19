@@ -2,24 +2,20 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class MusicTrackManager : Node2D, IPersistant
-{
-  public partial class Track
-  {
+public partial class MusicTrackManager : Node2D, IPersistent {
+  public partial class Track {
     public string Name { get; }
     public AudioStreamPlayer Stream { get; }
     public float Volume { get; }
 
-    public Track(string name, AudioStreamPlayer stream, float volume)
-    {
+    public Track(string name, AudioStreamPlayer stream, float volume) {
       Name = name;
       Stream = stream;
       Volume = volume;
     }
   }
 
-  private enum State
-  {
+  private enum State {
     STOPPED,
     FADE_IN,
     PLAYING,
@@ -56,7 +52,7 @@ public partial class MusicTrackManager : Node2D, IPersistant
             "brickBreaker", new Dictionary<string, object>
             {
                 { "path", "res://Assets/music/Enigma-Long-Version-Complete-Version.mp3" },
-                { "licence", "Creative Commons CC BY 3.0" },
+                { "license", "Creative Commons CC BY 3.0" },
                 { "link", "https://www.chosic.com/download-audio/32067/" },
                 { "volume", -8.0f }
             }
@@ -65,7 +61,7 @@ public partial class MusicTrackManager : Node2D, IPersistant
             "fight", new Dictionary<string, object>
             {
                 { "path", "res://Assets/music/Loyalty_Freak_Music_-_04_-_Cant_Stop_My_Feet_.mp3" },
-                { "licence", "Public domain CC0" },
+                { "license", "Public domain CC0" },
                 { "link", "https://www.chosic.com/download-audio/25495/" },
                 { "volume", -5.0f }
             }
@@ -74,7 +70,7 @@ public partial class MusicTrackManager : Node2D, IPersistant
             "level1", new Dictionary<string, object>
             {
                 { "path", "res://Assets/music/Loyalty Freak Music - Monarch of the street.ogg" },
-                { "licence", "Public domain CC0" },
+                { "license", "Public domain CC0" },
                 { "link", "https://freemusicarchive.org/music/Loyalty_Freak_Music/TO_CHILL_AND_STAY_AWAKE/Loyalty_Freak_Music_-_TO_CHILL_AND_STAY_AWAKE_-_07_Monarch_of_the_street/" },
                 { "volume", -7.0f }
             }
@@ -83,7 +79,7 @@ public partial class MusicTrackManager : Node2D, IPersistant
             "tetris", new Dictionary<string, object>
             {
                 { "path", "res://Assets/music/Myuu-Tetris-Dark-Version.mp3" },
-                { "licence", "free to use as long as credit is given" },
+                { "license", "free to use as long as credit is given" },
                 { "link", "https://www.youtube.com/watch?v=eunhYtd8agE&ab_channel=Myuu" },
                 { "volume", -5.0f }
             }
@@ -92,46 +88,40 @@ public partial class MusicTrackManager : Node2D, IPersistant
             "cards", new Dictionary<string, object>
             {
                 { "path", "res://Assets/music/Sneaky-Snitch.mp3" },
-                { "licence", "Creative Commons CC BY 3.0" },
+                { "license", "Creative Commons CC BY 3.0" },
                 { "link", "https://www.chosic.com/download-audio/39325/" },
                 { "volume", -5.0f }
             }
         }
     };
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     AddPitchScaleEffect();
     AddNotchEffect();
     SetPauseMenuEffect(false);
   }
 
-  private void AddPitchScaleEffect()
-  {
-    var shift = new AudioEffectPitchShift
-    {
+  private void AddPitchScaleEffect() {
+    var shift = new AudioEffectPitchShift {
       PitchScale = 1.0f
     };
     AudioServer.AddBusEffect(BUS_INDEX, shift, EFF_INDEX);
   }
 
-  private void AddNotchEffect()
-  {
-    var notch = new AudioEffectNotchFilter
-    {
+  private void AddNotchEffect() {
+    var notch = new AudioEffectNotchFilter {
       Resonance = 0.05f
     };
     AudioServer.AddBusEffect(BUS_INDEX, notch, NOTCH_EFF_INDEX);
   }
 
-  public void SetPauseMenuEffect(bool is_on)
-  {
+  public void SetPauseMenuEffect(bool is_on) {
     AudioServer.SetBusEffectEnabled(BUS_INDEX, NOTCH_EFF_INDEX, is_on);
   }
 
-  public void SetPitchScale(float _pitch_scale)
-  {
-    if (current_track == null) return;
+  public void SetPitchScale(float _pitch_scale) {
+    if (current_track == null)
+      return;
 
     var shift = (AudioEffectPitchShift)AudioServer.GetBusEffect(BUS_INDEX, EFF_INDEX);
     shift.PitchScale = 1.0f / _pitch_scale;
@@ -139,22 +129,19 @@ public partial class MusicTrackManager : Node2D, IPersistant
     pitch_scale = _pitch_scale;
   }
 
-  public void LoadTrack(string name)
-  {
-    if (track_list.ContainsKey(name))
-    {
+  public void LoadTrack(string name) {
+    if (track_list.ContainsKey(name)) {
       var volume = track_list[name].ContainsKey("volume") ? Convert.ToSingle(track_list[name]["volume"]) : 0.0f;
       AddTrack(name, track_list[name]["path"].ToString(), volume);
     }
   }
 
-  public void AddTrack(string name, string path, float volume)
-  {
-    if (music_pool.ContainsKey(name)) return;
+  public void AddTrack(string name, string path, float volume) {
+    if (music_pool.ContainsKey(name))
+      return;
 
     var stream = GD.Load<AudioStream>(path);
-    var audio_player = new AudioStreamPlayer
-    {
+    var audio_player = new AudioStreamPlayer {
       Stream = stream,
       StreamPaused = false,
       Bus = BUS_NAME,
@@ -167,47 +154,40 @@ public partial class MusicTrackManager : Node2D, IPersistant
     audio_player.Owner = this;
   }
 
-  public void RemoveTrack(string name)
-  {
-    if (!music_pool.ContainsKey(name)) return;
+  public void RemoveTrack(string name) {
+    if (!music_pool.ContainsKey(name))
+      return;
 
     var music = music_pool[name];
-    if (music != null)
-    {
+    if (music != null) {
       RemoveChild(music.Stream);
       music_pool.Remove(name);
     }
   }
 
-  public void PlayTrack(string name)
-  {
-    if (!music_pool.ContainsKey(name)) return;
+  public void PlayTrack(string name) {
+    if (!music_pool.ContainsKey(name))
+      return;
     var track = music_pool[name];
-    if (current_state == State.STOPPED)
-    {
+    if (current_state == State.STOPPED) {
       current_track = track;
       FadeIn();
     }
-    else if (current_state == State.FADE_IN)
-    {
+    else if (current_state == State.FADE_IN) {
       next_track = track;
       FadeOut();
     }
-    else if (current_state == State.FADE_OUT)
-    {
+    else if (current_state == State.FADE_OUT) {
       next_track = track;
     }
-    else if (current_state == State.PLAYING && current_track.Name != track.Name)
-    {
+    else if (current_state == State.PLAYING && current_track.Name != track.Name) {
       next_track = track;
       FadeOut();
     }
   }
 
-  public void Stop()
-  {
-    if (current_track != null)
-    {
+  public void Stop() {
+    if (current_track != null) {
       current_track.Stream.Stop();
       current_track = null;
       next_track = null;
@@ -215,23 +195,20 @@ public partial class MusicTrackManager : Node2D, IPersistant
     current_state = State.STOPPED;
   }
 
-  private void PrepareFadeTween()
-  {
+  private void PrepareFadeTween() {
     fade_tweener?.Kill();
     fade_tweener = CreateTween();
     fade_tweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);
   }
 
-  private void FadeOut()
-  {
+  private void FadeOut() {
     PrepareFadeTween();
     current_state = State.FADE_OUT;
     var duration = FADE_DURATION * (current_track.Stream.VolumeDb - FADE_VOLUME + 1.0f) / (current_track.Volume - FADE_VOLUME + 1.0f);
     fade_tweener.TweenProperty(current_track.Stream, "volume_db", FADE_VOLUME, duration);
   }
 
-  private void FadeIn()
-  {
+  private void FadeIn() {
     PrepareFadeTween();
     current_state = State.FADE_IN;
     current_track.Stream.Play();
@@ -240,52 +217,40 @@ public partial class MusicTrackManager : Node2D, IPersistant
     fade_tweener.TweenProperty(current_track.Stream, "volume_db", current_track.Volume, FADE_DURATION).From(FADE_VOLUME);
   }
 
-  private void OnTweenCompleted()
-  {
-    if (current_state == State.FADE_IN)
-    {
+  private void OnTweenCompleted() {
+    if (current_state == State.FADE_IN) {
       current_state = State.PLAYING;
     }
-    else if (current_state == State.FADE_OUT)
-    {
+    else if (current_state == State.FADE_OUT) {
       current_track.Stream.Stop();
-      if (next_track != null)
-      {
+      if (next_track != null) {
         current_track = next_track;
         FadeIn();
       }
-      else
-      {
+      else {
         current_state = State.STOPPED;
         current_track = null;
       }
     }
   }
 
-  private void OnCheckpointHit(Node _checkpoint)
-  {
-    if (current_state == State.FADE_OUT)
-    {
-      if (next_track != null)
-      {
+  private void OnCheckpointHit(Node _checkpoint) {
+    if (current_state == State.FADE_OUT) {
+      if (next_track != null) {
         save_data["track"] = next_track.Name;
       }
     }
-    else if (current_state != State.STOPPED)
-    {
+    else if (current_state != State.STOPPED) {
       save_data["track"] = current_track.Name;
     }
     save_data["scale"] = pitch_scale;
   }
 
   // FIXME: rename to Reset after C# migration
-  public void reset()
-  {
+  public void reset() {
     var track = Convert.ToString(save_data["track"]);
-    if (track != null)
-    {
-      if (current_track != null && track == current_track.Name)
-      {
+    if (track != null) {
+      if (current_track != null && track == current_track.Name) {
         return;
       }
       LoadTrack(track);
@@ -295,26 +260,22 @@ public partial class MusicTrackManager : Node2D, IPersistant
   }
 
   // FIXME: this has to be uppercase after C# migration
-  public Dictionary<string, object> save()
-  {
+  public Dictionary<string, object> save() {
     return save_data;
   }
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     // AddToGroup("persist");
     Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
     Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
   }
 
-  public override void _ExitTree()
-  {
+  public override void _ExitTree() {
     Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
     Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
   }
 
-  public void load(Dictionary<string, object> save_data)
-  {
+  public void load(Dictionary<string, object> save_data) {
     this.save_data = save_data;
     reset();
   }

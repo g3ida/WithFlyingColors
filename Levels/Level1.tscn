@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://Assets/Scripts/Level.cs" id="3"]
 [ext_resource type="PackedScene" uid="uid://c34ryx01v1y06" path="res://Assets/Scenes/Camera.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://Assets/Scenes/Platforms/SimplePlatform.tscn" id="7"]
-[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://Assets/Scenes/Fallzone.tscn" id="9"]
+[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://Assets/Scenes/FallZone.tscn" id="9"]
 [ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://Assets/Scenes/Gem.tscn" id="10"]
 [ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="11"]
 [ext_resource type="PackedScene" path="res://Assets/Scenes/HUD/GemsHUDContainer.tscn" id="16"]
@@ -87,7 +87,7 @@ position = Vector2(2722, 138.4)
 scale = Vector2(2.546, 1.11)
 group = "yellow"
 
-[node name="Fallzone" parent="." instance=ExtResource("9")]
+[node name="FallZone" parent="." instance=ExtResource("9")]
 position = Vector2(738, 1059)
 scale = Vector2(1000, 4.788)
 
@@ -156,7 +156,7 @@ bullet_scene = ExtResource("25")
 objectToFollow = NodePath("../Player")
 color_group = "blue"
 
-[node name="TetrixPool" parent="." instance=ExtResource("31")]
+[node name="TetrisPool" parent="." instance=ExtResource("31")]
 position = Vector2(5950, -987)
 
 [node name="CameraLocalizer" parent="." instance=ExtResource("32")]

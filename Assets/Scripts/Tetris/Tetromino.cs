@@ -2,8 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class Tetromino : Node2D
-{
+public partial class Tetromino : Node2D {
     private const int DIRECTIONS = 4;
 
     protected List<List<Vector2>> rotationMap;
@@ -14,13 +13,10 @@ public partial class Tetromino : Node2D
     public void DecRotateIndex() => rotateIndex = (rotateIndex - 1 + DIRECTIONS) % DIRECTIONS;
     public void MoveRotateIndexBy(int dir) => rotateIndex = (rotateIndex + dir + DIRECTIONS) % DIRECTIONS;
 
-    public void SetGrid(List<List<Block>> _grid)
-    {
+    public void SetGrid(List<List<Block>> _grid) {
         grid = _grid;
-        foreach (Node ch in GetChildren())
-        {
-            if (ch is Block block)
-            {
+        foreach (Node ch in GetChildren()) {
+            if (ch is Block block) {
                 block.grid = _grid;
             }
         }
@@ -43,15 +39,12 @@ public partial class Tetromino : Node2D
     public void RotateRight() => RotateDir(1);
     public bool RotateRightSafe() => RotateDirSafe(1);
 
-    private void RotateDir(int dir)
-    {
+    private void RotateDir(int dir) {
         int oldIdx = rotateIndex;
         MoveRotateIndexBy(dir);
         int i = 0;
-        foreach (Node ch in GetChildren())
-        {
-            if (ch is Block block)
-            {
+        foreach (Node ch in GetChildren()) {
+            if (ch is Block block) {
                 Vector2 pos = rotationMap[rotateIndex][i];
                 Vector2 oldPos = rotationMap[oldIdx][i];
                 Vector2 dDist = pos - oldPos;
@@ -62,10 +55,8 @@ public partial class Tetromino : Node2D
         SetShape();
     }
 
-    private bool RotateDirSafe(int dir)
-    {
-        if (CanRotateDir(dir))
-        {
+    private bool RotateDirSafe(int dir) {
+        if (CanRotateDir(dir)) {
             RotateDir(dir);
             return true;
         }
@@ -76,20 +67,16 @@ public partial class Tetromino : Node2D
     public bool CanMoveLeft() => CanMoveBy(-1, 0);
     public bool CanMoveRight() => CanMoveBy(1, 0);
 
-    private bool CanRotateDir(int dir)
-    {
+    private bool CanRotateDir(int dir) {
         int oldIdx = rotateIndex;
         MoveRotateIndexBy(dir);
         int i = 0;
-        foreach (Node ch in GetChildren())
-        {
-            if (ch is Block block)
-            {
+        foreach (Node ch in GetChildren()) {
+            if (ch is Block block) {
                 Vector2 pos = rotationMap[rotateIndex][i];
                 Vector2 oldPos = rotationMap[oldIdx][i];
                 Vector2 dDist = pos - oldPos;
-                if (!block.CanMoveBy((int)dDist.X, (int)dDist.Y))
-                {
+                if (!block.CanMoveBy((int)dDist.X, (int)dDist.Y)) {
                     MoveRotateIndexBy(-dir);
                     return false;
                 }
@@ -100,69 +87,52 @@ public partial class Tetromino : Node2D
         return true;
     }
 
-    public bool CanMoveBy(int i, int j)
-    {
-        foreach (Node ch in GetChildren())
-        {
-            if (ch is Block block && !block.CanMoveBy(i, j))
-            {
+    public bool CanMoveBy(int i, int j) {
+        foreach (Node ch in GetChildren()) {
+            if (ch is Block block && !block.CanMoveBy(i, j)) {
                 return false;
             }
         }
         return true;
     }
 
-    public void MoveBy(int i, int j)
-    {
-        foreach (Node ch in GetChildren())
-        {
-            if (ch is Block block)
-            {
+    public void MoveBy(int i, int j) {
+        foreach (Node ch in GetChildren()) {
+            if (ch is Block block) {
                 block.MoveBy(i, j);
             }
         }
         Position += new Vector2(i * Constants.TETRIS_BLOCK_SIZE, j * Constants.TETRIS_BLOCK_SIZE);
     }
 
-    private bool MoveBySafe(int i, int j)
-    {
-        if (CanMoveBy(i, j))
-        {
+    private bool MoveBySafe(int i, int j) {
+        if (CanMoveBy(i, j)) {
             MoveBy(i, j);
             return true;
         }
         return false;
     }
 
-    public void AddToGrid(bool permessiveMode = true)
-    {
-        foreach (Node ch in GetChildren())
-        {
-            if (ch is Block block)
-            {
-                block.AddToGrid(permessiveMode);
+    public void AddToGrid(bool permissiveMode = true) {
+        foreach (Node ch in GetChildren()) {
+            if (ch is Block block) {
+                block.AddToGrid(permissiveMode);
             }
         }
     }
 
-    public void RemoveFromGrid()
-    {
-        foreach (Node ch in GetChildren())
-        {
-            if (ch is Block block)
-            {
+    public void RemoveFromGrid() {
+        foreach (Node ch in GetChildren()) {
+            if (ch is Block block) {
                 block.RemoveFromGrid();
             }
         }
     }
 
-    public void SetShape()
-    {
+    public void SetShape() {
         int i = 0;
-        foreach (Node ch in GetChildren())
-        {
-            if (ch is Block block)
-            {
+        foreach (Node ch in GetChildren()) {
+            if (ch is Block block) {
                 block.Position = rotationMap[rotateIndex][i] * Constants.TETRIS_BLOCK_SIZE;
                 i++;
             }

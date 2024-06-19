@@ -3,18 +3,15 @@ using Wfc.Entities.Ui.Menu;
 
 
 
-public partial class Event : Node
-{
+public partial class Event : Node {
   private static Event _instance = null;
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     base._EnterTree();
     _instance = GetTree().Root.GetNode<Event>("EventCS");
   }
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     base._Ready();
     SetProcess(false);
   }
@@ -25,7 +22,7 @@ public partial class Event : Node
   public delegate void player_landedEventHandler(Node area, Vector2 position);
 
   [Signal]
-  public delegate void player_diyingEventHandler(Node area, Vector2 position, int entity_type);
+  public delegate void player_dyingEventHandler(Node area, Vector2 position, int entity_type);
 
   [Signal]
   public delegate void player_diedEventHandler();
@@ -114,7 +111,7 @@ public partial class Event : Node
   public delegate void bouncing_ball_removedEventHandler(Node ball);
 
   [Signal]
-  public delegate void picked_powerupEventHandler();
+  public delegate void picked_powerUpEventHandler();
 
   [Signal]
   public delegate void break_breaker_winEventHandler();
@@ -138,10 +135,10 @@ public partial class Event : Node
   public delegate void piano_puzzle_wonEventHandler();
 
   [Signal]
-  public delegate void cutscene_request_startEventHandler(string id);
+  public delegate void cutScene_request_startEventHandler(string id);
 
   [Signal]
-  public delegate void cutscene_request_endEventHandler(string id);
+  public delegate void cutScene_request_endEventHandler(string id);
 
   [Signal]
   public delegate void gem_temple_triggeredEventHandler();
@@ -157,7 +154,7 @@ public partial class Event : Node
 
   public void EmitPlayerLanded(Node area, Vector2 position) => _instance.EmitSignal(nameof(player_landed), area, position);
 
-  public void EmitPlayerDiying(Node area, Vector2 position, Constants.EntityType entityType) => _instance.EmitSignal(nameof(player_diying), area, position, (int)entityType);
+  public void EmitPlayerDying(Node area, Vector2 position, Constants.EntityType entityType) => _instance.EmitSignal(nameof(player_dying), area, position, (int)entityType);
 
   public void EmitPlayerDied() => _instance.EmitSignal(nameof(player_died));
 
@@ -217,7 +214,7 @@ public partial class Event : Node
 
   public void EmitBouncingBallRemoved(Node ball) => _instance.EmitSignal(nameof(bouncing_ball_removed), ball);
 
-  public void EmitPickedPowerup() => _instance.EmitSignal(nameof(picked_powerup));
+  public void EmitPickedPowerup() => _instance.EmitSignal(nameof(picked_powerUp));
 
   public void EmitBreakBreakerWin() => _instance.EmitSignal(nameof(break_breaker_win));
 
@@ -233,9 +230,9 @@ public partial class Event : Node
 
   public void EmitPianoPuzzleWon() => _instance.EmitSignal(nameof(piano_puzzle_won));
 
-  public void EmitCutsceneRequestStart(string id) => _instance.EmitSignal(nameof(cutscene_request_start), id);
+  public void EmitCutsceneRequestStart(string id) => _instance.EmitSignal(nameof(cutScene_request_start), id);
 
-  public void EmitCutsceneRequestEnd(string id) => _instance.EmitSignal(nameof(cutscene_request_end), id);
+  public void EmitCutsceneRequestEnd(string id) => _instance.EmitSignal(nameof(cutScene_request_end), id);
 
   public void EmitGemTempleTriggered() => _instance.EmitSignal(nameof(gem_temple_triggered));
 

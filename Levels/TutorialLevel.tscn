@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://Assets/Scenes/Level/Level.tscn" id="1"]
 [ext_resource type="Script" path="res://Assets/Scripts/CutScene/CutsceneTrigger.cs" id="2"]
-[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://Assets/Scenes/Fallzone.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://Assets/Scenes/FallZone.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://Assets/Scenes/Platforms/SimplePlatform.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://Assets/Scenes/Gem.tscn" id="5"]
 [ext_resource type="PackedScene" path="res://Assets/Scenes/Tutorial/TutorialText.tscn" id="6"]
@@ -40,7 +40,7 @@ limit_bottom = 620
 anchors_preset = 5
 grow_horizontal = 2
 
-[node name="Fallzone" parent="." index="3" instance=ExtResource("3")]
+[node name="FallZone" parent="." index="3" instance=ExtResource("3")]
 position = Vector2(10114, 1122)
 scale = Vector2(1800, 4.788)
 

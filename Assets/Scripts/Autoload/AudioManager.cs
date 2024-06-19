@@ -2,8 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class AudioManager : Node
-{
+public partial class AudioManager : Node {
   [Signal]
   public delegate void PlaySfxEventHandler(string sfxName);
 
@@ -35,8 +34,8 @@ public partial class AudioManager : Node
         {"pickup", new Dictionary<string, object> {{"path", BasePath + "pickup.ogg"}, {"volume", -4}}},
         {"playerExplode", new Dictionary<string, object> {{"path", BasePath + "die.ogg"}, {"volume", -10}}},
         {"playerFalling", new Dictionary<string, object> {{"path", BasePath + "falling.ogg"}, {"volume", -10}}},
-        {"rotateLeft", new Dictionary<string, object> {{"path", BasePath + "rotatex.ogg"}, {"volume", -20}, {"pitch_scale", 0.9}}},
-        {"rotateRight", new Dictionary<string, object> {{"path", BasePath + "rotatex.ogg"}, {"volume", -20}}},
+        {"rotateLeft", new Dictionary<string, object> {{"path", BasePath + "rotate-box.ogg"}, {"volume", -20}, {"pitch_scale", 0.9}}},
+        {"rotateRight", new Dictionary<string, object> {{"path", BasePath + "rotate-box.ogg"}, {"volume", -20}}},
         {"shine", new Dictionary<string, object> {{"path", BasePath + "shine.ogg"}, {"volume", -5}}},
         {"success", new Dictionary<string, object> {{"path", BasePath + "success.ogg"}, {"volume", -1}}},
         {"tetrisLine", new Dictionary<string, object> {{"path", BasePath + "tetris_line.ogg"}, {"volume", -7}}},
@@ -49,21 +48,18 @@ public partial class AudioManager : Node
 
   private static AudioManager _instance = null;
 
-  public static AudioManager Instance()
-  {
+  public static AudioManager Instance() {
     return _instance;
   }
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     base._EnterTree();
     _instance = GetTree().Root.GetNode<AudioManager>("AudioManagerCS");
     MusicTrackManager = MusicTrackManagerScene.Instantiate<MusicTrackManager>();
     ConnectSignals();
   }
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     ProcessMode = ProcessModeEnum.Always;
     SetProcess(false);
     /// FIXME: make this an extension function and use all over any node CreateChild<NodeType>()
@@ -73,28 +69,23 @@ public partial class AudioManager : Node
     FillSfxPool();
   }
 
-  private void FillSfxPool()
-  {
-    foreach (string key in sfxData.Keys)
-    {
+  private void FillSfxPool() {
+    foreach (string key in sfxData.Keys) {
       var stream = GD.Load<AudioStream>(sfxData[key]["path"].ToString());
       var audioPlayer = new AudioStreamPlayer();
       Helpers.SetLooping(stream, false);
       audioPlayer.Stream = stream;
 
-      if (sfxData[key].ContainsKey("volume"))
-      {
+      if (sfxData[key].ContainsKey("volume")) {
         audioPlayer.VolumeDb = Convert.ToSingle(sfxData[key]["volume"]);
       }
 
-      if (sfxData[key].ContainsKey("pitch_scale"))
-      {
+      if (sfxData[key].ContainsKey("pitch_scale")) {
         audioPlayer.PitchScale = Convert.ToSingle(sfxData[key]["pitch_scale"]);
       }
 
       var bus = "sfx";
-      if (sfxData[key].ContainsKey("bus"))
-      {
+      if (sfxData[key].ContainsKey("bus")) {
         bus = sfxData[key]["bus"].ToString();
       }
 
@@ -105,8 +96,7 @@ public partial class AudioManager : Node
     }
   }
 
-  private void ConnectSignals()
-  {
+  private void ConnectSignals() {
     PlaySfx += _OnPlaySfx;
     Event.Instance.Connect(nameof(Event.player_jumped), new Callable(this, nameof(_OnPlayerJumped)));
     Event.Instance.Connect("player_rotate", new Callable(this, nameof(_OnPlayerRotate)));
@@ -125,7 +115,7 @@ public partial class AudioManager : Node
     Event.Instance.Connect("pause_menu_exit", new Callable(this, nameof(_OnPauseMenuExit)));
     Event.Instance.Connect("player_fall", new Callable(this, nameof(_OnPlayerFalling)));
     Event.Instance.Connect("tetris_lines_removed", new Callable(this, nameof(_OnTetrisLinesRemoved)));
-    Event.Instance.Connect("picked_powerup", new Callable(this, nameof(_OnPickedPowerup)));
+    Event.Instance.Connect("picked_powerUp", new Callable(this, nameof(_OnPickedPowerup)));
     Event.Instance.Connect("brick_broken", new Callable(this, nameof(_OnBrickBroken)));
     Event.Instance.Connect("break_breaker_win", new Callable(this, nameof(_OnWinMiniGame)));
     Event.Instance.Connect("brick_breaker_start", new Callable(this, nameof(_OnBrickBreakerStart)));
@@ -142,8 +132,7 @@ public partial class AudioManager : Node
     Event.Instance.Connect("gem_put_in_temple", new Callable(this, nameof(_OnGemPutInTemple)));
   }
 
-  private void DisconnectSignals()
-  {
+  private void DisconnectSignals() {
     Disconnect(nameof(PlaySfx), new Callable(this, nameof(_OnPlaySfx)));
     Event.Instance.Disconnect("player_jumped", new Callable(this, nameof(_OnPlayerJumped)));
     Event.Instance.Disconnect("player_rotate", new Callable(this, nameof(_OnPlayerRotate)));
@@ -162,7 +151,7 @@ public partial class AudioManager : Node
     Event.Instance.Disconnect("pause_menu_exit", new Callable(this, nameof(_OnPauseMenuExit)));
     Event.Instance.Disconnect("player_fall", new Callable(this, nameof(_OnPlayerFalling)));
     Event.Instance.Disconnect("tetris_lines_removed", new Callable(this, nameof(_OnTetrisLinesRemoved)));
-    Event.Instance.Disconnect("picked_powerup", new Callable(this, nameof(_OnPickedPowerup)));
+    Event.Instance.Disconnect("picked_powerUp", new Callable(this, nameof(_OnPickedPowerup)));
     Event.Instance.Disconnect("brick_broken", new Callable(this, nameof(_OnBrickBroken)));
     Event.Instance.Disconnect("break_breaker_win", new Callable(this, nameof(_OnWinMiniGame)));
     Event.Instance.Disconnect("brick_breaker_start", new Callable(this, nameof(_OnBrickBreakerStart)));
@@ -179,203 +168,160 @@ public partial class AudioManager : Node
     Event.Instance.Disconnect("gem_put_in_temple", new Callable(this, nameof(_OnGemPutInTemple)));
   }
 
-  public override void _ExitTree()
-  {
+  public override void _ExitTree() {
     DisconnectSignals();
     base._ExitTree();
   }
 
-  private void _OnPlaySfx(string sfx)
-  {
-    if (sfxPool.ContainsKey(sfx))
-    {
+  private void _OnPlaySfx(string sfx) {
+    if (sfxPool.ContainsKey(sfx)) {
       sfxPool[sfx].Play();
     }
   }
 
-  public void StopAllSfx()
-  {
-    foreach (var sfx in sfxPool.Values)
-    {
+  public void StopAllSfx() {
+    foreach (var sfx in sfxPool.Values) {
       sfx.Stop();
     }
   }
 
-  public void StopAllExcept(string[] sfxList)
-  {
-    foreach (var sfx in sfxPool)
-    {
-      if (!Array.Exists(sfxList, element => element == sfx.Key))
-      {
+  public void StopAllExcept(string[] sfxList) {
+    foreach (var sfx in sfxPool) {
+      if (!Array.Exists(sfxList, element => element == sfx.Key)) {
         sfx.Value.Stop();
       }
     }
   }
 
-  public void EmitPlaySfx(string sfxName)
-  {
+  public void EmitPlaySfx(string sfxName) {
     EmitSignal(nameof(PlaySfx), sfxName);
   }
 
-  public void PauseAllSfx()
-  {
-    foreach (var sfx in sfxPool.Values)
-    {
-      if (sfx.Playing)
-      {
+  public void PauseAllSfx() {
+    foreach (var sfx in sfxPool.Values) {
+      if (sfx.Playing) {
         sfx.StreamPaused = true;
       }
     }
   }
 
-  public void ResumeAllSfx()
-  {
-    foreach (var sfx in sfxPool.Values)
-    {
-      if (sfx.Playing)
-      {
+  public void ResumeAllSfx() {
+    foreach (var sfx in sfxPool.Values) {
+      if (sfx.Playing) {
         sfx.StreamPaused = false;
       }
     }
   }
 
-  private void _OnPlayerJumped()
-  {
+  private void _OnPlayerJumped() {
     _OnPlaySfx("jump");
   }
 
-  private void _OnPlayerRotate(int dir)
-  {
+  private void _OnPlayerRotate(int dir) {
     _OnPlaySfx(dir == -1 ? "rotateLeft" : "rotateRight");
   }
 
-  private void _OnPlayerLand()
-  {
+  private void _OnPlayerLand() {
     _OnPlaySfx("land");
   }
 
-  private void _OnMenuButtonPressed(int menuButton)
-  {
+  private void _OnMenuButtonPressed(int menuButton) {
     _OnPlaySfx("menuSelect");
   }
 
-  private void _OnGemCollected(string color, Vector2 position, SpriteFrames x)
-  {
+  private void _OnGemCollected(string color, Vector2 position, SpriteFrames x) {
     _OnPlaySfx("gemCollect");
   }
 
-  private void _OnButtonToggle(bool value)
-  {
+  private void _OnButtonToggle(bool value) {
     _OnPlaySfx("menuValueChange");
   }
 
-  private void _OnKeyBound(bool value, bool value2)
-  {
+  private void _OnKeyBound(bool value, bool value2) {
     _OnPlaySfx("menuValueChange");
   }
 
-  private void _OnTabChanged()
-  {
+  private void _OnTabChanged() {
     _OnPlaySfx("menuFocus");
   }
 
-  private void _OnFocusChanged()
-  {
+  private void _OnFocusChanged() {
     _OnPlaySfx("menuFocus");
   }
 
-  private void _OnMenuBoxRotated()
-  {
+  private void _OnMenuBoxRotated() {
     _OnPlaySfx("rotateRight");
   }
 
-  private void _OnKeyboardActionBinding()
-  {
+  private void _OnKeyboardActionBinding() {
     _OnPlaySfx("menuValueChange");
   }
 
-  private void _OnPlayerExplode()
-  {
+  private void _OnPlayerExplode() {
     _OnPlaySfx("playerExplode");
   }
 
-  private void _OnPlayerFalling()
-  {
+  private void _OnPlayerFalling() {
     _OnPlaySfx("playerFalling");
   }
 
-  private void _OnTetrisLinesRemoved()
-  {
+  private void _OnTetrisLinesRemoved() {
     _OnPlaySfx("tetrisLine");
   }
 
-  private void _OnPickedPowerup()
-  {
+  private void _OnPickedPowerup() {
     _OnPlaySfx("pickup");
   }
 
-  private void _OnBrickBroken(string color, Vector2 position)
-  {
+  private void _OnBrickBroken(string color, Vector2 position) {
     _OnPlaySfx("brick");
   }
 
-  private void _OnWinMiniGame()
-  {
+  private void _OnWinMiniGame() {
     _OnPlaySfx("winMiniGame");
   }
 
-  private void _OnBrickBreakerStart()
-  {
+  private void _OnBrickBreakerStart() {
     _OnPlaySfx("bricksSlide");
   }
 
-  private void _OnPianoNotePressed(string note)
-  {
+  private void _OnPianoNotePressed(string note) {
     _OnPlaySfx("piano_" + note);
   }
 
-  private void _OnPianoNoteReleased(string note)
-  {
+  private void _OnPianoNoteReleased(string note) {
     // do nothing
   }
 
-  private void _OnPageFlipped()
-  {
+  private void _OnPageFlipped() {
     _OnPlaySfx("pageFlip");
   }
 
-  private void _OnWrongPianoNotePlayed()
-  {
+  private void _OnWrongPianoNotePlayed() {
     _OnPlaySfx("wrongAnswer");
   }
 
-  private void _OnPianoPuzzleWon()
-  {
+  private void _OnPianoPuzzleWon() {
     _OnPlaySfx("success");
   }
 
-  private void _OnGemTempleTriggered()
-  {
+  private void _OnGemTempleTriggered() {
     _OnPlaySfx("shine");
   }
 
-  private void _OnGemEngineStarted()
-  {
+  private void _OnGemEngineStarted() {
     _OnPlaySfx("GemEngine");
   }
 
-  private void _OnGemPutInTemple()
-  {
+  private void _OnGemPutInTemple() {
     _OnPlaySfx("GemPut");
   }
 
-  private void _OnPauseMenuEnter()
-  {
+  private void _OnPauseMenuEnter() {
     _OnPlaySfx("menuSelect");
   }
 
-  private void _OnPauseMenuExit()
-  {
+  private void _OnPauseMenuExit() {
     _OnPlaySfx("menuSelect");
   }
 }

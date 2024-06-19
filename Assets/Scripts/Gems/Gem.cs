@@ -3,8 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public partial class Gem : Area2D, IPersistant
-{
+public partial class Gem : Area2D, IPersistent {
   [Export]
   public string group_name;
 
@@ -14,10 +13,8 @@ public partial class Gem : Area2D, IPersistant
   public GemStatesStore StatesStore;
   public GemBaseState CurrentState;
 
-  public GemStatesEnum GemState
-  {
-    get
-    {
+  public GemStatesEnum GemState {
+    get {
       return StatesStore.GetStateEnum(CurrentState);
     }
   }
@@ -30,8 +27,7 @@ public partial class Gem : Area2D, IPersistant
 
   private Dictionary<string, object> save_data = new Dictionary<string, object> { { "state", null } };
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     CollisionShapeNode = GetNode<CollisionPolygon2D>("CollisionShape2D");
     LightNode = GetNode<PointLight2D>("PointLight2D");
     ShineNode = GetNode<AudioStreamPlayer2D>("ShineSfx");
@@ -52,26 +48,21 @@ public partial class Gem : Area2D, IPersistant
     CurrentState.Enter(this);
   }
 
-  private void SwitchState(GemBaseState newState)
-  {
-    if (newState != null)
-    {
+  private void SwitchState(GemBaseState newState) {
+    if (newState != null) {
       CurrentState.Exit(this);
       CurrentState = newState;
       CurrentState.Enter(this);
     }
   }
 
-  public override void _PhysicsProcess(double delta)
-  {
+  public override void _PhysicsProcess(double delta) {
     GemBaseState state = (GemBaseState)CurrentState.PhysicsUpdate(this, (float)delta);
     SwitchState(state);
   }
 
-  public void _on_Gem_area_entered(Area2D area)
-  {
-    if (Global.Instance().Player.IsDying() || CurrentState != StatesStore.NotCollected)
-    {
+  public void _on_Gem_area_entered(Area2D area) {
+    if (Global.Instance().Player.IsDying() || CurrentState != StatesStore.NotCollected) {
       return;
     }
 
@@ -79,63 +70,51 @@ public partial class Gem : Area2D, IPersistant
     SwitchState(state);
   }
 
-  public void _on_AnimationPlayer_animation_finished(string animName)
-  {
+  public void _on_AnimationPlayer_animation_finished(string animName) {
     GemBaseState state = (GemBaseState)CurrentState.OnAnimationFinished(this, animName);
     SwitchState(state);
   }
 
-  private void ConnectSignals()
-  {
+  private void ConnectSignals() {
     Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
     Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
   }
 
-  private void DisconnectSignals()
-  {
+  private void DisconnectSignals() {
     Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
     Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
   }
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     ConnectSignals();
   }
 
-  public override void _ExitTree()
-  {
+  public override void _ExitTree() {
     DisconnectSignals();
   }
 
-  private void _OnCheckpointHit(Node checkpoint)
-  {
+  private void _OnCheckpointHit(Node checkpoint) {
     GemBaseState savedState = CurrentState != StatesStore.Collecting ? CurrentState : StatesStore.Collected;
     save_data["state"] = (int)StatesStore.GetStateEnum(savedState);
   }
 
-  public Dictionary<string, object> save()
-  {
+  public Dictionary<string, object> save() {
     return save_data;
   }
 
-  public void reset()
-  {
+  public void reset() {
     var state = (GemStatesEnum)Helpers.ParseSaveDataInt(save_data, "state");
     SwitchState((GemBaseState)StatesStore.GetState(state));
   }
 
-  public bool IsInGroup(string grp)
-  {
+  public bool IsInGroup(string grp) {
     // if the player is dying we don't want to collect it
-    if (Global.Instance().Player.IsDying())
-    {
+    if (Global.Instance().Player.IsDying()) {
       return false;
     }
     // if the gem is already collecting we don't wan't the player to die
-    if (CurrentState == StatesStore.Collecting)
-    {
-      if (Constants.COLOR_GROUPS.Contains(grp))
-      {
+    if (CurrentState == StatesStore.Collecting) {
+      if (Constants.COLOR_GROUPS.Contains(grp)) {
         return true;
       }
     }
@@ -143,8 +122,7 @@ public partial class Gem : Area2D, IPersistant
     return base.IsInGroup(grp);
   }
 
-  public void load(Dictionary<string, object> save_data)
-  {
+  public void load(Dictionary<string, object> save_data) {
     this.save_data = save_data;
     reset();
   }

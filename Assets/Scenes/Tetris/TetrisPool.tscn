@@ -15,7 +15,7 @@ size = Vector2(20, 8.444)
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(236.334, 35.334)
 
-[node name="TetrixPool" type="Node2D"]
+[node name="TetrisPool" type="Node2D"]
 scale = Vector2(1.5, 1.5)
 script = ExtResource("2")
 
@@ -79,6 +79,6 @@ collision_mask = 2
 position = Vector2(29.5001, -18.3333)
 shape = SubResource("1")
 
-[connection signal="game_over" from="." to="." method="_on_TetrixPool_game_over"]
-[connection signal="lines_removed" from="." to="." method="_on_TetrixPool_lines_removed"]
+[connection signal="game_over" from="." to="." method="_on_TetrisPool_game_over"]
+[connection signal="lines_removed" from="." to="." method="_on_TetrisPool_lines_removed"]
 [connection signal="body_entered" from="TriggerEnterArea" to="." method="_on_TriggerEnterArea_body_entered"]

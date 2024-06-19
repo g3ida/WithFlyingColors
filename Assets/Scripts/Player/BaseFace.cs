@@ -1,32 +1,30 @@
 using Godot;
 using System;
 
-public partial class BaseFace : Area2D
-{
+public partial class BaseFace : Area2D {
     protected CollisionShape2D collisionShapeNode;
     protected Vector2 extents;
 
     protected float positionX;
     protected float positionY;
 
-    public override void _Ready()
-    {
+    public override void _Ready() {
         collisionShapeNode = GetNode<CollisionShape2D>("CollisionShape2D");
         extents = (collisionShapeNode.Shape as RectangleShape2D).Size;
         positionX = Position.X;
         positionY = Position.Y;
     }
 
-    public bool CheckGroup(Area2D area, string[] groups)
-    {
-        // FIXME: remove reddundant code
+    public bool CheckGroup(Area2D area, string[] groups) {
+        // FIXME: remove redundant code
         if (area is Gem gem) {
             foreach (string group in groups) {
                 if (gem.IsInGroup(group)) {
                     return true;
                 }
             }
-        } else {
+        }
+        else {
             foreach (string group in groups) {
                 if (area.IsInGroup(group)) {
                     return true;
@@ -36,8 +34,7 @@ public partial class BaseFace : Area2D
         return false;
     }
 
-    public virtual void ScaleBy(float factor)
-    {
+    public virtual void ScaleBy(float factor) {
         float scaleFactor = factor;
         Scale = new Vector2(scaleFactor, scaleFactor);
         Position = new Vector2(

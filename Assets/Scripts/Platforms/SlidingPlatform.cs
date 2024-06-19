@@ -2,10 +2,8 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class SlidingPlatform : Node2D, IPersistant
-{
-  public enum State
-  {
+public partial class SlidingPlatform : Node2D, IPersistent {
+  public enum State {
     WAIT_1,
     SLIDING_FORTH,
     WAIT_2,
@@ -47,8 +45,7 @@ public partial class SlidingPlatform : Node2D, IPersistant
         { "delayed_stop", false }
     };
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     _platform = GetParent<AnimatableBody2D>();
     _gearNone = GetNode<Node2D>("Gear");
     _follow = _platform.GlobalPosition;
@@ -58,55 +55,45 @@ public partial class SlidingPlatform : Node2D, IPersistant
     ProcessTween();
   }
 
-  public override void _PhysicsProcess(double delta)
-  {
-    if (smooth_landing)
-    {
+  public override void _PhysicsProcess(double delta) {
+    if (smooth_landing) {
       _platform.GlobalPosition = _platform.GlobalPosition.Lerp(_follow, 0.075f);
     }
-    else
-    {
+    else {
       _platform.GlobalPosition = _follow;
     }
   }
 
-  private Vector2 ParseDestination()
-  {
-    foreach (Node child in GetChildren())
-    {
-      if (child is Marker2D pos2D)
-      {
+  private Vector2 ParseDestination() {
+    foreach (Node child in GetChildren()) {
+      if (child is Marker2D pos2D) {
         return pos2D.Position * _platform.GlobalScale + _follow;
       }
     }
     return _platform.GlobalPosition;
   }
 
-  private void Setup()
-  {
+  private void Setup() {
     _distance = (_destination - _follow).Length();
     _duration = _distance / (speed * Constants.WORLD_TO_SCREEN);
     _startPos = _follow;
     _endPos = _destination;
-    if (!show_gear)
-    {
+    if (!show_gear) {
       _gearNone.Visible = false;
     }
   }
 
-  private void CleanTween()
-  {
+  private void CleanTween() {
     _tweener?.Kill();
     _tweener = CreateTween();
   }
 
-  private void ProcessTween()
-  {
-    if (is_stopped) return;
+  private void ProcessTween() {
+    if (is_stopped)
+      return;
     CleanTween();
 
-    switch (_currentState)
-    {
+    switch (_currentState) {
       case State.WAIT_1:
         Slide(_startPos, _startPos, wait_time, 0);
         break;
@@ -122,8 +109,7 @@ public partial class SlidingPlatform : Node2D, IPersistant
     }
   }
 
-  private void Slide(Vector2 start, Vector2 end, float duration, float wait)
-  {
+  private void Slide(Vector2 start, Vector2 end, float duration, float wait) {
     _tweener.TweenProperty(this, "_follow", end, duration)
         .SetTrans(Tween.TransitionType.Linear)
         .SetEase(Tween.EaseType.InOut)
@@ -132,41 +118,33 @@ public partial class SlidingPlatform : Node2D, IPersistant
         .Connect("finished", new Callable(this, nameof(OnTweenCompleted)), (uint)ConnectFlags.OneShot);
   }
 
-  public void SetLooping(bool looping)
-  {
+  public void SetLooping(bool looping) {
     _isTweenLooping = looping;
-    if (_tweener != null)
-    {
+    if (_tweener != null) {
       _tweener.SetLoops(looping ? -1 : 1);
     }
   }
 
-  private void ConnectSignals()
-  {
+  private void ConnectSignals() {
     Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
     Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
   }
 
-  private void DisconnectSignals()
-  {
+  private void DisconnectSignals() {
     Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
     Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
   }
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     ConnectSignals();
   }
 
-  public override void _ExitTree()
-  {
+  public override void _ExitTree() {
     DisconnectSignals();
   }
 
-  private void OnCheckpointHit(Node checkpoint)
-  {
-    if (_delayedStop && !restore_delayed_stop)
-    {
+  private void OnCheckpointHit(Node checkpoint) {
+    if (_delayedStop && !restore_delayed_stop) {
       var dest = GetDestinationPosition();
       save_data["state"] = (int)GetNextState(_currentState);
       save_data["is_stopped"] = true;
@@ -175,8 +153,7 @@ public partial class SlidingPlatform : Node2D, IPersistant
       save_data["position_y"] = dest.Y;
       save_data["looping"] = _isTweenLooping;
     }
-    else
-    {
+    else {
       save_data["state"] = (int)_currentState;
       var dest = GetSourcePosition();
       save_data["position_x"] = dest.X;
@@ -187,13 +164,11 @@ public partial class SlidingPlatform : Node2D, IPersistant
     }
   }
 
-  public Dictionary<string, object> save()
-  {
+  public Dictionary<string, object> save() {
     return save_data;
   }
 
-  public void reset()
-  {
+  public void reset() {
     _tweener?.Kill();
     _currentState = (State)Helpers.ParseSaveDataInt(save_data, "state");
     _platform.GlobalPosition = new Vector2(Convert.ToSingle(save_data["position_x"]), Convert.ToSingle(save_data["position_y"]));
@@ -204,57 +179,52 @@ public partial class SlidingPlatform : Node2D, IPersistant
     ProcessTween();
   }
 
-  public void StopSlider(bool stopDirectly)
-  {
-    if (is_stopped) return;
-    if (stopDirectly)
-    {
+  public void StopSlider(bool stopDirectly) {
+    if (is_stopped)
+      return;
+    if (stopDirectly) {
       is_stopped = true;
       _tweener?.Kill();
     }
-    else
-    {
+    else {
       _delayedStop = true;
     }
   }
 
-  public void ResumeSlider()
-  {
+  public void ResumeSlider() {
     is_stopped = false;
     ProcessTween();
   }
 
-  private State GetNextState(State state)
-  {
-    switch (state)
-    {
-      case State.WAIT_1: return State.SLIDING_FORTH;
-      case State.SLIDING_FORTH: return State.WAIT_2;
-      case State.WAIT_2: return State.SLIDING_BACK;
-      case State.SLIDING_BACK: return State.WAIT_1;
-      default: return state;
+  private State GetNextState(State state) {
+    switch (state) {
+      case State.WAIT_1:
+        return State.SLIDING_FORTH;
+      case State.SLIDING_FORTH:
+        return State.WAIT_2;
+      case State.WAIT_2:
+        return State.SLIDING_BACK;
+      case State.SLIDING_BACK:
+        return State.WAIT_1;
+      default:
+        return state;
     };
   }
 
-  private void OnTweenCompleted()
-  {
+  private void OnTweenCompleted() {
     _currentState = GetNextState(_currentState);
-    if (_delayedStop)
-    {
+    if (_delayedStop) {
       _delayedStop = false;
       StopSlider(true);
     }
-    if (one_shot && _currentState == one_shot_state)
-    {
+    if (one_shot && _currentState == one_shot_state) {
       _delayedStop = true;
     }
     ProcessTween();
   }
 
-  private Vector2 GetDestinationPosition()
-  {
-    switch (_currentState)
-    {
+  private Vector2 GetDestinationPosition() {
+    switch (_currentState) {
       case State.WAIT_1:
       case State.SLIDING_BACK:
         return _startPos;
@@ -266,10 +236,8 @@ public partial class SlidingPlatform : Node2D, IPersistant
     };
   }
 
-  private Vector2 GetSourcePosition()
-  {
-    switch (_currentState)
-    {
+  private Vector2 GetSourcePosition() {
+    switch (_currentState) {
       case State.WAIT_2:
       case State.SLIDING_BACK:
         return _endPos;
@@ -281,8 +249,7 @@ public partial class SlidingPlatform : Node2D, IPersistant
     };
   }
 
-  public void load(Dictionary<string, object> save_data)
-  {
+  public void load(Dictionary<string, object> save_data) {
     this.save_data = save_data;
     reset();
   }
