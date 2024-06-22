@@ -1,13 +1,10 @@
-using System;
+namespace Wfc.Skin;
 
-namespace Wfc.Skin {
-public enum SkinColorIntensity
-{
-    Background,
-    VeryLight,
-    Light,
-    Basic,
-    Dark,
-    VeryDark
-}
+public enum SkinColorIntensity {
+  Background,
+  VeryLight,
+  Light,
+  Basic,
+  Dark,
+  VeryDark
 }

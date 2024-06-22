@@ -1,12 +1,7 @@
-using System;
-
-namespace Wfc.Skin
-{
-  public enum SkinColor
-  {
-    TopFace,
-    LeftFace,
-    RightFace,
-    BottomFace,
-  }
+namespace Wfc.Skin;
+public enum SkinColor {
+  TopFace,
+  LeftFace,
+  RightFace,
+  BottomFace,
 }

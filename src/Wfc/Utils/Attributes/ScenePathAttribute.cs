@@ -1,15 +1,7 @@
+namespace Wfc.Utils.Attributes;
 using System;
 
-namespace Wfc.Utils.Attributes
-{
-  [AttributeUsage(AttributeTargets.Class)]
-  public class ScenePathAttribute : Attribute
-  {
-    public string Path { get; }
-
-    public ScenePathAttribute(string path)
-    {
-      Path = path;
-    }
-  }
+[AttributeUsage(AttributeTargets.Class)]
+public class ScenePathAttribute(string path) : Attribute {
+  public string Path { get; } = path;
 }

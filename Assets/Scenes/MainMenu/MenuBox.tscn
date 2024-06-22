@@ -86,10 +86,10 @@ theme_override_styles/focus = SubResource("7")
 icon = ExtResource("3")
 flat = true
 
-[connection signal="pressed" from="OutsideButton" to="." method="_on_OutsideButton_pressed"]
-[connection signal="pressed" from="MenuBox/Spr/PlayBoxButton" to="." method="_on_PlayButton_Pressed"]
-[connection signal="pressed" from="MenuBox/Spr/QuitBoxButton" to="." method="_on_QuitButton_pressed"]
-[connection signal="pressed" from="MenuBox/Spr/SettingsBoxButton" to="." method="_on_SettingsButton_pressed"]
-[connection signal="pressed" from="MenuBox/Spr/StatsBoxButton" to="." method="_on_StatsButton_pressed"]
-[connection signal="pressed" from="RightButton" to="." method="_on_RightButton_pressed"]
-[connection signal="pressed" from="LeftButton" to="." method="_on_LeftButton_pressed"]
+[connection signal="pressed" from="OutsideButton" to="." method="On_OutsideButton_pressed"]
+[connection signal="pressed" from="MenuBox/Spr/PlayBoxButton" to="." method="OnPlayButtonPressed"]
+[connection signal="pressed" from="MenuBox/Spr/QuitBoxButton" to="." method="OnQuitButtonPressed"]
+[connection signal="pressed" from="MenuBox/Spr/SettingsBoxButton" to="." method="OnSettingsButtonPressed"]
+[connection signal="pressed" from="MenuBox/Spr/StatsBoxButton" to="." method="OnStatsButtonPressed"]
+[connection signal="pressed" from="RightButton" to="." method="OnRightButtonPressed"]
+[connection signal="pressed" from="LeftButton" to="." method="OnLeftButtonPressed"]

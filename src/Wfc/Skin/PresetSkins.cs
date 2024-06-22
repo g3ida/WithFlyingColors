@@ -1,7 +1,7 @@
 namespace Wfc.Skin;
 
 internal static partial class PresetSkins {
-  public static readonly Skin DEFAULT_SKIN = new("default",
+  public static readonly GameSkin DEFAULT_SKIN = new("default",
     [
       ["00c8d9", "d80071", "8808cf", "b5e300"],
       ["00d3e5", "e50078", "9208dd", "beed00"],
@@ -11,7 +11,7 @@ internal static partial class PresetSkins {
       ["8cf4ff", "ff87c6", "ba7add", "e8ff8c"]
     ]);
 
-  public static readonly Skin GOOGL_SKIN = new("googl",
+  public static readonly GameSkin GOOGL_SKIN = new("googl",
    [
       ["3597d9", "2e9148", "e3a52b", "c93c29"],
       ["38a0e5", "319c4d", "f0ae2e", "d43f2b"],

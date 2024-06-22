@@ -1,11 +1,8 @@
+namespace Wfc.Entities.Ui.Menubox;
 using System;
 
-namespace Wfc.Entities.Ui.Menubox
-{
-  public class SubMenuButton
-  {
-    public string Text;
-    public Action OnClick;
-    public bool IsDisabled;
-  }
+public class SubMenuButton {
+  public required string Text;
+  public required Action OnClick;
+  public bool IsDisabled;
 }
