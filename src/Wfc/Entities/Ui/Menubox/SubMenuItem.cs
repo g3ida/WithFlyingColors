@@ -4,8 +4,8 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 
-[ScenePath("res://Assets/Scenes/MainMenu/SubMenuItem.tscn")]
-public partial class SubMenuItemScene : Control {
+[ScenePath]
+public partial class SubMenuItem : Control {
   [NodePath("Button")]
   private Button _buttonNode = null!;
   public SubMenuButton ButtonInfo { get; private set; } = null!;

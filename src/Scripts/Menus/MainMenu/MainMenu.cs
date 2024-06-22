@@ -4,12 +4,12 @@ using Wfc.Entities.Ui.Menubox;
 
 public partial class MainMenu : GameMenu {
   private Label currentSlotLabelNode;
-  private MenuboxScene menuBoxNode;
+  private Menubox menuBoxNode;
   private DialogContainer resetSlotDialogNode;
 
   public override void _Ready() {
     base._Ready();
-    menuBoxNode = GetNode<MenuboxScene>("MenuBox");
+    menuBoxNode = GetNode<Menubox>("MenuBox");
     resetSlotDialogNode = GetNode<DialogContainer>("ResetDialogContainer");
     currentSlotLabelNode = GetNode<Label>("CurrentSlotLabel");
 

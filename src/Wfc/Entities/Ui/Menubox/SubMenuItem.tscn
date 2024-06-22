@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://d08snrvwo8p1b"]
 
-[ext_resource type="Script" path="res://src/Wfc/Entities/Ui/Menubox/SubMenuItemScene.cs" id="1_cpb4a"]
+[ext_resource type="Script" path="res://src/Wfc/Entities/Ui/Menubox/SubMenuItem.cs" id="1_cpb4a"]
 [ext_resource type="FontFile" uid="uid://e6iodry72ny8" path="res://Assets/Fonts/HeavyEquipment.ttf" id="3"]
 
 [sub_resource type="FontFile" id="3"]

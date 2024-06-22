@@ -1,7 +1,7 @@
 namespace Wfc.Entities.Ui;
 using Godot;
 
-public partial class UITransitionScene : Control {
+public partial class UITransition : Control {
   [Signal]
   public delegate void EnteredEventHandler();
 

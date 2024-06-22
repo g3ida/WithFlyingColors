@@ -4,8 +4,8 @@ using Wfc.Entities.World.Player;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
-[ScenePath("res://Assets/Scenes/MainMenu/MenuBox.tscn")]
-public partial class MenuboxScene : Control {
+[ScenePath]
+public partial class Menubox : Control {
   private enum States { MENU, SUB_MENU_ENTER, SUB_MENU, SUB_MENU_EXIT, EXIT }
 
   private const float SUB_MENU_POPUP_DURATION = 0.2f;

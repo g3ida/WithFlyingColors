@@ -7,12 +7,10 @@ using GodotTestDriver;
 using Shouldly;
 using Wfc.Entities.World.Player;
 
-public class PlayerRotationActionTest : TestClass {
+public class PlayerRotationActionTest(Node testScene) : TestClass(testScene) {
   private PlayerRotation _playerRotation = default!;
   private CharacterBody2D _playerRotationParent = default!;
   private Fixture _fixture = default!;
-
-  public PlayerRotationActionTest(Node testScene) : base(testScene) { }
 
   [SetupAll]
   public async Task Setup() {
