@@ -1,86 +1,50 @@
+namespace Wfc.Skin;
 using System.Collections.Generic;
 
-namespace Wfc.Skin
-{
-  public partial class SkinManager
-  {
-    private static SkinManager _s_instance;
-    public Skin CurrentSkin
-    {
-      get
-      {
-        return store.GetSkin("current");
-      }
-    }
-    public Skin DefaultSkin
-    {
-      get
-      {
-        return store.GetSkin("default");
-      }
-    }
 
-    public static SkinManager Instance
-    {
-      get
-      {
-        if (_s_instance == null)
-        {
-          _s_instance = new SkinManager();
-        }
-        return _s_instance;
-      }
+public partial class SkinManager {
+  private static SkinManager? _instance;
+  public GameSkin CurrentSkin => _store.GetSkin("current");
+  public GameSkin DefaultSkin => _store.GetSkin("default");
+
+  public static SkinManager Instance {
+    get {
+      _instance ??= new SkinManager();
+      return _instance;
     }
-
-    private SkinsStore store;
-
-    private SkinManager()
-    {
-      store = new SkinsStore();
-      _PopulateWithPresetSkins();
-    }
-
-    public Skin GetSkin(string name)
-    {
-      return store.GetSkin(name);
-    }
-
-    public bool AddSkin(string name, Skin skin)
-    {
-      return store.AddSkin(name, skin);
-    }
-
-    public bool RemoveSkin(string name)
-    {
-      if (name == "default" || name == "current")
-      {
-        throw new System.ArgumentException("Cannot remove default or current skin");
-      }
-      return store.RemoveSkin(name);
-    }
-
-    public List<Skin> GetAllSkins()
-    {
-      return store.GetAllSkins();
-    }
-
-    public void ClearToDefaults()
-    {
-      store.ClearSkins();
-      _PopulateWithPresetSkins();
-    }
-
-    public bool ContainsSkin(string name)
-    {
-      return store.ContainsSkin(name);
-    }
-
-    private void _PopulateWithPresetSkins()
-    {
-      store.AddSkin("default", PresetSkins.DEFAULT_SKIN);
-      store.AddSkin("googl", PresetSkins.GOOGL_SKIN);
-      store.AddSkin("current", PresetSkins.DEFAULT_SKIN);
-    }
-
   }
+
+  private readonly SkinsStore _store;
+
+  private SkinManager() {
+    _store = new SkinsStore();
+    PopulateWithPresetSkins();
+  }
+
+  public GameSkin GetSkin(string name) => _store.GetSkin(name);
+
+  public bool AddSkin(string name, GameSkin skin) => _store.AddSkin(name, skin);
+
+  public bool RemoveSkin(string name) {
+    if (name is "default" or "current") {
+      throw new System.ArgumentException("Cannot remove default or current skin");
+    }
+    return _store.RemoveSkin(name);
+  }
+
+  public List<GameSkin> GetAllSkins() => _store.GetAllSkins();
+
+  public void ClearToDefaults() {
+    _store.ClearSkins();
+    PopulateWithPresetSkins();
+  }
+
+  public bool ContainsSkin(string name) => _store.ContainsSkin(name);
+
+  private void PopulateWithPresetSkins() {
+    _store.AddSkin("default", PresetSkins.DEFAULT_SKIN);
+    _store.AddSkin("googl", PresetSkins.GOOGL_SKIN);
+    _store.AddSkin("current", PresetSkins.DEFAULT_SKIN);
+  }
+
 }

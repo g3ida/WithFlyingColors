@@ -2,14 +2,12 @@ using Godot;
 using System;
 using Wfc.Entities.Ui.Menubox;
 
-public partial class MainMenu : GameMenu
-{
+public partial class MainMenu : GameMenu {
   private Label currentSlotLabelNode;
   private MenuboxScene menuBoxNode;
   private DialogContainer resetSlotDialogNode;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     base._Ready();
     menuBoxNode = GetNode<MenuboxScene>("MenuBox");
     resetSlotDialogNode = GetNode<DialogContainer>("ResetDialogContainer");
@@ -20,18 +18,14 @@ public partial class MainMenu : GameMenu
     currentSlotLabelNode.Text = $"Current slot: {SaveGame.Instance().currentSlotIndex + 1}";
   }
 
-  public void ShowResetDataDialog()
-  {
+  public void ShowResetDataDialog() {
     resetSlotDialogNode.ShowDialog();
   }
 
-  public override bool on_menu_button_pressed(MenuButtons menuButton)
-  {
-    switch (menuButton)
-    {
+  public override bool on_menu_button_pressed(MenuButtons menuButton) {
+    switch (menuButton) {
       case MenuButtons.QUIT:
-        if (screenState == MenuScreenState.ENTERED)
-        {
+        if (screenState == MenuScreenState.ENTERED) {
           GetTree().Quit();
         }
         return true;
@@ -44,34 +38,30 @@ public partial class MainMenu : GameMenu
         NavigateToScreen(MenuManager.Menus.SETTINGS_MENU);
         return true;
       case MenuButtons.BACK:
-        menuBoxNode._HideSubMenuIfNeeded();
+        menuBoxNode.HideSubMenuIfNeeded();
         return true;
       default:
         return ProcessPlaySubMenus(menuButton);
     }
   }
 
-  private bool ProcessPlaySubMenus(MenuButtons menuButton)
-  {
-    switch (menuButton)
-    {
+  private bool ProcessPlaySubMenus(MenuButtons menuButton) {
+    switch (menuButton) {
       case MenuButtons.NEW_GAME:
-        if (SaveGame.Instance().DoesSlotHaveProgress(SaveGame.Instance().currentSlotIndex))
-        {
+        if (SaveGame.Instance().DoesSlotHaveProgress(SaveGame.Instance().currentSlotIndex)) {
           resetSlotDialogNode.ShowDialog();
         }
-        else
-        {
+        else {
           NavigateToScreen(MenuManager.Menus.GAME);
-          menuBoxNode._HideSubMenuIfNeeded();
+          menuBoxNode.HideSubMenuIfNeeded();
         }
         return true;
       case MenuButtons.CONTINUE_GAME:
-        menuBoxNode._HideSubMenuIfNeeded();
+        menuBoxNode.HideSubMenuIfNeeded();
         NavigateToScreen(MenuManager.Menus.GAME);
         return true;
       case MenuButtons.SELECT_SLOT:
-        menuBoxNode._HideSubMenuIfNeeded();
+        menuBoxNode.HideSubMenuIfNeeded();
         NavigateToScreen(MenuManager.Menus.SELECT_SLOT);
         return true;
       default:
@@ -79,10 +69,9 @@ public partial class MainMenu : GameMenu
     }
   }
 
-  private void _on_ResetSlotDialog_confirmed()
-  {
+  private void _on_ResetSlotDialog_confirmed() {
     SaveGame.Instance().RemoveSaveSlot(SaveGame.Instance().currentSlotIndex);
-    menuBoxNode._HideSubMenuIfNeeded();
+    menuBoxNode.HideSubMenuIfNeeded();
     NavigateToScreen(MenuManager.Menus.GAME);
   }
 }

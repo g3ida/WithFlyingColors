@@ -77,7 +77,7 @@ public partial class PlayerRotation : Node2D {
       _thetaTarget = Mathf.Round(unroundedAngle) * angleRadians;
     }
     else {
-      var roundedAngle = MathUtils.isPositive(angleRadians) ? Mathf.Ceil(unroundedAngle) : Mathf.Floor(unroundedAngle);
+      var roundedAngle = MathUtils.IsPositive(angleRadians) ? Mathf.Ceil(unroundedAngle) : Mathf.Floor(unroundedAngle);
       _thetaTarget = roundedAngle * angleRadians;
     }
 
