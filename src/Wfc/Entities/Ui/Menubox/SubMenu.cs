@@ -8,9 +8,9 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [Tool]
-[ScenePath("res://Assets/Scenes/MainMenu/SubMenu.tscn")]
-public partial class SubMenuScene : Control {
-  private readonly List<SubMenuItemScene> _buttonsNodes = [];
+[ScenePath]
+public partial class SubMenu : Control {
+  private readonly List<SubMenuItem> _buttonsNodes = [];
 
   [NodePath("VBoxContainer")]
   private VBoxContainer _buttonsContainerNode = null!;
@@ -37,12 +37,12 @@ public partial class SubMenuScene : Control {
     var edgeColor = skin.GetColor(colorGroup.SkinColor, SkinColorIntensity.VeryDark);
     _topEdgeNode.Modulate = edgeColor;
 
-    var scene = SceneHelpers.LoadScene<SubMenuItemScene>();
+    var scene = SceneHelpers.LoadScene<SubMenuItem>();
     float buttonsHeight = 0;
     float buttonsCustomMinimalSize = 0;
 
     foreach (var button in buttons) {
-      var item = scene.Instantiate<SubMenuItemScene>();
+      var item = scene.Instantiate<SubMenuItem>();
       item.Ready += () => item.PrepareWith(button, buttonColor);
       _buttonsNodes.Add(item);
       _buttonsContainerNode.AddChild(item);

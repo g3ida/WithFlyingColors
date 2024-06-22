@@ -8,7 +8,7 @@ using Wfc.Utils;
 
 
 public class SubMenuSceneBuilder {
-  public static SubMenuScene Create(Node instantiator, IEnumerable<ButtonDef> buttons, ColorGroup colorGroup) {
+  public static SubMenu Create(Node instantiator, IEnumerable<ButtonDef> buttons, ColorGroup colorGroup) {
     var subMenuButtons = buttons
       .Where(button => button.DisplayCondition.Verify())
       .Select(button => new SubMenuButton {
@@ -16,7 +16,7 @@ public class SubMenuSceneBuilder {
         OnClick = () => button.MenuAction.Emit(),
         IsDisabled = button.DisableCondition.Verify(),
       });
-    var instance = SceneHelpers.InstantiateNode<SubMenuScene>();
+    var instance = SceneHelpers.InstantiateNode<SubMenu>();
     instance.Ready += () => instance.PopulateWith(subMenuButtons, colorGroup);
     instantiator.AddChild(instance);
     instance.Owner = instantiator;
