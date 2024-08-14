@@ -36,6 +36,8 @@ public partial class Menubox : Control {
 
   private Tween _subMenuTweener = null!;
 
+  private Menubox() { }
+
   // FIXME: make high level. The menu should update the box.
   public void SetPreviousMenu() {
     _currentState = States.MENU;
@@ -127,7 +129,6 @@ public partial class Menubox : Control {
     if (!CanRespondToInput()) {
       return;
     }
-
     _currentState = States.EXIT;
     Event.Instance.EmitMenuButtonPressed(menuButton);
   }
@@ -152,11 +153,6 @@ public partial class Menubox : Control {
 
   private void DisplayOrHidePlaySubMenu(bool shouldShow = true) {
     if (_playSubMenuNode == null) {
-      // PackedScene PlaySubMenuScene = GD.Load<PackedScene>("res://Assets/Scenes/MainMenu/PlaySubMenu.tscn");
-      // _playSubMenuNode = PlaySubMenuScene.Instantiate<Control>();
-      // _menuBoxNode.AddChild(_playSubMenuNode);
-      // _playSubMenuNode.Owner = _menuBoxNode;
-
       _playSubMenuNode = new PlaySubMenu();
       _menuBoxNode.AddChild(_playSubMenuNode);
       _playSubMenuNode.Owner = _menuBoxNode;
@@ -203,7 +199,7 @@ public partial class Menubox : Control {
     }
   }
 
-  private void On_OutsideButton_pressed() => HideSubMenuIfNeeded();
+  private void OnOutsideButtonPressed() => HideSubMenuIfNeeded();
 
   private bool CanRespondToInput() {
     var isInTransition = GetParent<GameMenu>().IsInTransitionState();

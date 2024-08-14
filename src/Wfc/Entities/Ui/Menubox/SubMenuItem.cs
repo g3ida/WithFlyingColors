@@ -10,6 +10,8 @@ public partial class SubMenuItem : Control {
   private Button _buttonNode = null!;
   public SubMenuButton ButtonInfo { get; private set; } = null!;
 
+  private SubMenuItem() { }
+
   public override void _Ready() {
     this.WireNodes();
     _buttonNode.Pressed += () => ButtonInfo.OnClick();
