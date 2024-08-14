@@ -86,7 +86,7 @@ theme_override_styles/focus = SubResource("7")
 icon = ExtResource("3")
 flat = true
 
-[connection signal="pressed" from="OutsideButton" to="." method="On_OutsideButton_pressed"]
+[connection signal="pressed" from="OutsideButton" to="." method="OnOutsideButtonPressed"]
 [connection signal="pressed" from="MenuBox/Spr/PlayBoxButton" to="." method="OnPlayButtonPressed"]
 [connection signal="pressed" from="MenuBox/Spr/QuitBoxButton" to="." method="OnQuitButtonPressed"]
 [connection signal="pressed" from="MenuBox/Spr/SettingsBoxButton" to="." method="OnSettingsButtonPressed"]

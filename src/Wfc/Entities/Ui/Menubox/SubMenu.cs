@@ -18,6 +18,8 @@ public partial class SubMenu : Control {
   [NodePath("VBoxContainer/Top")]
   private Control _topEdgeNode = null!;
 
+  private SubMenu() { }
+
   public override void _Ready() {
     this.WireNodes();
     base._Ready();
