@@ -145,4 +145,4 @@ text = "Current slot:"
 
 [connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]
 [connection signal="slot_pressed" from="SlotsContainer" to="." method="_on_SlotsContainer_slot_pressed"]
-[connection signal="confirmed" from="ResetDialogContainer/ResetSlotDialog" to="." method="_on_ResetSlotDialog_confirmed"]
+[connection signal="confirmed" from="ResetDialogContainer/ResetSlotDialog" to="." method="OnResetSlotConfirmed"]

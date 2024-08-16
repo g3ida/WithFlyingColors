@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="1"]
 [ext_resource type="PackedScene" uid="uid://e4osajb7jluk" path="res://src/Wfc/Entities/Ui/Menubox/MenuBox.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" id="3"]
-[ext_resource type="Script" path="res://src/Scripts/Menus/MainMenu/MainMenu.cs" id="4"]
+[ext_resource type="Script" path="res://src/Wfc/Entities/Ui/Menu/MainMenu.cs" id="4"]
 [ext_resource type="PackedScene" path="res://Assets/Scenes/UI/UITransition.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://Assets/Scenes/UI/DialogContainer.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://Assets/Scenes/UI/ResetSlotDialog.tscn" id="7"]
@@ -113,4 +113,4 @@ anchors_preset = 0
 delay = 0.5
 hidden_relative_position = Vector2(0, 950)
 
-[connection signal="confirmed" from="ResetDialogContainer/ResetSlotDialog" to="." method="_on_ResetSlotDialog_confirmed"]
+[connection signal="confirmed" from="ResetDialogContainer/ResetSlotDialog" to="." method="OnResetSlotConfirmed"]
