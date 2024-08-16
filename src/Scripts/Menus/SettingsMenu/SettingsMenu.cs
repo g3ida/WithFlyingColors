@@ -23,8 +23,8 @@ public partial class SettingsMenu : GameMenu {
     }
   }
 
-  public override bool on_menu_button_pressed(MenuButtons menuButton) {
-    base.on_menu_button_pressed(menuButton);
+  public override bool OnMenuButtonPressed(MenuButtons menuButton) {
+    base.OnMenuButtonPressed(menuButton);
     switch (menuButton) {
       case MenuButtons.SHOW_DIALOG:
         DialogContainerNode.ShowDialog();

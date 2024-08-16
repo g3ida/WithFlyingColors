@@ -89,12 +89,12 @@ public partial class GameMenu : Control {
     if (screenState != MenuScreenState.ENTERED)
       return;
 
-    if (!on_menu_button_pressed(menu_button) && menu_button == MenuButtons.BACK) {
+    if (!OnMenuButtonPressed(menu_button) && menu_button == MenuButtons.BACK) {
       NavigateToScreen(MenuManager.Instance().PreviousMenu);
     }
   }
 
-  public virtual bool on_menu_button_pressed(MenuButtons menu_button) {
+  public virtual bool OnMenuButtonPressed(MenuButtons menu_button) {
     return false;
   }
 
