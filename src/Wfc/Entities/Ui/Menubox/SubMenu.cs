@@ -6,6 +6,7 @@ using Wfc.Core.Types;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
+using Wfc.Core.Exceptions;
 
 [Tool]
 [ScenePath]

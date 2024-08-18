@@ -2,7 +2,7 @@ namespace Wfc.Entities.Ui.Menubox;
 using Godot;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-
+using Wfc.Core.Exceptions;
 
 [ScenePath]
 public partial class SubMenuItem : Control {

@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using Wfc.Screens;
 
 public partial class LevelSelectMenu : GameMenu
 {
@@ -42,7 +43,7 @@ public partial class LevelSelectMenu : GameMenu
     return sceneNode;
   }
 
-  private void _on_BackButton_pressed()
+  private void OnBackButtonPressed()
   {
     if (!IsInTransitionState())
     {

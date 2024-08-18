@@ -20,7 +20,6 @@ config/icon="res://icon.png"
 
 GlobalCS="*res://src/Scripts/Autoload/Global.cs"
 EventCS="*res://src/Scripts/Autoload/Event.cs"
-MenuManagerCS="*res://src/Scripts/Autoload/MenuManager.cs"
 AudioManagerCS="*res://src/Scripts/Autoload/AudioManager.cs"
 SaveGameCS="*res://src/Scripts/Autoload/SaveGame.cs"
 GameSettings="*res://src/Scripts/Autoload/GameSettings.cs"
@@ -100,6 +99,10 @@ down={
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://Assets/Locale/translations.de.translation", "res://Assets/Locale/translations.en.translation", "res://Assets/Locale/translations.fr.translation", "res://Assets/Locale/translations.es.translation", "res://Assets/Locale/translations.it.translation", "res://Assets/Locale/translations.nl.translation", "res://Assets/Locale/translations.pt.translation")
 
 [layer_names]
 

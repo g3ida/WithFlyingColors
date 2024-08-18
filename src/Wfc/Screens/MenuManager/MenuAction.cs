@@ -1,4 +1,4 @@
-namespace Wfc.Entities.Ui.Menu;
+namespace Wfc.Screens.MenuManager;
 public enum MenuAction {
   Play = 0,
   GoToSettings = 1,

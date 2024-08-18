@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=2]
 
 [ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" id="1"]
-[ext_resource type="Script" path="res://src/Scripts/Menus/StatsMenu/StatsMenu.cs" id="2"]
+[ext_resource type="Script" path="res://src/Wfc/Screens/StatsMenu.cs" id="2"]
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="3"]
 [ext_resource type="Script" path="res://src/Scripts/Menus/MainMenu/BackButton.cs" id="4"]
 [ext_resource type="StyleBox" path="res://Assets/Styles/MenuButtonPressedStyle.tres" id="5"]
@@ -58,4 +58,4 @@ script = ExtResource( 4 )
 delay = 0.6
 hidden_relative_position = Vector2( -900, 0 )
 
-[connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="OnBackButtonPressed"]

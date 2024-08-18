@@ -1,43 +1,46 @@
-using Godot;
-using Wfc.Entities.Ui.Menubox;
+namespace Wfc.Screens;
 
-public partial class MainMenu : GameMenu
-{
+using Godot;
+using Wfc.Screens.MenuManager;
+using Wfc.Entities.Ui.Menubox;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
+
+[ScenePath]
+public partial class MainMenu : GameMenu {
+
+  [NodePath("CurrentSlotLabel")]
   private Label _currentSlotLabelNode = null!;
+
+  [NodePath("MenuBox")]
   private Menubox _menuBoxNode = null!;
+
+  [NodePath("ResetDialogContainer")]
   private DialogContainer _resetSlotDialogNode = null!;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     base._Ready();
-    _menuBoxNode = GetNode<Menubox>("MenuBox");
-    _resetSlotDialogNode = GetNode<DialogContainer>("ResetDialogContainer");
-    _currentSlotLabelNode = GetNode<Label>("CurrentSlotLabel");
-
+    this.WireNodes();
     SaveGame.Instance().Init();
-
     _currentSlotLabelNode.Text = $"Current slot: {SaveGame.Instance().currentSlotIndex + 1}";
   }
 
   public void ShowResetDataDialog() => _resetSlotDialogNode.ShowDialog();
 
-  public override bool OnMenuButtonPressed(MenuButtons menu_button)
-  {
-    switch (menu_button)
-    {
+  public override bool OnMenuButtonPressed(MenuButtons menu_button) {
+    switch (menu_button) {
       case MenuButtons.QUIT:
-        if (screenState == MenuScreenState.ENTERED)
-        {
+        if (_screenState == MenuScreenState.ENTERED) {
           GetTree().Quit();
         }
         return true;
       case MenuButtons.PLAY:
         return true;
       case MenuButtons.STATS:
-        NavigateToScreen(MenuManager.Menus.STATS_MENU);
+        NavigateToScreen(GameMenus.STATS_MENU);
         return true;
       case MenuButtons.SETTINGS:
-        NavigateToScreen(MenuManager.Menus.SETTINGS_MENU);
+        NavigateToScreen(GameMenus.SETTINGS_MENU);
         return true;
       case MenuButtons.BACK:
         _menuBoxNode.HideSubMenuIfNeeded();
@@ -47,38 +50,33 @@ public partial class MainMenu : GameMenu
     }
   }
 
-  private bool ProcessPlaySubMenus(MenuButtons menuButton)
-  {
-    switch (menuButton)
-    {
+  private bool ProcessPlaySubMenus(MenuButtons menuButton) {
+    switch (menuButton) {
       case MenuButtons.NEW_GAME:
-        if (SaveGame.Instance().DoesSlotHaveProgress(SaveGame.Instance().currentSlotIndex))
-        {
+        if (SaveGame.Instance().DoesSlotHaveProgress(SaveGame.Instance().currentSlotIndex)) {
           _resetSlotDialogNode.ShowDialog();
         }
-        else
-        {
-          NavigateToScreen(MenuManager.Menus.GAME);
+        else {
+          NavigateToScreen(GameMenus.GAME);
           _menuBoxNode.HideSubMenuIfNeeded();
         }
         return true;
       case MenuButtons.CONTINUE_GAME:
         _menuBoxNode.HideSubMenuIfNeeded();
-        NavigateToScreen(MenuManager.Menus.GAME);
+        NavigateToScreen(GameMenus.GAME);
         return true;
       case MenuButtons.SELECT_SLOT:
         _menuBoxNode.HideSubMenuIfNeeded();
-        NavigateToScreen(MenuManager.Menus.SELECT_SLOT);
+        NavigateToScreen(GameMenus.SELECT_SLOT);
         return true;
       default:
         return false;
     }
   }
 
-  private void OnResetSlotConfirmed()
-  {
+  private void OnResetSlotConfirmed() {
     SaveGame.Instance().RemoveSaveSlot(SaveGame.Instance().currentSlotIndex);
     _menuBoxNode.HideSubMenuIfNeeded();
-    NavigateToScreen(MenuManager.Menus.GAME);
+    NavigateToScreen(GameMenus.GAME);
   }
 }

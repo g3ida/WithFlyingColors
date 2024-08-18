@@ -1,31 +1,44 @@
 namespace Wfc.Entities.Ui.Menubox;
+
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
 using System.Collections.Generic;
+using Wfc.Core.Localization;
 using Wfc.Core.Types;
+using Wfc.Screens.MenuManager;
 
-public partial class PlaySubMenu : Control {
-  private readonly List<ButtonDef> _subMenuButtonsDef = [
-      new() {
-          Text = "Continue",
-          MenuAction = Menu.MenuAction.ContinueGame,
-          DisplayCondition = ButtonDef.ButtonCondition.IsDirtySlot
-      },
-      new()
-      {
-          Text = "New Game",
-          MenuAction = Menu.MenuAction.NewGame,
-          DisplayCondition = ButtonDef.ButtonCondition.IsVirginSlot
-      },
-      new()
-      {
-          Text = $"Current Slot: {SaveGame.Instance().currentSlotIndex + 1}",
-          MenuAction = Menu.MenuAction.GoToSlotSelect,
-          DisplayCondition = ButtonDef.ButtonCondition.None
-      },
-  ];
+[Meta(typeof(IAutoNode))]
+public partial class PlaySubMenu : Control
+{
 
-  public override void _Ready() {
-    var subMenuNode = SubMenuSceneBuilder.Create(this, _subMenuButtonsDef, ColorGroup.Blue);
+  public override void _Notification(int what) => this.Notify(what);
+
+  [Dependency]
+  public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
+
+  public void OnResolved()
+  {
+    List<ButtonDef> subMenuButtonsDef = [
+            new() {
+            Text = LocalizationService.GetLocalizedString(TranslationKey.Continue),
+            MenuAction = MenuAction.ContinueGame,
+            DisplayCondition = ButtonDef.ButtonCondition.IsDirtySlot
+        },
+        new()
+        {
+            Text = LocalizationService.GetLocalizedString(TranslationKey.NewGame),
+            MenuAction = MenuAction.NewGame,
+            DisplayCondition = ButtonDef.ButtonCondition.IsVirginSlot
+        },
+        new()
+        {
+            Text = LocalizationService.GetLocalizedString(TranslationKey.SelectedSlot) + $": {SaveGame.Instance().currentSlotIndex + 1}",
+            MenuAction = MenuAction.GoToSlotSelect,
+            DisplayCondition = ButtonDef.ButtonCondition.None
+        },
+    ];
+    var subMenuNode = SubMenuSceneBuilder.Create(this, subMenuButtonsDef, ColorGroup.Blue);
     CustomMinimumSize = subMenuNode.CustomMinimumSize;
     Size = subMenuNode.Size;
   }

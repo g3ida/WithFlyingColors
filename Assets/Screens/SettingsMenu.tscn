@@ -135,7 +135,7 @@ theme = ExtResource("12")
 dialog_text = "Please Make sure all input keys are bound correctly."
 dialog_autowrap = true
 
-[connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="OnBackButtonPressed"]
 [connection signal="tab_changed" from="TabContainer" to="TabContainer/Display" method="_on_TabContainer_tab_changed"]
 [connection signal="tab_changed" from="TabContainer" to="TabContainer/Controller" method="_on_TabContainer_tab_changed"]
 [connection signal="tab_changed" from="TabContainer" to="TabContainer/Audio" method="_on_TabContainer_tab_changed"]

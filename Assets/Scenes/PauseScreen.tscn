@@ -49,4 +49,4 @@ text = "Back to main menu"
 
 [connection signal="pressed" from="PauseMenu/CenterContainer/VBoxContainer/ResumeButton" to="." method="_on_ResumeButton2_pressed"]
 [connection signal="pressed" from="PauseMenu/CenterContainer/VBoxContainer/LevelSelectButton" to="." method="_on_LevelSelectButton_pressed"]
-[connection signal="pressed" from="PauseMenu/CenterContainer/VBoxContainer/BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="pressed" from="PauseMenu/CenterContainer/VBoxContainer/BackButton" to="." method="OnBackButtonPressed"]

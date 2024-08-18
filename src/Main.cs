@@ -10,20 +10,17 @@ using Chickensoft.GoDotTest;
 //
 // If you want to edit your game's main entry-point, please change RunScene() method.
 
-public partial class Main : Node2D
-{
+public partial class Main : Node2D {
 #if DEBUG
   public TestEnvironment Environment = default!;
 #endif
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
 #if DEBUG
     // If this is a debug build, use GoDotTest to examine the
     // command line arguments and determine if we should run tests.
     Environment = TestEnvironment.From(OS.GetCmdlineArgs());
-    if (Environment.ShouldRunTests)
-    {
+    if (Environment.ShouldRunTests) {
       CallDeferred("RunTests");
       return;
     }
@@ -39,5 +36,5 @@ public partial class Main : Node2D
 #endif
 
   private void RunScene() =>
-    GetTree().ChangeSceneToFile("res://src/Wfc/Entities/Ui/Menu/MainMenu.tscn");
+    GetTree().ChangeSceneToFile("res://src/Wfc/Base/RootNode.tscn");
 }

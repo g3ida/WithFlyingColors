@@ -1,5 +1,5 @@
 namespace Wfc.Entities.Ui;
-using Wfc.Entities.Ui.Menu;
+using Wfc.Screens.MenuManager;
 
 public class ButtonDef {
   public enum ButtonCondition {
