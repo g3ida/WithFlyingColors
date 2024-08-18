@@ -50,7 +50,7 @@ public partial class PauseScreenMenu : CanvasLayer
     Event.Instance.EmitPauseMenuEnter();
   }
 
-  private void _on_BackButton_pressed()
+  private void OnBackButtonPressed()
   {
     AudioManager.Instance().StopAllSfx();
     Resume();

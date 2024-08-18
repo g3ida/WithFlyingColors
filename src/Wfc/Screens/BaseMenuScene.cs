@@ -1,4 +1,4 @@
-namespace Wfc.Entities.Ui.Menu;
+namespace Wfc.Screens;
 
 using Godot;
 

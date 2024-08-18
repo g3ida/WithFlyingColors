@@ -1,0 +1,34 @@
+keys,en,fr,de,es,it,pt,nl
+PLAY,Play,Jouer,Spielen,Jugar,Gioca,Jogar,Spelen
+CONTINUE, Continue,Continuer,Fortsetzen,Continuar,Continua,Continuar,Doorgaan
+NEW_GAME,New Game,Nouvelle partie,Neues Spiel,Nuevo juego,Nuova partita,Novo Jogo,Nieuw Spel
+QUIT,Quit,Quitter,Beenden,Salir,Esci,Sair,Afsluiten
+SELECTED_SLOT,Selected Slot,Emplacement sélectionné,Ausgewählter Slot,Ranura seleccionada,Slot selezionato,Slot Selecionado,Geselecteerd Slot
+SETTINGS,Settings,Paramètres,Einstellungen,Ajustes,Impostazioni,Configurações,Instellingen
+GAME_SETTINGS,Game Settings,Paramètres du jeu,Spieleinstellungen,Ajustes del juego,Impostazioni di gioco,Configurações do Jogo,Spelinstellingen
+STATS,Stats,Statistiques,Statistiken,Estadísticas,Statistiche,Estatísticas,Statistieken
+GAME_STATS,Game Stats,Statistiques du jeu,Spielstatistiken,Estadísticas del juego,Statistiche di gioco,Estatísticas do Jogo,Spelstatistieken
+OPTIONS,Options,Options,Optionen,Opciones,Opzioni,Opções,Opties
+SELECT_SLOT,Select Slot,Sélectionner un emplacement,Slot auswählen,Seleccionar ranura,Seleziona slot,Selecionar Slot,Slot Selecteren
+SAVE_SLOT,Save Slot,Sauvegarder l'emplacement,Slot speichern,Guardar ranura,Salva slot,Salvar Slot,Slot Opslaan
+DELETE_SLOT,Delete Slot,Supprimer l'emplacement,Slot löschen,Eliminar ranura,Elimina slot,Excluir Slot,Slot Verwijderen
+REMOVE_SLOT,Remove Slot,Retirer l'emplacement,Slot entfernen,Quitar ranura,Rimuovi slot,Remover Slot,Slot Verwijderen
+RESUME_GAME,Resume Game,Reprendre la partie,Spiel fortsetzen,Reanudar juego,Riprendi partita,Retomar Jogo,Spel Hervatten
+DISPLAY,Display,Affichage,Anzeige,Pantalla,Display,Exibição,Weergave
+SCREEN_RESOLUTION,Screen Resolution,Résolution d'écran,Bildschirmauflösung,Resolución de pantalla,Risoluzione schermo,Resolução de Tela,Schermresolutie
+FULLSCREEN,Fullscreen,Plein écran,Vollbild,Pantalla completa,Schermo intero,Tela Cheia,Volledig Scherm
+CONTROLLER,Controller,Manette,Controller,Mando,Controller,Controle,Controller
+CONTROLLER_TYPE,Controller Type,Type de manette,Controller-Typ,Tipo de mando,Tipo di controller,Tipo de Controle,Controller Type
+KEYBOARD,Keyboard,Clavier,Tastatur,Teclado,Tastiera,Teclado,Toetsenbord
+JOYSTICK,Joystick,Joystick,Joystick,Joystick,Joystick,Joystick,Joystick
+JUMP,Jump,Sauter,Springen,Saltar,Salta,Pular,Springen
+MOVE_LEFT,Move Left,Déplacer à gauche,Nach links bewegen,Mover a la izquierda,Muovi a sinistra,Mover para Esquerda,Naar Links Bewegen
+MOVE_RIGHT,Move Right,Déplacer à droite,Nach rechts bewegen,Mover a la derecha,Muovi a destra,Mover para Direita,Naar Rechts Bewegen
+ROTATE_LEFT,Rotate Left,Tourner à gauche,Nach links drehen,Girar a la izquierda,Ruota a sinistra,Girar para Esquerda,Naar Links Draaien
+ROTATE_RIGHT,Rotate Right,Tourner à droite,Nach rechts drehen,Girar a la derecha,Ruota a destra,Girar para Direita,Naar Rechts Draaien
+DASH,Dash,Dash,Dash,Dash,Scatto,Dash,Dash
+DOWN,Down,Bas,Nach unten,Abajo,Giù,Baixo,Omlaag
+PAUSE,Pause,Pause,Pause,Pausa,Pausa,Pausar,Pauze
+AUDIO,Audio,Audio,Audio,Audio,Audio,Áudio,Audio
+SFX_VOLUME,SFX Volume,Volume des effets sonores,Soundeffekt-Lautstärke,Volumen de efectos de sonido,Volume effetti sonori,Volume de Efeitos Sonoros,Geluidseffecten Volume
+MUSIC_VOLUME,Music Volume,Volume de la musique,Musik-Lautstärke,Volumen de música,Volume musica,Volume da Música,Muziek Volume

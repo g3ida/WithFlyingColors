@@ -1,17 +1,18 @@
 using Godot;
-using Wfc.Entities.Ui.Menu;
+using Wfc.Screens.MenuManager;
 
-
-
-public partial class Event : Node {
+public partial class Event : Node
+{
   private static Event _instance = null;
 
-  public override void _EnterTree() {
+  public override void _EnterTree()
+  {
     base._EnterTree();
     _instance = GetTree().Root.GetNode<Event>("EventCS");
   }
 
-  public override void _Ready() {
+  public override void _Ready()
+  {
     base._Ready();
     SetProcess(false);
   }

@@ -1,62 +1,91 @@
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
 using System;
+using Wfc.Screens.MenuManager;
 
-public partial class SceneOrchester : Node2D {
-  public override void _EnterTree() {
+[Meta(typeof(IAutoNode))]
+public partial class SceneOrchester : Node2D
+{
+  public override void _Notification(int what) => this.Notify(what);
+
+  [Dependency]
+  public IMenuManager MenuManager => this.DependOn<IMenuManager>();
+
+  public override void _EnterTree()
+  {
+    base._EnterTree();
     ConnectSignals();
   }
 
-  public override void _ExitTree() {
+  public override void _ExitTree()
+  {
+    base._ExitTree();
     DisconnectSignals();
     AudioManager.Instance().MusicTrackManager.Stop();
   }
 
-  public override void _Ready() {
+  public override void _Ready()
+  {
+    base._Ready();
     SetProcess(false);
+  }
+
+  public void OnResolved()
+  {
     var metaData = SaveGame.Instance().GetCurrentSlotMetaData();
     bool isNewGame = (metaData == null) || (Convert.ToSingle(metaData["progress"]) <= 0.0f);
-    PackedScene sceneResource = null;
 
-    if (!string.IsNullOrEmpty(MenuManager.Instance().levelScenePath)) {
-      sceneResource = GD.Load<PackedScene>(MenuManager.Instance().levelScenePath);
+    PackedScene sceneResource = null;
+    if (!string.IsNullOrEmpty(MenuManager.GetCurrentLevelScenePath()))
+    {
+      sceneResource = GD.Load<PackedScene>(MenuManager.GetCurrentLevelScenePath());
       SetupSceneGame(sceneResource, false);
     }
-    else if (isNewGame) {
-      sceneResource = GD.Load<PackedScene>(MenuManager.START_LEVEL_MENU_SCENE);
+    else if (isNewGame)
+    {
+      sceneResource = GD.Load<PackedScene>(MenuScenes.START_LEVEL_MENU_SCENE);
       SetupSceneGame(sceneResource, true);
     }
-    else {
+    else
+    {
       sceneResource = GD.Load<PackedScene>(metaData["scene_path"].ToString());
       SetupSceneGame(sceneResource, true);
     }
   }
 
-  private void ConnectSignals() {
+  private void ConnectSignals()
+  {
     Event.Instance.Connect("player_died", new Callable(this, nameof(OnGameOver)));
     Event.Instance.Connect("level_cleared", new Callable(this, nameof(OnLevelCleared)));
   }
 
-  private void DisconnectSignals() {
+  private void DisconnectSignals()
+  {
     Event.Instance.Disconnect("player_died", new Callable(this, nameof(OnGameOver)));
     Event.Instance.Disconnect("level_cleared", new Callable(this, nameof(OnLevelCleared)));
   }
 
-  private void OnGameOver() {
+  private void OnGameOver()
+  {
     Event.Instance.EmitSignal("checkpoint_loaded");
   }
 
-  private void SetupSceneGame(PackedScene sceneResource, bool tryLoad) {
+  private void SetupSceneGame(PackedScene sceneResource, bool tryLoad)
+  {
     var sceneInstance = sceneResource.Instantiate();
     AddChild(sceneInstance);
     sceneInstance.Owner = this;
 
-    if (tryLoad) {
+    if (tryLoad)
+    {
       SaveGame.Instance().CallDeferred(nameof(SaveGame.LoadIfNeeded));
     }
   }
 
-  private void OnLevelCleared() {
+  private void OnLevelCleared()
+  {
     // FIXME: uncomment this line after implementing PauseMenu in c#
-    Global.Instance().PauseMenu.NavigateToScreen(MenuManager.Menus.LEVEL_CLEAR_MENU);
+    Global.Instance().PauseMenu.NavigateToScreen(GameMenus.LEVEL_CLEAR_MENU);
   }
 }

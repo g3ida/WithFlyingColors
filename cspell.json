@@ -17,7 +17,8 @@
     "**/*.png",
     "**/*.godot",
     "**/PresetSkins.cs",
-    "src/Scripts/Skin/SkinLoader.cs"
+    "src/Scripts/Skin/SkinLoader.cs",
+    "Assets/Locale/**/*.*"
   ],
   "words": [
     "assemblyfilters",

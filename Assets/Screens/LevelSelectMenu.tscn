@@ -78,4 +78,4 @@ anchors_preset = 0
 delay = 0.5
 hidden_relative_position = Vector2(-500, 0)
 
-[connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="OnBackButtonPressed"]

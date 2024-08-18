@@ -143,6 +143,6 @@ size_flags_horizontal = 3
 theme = ExtResource("12")
 text = "Current slot:"
 
-[connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="OnBackButtonPressed"]
 [connection signal="slot_pressed" from="SlotsContainer" to="." method="_on_SlotsContainer_slot_pressed"]
 [connection signal="confirmed" from="ResetDialogContainer/ResetSlotDialog" to="." method="OnResetSlotConfirmed"]

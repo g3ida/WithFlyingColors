@@ -54,7 +54,7 @@ public static partial class TextureGenerator {
     var width = srcImage.GetWidth();
     var height = srcImage.GetHeight();
     var format = srcImage.GetFormat();
-    var image = Image.Create(width, height, false, format);
+    var image = Image.CreateEmpty(width, height, false, format);
     for (var i = 0; i < width; i++) {
       for (var j = 0; j < height; j++) {
         var pix = srcImage.GetPixel(i, j);
