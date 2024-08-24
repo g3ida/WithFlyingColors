@@ -22,7 +22,7 @@ public partial class MainMenu : GameMenu {
     base._Ready();
     this.WireNodes();
     SaveGame.Instance().Init();
-    _currentSlotLabelNode.Text = $"Current slot: {SaveGame.Instance().currentSlotIndex + 1}";
+    _currentSlotLabelNode.Text = $"Current slot: {SaveGame.Instance().CurrentSlotIndex + 1}";
   }
 
   public void ShowResetDataDialog() => _resetSlotDialogNode.ShowDialog();
@@ -53,7 +53,7 @@ public partial class MainMenu : GameMenu {
   private bool ProcessPlaySubMenus(MenuButtons menuButton) {
     switch (menuButton) {
       case MenuButtons.NEW_GAME:
-        if (SaveGame.Instance().DoesSlotHaveProgress(SaveGame.Instance().currentSlotIndex)) {
+        if (SaveGame.Instance().DoesSlotHaveProgress(SaveGame.Instance().CurrentSlotIndex)) {
           _resetSlotDialogNode.ShowDialog();
         }
         else {
@@ -75,7 +75,7 @@ public partial class MainMenu : GameMenu {
   }
 
   private void OnResetSlotConfirmed() {
-    SaveGame.Instance().RemoveSaveSlot(SaveGame.Instance().currentSlotIndex);
+    SaveGame.Instance().RemoveSaveSlot(SaveGame.Instance().CurrentSlotIndex);
     _menuBoxNode.HideSubMenuIfNeeded();
     NavigateToScreen(GameMenus.GAME);
   }

@@ -1,8 +1,7 @@
 using Godot;
 using System;
 
-public partial class SlotActionButtons : HBoxContainer
-{
+public partial class SlotActionButtons : HBoxContainer {
     [Signal]
     public delegate void select_button_pressedEventHandler(int slotIndex);
     [Signal]
@@ -14,8 +13,7 @@ public partial class SlotActionButtons : HBoxContainer
     private SlotButton _confirmButtonNode;
     private Control _spaceNode;
 
-    public override void _Ready()
-    {
+    public override void _Ready() {
         _deleteButtonNode = GetNode<SlotButton>("DeleteButton");
         _confirmButtonNode = GetNode<SlotButton>("ConfirmButton");
         _spaceNode = new Control();
@@ -26,61 +24,50 @@ public partial class SlotActionButtons : HBoxContainer
         UpdateSpaceNode(0);
     }
 
-    public void ShowButton()
-    {
-        if (ShouldShowDeleteButton())
-        {
+    public void ShowButton() {
+        if (ShouldShowDeleteButton()) {
             _deleteButtonNode.ShowButton();
             _deleteButtonNode.GrabFocus();
         }
-        if (ShouldShowSelectButton())
-        {
+        if (ShouldShowSelectButton()) {
             _confirmButtonNode.ShowButton();
             _confirmButtonNode.GrabFocus();
         }
     }
 
-    public void HideButton()
-    {
+    public void HideButton() {
         _deleteButtonNode.HideButton();
         _confirmButtonNode.HideButton();
     }
 
-    private void UpdateSpaceNode(float buttonsSize)
-    {
+    private void UpdateSpaceNode(float buttonsSize) {
         float buttonsMaxWidth = SlotButton.BUTTON_MAX_WIDTH * 2;
         _spaceNode.Size = new Vector2(buttonsMaxWidth - buttonsSize, _spaceNode.Size.Y);
         _spaceNode.CustomMinimumSize = new Vector2(buttonsMaxWidth - buttonsSize, _spaceNode.CustomMinimumSize.Y);
     }
 
-    public override void _Process(double delta)
-    {
+    public override void _Process(double delta) {
         float buttonsSize = _deleteButtonNode.Size.X + _confirmButtonNode.Size.X;
         UpdateSpaceNode(buttonsSize);
     }
 
-    public bool ButtonsHasFocus()
-    {
+    public bool ButtonsHasFocus() {
         return _deleteButtonNode.ButtonHasFocus() || _confirmButtonNode.ButtonHasFocus();
     }
 
-    private void _on_DeleteButton_pressed()
-    {
+    private void _on_DeleteButton_pressed() {
         EmitSignal(nameof(clear_button_pressed), SlotIndex);
     }
 
-    private bool ShouldShowDeleteButton()
-    {
+    private bool ShouldShowDeleteButton() {
         return SaveGame.Instance().IsSlotFilled(SlotIndex);
     }
 
-    private bool ShouldShowSelectButton()
-    {
-        return SaveGame.Instance().currentSlotIndex != SlotIndex;
+    private bool ShouldShowSelectButton() {
+        return SaveGame.Instance().CurrentSlotIndex != SlotIndex;
     }
 
-    private void _on_ConfirmButton_pressed()
-    {
+    private void _on_ConfirmButton_pressed() {
         EmitSignal(nameof(select_button_pressed), SlotIndex);
     }
 }

@@ -3,7 +3,7 @@ namespace Wfc.Core.Event;
 using Godot;
 using Wfc.Screens.MenuManager;
 
-public partial class Event : Node {
+public partial class Event : Node, IEvent {
   public override void _EnterTree() {
     base._EnterTree();
     Instance = GetTree().Root.GetNode<Event>("EventCS");
@@ -162,8 +162,11 @@ public partial class Event : Node {
   }
 
   public void Emit(EventType eventType) {
-    EmitSignal(nameof(eventType));
+    EmitSignal(eventType.ToString());
   }
+
+  public void Emit(EventType eventType, params Variant[] args)
+    => EmitSignal(eventType.ToString(), args);
 
   public void EmitPlayerLanded(Node area, Vector2 position) => Instance.EmitSignal(nameof(PlayerLanded), area, position);
   public void EmitPlayerDying(Node area, Vector2 position, Constants.EntityType entityType) => Instance.EmitSignal(nameof(PlayerDying), area, position, (int)entityType);

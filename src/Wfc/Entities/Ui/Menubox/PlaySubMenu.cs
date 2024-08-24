@@ -9,16 +9,14 @@ using Wfc.Core.Types;
 using Wfc.Screens.MenuManager;
 
 [Meta(typeof(IAutoNode))]
-public partial class PlaySubMenu : Control
-{
+public partial class PlaySubMenu : Control {
 
   public override void _Notification(int what) => this.Notify(what);
 
   [Dependency]
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
 
-  public void OnResolved()
-  {
+  public void OnResolved() {
     List<ButtonDef> subMenuButtonsDef = [
             new() {
             Text = LocalizationService.GetLocalizedString(TranslationKey.Continue),
@@ -33,7 +31,7 @@ public partial class PlaySubMenu : Control
         },
         new()
         {
-            Text = LocalizationService.GetLocalizedString(TranslationKey.SelectedSlot) + $": {SaveGame.Instance().currentSlotIndex + 1}",
+            Text = LocalizationService.GetLocalizedString(TranslationKey.SelectedSlot) + $": {SaveGame.Instance().CurrentSlotIndex + 1}",
             MenuAction = MenuAction.GoToSlotSelect,
             DisplayCondition = ButtonDef.ButtonCondition.None
         },
