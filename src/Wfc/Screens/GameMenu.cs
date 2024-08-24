@@ -11,15 +11,16 @@ public partial class GameMenu : Control {
   // I faced resolution issues when deriving from dependency Injected classes
   // So I used composition to get around it.
   [Meta(typeof(IAutoNode))]
-  public partial class MenuManagerWrapper : Node {
+  public partial class DependenciesWrapper : Node {
     public override void _Notification(int what) => this.Notify(what);
 
     [Dependency]
     public IMenuManager MenuManager => this.DependOn<IMenuManager>();
+    [Dependency]
+    public IEvent EventHandler => this.DependOn<IEvent>();
 
     public void OnResolved() { }
   }
-
 
   public enum MenuScreenState {
     ENTERING,
@@ -30,27 +31,29 @@ public partial class GameMenu : Control {
 
   protected MenuScreenState _screenState;
   private GameMenus _destinationScreen;
-  private Node _currentFocus = null!;
+  private Node? _currentFocus;
   public bool HandleBackEvent = true;
-
-  private MenuManagerWrapper _menuManagerWrapper = null!;
 
   private readonly List<UITransition> _transitionElements = [];
   private int _enteredTransitionElementsCount;
 
+  // Dependencies
+  private DependenciesWrapper _dependenciesWrapper = null!;
+  protected IMenuManager MenuManager => _dependenciesWrapper.MenuManager;
+  protected IEvent EventHandler => _dependenciesWrapper.EventHandler;
+
   public override void _EnterTree() {
     base._EnterTree();
-    ConnectSignals();
-    SetupMenuManager();
+    SetupDependencies();
     ParseTransitionElements();
     _screenState = HasNoTransitionElements() ? MenuScreenState.ENTERED : MenuScreenState.ENTERING;
     OnEnter();
   }
 
-  private void SetupMenuManager() {
-    _menuManagerWrapper = new MenuManagerWrapper();
-    AddChild(_menuManagerWrapper);
-    _menuManagerWrapper.Owner = this;
+  private void SetupDependencies() {
+    _dependenciesWrapper = new DependenciesWrapper();
+    AddChild(_dependenciesWrapper);
+    _dependenciesWrapper.Owner = this;
   }
 
   public override void _ExitTree() {
@@ -61,6 +64,7 @@ public partial class GameMenu : Control {
 
   public override void _Ready() {
     base._Ready();
+    ConnectSignals();
     EnterTransitionElements();
     OnReady();
   }
@@ -73,7 +77,7 @@ public partial class GameMenu : Control {
     base._Process(delta);
     var focus_owner = GetViewport().GuiGetFocusOwner();
     if (focus_owner != null && focus_owner != _currentFocus) {
-      Event.Instance.EmitFocusChanged();
+      EventHandler.Emit(EventType.FocusChanged);
     }
     _currentFocus = focus_owner;
     OnProcess(delta);
@@ -90,7 +94,8 @@ public partial class GameMenu : Control {
     }
 
     if (HandleBackEvent && (Input.IsActionJustPressed("ui_cancel") || Input.IsActionJustPressed("ui_home"))) {
-      Event.Instance.EmitMenuButtonPressed(MenuButtons.BACK);
+      // Event.Instance.EmitMenuButtonPressed(MenuButtons.BACK);
+      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.BACK);
     }
   }
 
@@ -99,7 +104,7 @@ public partial class GameMenu : Control {
       _destinationScreen = menu_screen;
       if (HasNoTransitionElements()) {
         _screenState = MenuScreenState.EXITED;
-        _menuManagerWrapper.MenuManager.GoToMenu(_destinationScreen);
+        MenuManager.GoToMenu(_destinationScreen);
       }
       else {
         _screenState = MenuScreenState.EXITING;
@@ -115,17 +120,17 @@ public partial class GameMenu : Control {
       return;
     }
 
-    _menuManagerWrapper.MenuManager.SetCurrentLevel(level_screen_path);
+    MenuManager.SetCurrentLevel(level_screen_path);
     NavigateToScreen(GameMenus.GAME);
   }
 
-  private void _OnMenuButtonPressed(MenuButtons menu_button) {
+  private void InternalOnMenuButtonPressed(MenuButtons menu_button) {
     if (_screenState != MenuScreenState.ENTERED) {
       return;
     }
 
     if (!OnMenuButtonPressed(menu_button) && menu_button == MenuButtons.BACK) {
-      NavigateToScreen(_menuManagerWrapper.MenuManager.GetPreviousMenu());
+      NavigateToScreen(MenuManager.GetPreviousMenu());
     }
   }
 
@@ -142,11 +147,11 @@ public partial class GameMenu : Control {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect(EventType.MenuButtonPressed, new Callable(this, nameof(_OnMenuButtonPressed)));
+    EventHandler.Connect(EventType.MenuButtonPressed, new Callable(this, nameof(InternalOnMenuButtonPressed)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect(EventType.MenuButtonPressed, new Callable(this, nameof(_OnMenuButtonPressed)));
+    EventHandler.Disconnect(EventType.MenuButtonPressed, new Callable(this, nameof(InternalOnMenuButtonPressed)));
   }
 
   private void ParseTransitionElements() {
@@ -201,7 +206,7 @@ public partial class GameMenu : Control {
     _enteredTransitionElementsCount--;
     if (_enteredTransitionElementsCount == 0) {
       _screenState = MenuScreenState.EXITED;
-      _menuManagerWrapper.MenuManager.GoToMenu(_destinationScreen);
+      MenuManager.GoToMenu(_destinationScreen);
     }
   }
 

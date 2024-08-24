@@ -17,8 +17,8 @@ public class ButtonDef {
 
 public static class ButtonsConditionsExtensions {
   public static bool Verify(this ButtonDef.ButtonCondition buttonDef) => buttonDef switch {
-    ButtonDef.ButtonCondition.IsDirtySlot => SaveGame.Instance().DoesSlotHaveProgress(SaveGame.Instance().currentSlotIndex),
-    ButtonDef.ButtonCondition.IsVirginSlot => !SaveGame.Instance().DoesSlotHaveProgress(SaveGame.Instance().currentSlotIndex),
+    ButtonDef.ButtonCondition.IsDirtySlot => SaveGame.Instance().DoesSlotHaveProgress(SaveGame.Instance().CurrentSlotIndex),
+    ButtonDef.ButtonCondition.IsVirginSlot => !SaveGame.Instance().DoesSlotHaveProgress(SaveGame.Instance().CurrentSlotIndex),
     ButtonDef.ButtonCondition.None => false,
     _ => false,
   };

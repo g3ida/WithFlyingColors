@@ -19,14 +19,14 @@ public partial class SelectSlotMenu : GameMenu {
     ResetDialogContainerNode = GetNode<DialogContainer>("ResetDialogContainer");
     NoSelectedSlotDialogContainer = GetNode<DialogContainer>("NoSelectedSlotDialogContainer");
     CurrentSlotLabelNode = GetNode<Label>("CurrentSlotLabel");
-    currentSlotOnFocus = SaveGame.Instance().currentSlotIndex;
+    currentSlotOnFocus = SaveGame.Instance().CurrentSlotIndex;
 
-    SlotsContainer.SetGameCurrentSelectedSlot(SaveGame.Instance().currentSlotIndex);
+    SlotsContainer.SetGameCurrentSelectedSlot(SaveGame.Instance().CurrentSlotIndex);
     SetSelectedSlotLabel();
   }
 
   private void OnBackButtonPressed() {
-    if (SaveGame.Instance().currentSlotIndex == -1) {
+    if (SaveGame.Instance().CurrentSlotIndex == -1) {
       Event.Instance.EmitMenuButtonPressed(MenuButtons.SHOW_DIALOG);
     }
     else {
@@ -58,7 +58,7 @@ public partial class SelectSlotMenu : GameMenu {
   private void _on_SlotsContainer_slot_pressed(int id, string action) {
     currentSlotOnFocus = id;
     if (action == "select") {
-      SaveGame.Instance().currentSlotIndex = id;
+      SaveGame.Instance().CurrentSlotIndex = id;
       _on_confirm_slot_button_selected(id);
       SlotsContainer.SetGameCurrentSelectedSlot(id);
       Event.Instance.EmitMenuButtonPressed(MenuButtons.SELECT_SLOT);
@@ -72,7 +72,7 @@ public partial class SelectSlotMenu : GameMenu {
 
   private void _on_confirm_slot_button_selected(int slotIndex) {
     if (SaveGame.Instance().IsSlotFilled(slotIndex)) {
-      SaveGame.Instance().currentSlotIndex = slotIndex;
+      SaveGame.Instance().CurrentSlotIndex = slotIndex;
     }
     else {
       SaveGame.Instance().Save(slotIndex, true);
@@ -85,13 +85,13 @@ public partial class SelectSlotMenu : GameMenu {
     SaveGame.Instance().RemoveSaveSlot(currentSlotOnFocus);
     SaveGame.Instance().Refresh();
     SlotsContainer.UpdateSlot(deleteTmpId, true);
-    SlotsContainer.SetGameCurrentSelectedSlot(SaveGame.Instance().currentSlotIndex);
+    SlotsContainer.SetGameCurrentSelectedSlot(SaveGame.Instance().CurrentSlotIndex);
     SetSelectedSlotLabel();
   }
 
   private void SetSelectedSlotLabel() {
-    if (SaveGame.Instance().currentSlotIndex != -1) {
-      CurrentSlotLabelNode.Text = $"{SaveGame.Instance().currentSlotIndex + 1}";
+    if (SaveGame.Instance().CurrentSlotIndex != -1) {
+      CurrentSlotLabelNode.Text = $"{SaveGame.Instance().CurrentSlotIndex + 1}";
     }
     else {
       CurrentSlotLabelNode.Text = "None";
