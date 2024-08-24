@@ -1,9 +1,9 @@
 using Godot;
 using System;
 using System.Linq;
+using Wfc.Core.Event;
 
-public partial class KeyBindingButton : Button
-{
+public partial class KeyBindingButton : Button {
   private const string DefaultText = "(EMPTY)";
   [Export] public string key { get; set; }
   private Key? value = null;
@@ -15,15 +15,12 @@ public partial class KeyBindingButton : Button
 
   private AnimationPlayer AnimationPlayer;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     AnimationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
     var actionList = InputMap.ActionGetEvents(key).Cast<InputEvent>();
     var inputEvent = InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList);
-    if (inputEvent != null)
-    {
-      if (inputEvent is InputEventKey inputKeyEvent)
-      {
+    if (inputEvent != null) {
+      if (inputEvent is InputEventKey inputKeyEvent) {
         value = inputKeyEvent.Keycode;
         Text = OS.GetKeycodeString(value.Value);
       }
@@ -31,42 +28,33 @@ public partial class KeyBindingButton : Button
     AnimationPlayer.Play("RESET");
   }
 
-  private void Undo()
-  {
-    if (value != null)
-    {
+  private void Undo() {
+    if (value != null) {
       Text = OS.GetKeycodeString(value.Value);
     }
-    else
-    {
+    else {
       Text = DefaultText;
     }
   }
 
-  public override void _Input(InputEvent ev)
-  {
+  public override void _Input(InputEvent ev) {
     bool handled = false;
-    if (!isListening)
-    {
+    if (!isListening) {
       return;
     }
-    if (ev is InputEventKey eventKey)
-    {
+    if (ev is InputEventKey eventKey) {
       value = eventKey.Keycode;
       Text = OS.GetKeycodeString(value.Value);
       EmitSignal(nameof(keyboard_action_bound), key, (long)value);
       handled = true;
     }
-    else if (ev is InputEventMouse eventMouse)
-    {
-      if (eventMouse.ButtonMask.HasFlag(MouseButtonMask.Left))
-      {
+    else if (ev is InputEventMouse eventMouse) {
+      if (eventMouse.ButtonMask.HasFlag(MouseButtonMask.Left)) {
         Undo();
         handled = true;
       }
     }
-    if (handled)
-    {
+    if (handled) {
       ButtonPressed = false;
       isListening = false;
       GetViewport().SetInputAsHandled();
@@ -75,16 +63,13 @@ public partial class KeyBindingButton : Button
     }
   }
 
-  public bool IsValid()
-  {
+  public bool IsValid() {
     return Text == DefaultText;
   }
 
-  private void _on_Control_on_action_bound_signal(string action, long key)
-  {
+  private void _on_Control_on_action_bound_signal(string action, long key) {
     long val = this.value != null ? (long)this.value : -1L;
-    if (action == this.key || key != (long)val)
-    {
+    if (action == this.key || key != (long)val) {
       return;
     }
     value = null;
@@ -92,10 +77,8 @@ public partial class KeyBindingButton : Button
     EmitSignal(nameof(keyboard_action_bound), action, -1);
   }
 
-  private void _on_KeyBindingButton_pressed()
-  {
-    if (ButtonPressed)
-    {
+  private void _on_KeyBindingButton_pressed() {
+    if (ButtonPressed) {
       ButtonPressed = true;
       isListening = true;
       Event.Instance.EmitKeyboardActionBiding();
@@ -104,10 +87,8 @@ public partial class KeyBindingButton : Button
     }
   }
 
-  private void _on_KeyBindingButton_mouse_entered()
-  {
-    if (!GetTree().Paused)
-    {
+  private void _on_KeyBindingButton_mouse_entered() {
+    if (!GetTree().Paused) {
       GrabFocus();
     }
   }

@@ -1,35 +1,29 @@
 using Godot;
 using System;
+using Wfc.Core.Event;
 
-public partial class PauseScreenMenu : CanvasLayer
-{
+public partial class PauseScreenMenu : CanvasLayer {
   private ScreenShaders screenShaders;
   private PauseMenu pauseMenu;
   private bool isPaused = false;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     screenShaders = GetNode<ScreenShaders>("ScreenShaders");
     pauseMenu = GetNode<PauseMenu>("PauseMenu");
   }
 
-  public override void _Process(double delta)
-  {
-    if (Input.IsActionJustPressed("pause"))
-    {
-      if (isPaused)
-      {
+  public override void _Process(double delta) {
+    if (Input.IsActionJustPressed("pause")) {
+      if (isPaused) {
         Resume();
       }
-      else
-      {
+      else {
         PauseGame();
       }
     }
   }
 
-  private void Resume()
-  {
+  private void Resume() {
     AudioManager.Instance().ResumeAllSfx();
     AudioManager.Instance().MusicTrackManager.SetPauseMenuEffect(false);
     screenShaders.DisablePauseShader();
@@ -39,8 +33,7 @@ public partial class PauseScreenMenu : CanvasLayer
     Event.Instance.EmitPauseMenuExit();
   }
 
-  private void PauseGame()
-  {
+  private void PauseGame() {
     AudioManager.Instance().PauseAllSfx();
     AudioManager.Instance().MusicTrackManager.SetPauseMenuEffect(true);
     screenShaders.Call("ActivatePauseShader");
@@ -50,23 +43,19 @@ public partial class PauseScreenMenu : CanvasLayer
     Event.Instance.EmitPauseMenuEnter();
   }
 
-  private void OnBackButtonPressed()
-  {
+  private void OnBackButtonPressed() {
     AudioManager.Instance().StopAllSfx();
     Resume();
     pauseMenu.GoToMainMenu();
   }
 
-  private void _on_ResumeButton2_pressed()
-  {
-    if (isPaused)
-    {
+  private void _on_ResumeButton2_pressed() {
+    if (isPaused) {
       Resume();
     }
   }
 
-  private void _on_LevelSelectButton_pressed()
-  {
+  private void _on_LevelSelectButton_pressed() {
     AudioManager.Instance().StopAllSfx();
     Resume();
     pauseMenu.GoToLevelSelectMenu();

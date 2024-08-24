@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using Wfc.Core.Event;
 
 public partial class SaveGame : Node2D {
   private const string SAVE_FILE_PATH = "user://save_slot_{0}.save";
@@ -56,11 +57,11 @@ public partial class SaveGame : Node2D {
   }
 
   public void ConnectSignals() {
-    Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpoint)));
+    Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpoint)));
   }
 
   public void DisconnectSignals() {
-    Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpoint)));
+    Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpoint)));
   }
 
   public override void _ExitTree() {
@@ -132,6 +133,7 @@ public partial class SaveGame : Node2D {
         {
             { "image_path", GetSaveSlotImagePath(saveSlotIndex) },
             { "save_time", GetUnixTimestamp() },
+            // fixme: this creates issues of scene paths ? use enums instead ?
             { "scene_path", GetTree().CurrentScene.GetChild(0).SceneFilePath },
             { "progress", 0 } // TODO: calculate progress
         };

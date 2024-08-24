@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Wfc.Core.Event;
 
 // deprecated
 public partial class Checkpoint : Area2D, IPersistent {

@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using Wfc.Core.Event;
 
 public partial class CheckpointArea : Area2D, IPersistent {
   [Signal]

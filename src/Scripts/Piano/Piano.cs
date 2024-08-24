@@ -1,9 +1,9 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Wfc.Core.Event;
 
-public partial class Piano : Node2D
-{
+public partial class Piano : Node2D {
   private PackedScene NotesPointerScene = (PackedScene)ResourceLoader.Load("res://Assets/Scenes/Piano/NextNotePointer.tscn");
   private List<string> notes = new List<string> { "do", "re", "mi", "fa", "sol", "la", "si" };
 
@@ -13,44 +13,36 @@ public partial class Piano : Node2D
 
   private NextNotePointer NotesPointerNode = null;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     PianoNotesNodes = GetNode("NotesContainer").GetChildren();
     SolfegeBoardNode = GetNode<SolfegeBoard>("SolfegeBoard");
     lettersContainerNode = GetNode("LettersContainer");
   }
 
-  private void _on_piano_note_pressed(PianoNote note)
-  {
+  private void _on_piano_note_pressed(PianoNote note) {
     int index = note.index - 1;
     Event.Instance.EmitPianoNotePressed(notes[index]);
   }
 
-  private void _on_piano_note_released(PianoNote note)
-  {
+  private void _on_piano_note_released(PianoNote note) {
     int index = note.index - 1;
     Event.Instance.EmitPianoNoteReleased(notes[index]);
   }
 
-  private void _on_SolfegeBoard_board_notes_played()
-  {
+  private void _on_SolfegeBoard_board_notes_played() {
     Event.Instance.EmitPianoPuzzleWon();
     _RemovePointerNode();
   }
 
-  private void _RemovePointerNode()
-  {
-    if (NotesPointerNode != null)
-    {
+  private void _RemovePointerNode() {
+    if (NotesPointerNode != null) {
       NotesPointerNode.QueueFree();
       NotesPointerNode = null;
     }
   }
 
-  public void StartGame()
-  {
-    if (NotesPointerNode != null && NotesPointerNode.IsInsideTree())
-    {
+  public void StartGame() {
+    if (NotesPointerNode != null && NotesPointerNode.IsInsideTree()) {
       NotesPointerNode.QueueFree();
     }
     NotesPointerNode = _InstanceNotesPointer();
@@ -59,45 +51,35 @@ public partial class Piano : Node2D
     _UpdateNotesPointerPosition(expectedNote);
   }
 
-  private NextNotePointer _InstanceNotesPointer()
-  {
+  private NextNotePointer _InstanceNotesPointer() {
     var node = NotesPointerScene.Instantiate();
     lettersContainerNode.AddChild(node);
     node.Owner = lettersContainerNode;
     return node as NextNotePointer;
   }
 
-  private void _on_SolfegeBoard_expected_note_changed(string newExpectedNote)
-  {
+  private void _on_SolfegeBoard_expected_note_changed(string newExpectedNote) {
     _UpdateNotesPointerPosition(newExpectedNote);
   }
 
-  private void _UpdateNotesPointerPosition(string newExpectedNote)
-  {
-    if (NotesPointerNode != null)
-    {
+  private void _UpdateNotesPointerPosition(string newExpectedNote) {
+    if (NotesPointerNode != null) {
       var note = _GetNoteNode(newExpectedNote);
-      if (note != null)
-      {
+      if (note != null) {
         NotesPointerNode.Position = new Vector2(note.Position.X, 0);
       }
     }
   }
 
-  private void _on_SolfegeBoard_wrong_note_played()
-  {
+  private void _on_SolfegeBoard_wrong_note_played() {
     // Replace with function body.
   }
 
-  private PianoNote _GetNoteNode(string newExpectedNote)
-  {
+  private PianoNote _GetNoteNode(string newExpectedNote) {
     int idx = notes.IndexOf(newExpectedNote);
-    if (idx != -1)
-    {
-      foreach (PianoNote note in PianoNotesNodes)
-      {
-        if (note.index == idx + 1)
-        {
+    if (idx != -1) {
+      foreach (PianoNote note in PianoNotesNodes) {
+        if (note.index == idx + 1) {
           return note;
         }
       }
@@ -105,30 +87,25 @@ public partial class Piano : Node2D
     return null;
   }
 
-  public void Reset()
-  {
+  public void Reset() {
     _RemovePointerNode();
   }
 
-  private void _SetupNotePointerPosition()
-  {
+  private void _SetupNotePointerPosition() {
     _UpdateNotesPointerPosition(SolfegeBoardNode.GetExpectedNote());
   }
 
 
   // FIXME logic after migration should change
-  public override void _EnterTree()
-  {
-    Event.Instance.Connect("checkpoint_loaded", new Callable(this, "Reset"));
+  public override void _EnterTree() {
+    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, "Reset"));
   }
 
-  public override void _ExitTree()
-  {
-    Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, "Reset"));
+  public override void _ExitTree() {
+    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, "Reset"));
   }
 
-  public bool IsStopped()
-  {
+  public bool IsStopped() {
     return SolfegeBoardNode.IsStopped();
   }
 }

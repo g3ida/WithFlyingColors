@@ -1,5 +1,6 @@
 namespace Wfc.Screens;
 
+using Wfc.Core.Event;
 using Wfc.Utils.Attributes;
 
 [ScenePath]

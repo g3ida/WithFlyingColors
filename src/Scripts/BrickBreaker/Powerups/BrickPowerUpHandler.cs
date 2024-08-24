@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using Wfc.Core.Event;
 
 public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   private const float COLD_DOWN = 1.5f;
@@ -39,13 +40,13 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect("brick_broken", new Callable(this, nameof(OnBrickBroken)));
-    Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(Reset)));
+    Event.Instance.Connect(EventType.BrickBroken, new Callable(this, nameof(OnBrickBroken)));
+    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect("brick_broken", new Callable(this, nameof(OnBrickBroken)));
-    Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(Reset)));
+    Event.Instance.Disconnect(EventType.BrickBroken, new Callable(this, nameof(OnBrickBroken)));
+    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
   }
 
   public void Reset() {

@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using Wfc.Core.Event;
 
 public partial class PlayerSlipperingState : PlayerBaseState {
   public int direction = 1;

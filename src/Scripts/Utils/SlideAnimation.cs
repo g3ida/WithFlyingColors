@@ -1,51 +1,41 @@
 using Godot;
+using Wfc.Core.Event;
 
-public partial class SlideAnimation : Node2D
-{
-  private Node2D thisNode;
-  private Vector2 destination;
-  private bool notified = false;
-  private string animationName;
+public partial class SlideAnimation : Node2D {
+  private Node2D _thisNode;
+  private Vector2 _destination;
+  private bool _notified;
+  private string _animationName;
 
-  private float duration;
-  private float timer;
-  private Vector2 oldPosition;
+  private float _duration;
+  private float _timer;
+  private Vector2 _oldPosition;
 
-  public SlideAnimation()
-  {
-    // FIXME remove this constructor after c# migration
+  public void Set(string animationName, Node2D @this, Vector2 destination, float duration) {
+    _thisNode = @this;
+    this._destination = destination;
+    this._animationName = animationName;
+    _oldPosition = _thisNode.Position;
+    this._duration = duration;
+    _timer = 0;
   }
 
-  public void Set(string _animationName, Node2D _this, Vector2 _destination, float _duration)
-  {
-    thisNode = _this;
-    destination = _destination;
-    animationName = _animationName;
-    oldPosition = thisNode.Position;
-    duration = _duration;
-    timer = 0;
-  }
-
-  public void Update(float delta)
-  {
-    timer += delta;
-    if (timer > duration)
-    {
-      timer = duration;
+  public void Update(float delta) {
+    _timer += delta;
+    if (_timer > _duration) {
+      _timer = _duration;
     }
 
-    float weight = timer / duration;
-    thisNode.Position = thisNode.Position.Lerp(destination, weight);
+    var weight = _timer / _duration;
+    _thisNode.Position = _thisNode.Position.Lerp(_destination, weight);
 
-    if (!notified && thisNode.Position == destination)
-    {
-      notified = true;
+    if (!_notified && _thisNode.Position == _destination) {
+      _notified = true;
       Notify();
     }
   }
 
-  private void Notify()
-  {
-    Event.Instance.EmitSlideAnimationEnded(animationName);
+  private void Notify() {
+    Event.Instance.EmitSlideAnimationEnded(_animationName);
   }
 }

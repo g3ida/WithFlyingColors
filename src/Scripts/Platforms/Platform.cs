@@ -1,9 +1,9 @@
 using Godot;
 using System;
+using Wfc.Core.Event;
 
 [Tool]
-public partial class Platform : AnimatableBody2D
-{
+public partial class Platform : AnimatableBody2D {
   private static readonly Texture2D GearedTexture = (Texture2D)GD.Load("res://Assets/Sprites/Platforms/geared-platform.png");
   private static readonly Texture2D SimpleTexture = (Texture2D)GD.Load("res://Assets/Sprites/Platforms/platform.png");
 
@@ -22,8 +22,7 @@ public partial class Platform : AnimatableBody2D
   private NinePatchRect ninePatchRectNode;
   private Area2D areaNode;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     base._Ready();
     ninePatchRectNode = GetNode<NinePatchRect>("NinePatchRect");
     areaNode = GetNode<Area2D>("Area2D");
@@ -31,51 +30,43 @@ public partial class Platform : AnimatableBody2D
     SetPlatformTexture();
     NinePatchTextureUtils.ScaleTexture(ninePatchRectNode, Scale);
 
-    if (!string.IsNullOrEmpty(group))
-    {
+    if (!string.IsNullOrEmpty(group)) {
       int colorIndex = ColorUtils.GetGroupColorIndex(group);
       ninePatchRectNode.Modulate = ColorUtils.GetBasicColor(colorIndex);
       areaNode.AddToGroup(group);
     }
   }
 
-  public override void _EnterTree()
-  {
+  public override void _EnterTree() {
     base._EnterTree();
     ConnectSignals();
   }
 
-  public override void _ExitTree()
-  {
+  public override void _ExitTree() {
     DisconnectSignals();
   }
 
-  public void OnPlayerLanded(Node area, Vector2 position)
-  {
-    if (area == areaNode)
-    {
+  public void OnPlayerLanded(Node area, Vector2 position) {
+    if (area == areaNode) {
       animationTimer = 0;
       contactPosition = position;
     }
   }
 
-  public override void _Process(double delta)
-  {
+  public override void _Process(double delta) {
     if (Engine.IsEditorHint())
       return;
 
     animationTimer += (float)delta;
 
-    if (ninePatchRectNode.Material is ShaderMaterial shaderMaterial)
-    {
+    if (ninePatchRectNode.Material is ShaderMaterial shaderMaterial) {
       // FIXME: Migration 4.0 - Viewport
       // Vector2 resolution = GetViewport().GetSize2dOverride();
       Vector2 resolution = new Vector2(1, 1);
 
       Camera2D cam = Global.Instance().Camera;
 
-      if (cam != null)
-      {
+      if (cam != null) {
         Vector2 camPos = cam.GetScreenCenterPosition();
         Vector2 currentPos = new Vector2(
             contactPosition.X + (resolution.X / 2) - camPos.X,
@@ -91,30 +82,25 @@ public partial class Platform : AnimatableBody2D
     }
   }
 
-  private void SetPlatformTexture()
-  {
-    if (geared)
-    {
+  private void SetPlatformTexture() {
+    if (geared) {
       NinePatchTextureUtils.SetTexture(ninePatchRectNode, GearedTexture);
     }
-    else
-    {
+    else {
       NinePatchTextureUtils.SetTexture(ninePatchRectNode, SimpleTexture);
     }
   }
 
-  private void ConnectSignals()
-  {
+  private void ConnectSignals() {
     if (Engine.IsEditorHint())
       return;
-    Event.Instance.Connect("player_landed", new Callable(this, nameof(OnPlayerLanded)));
+    Event.Instance.Connect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
   }
 
-  private void DisconnectSignals()
-  {
+  private void DisconnectSignals() {
     base._ExitTree();
     if (Engine.IsEditorHint())
       return;
-    Event.Instance.Disconnect("player_landed", new Callable(this, nameof(OnPlayerLanded)));
+    Event.Instance.Disconnect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
   }
 }

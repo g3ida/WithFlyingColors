@@ -4,6 +4,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using System.Collections.Generic;
+using Wfc.Core.Event;
 using Wfc.Screens.MenuManager;
 
 public partial class GameMenu : Control {
@@ -72,7 +73,7 @@ public partial class GameMenu : Control {
     base._Process(delta);
     var focus_owner = GetViewport().GuiGetFocusOwner();
     if (focus_owner != null && focus_owner != _currentFocus) {
-      Event.Instance.EmitSignal("focus_changed");
+      Event.Instance.EmitFocusChanged();
     }
     _currentFocus = focus_owner;
     OnProcess(delta);
@@ -141,11 +142,11 @@ public partial class GameMenu : Control {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect("menu_button_pressed", new Callable(this, nameof(_OnMenuButtonPressed)));
+    Event.Instance.Connect(EventType.MenuButtonPressed, new Callable(this, nameof(_OnMenuButtonPressed)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect("menu_button_pressed", new Callable(this, nameof(_OnMenuButtonPressed)));
+    Event.Instance.Disconnect(EventType.MenuButtonPressed, new Callable(this, nameof(_OnMenuButtonPressed)));
   }
 
   private void ParseTransitionElements() {

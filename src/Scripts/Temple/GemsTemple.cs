@@ -1,8 +1,8 @@
 using Godot;
 using System.Collections.Generic;
+using Wfc.Core.Event;
 
-public partial class GemsTemple : Node2D
-{
+public partial class GemsTemple : Node2D {
   // Constants
   private PackedScene TempleGemScene = GD.Load<PackedScene>("res://Assets/Scenes/Temple/TempleGem.tscn");
   private const float WAIT_DELAY = 0.1f;
@@ -14,8 +14,7 @@ public partial class GemsTemple : Node2D
 
   private readonly int[] GEMS_EASE_TYPE = { 1, 1, 0, 0 };
 
-  private enum States
-  {
+  private enum States {
     NOT_TRIGGERED,
     WALK_PHASE,
     COLLECT_PHASE,
@@ -24,11 +23,11 @@ public partial class GemsTemple : Node2D
     END_PHASE
   }
 
-  private List<Node2D> templeGems = new List<Node2D>();
-  private float gemsAngularVelocity = 0;
-  private int numActiveGems = 0;
-  private float bloomSpriteScale = 1.0f;
-  private States currentState = States.NOT_TRIGGERED;
+  private readonly List<Node2D> _templeGems = [];
+  private float _gemsAngularVelocity = 0;
+  private int _numActiveGems = 0;
+  private float _bloomSpriteScale = 1.0f;
+  private States _currentState = States.NOT_TRIGGERED;
 
   // Nodes
   private Node2D GemSlotsContainerNode;
@@ -39,8 +38,7 @@ public partial class GemsTemple : Node2D
 
   private Tween tweener;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     GemSlotsContainerNode = GetNode<Node2D>("GemsContainer");
     GemsSlotsNodes = GemSlotsContainerNode.GetChildren();
     StartGemsAreaNode = GetNode<Area2D>("StartGemsArea");
@@ -50,37 +48,31 @@ public partial class GemsTemple : Node2D
     BloomSpriteNode.Visible = false;
   }
 
-  private void _on_TriggerArea_body_entered(Node body)
-  {
-    if (currentState == States.NOT_TRIGGERED && body == Global.Instance().Player)
-    {
+  private void _on_TriggerArea_body_entered(Node body) {
+    if (_currentState == States.NOT_TRIGGERED && body == Global.Instance().Player) {
       GoToWalkPhase();
     }
   }
 
-  private bool CreateTempleGems()
-  {
+  private bool CreateTempleGems() {
     int i = 0;
-    foreach (string colorGrp in Constants.COLOR_GROUPS)
-    {
-      if (Global.Instance().GemHUD.IsGemCollected(colorGrp))
-      {
+    foreach (string colorGrp in Constants.COLOR_GROUPS) {
+      if (Global.Instance().GemHUD.IsGemCollected(colorGrp)) {
         var templeGem = CreateTempleGem(
             colorGrp,
             WAIT_DELAY * (i + 1),
             Global.Instance().Player.GlobalPosition,
             (GemsSlotsNodes[i] as Node2D).GlobalPosition,
             GEMS_EASE_TYPE[i]);
-        templeGems.Add(templeGem);
-        numActiveGems += 1;
+        _templeGems.Add(templeGem);
+        _numActiveGems += 1;
         i += 1;
       }
     }
     return i > 0;
   }
 
-  private Node2D CreateTempleGem(string colorGroup, float delay, Vector2 position, Vector2 destination, int easeType)
-  {
+  private Node2D CreateTempleGem(string colorGroup, float delay, Vector2 position, Vector2 destination, int easeType) {
     var templeGem = TempleGemScene.Instantiate<TempleGem>();
     GemSlotsContainerNode.AddChild(templeGem);
     templeGem.Owner = GemSlotsContainerNode;
@@ -92,10 +84,8 @@ public partial class GemsTemple : Node2D
     return templeGem;
   }
 
-  public override void _Process(double delta)
-  {
-    switch (currentState)
-    {
+  public override void _Process(double delta) {
+    switch (_currentState) {
       case States.WALK_PHASE:
         Global.Instance().Player.SetMaxSpeed();
         break;
@@ -103,144 +93,120 @@ public partial class GemsTemple : Node2D
         ProcessRotateGems((float)delta);
         break;
       case States.BLOOM_PHASE:
-        BloomSpriteNode.Scale = new Vector2(bloomSpriteScale, bloomSpriteScale);
+        BloomSpriteNode.Scale = new Vector2(_bloomSpriteScale, _bloomSpriteScale);
         break;
     }
   }
 
-  private void ProcessRotateGems(float delta)
-  {
-    var amount = gemsAngularVelocity * delta;
+  private void ProcessRotateGems(float delta) {
+    var amount = _gemsAngularVelocity * delta;
     GemSlotsContainerNode.Rotate(amount);
-    foreach (Node node in GemSlotsContainerNode.GetChildren())
-    {
+    foreach (Node node in GemSlotsContainerNode.GetChildren()) {
       ((Node2D)node).Rotate(-amount);
     }
-    var intensity = 0.5f + (gemsAngularVelocity / MAX_GEM_TEMPLE_ANGULAR_VELOCITY);
-    foreach (Node2D node in templeGems)
-    {
+    var intensity = 0.5f + (_gemsAngularVelocity / MAX_GEM_TEMPLE_ANGULAR_VELOCITY);
+    foreach (Node2D node in _templeGems) {
       node.Set("light_intensity", intensity);
     }
   }
 
-  private void OnGemCollected(Node2D templeGem)
-  {
-    if (currentState == States.COLLECT_PHASE)
-    {
-      numActiveGems -= 1;
+  private void OnGemCollected(Node2D templeGem) {
+    if (_currentState == States.COLLECT_PHASE) {
+      _numActiveGems -= 1;
       Event.Instance.EmitGemPutInTemple();
-      if (numActiveGems <= 0)
-      {
+      if (_numActiveGems <= 0) {
         GoToRotationPhase();
       }
     }
   }
 
-  private void StartRotationTimer()
-  {
+  private void StartRotationTimer() {
     RotationTimerNode.WaitTime = ROTATION_DURATION;
     RotationTimerNode.Start();
   }
 
-  private void _on_StartGemsArea_body_entered(Node body)
-  {
-    if (currentState == States.WALK_PHASE && body == Global.Instance().Player)
-    {
+  private void _on_StartGemsArea_body_entered(Node body) {
+    if (_currentState == States.WALK_PHASE && body == Global.Instance().Player) {
       GoToCollectPhase();
     }
   }
 
-  private void _on_RotationTimer_timeout()
-  {
-    if (currentState == States.ROTATION_PHASE)
-    {
+  private void _on_RotationTimer_timeout() {
+    if (_currentState == States.ROTATION_PHASE) {
       GoToBloomPhase();
     }
   }
 
   // State transitions
-  private void GoToNotTriggeredPhase()
-  {
-    currentState = States.NOT_TRIGGERED;
-    foreach (Node2D el in templeGems)
-    {
+  private void GoToNotTriggeredPhase() {
+    _currentState = States.NOT_TRIGGERED;
+    foreach (Node2D el in _templeGems) {
       el.QueueFree();
     }
-    templeGems.Clear();
-    gemsAngularVelocity = 0;
-    numActiveGems = 0;
-    bloomSpriteScale = 1.0f;
+    _templeGems.Clear();
+    _gemsAngularVelocity = 0;
+    _numActiveGems = 0;
+    _bloomSpriteScale = 1.0f;
     BloomSpriteNode.Visible = false;
   }
 
-  private void GoToWalkPhase()
-  {
-    currentState = States.WALK_PHASE;
+  private void GoToWalkPhase() {
+    _currentState = States.WALK_PHASE;
     Global.Instance().Player.Velocity = new Vector2(0, Global.Instance().Player.Velocity.Y);
     Event.Instance.EmitGemTempleTriggered();
     Global.Instance().Cutscene.ShowSomeNode(Global.Instance().Player, 10.0f, 3.2f);
   }
 
-  private void GoToRotationPhase()
-  {
-    currentState = States.ROTATION_PHASE;
+  private void GoToRotationPhase() {
+    _currentState = States.ROTATION_PHASE;
     RotateGemsTween();
     StartRotationTimer();
     Event.Instance.EmitGemEngineStarted();
   }
 
-  private void GoToCollectPhase()
-  {
-    currentState = States.COLLECT_PHASE;
+  private void GoToCollectPhase() {
+    _currentState = States.COLLECT_PHASE;
     Global.Instance().Player.Velocity = new Vector2(0, Global.Instance().Player.Velocity.Y);
-    if (!CreateTempleGems())
-    {
+    if (!CreateTempleGems()) {
       OnGemCollected(null);
     }
   }
 
-  private void GoToBloomPhase()
-  {
-    currentState = States.BLOOM_PHASE;
+  private void GoToBloomPhase() {
+    _currentState = States.BLOOM_PHASE;
     BloomSpriteNode.Visible = true;
     BloomSpriteResizeTween();
   }
 
-  private void GoToEndPhase()
-  {
+  private void GoToEndPhase() {
     Event.Instance.EmitLevelCleared();
   }
 
   // Tween animations
-  private void RotateGemsTween()
-  {
-    if (tweener != null)
-    {
+  private void RotateGemsTween() {
+    if (tweener != null) {
       tweener.Kill();
     }
     tweener = GetTree().CreateTween();
     tweener.TweenProperty(this, "gemsAngularVelocity", MAX_GEM_TEMPLE_ANGULAR_VELOCITY, DURATION_TO_FULL_GEM_ROTATION_SPEED)
-        .From(gemsAngularVelocity)
+        .From(_gemsAngularVelocity)
         .SetTrans(Tween.TransitionType.Linear)
         .SetEase(Tween.EaseType.Out);
   }
 
-  private void BloomSpriteResizeTween()
-  {
-    if (tweener != null)
-    {
+  private void BloomSpriteResizeTween() {
+    if (tweener != null) {
       tweener.Kill();
     }
     tweener = GetTree().CreateTween();
     tweener.TweenProperty(this, "bloomSpriteScale", BLOOM_SPRITE_MAX_SCALE, BLOOM_SPRITE_SCALE_DURATION)
-        .From(bloomSpriteScale)
+        .From(_bloomSpriteScale)
         .SetTrans(Tween.TransitionType.Linear)
         .SetEase(Tween.EaseType.Out);
     tweener.Connect("finished", new Callable(this, nameof(OnBloomSpriteResizeEnd)), (uint)ConnectFlags.OneShot);
   }
 
-  private void OnBloomSpriteResizeEnd()
-  {
+  private void OnBloomSpriteResizeEnd() {
     GoToEndPhase();
   }
 }

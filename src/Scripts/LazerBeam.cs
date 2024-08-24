@@ -1,5 +1,5 @@
 using Godot;
-using System;
+using Wfc.Core.Event;
 
 [Tool]
 public partial class LazerBeam : Node2D {

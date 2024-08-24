@@ -1,4 +1,7 @@
 namespace Wfc.Screens.MenuManager;
+
+using Wfc.Core.Event;
+
 public enum MenuAction {
   Play = 0,
   GoToSettings = 1,

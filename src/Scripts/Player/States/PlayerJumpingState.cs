@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using Wfc.Core.Event;
 
 public partial class PlayerJumpingState : PlayerBaseState {
   private const float TIME_UNTIL_FULL_JUMP_IS_CONSIDERED = 0.15f;

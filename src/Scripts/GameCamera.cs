@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Wfc.Core.Event;
 
 public partial class GameCamera : Camera2D, IPersistent {
   public const float CAMERA_DRAG_JUMP = 0.45f;
@@ -136,19 +137,19 @@ public partial class GameCamera : Camera2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
-    Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
-    Event.Instance.Connect("player_jumped", new Callable(this, nameof(_OnPlayerJump)));
-    Event.Instance.Connect("player_land", new Callable(this, nameof(_OnPlayerLand)));
-    Event.Instance.Connect("player_dying", new Callable(this, nameof(_OnPlayerDying)));
+    Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
+    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    Event.Instance.Connect(EventType.PlayerJumped, new Callable(this, nameof(_OnPlayerJump)));
+    Event.Instance.Connect(EventType.PlayerLand, new Callable(this, nameof(_OnPlayerLand)));
+    Event.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
-    Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
-    Event.Instance.Disconnect("player_jumped", new Callable(this, nameof(_OnPlayerJump)));
-    Event.Instance.Disconnect("player_land", new Callable(this, nameof(_OnPlayerLand)));
-    Event.Instance.Disconnect("player_dying", new Callable(this, nameof(_OnPlayerDying)));
+    Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
+    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    Event.Instance.Disconnect(EventType.PlayerJumped, new Callable(this, nameof(_OnPlayerJump)));
+    Event.Instance.Disconnect(EventType.PlayerLand, new Callable(this, nameof(_OnPlayerLand)));
+    Event.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
   }
 
   public override void _EnterTree() {

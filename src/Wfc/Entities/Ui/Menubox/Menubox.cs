@@ -8,11 +8,11 @@ using Wfc.Entities.World.Player;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Screens;
+using Wfc.Core.Event;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
-public partial class Menubox : Control
-{
+public partial class Menubox : Control {
   public override void _Notification(int what) => this.Notify(what);
 
   [Dependency]
@@ -51,23 +51,19 @@ public partial class Menubox : Control
   private Menubox() { }
 
   // FIXME: make high level. The menu should update the box.
-  public void SetPreviousMenu()
-  {
+  public void SetPreviousMenu() {
     _currentState = States.MENU;
-    if (MenuManager.GetPreviousMenu() == GameMenus.STATS_MENU)
-    {
+    if (MenuManager.GetPreviousMenu() == GameMenus.STATS_MENU) {
       _menuBoxNode.Rotate(-Mathf.Pi);
       _activeIndex = 2;
     }
-    else if (MenuManager.GetPreviousMenu() == GameMenus.SETTINGS_MENU)
-    {
+    else if (MenuManager.GetPreviousMenu() == GameMenus.SETTINGS_MENU) {
       _menuBoxNode.Rotate(-Mathf.Pi / 2);
       _activeIndex = 1;
     }
   }
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     this.WireNodes();
     _boxRotationNode = new PlayerRotation(parent: _menuBoxNode);
 
@@ -77,50 +73,39 @@ public partial class Menubox : Control
     _buttons[_activeIndex].disabled = false;
   }
 
-  public void OnResolved()
-  {
+  public void OnResolved() {
     SetPreviousMenu();
   }
 
-  private void SetButtonsEnabled(bool enabled)
-  {
-    foreach (var b in _buttons)
-    {
+  private void SetButtonsEnabled(bool enabled) {
+    foreach (var b in _buttons) {
       b.disabled = !enabled;
     }
   }
 
-  public override void _PhysicsProcess(double delta)
-  {
+  public override void _PhysicsProcess(double delta) {
     _playSubMenuNode?.SetPosition(_playSubMenuPos);
 
-    if (Input.IsActionJustPressed("rotate_left") || Input.IsActionJustPressed("ui_left"))
-    {
+    if (Input.IsActionJustPressed("rotate_left") || Input.IsActionJustPressed("ui_left")) {
       OnLeftButtonPressed();
     }
-    else if (Input.IsActionJustPressed("rotate_right") || Input.IsActionJustPressed("ui_right"))
-    {
+    else if (Input.IsActionJustPressed("rotate_right") || Input.IsActionJustPressed("ui_right")) {
       OnRightButtonPressed();
     }
-    else if (Input.IsActionJustPressed("ui_accept"))
-    {
+    else if (Input.IsActionJustPressed("ui_accept")) {
       ClickOnActiveButton();
     }
   }
 
-  public void HideSubMenuIfNeeded()
-  {
-    if (_currentState is States.SUB_MENU or States.SUB_MENU_ENTER)
-    {
+  public void HideSubMenuIfNeeded() {
+    if (_currentState is States.SUB_MENU or States.SUB_MENU_ENTER) {
       DisplayOrHidePlaySubMenu(false);
     }
   }
 
-  public void OnRightButtonPressed()
-  {
+  public void OnRightButtonPressed() {
     HideSubMenuIfNeeded();
-    if (_boxRotationNode.Fire(Constants.PI2, 0.1f, forceRotationIfBusy: false))
-    {
+    if (_boxRotationNode.Fire(Constants.PI2, 0.1f, forceRotationIfBusy: false)) {
       _buttons[_activeIndex].disabled = true;
       _activeIndex = (_activeIndex - 1 + _buttons.Length) % _buttons.Length;
       _buttons[_activeIndex].disabled = false;
@@ -128,11 +113,9 @@ public partial class Menubox : Control
     }
   }
 
-  public void OnLeftButtonPressed()
-  {
+  public void OnLeftButtonPressed() {
     HideSubMenuIfNeeded();
-    if (_boxRotationNode.Fire(-Constants.PI2, 0.1f, forceRotationIfBusy: false))
-    {
+    if (_boxRotationNode.Fire(-Constants.PI2, 0.1f, forceRotationIfBusy: false)) {
       _buttons[_activeIndex].disabled = true;
       _activeIndex = (_activeIndex + 1) % _buttons.Length;
       _buttons[_activeIndex].disabled = false;
@@ -140,15 +123,12 @@ public partial class Menubox : Control
     }
   }
 
-  public void OnPlayButtonPressed()
-  {
-    if (!CanRespondToInput())
-    {
+  public void OnPlayButtonPressed() {
+    if (!CanRespondToInput()) {
       return;
     }
 
-    if (_currentState is States.MENU or States.SUB_MENU_EXIT)
-    {
+    if (_currentState is States.MENU or States.SUB_MENU_EXIT) {
       DisplayOrHidePlaySubMenu(true);
       Event.Instance.EmitMenuButtonPressed(MenuButtons.PLAY);
     }
@@ -160,44 +140,34 @@ public partial class Menubox : Control
 
   public void OnStatsButtonPressed() => ProcessButtonPress(MenuButtons.STATS);
 
-  private void ProcessButtonPress(MenuButtons menuButton)
-  {
-    if (!CanRespondToInput())
-    {
+  private void ProcessButtonPress(MenuButtons menuButton) {
+    if (!CanRespondToInput()) {
       return;
     }
     _currentState = States.EXIT;
     Event.Instance.EmitMenuButtonPressed(menuButton);
   }
 
-  private void ClickOnActiveButton()
-  {
-    if (_currentState is States.SUB_MENU or States.SUB_MENU_ENTER)
-    {
+  private void ClickOnActiveButton() {
+    if (_currentState is States.SUB_MENU or States.SUB_MENU_ENTER) {
       return;
     }
-    if (_buttons[_activeIndex] == _playButtonNode)
-    {
+    if (_buttons[_activeIndex] == _playButtonNode) {
       OnPlayButtonPressed();
     }
-    else if (_buttons[_activeIndex] == _quitButtonNode)
-    {
+    else if (_buttons[_activeIndex] == _quitButtonNode) {
       OnQuitButtonPressed();
     }
-    else if (_buttons[_activeIndex] == _settingsButtonNode)
-    {
+    else if (_buttons[_activeIndex] == _settingsButtonNode) {
       OnSettingsButtonPressed();
     }
-    else if (_buttons[_activeIndex] == _statsButtonNode)
-    {
+    else if (_buttons[_activeIndex] == _statsButtonNode) {
       OnStatsButtonPressed();
     }
   }
 
-  private void DisplayOrHidePlaySubMenu(bool shouldShow = true)
-  {
-    if (_playSubMenuNode == null)
-    {
+  private void DisplayOrHidePlaySubMenu(bool shouldShow = true) {
+    if (_playSubMenuNode == null) {
       _playSubMenuNode = new PlaySubMenu();
       _menuBoxNode.AddChild(_playSubMenuNode);
       _playSubMenuNode.Owner = _menuBoxNode;
@@ -208,13 +178,11 @@ public partial class Menubox : Control
       var spriteHeight = _spriteNode.Texture.GetHeight();
       var source = _playSubMenuNode.Position;
       var destination = source + (Vector2.Up * spriteHeight * 0.5f);
-      if (shouldShow)
-      {
+      if (shouldShow) {
         InterpolateSubMenu(source, destination);
       }
     }
-    else if (!shouldShow)
-    {
+    else if (!shouldShow) {
       var sz = _playSubMenuNode.CustomMinimumSize;
       var destination = new Vector2(-sz.X * 0.5f, -sz.Y);
       var source = _playSubMenuPos;
@@ -223,8 +191,7 @@ public partial class Menubox : Control
     }
   }
 
-  private void InterpolateSubMenu(Vector2 source, Vector2 destination)
-  {
+  private void InterpolateSubMenu(Vector2 source, Vector2 destination) {
     _subMenuTweener?.Kill();
     _subMenuTweener = CreateTween();
     _subMenuTweener.Connect("finished", new Callable(this, nameof(SubmenuTweenCompleted)), (uint)ConnectFlags.OneShot);
@@ -236,14 +203,11 @@ public partial class Menubox : Control
         .SetEase(Tween.EaseType.InOut);
   }
 
-  private void SubmenuTweenCompleted()
-  {
-    if (_currentState == States.SUB_MENU_ENTER)
-    {
+  private void SubmenuTweenCompleted() {
+    if (_currentState == States.SUB_MENU_ENTER) {
       _currentState = States.SUB_MENU;
     }
-    else if (_currentState == States.SUB_MENU_EXIT)
-    {
+    else if (_currentState == States.SUB_MENU_EXIT) {
       _currentState = States.MENU;
       _playSubMenuNode?.QueueFree();
       _playSubMenuNode = null;
@@ -252,8 +216,7 @@ public partial class Menubox : Control
 
   private void OnOutsideButtonPressed() => HideSubMenuIfNeeded();
 
-  private bool CanRespondToInput()
-  {
+  private bool CanRespondToInput() {
     var isInTransition = GetParent<GameMenu>().IsInTransitionState();
     return _currentState != States.EXIT && !isInTransition;
   }

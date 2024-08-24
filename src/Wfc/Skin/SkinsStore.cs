@@ -2,7 +2,7 @@ namespace Wfc.Skin;
 using System.Collections.Generic;
 using System.Linq;
 
-internal partial class SkinsStore {
+internal sealed class SkinsStore {
 
   private Dictionary<string, GameSkin> Skins { get; }
 
