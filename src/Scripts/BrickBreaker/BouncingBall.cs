@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Linq;
+using Wfc.Core.Event;
 
 public partial class BouncingBall : CharacterBody2D {
   [Export]

@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Wfc.Core.Event;
 
 [Tool]
 public partial class GemHUD : Node2D, IPersistent {
@@ -46,25 +47,26 @@ public partial class GemHUD : Node2D, IPersistent {
 
   private void ConnectSignals() {
     if (!Engine.IsEditorHint()) {
-      Event.Instance.Connect("gem_collected", new Callable(this, nameof(OnGemCollected)));
-      Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
-      Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
+      Event.Instance.Connect(EventType.GemCollected, new Callable(this, nameof(OnGemCollected)));
+      Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
+      Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
     }
   }
 
   private void DisconnectSignals() {
     if (!Engine.IsEditorHint()) {
-      Event.Instance.Disconnect("gem_collected", new Callable(this, nameof(OnGemCollected)));
-      Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
-      Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
+      Event.Instance.Disconnect(EventType.GemCollected, new Callable(this, nameof(OnGemCollected)));
+      Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
+      Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
     }
   }
 
   private void OnGemCollected(string col, Vector2 position, SpriteFrames frames) {
-    if (this.Color == col) {
+    if (Color == col) {
       currentState = State.COLLECTING;
-      animation = new AnimatedSprite2D();
-      animation.SpriteFrames = frames;
+      animation = new AnimatedSprite2D {
+        SpriteFrames = frames
+      };
       animation.Play();
       animation.Modulate = textureRectNode.Modulate;
       AddChild(animation);
@@ -73,7 +75,7 @@ public partial class GemHUD : Node2D, IPersistent {
       animation.GlobalPosition = position;
       collectedAnimation = new SlideAnimation();
       collectedAnimation.Set("gem_slide", animation, new Vector2(20, 20), 1);
-      Event.Instance.Connect("slide_animation_ended", new Callable(this, nameof(OnSlideAnimEnded)), flags: (uint)ConnectFlags.OneShot);
+      Event.Instance.ConnectOneShot(EventType.SlideAnimationEnded, new Callable(this, nameof(OnSlideAnimEnded)));
     }
   }
 

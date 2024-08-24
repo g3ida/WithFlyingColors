@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Wfc.Core.Event;
 
 public partial class DialogContainer : Control {
   private const float TWEEN_DURATION = 0.2f;
@@ -98,8 +99,9 @@ public partial class DialogContainer : Control {
   }
 
   private void StartHidingDialog() {
-    if (IsHiddenOrHidingState())
+    if (IsHiddenOrHidingState()) {
       return;
+    }
 
     Event.Instance.EmitMenuButtonPressed(MenuButtons.CONFIRM_DIALOG);
     ShowNodes(); // just to make sure they are visible

@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using Wfc.Core.Event;
 
 public partial class BoxFace : BaseFace {
   public float edgeLength;

@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Wfc.Core.Event;
 
 public partial class Player : CharacterBody2D, IPersistent {
   public const float SQUEEZE_ANIM_DURATION = 0.17f;
@@ -249,15 +250,15 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect("player_dying", new Callable(this, nameof(OnPlayerDying)));
-    Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
-    Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
+    Event.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(OnPlayerDying)));
+    Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
+    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect("player_dying", new Callable(this, nameof(OnPlayerDying)));
-    Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(OnCheckpointHit)));
-    Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
+    Event.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(OnPlayerDying)));
+    Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
+    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
   }
 
   public override void _EnterTree() {

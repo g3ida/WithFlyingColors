@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Wfc.Core.Event;
 
 public partial class TetrisPool : Node2D {
   [Signal]
@@ -304,15 +305,15 @@ public partial class TetrisPool : Node2D {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect("player_dying", new Callable(this, nameof(_on_player_dying)));
-    Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
+    Event.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_on_player_dying)));
+    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
     //Connect(nameof(lines_removed), this, nameof(_on_TetrisPool_lines_removed));
     //Connect(nameof(game_over), this, nameof(_on_TetrisPool_game_over));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect("player_dying", new Callable(this, nameof(_on_player_dying)));
-    Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
+    Event.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_on_player_dying)));
+    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
     //Disconnect(nameof(lines_removed), this, nameof(_on_TetrisPool_lines_removed));
     //Disconnect(nameof(game_over), this, nameof(_on_TetrisPool_game_over));
   }

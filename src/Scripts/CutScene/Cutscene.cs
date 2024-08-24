@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using Wfc.Core.Event;
 
 public partial class Cutscene : Node2D {
   private const float DURATION = 0.1f;
@@ -38,13 +39,13 @@ public partial class Cutscene : Node2D {
   }
 
   public override void _EnterTree() {
-    Event.Instance.Connect("cutScene_request_start", new Callable(this, nameof(OnCutsceneRequestStart)));
-    Event.Instance.Connect("cutScene_request_end", new Callable(this, nameof(OnCutsceneRequestEnd)));
+    Event.Instance.Connect(EventType.CutSceneRequestStart, new Callable(this, nameof(OnCutsceneRequestStart)));
+    Event.Instance.Connect(EventType.CutSceneRequestEnd, new Callable(this, nameof(OnCutsceneRequestEnd)));
   }
 
   public override void _ExitTree() {
-    Event.Instance.Disconnect("cutScene_request_start", new Callable(this, nameof(OnCutsceneRequestStart)));
-    Event.Instance.Disconnect("cutScene_request_end", new Callable(this, nameof(OnCutsceneRequestEnd)));
+    Event.Instance.Disconnect(EventType.CutSceneRequestStart, new Callable(this, nameof(OnCutsceneRequestStart)));
+    Event.Instance.Disconnect(EventType.CutSceneRequestEnd, new Callable(this, nameof(OnCutsceneRequestEnd)));
   }
 
   public bool IsBusy() {

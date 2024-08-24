@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Wfc.Core.Event;
 
 public partial class BrickBreaker : Node2D, IPersistent {
   private const float FACE_SEPARATOR_SCALE_FACTOR = 3.5f;
@@ -93,17 +94,17 @@ public partial class BrickBreaker : Node2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
-    Event.Instance.Connect("checkpoint_loaded", new Callable(this, nameof(reset)));
-    Event.Instance.Connect("player_dying", new Callable(this, nameof(_OnPlayerDying)));
-    Event.Instance.Connect("bouncing_ball_removed", new Callable(this, nameof(_OnBouncingBallRemoved)));
+    Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
+    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    Event.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
+    Event.Instance.Connect(EventType.BouncingBallRemoved, new Callable(this, nameof(_OnBouncingBallRemoved)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect("checkpoint_reached", new Callable(this, nameof(_OnCheckpointHit)));
-    Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, nameof(reset)));
-    Event.Instance.Disconnect("player_dying", new Callable(this, nameof(_OnPlayerDying)));
-    Event.Instance.Disconnect("bouncing_ball_removed", new Callable(this, nameof(_OnBouncingBallRemoved)));
+    Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
+    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    Event.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
+    Event.Instance.Disconnect(EventType.BouncingBallRemoved, new Callable(this, nameof(_OnBouncingBallRemoved)));
   }
 
   public override void _EnterTree() {

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Godot;
+using Wfc.Core.Event;
 
-public partial class SolfegeBoard : Node2D
-{
+public partial class SolfegeBoard : Node2D {
   private const float DURATION = 0.8f;
   private PackedScene NotesCursorScene = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Piano/NotesCursor.tscn");
   private Texture2D MusicPaperRectTexture = GD.Load<Texture2D>("res://Assets/Sprites/Piano/music-paper-rect.png");
@@ -31,8 +31,7 @@ public partial class SolfegeBoard : Node2D
 
   private int NUM_PAGES;
 
-  private enum BoardState
-  {
+  private enum BoardState {
     STOPPED,
     PLAYING,
     FINISHED
@@ -53,8 +52,7 @@ public partial class SolfegeBoard : Node2D
 
   private SolfegeNotesTextureGenerator solfegeNotesTextureGenerator;
 
-  public override void _Ready()
-  {
+  public override void _Ready() {
     MusicPaperRectNode = GetNode<Sprite2D>("MusicPaperRect");
     NUM_PAGES = PAGES.Length;
     solfegeNotesTextureGenerator = new SolfegeNotesTextureGenerator();
@@ -62,31 +60,26 @@ public partial class SolfegeBoard : Node2D
     _InitState();
   }
 
-  public void StartGame()
-  {
+  public void StartGame() {
     currentState = BoardState.PLAYING;
     _InitState();
   }
 
-  public void FlipNextPage()
-  {
+  public void FlipNextPage() {
     currentPage += 1;
-    if (currentPage >= NUM_PAGES)
-    {
+    if (currentPage >= NUM_PAGES) {
       currentState = BoardState.FINISHED;
       EmitSignal(nameof(board_notes_played));
       _SetFlipPageShader(MusicPaperRectTexture);
       _InitState();
     }
-    else
-    {
+    else {
       var solfegeTexture = solfegeNotesTextureGenerator.CreateFromNotes(PAGES[currentPage], MusicPaperRectNode.GetRect().Size);
       _SetFlipPageShader(solfegeTexture);
     }
   }
 
-  private void _SetFlipPageShader(Texture2D nextTexture)
-  {
+  private void _SetFlipPageShader(Texture2D nextTexture) {
     var paperShaderMaterial = (MusicPaperRectNode.Material as ShaderMaterial);
     paperShaderMaterial.SetShaderParameter("flip_left", true);
     paperShaderMaterial.SetShaderParameter("cylinder_direction", new Vector2(5.0f, 1.0f));
@@ -97,8 +90,7 @@ public partial class SolfegeBoard : Node2D
     Event.Instance.EmitPageFlipped();
   }
 
-  private void _InitShader()
-  {
+  private void _InitShader() {
     var paperShaderMaterial = (MusicPaperRectNode.Material as ShaderMaterial);
     paperShaderMaterial.SetShaderParameter("time", 0);
     paperShaderMaterial.SetShaderParameter("flip_duration", DURATION);
@@ -106,38 +98,31 @@ public partial class SolfegeBoard : Node2D
     paperShaderMaterial.SetShaderParameter("rect", MusicPaperRectNode.GetRect().Size);
   }
 
-  public override void _Process(double delta)
-  {
-    if (isFlipping)
-    {
+  public override void _Process(double delta) {
+    if (isFlipping) {
       time += (float)delta;
       (MusicPaperRectNode.Material as ShaderMaterial).SetShaderParameter("time", time);
-      if (time > DURATION)
-      {
+      if (time > DURATION) {
         isFlipping = false;
         MusicPaperRectNode.Texture = currentTexture;
       }
     }
   }
 
-  public override void _EnterTree()
-  {
-    Event.Instance.Connect("piano_note_pressed", new Callable(this, "_OnNotePressed"));
-    Event.Instance.Connect("checkpoint_loaded", new Callable(this, "Reset"));
-    Event.Instance.Connect("checkpoint_reached", new Callable(this, "_OnCheckpointHit"));
+  public override void _EnterTree() {
+    Event.Instance.Connect(EventType.PianoNotePressed, new Callable(this, "_OnNotePressed"));
+    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, "Reset"));
+    Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, "_OnCheckpointHit"));
   }
 
-  public override void _ExitTree()
-  {
-    Event.Instance.Disconnect("piano_note_pressed", new Callable(this, "_OnNotePressed"));
-    Event.Instance.Disconnect("checkpoint_loaded", new Callable(this, "Reset"));
-    Event.Instance.Disconnect("checkpoint_reached", new Callable(this, "_OnCheckpointHit"));
+  public override void _ExitTree() {
+    Event.Instance.Disconnect(EventType.PianoNotePressed, new Callable(this, "_OnNotePressed"));
+    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, "Reset"));
+    Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, "_OnCheckpointHit"));
   }
 
-  private void _InitState()
-  {
-    if (currentState == BoardState.PLAYING)
-    {
+  private void _InitState() {
+    if (currentState == BoardState.PLAYING) {
       currentNoteIndex = 0;
       currentPage = 0;
       MusicPaperRectNode.Visible = true;
@@ -145,8 +130,7 @@ public partial class SolfegeBoard : Node2D
       var resetTexture = solfegeNotesTextureGenerator.CreateFromNotes(PAGES[currentPage], MusicPaperRectNode.GetRect().Size);
       _SetFlipPageShader(resetTexture);
       (MusicPaperRectNode.Material as ShaderMaterial).SetShaderParameter("current_page", currentTexture);
-      if (notesCursor != null)
-      {
+      if (notesCursor != null) {
         notesCursor.QueueFree();
         notesCursor = null;
       }
@@ -155,10 +139,8 @@ public partial class SolfegeBoard : Node2D
       notesCursor.Owner = MusicPaperRectNode;
       _SetNotesCursorPosition();
     }
-    else if (currentState == BoardState.FINISHED || currentState == BoardState.STOPPED)
-    {
-      if (notesCursor != null)
-      {
+    else if (currentState is BoardState.FINISHED or BoardState.STOPPED) {
+      if (notesCursor != null) {
         notesCursor.QueueFree();
         notesCursor = null;
         MusicPaperRectNode.Texture = MusicPaperRectTexture;
@@ -167,46 +149,38 @@ public partial class SolfegeBoard : Node2D
     }
   }
 
-  private Vector2 _GetNotePositionFromIndex(int noteIndex)
-  {
+  private Vector2 _GetNotePositionFromIndex(int noteIndex) {
     var gen = solfegeNotesTextureGenerator;
     var x = SolfegeNotesTextureGenerator.SOLFEGE_KEY_OFFSET + noteIndex * SolfegeNotesTextureGenerator.NOTE_SPRITE_WIDTH;
     var y = 0;
     return new Vector2(x, y);
   }
 
-  private void _SetNotesCursorPosition()
-  {
-    if (notesCursor != null)
-    {
+  private void _SetNotesCursorPosition() {
+    if (notesCursor != null) {
       var pos = _GetNotePositionFromIndex(currentNoteIndex);
       notesCursor.MoveToPosition(pos);
     }
   }
 
-  public void Reset()
-  {
+  public void Reset() {
     currentState = (BoardState)saveData["current_state"];
     _InitState();
     EmitExpectedNoteChanged();
   }
 
-  private void _OnNotePressed(string note)
-  {
+  private void _OnNotePressed(string note) {
     if (currentState != BoardState.PLAYING)
       return;
 
-    if (note == PAGES[currentPage][currentNoteIndex])
-    {
+    if (note == PAGES[currentPage][currentNoteIndex]) {
       currentNoteIndex += 1;
-      if (currentNoteIndex >= PAGES[currentPage].Length)
-      {
+      if (currentNoteIndex >= PAGES[currentPage].Length) {
         currentNoteIndex = 0;
         FlipNextPage();
       }
     }
-    else
-    {
+    else {
       currentNoteIndex = 0;
       EmitSignal(nameof(wrong_note_played));
     }
@@ -216,39 +190,31 @@ public partial class SolfegeBoard : Node2D
   }
 
 
-  private void EmitExpectedNoteChanged()
-  {
-    if (currentState == BoardState.PLAYING)
-    {
+  private void EmitExpectedNoteChanged() {
+    if (currentState == BoardState.PLAYING) {
       EmitSignal(nameof(expected_note_changed), PAGES[currentPage][currentNoteIndex]);
     }
   }
 
-  private void EmitWrongNoteEvent()
-  {
+  private void EmitWrongNoteEvent() {
     Event.Instance.EmitWrongPianoNotePlayed();
     EmitSignal(nameof(wrong_note_played));
   }
 
-  public string GetExpectedNote()
-  {
-    if (currentState == BoardState.PLAYING)
-    {
+  public string GetExpectedNote() {
+    if (currentState == BoardState.PLAYING) {
       return PAGES[currentPage][currentNoteIndex];
     }
-    else
-    {
+    else {
       return null;
     }
   }
 
-  private void _OnCheckpointHit(Node checkpoint)
-  {
+  private void _OnCheckpointHit(Node checkpoint) {
     saveData["current_state"] = currentState;
   }
 
-  public bool IsStopped()
-  {
+  public bool IsStopped() {
     return currentState == BoardState.STOPPED;
   }
 }
