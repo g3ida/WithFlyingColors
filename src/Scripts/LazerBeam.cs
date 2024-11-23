@@ -1,5 +1,5 @@
 using Godot;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
 public partial class LazerBeam : Node2D {
@@ -61,7 +61,7 @@ public partial class LazerBeam : Node2D {
         // Play some SFX maybe?
       }
       else {
-        Event.Instance.EmitPlayerDying(null, GlobalPosition, Constants.EntityType.LAZER);
+        EventHandler.Instance.EmitPlayerDying(null, GlobalPosition, Constants.EntityType.LAZER);
       }
     }
   }

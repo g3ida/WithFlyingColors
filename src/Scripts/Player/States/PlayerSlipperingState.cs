@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerSlipperingState : PlayerBaseState {
   public int direction = 1;
@@ -28,7 +29,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     skipExitRotation = false;
     exitRotationSpeed = CORRECT_ROTATION_JUMP_SPEED;
     playerRotation.Execute(direction, Constants.PI2, SLIPPERING_ROTATION_DURATION, true, false, true);
-    Event.Instance.EmitPlayerSlippering();
+    EventHandler.Instance.EmitPlayerSlippering();
     player.can_dash = true;
   }
 

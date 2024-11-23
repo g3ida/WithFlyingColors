@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BrickBreaker : Node2D, IPersistent {
   private const float FACE_SEPARATOR_SCALE_FACTOR = 3.5f;
@@ -94,17 +95,17 @@ public partial class BrickBreaker : Node2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
-    Event.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
-    Event.Instance.Connect(EventType.BouncingBallRemoved, new Callable(this, nameof(_OnBouncingBallRemoved)));
+    EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
+    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
+    EventHandler.Instance.Connect(EventType.BouncingBallRemoved, new Callable(this, nameof(_OnBouncingBallRemoved)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
-    Event.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
-    Event.Instance.Disconnect(EventType.BouncingBallRemoved, new Callable(this, nameof(_OnBouncingBallRemoved)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
+    EventHandler.Instance.Disconnect(EventType.BouncingBallRemoved, new Callable(this, nameof(_OnBouncingBallRemoved)));
   }
 
   public override void _EnterTree() {
@@ -182,7 +183,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
       current_state = BrickBreakerState.PLAYING;
       current_level = 0;
       BricksTileMapNode = (Node2D)SpawnBricks();
-      Event.Instance.EmitBrickBreakerStart();
+      EventHandler.Instance.EmitBrickBreakerStart();
       await ToSignal(bricksMoveTweener, "finished");
       SpawnBall();
       BricksTimerNode.Start();
@@ -195,7 +196,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
   private void _OnBouncingBallRemoved(Node2D _ball) {
     num_balls -= 1;
     if (num_balls <= 0) {
-      Event.Instance.EmitPlayerDying(DeathZoneNode, _ball.GlobalPosition, Constants.EntityType.BRICK_BREAKER);
+      EventHandler.Instance.EmitPlayerDying(DeathZoneNode, _ball.GlobalPosition, Constants.EntityType.BRICK_BREAKER);
     }
   }
 
@@ -250,7 +251,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
     if (current_state == BrickBreakerState.PLAYING) {
       current_state = BrickBreakerState.WIN;
       BricksTimerNode.Stop();
-      Event.Instance.EmitBreakBreakerWin();
+      EventHandler.Instance.EmitBreakBreakerWin();
       CleanUpGame();
       CreateBricksMoveTweener();
       MoveBricksDownBy(LEVELS_WIN_GAP, 3.0f);

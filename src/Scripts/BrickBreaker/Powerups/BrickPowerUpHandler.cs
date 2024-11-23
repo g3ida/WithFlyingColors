@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   private const float COLD_DOWN = 1.5f;
@@ -40,13 +41,13 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect(EventType.BrickBroken, new Callable(this, nameof(OnBrickBroken)));
-    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
+    EventHandler.Instance.Connect(EventType.BrickBroken, new Callable(this, nameof(OnBrickBroken)));
+    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect(EventType.BrickBroken, new Callable(this, nameof(OnBrickBroken)));
-    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
+    EventHandler.Instance.Disconnect(EventType.BrickBroken, new Callable(this, nameof(OnBrickBroken)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
   }
 
   public void Reset() {
@@ -139,7 +140,7 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
       CallDeferred("add_child", hit);
     }
     powerUp?.Disconnect("on_player_hit", new Callable(this, nameof(OnPlayerHit)));
-    Event.Instance.EmitPickedPowerup();
+    EventHandler.Instance.EmitPickedPowerup();
   }
 
   public override void _EnterTree() {

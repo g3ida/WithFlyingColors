@@ -1,5 +1,4 @@
 using Godot;
-using System;
 using Wfc.Core.Event;
 using Wfc.Screens;
 
@@ -27,10 +26,11 @@ public partial class SelectSlotMenu : GameMenu {
 
   private void OnBackButtonPressed() {
     if (SaveGame.Instance().CurrentSlotIndex == -1) {
-      Event.Instance.EmitMenuButtonPressed(MenuButtons.SHOW_DIALOG);
+      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.SHOW_DIALOG);
+
     }
     else {
-      Event.Instance.EmitMenuButtonPressed(MenuButtons.BACK);
+      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.BACK);
     }
   }
 
@@ -61,12 +61,13 @@ public partial class SelectSlotMenu : GameMenu {
       SaveGame.Instance().CurrentSlotIndex = id;
       _on_confirm_slot_button_selected(id);
       SlotsContainer.SetGameCurrentSelectedSlot(id);
-      Event.Instance.EmitMenuButtonPressed(MenuButtons.SELECT_SLOT);
+      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.SELECT_SLOT);
+
     }
     else if (action == "delete") {
       deleteTmpId = id;
       ResetDialogContainerNode.ShowDialog();
-      Event.Instance.EmitMenuButtonPressed(MenuButtons.DELETE_SLOT);
+      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.DELETE_SLOT);
     }
   }
 

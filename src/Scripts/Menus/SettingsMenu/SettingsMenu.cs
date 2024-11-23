@@ -1,5 +1,4 @@
 using Godot;
-using System;
 using Wfc.Core.Event;
 using Wfc.Screens;
 
@@ -37,7 +36,7 @@ public partial class SettingsMenu : GameMenu {
           return false; // We don't return true here because we want the default behavior to be called
         }
         else {
-          Event.Instance.EmitMenuButtonPressed(MenuButtons.SHOW_DIALOG);
+          EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.SHOW_DIALOG);
           return true;
         }
       default:
@@ -52,10 +51,10 @@ public partial class SettingsMenu : GameMenu {
   private void OnBackButtonPressed() {
     if (!IsInTransitionState()) {
       if (IsValidState()) {
-        Event.Instance.EmitMenuButtonPressed(MenuButtons.BACK);
+        EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.BACK);
       }
       else {
-        Event.Instance.EmitMenuButtonPressed(MenuButtons.SHOW_DIALOG);
+        EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.SHOW_DIALOG);
       }
     }
   }

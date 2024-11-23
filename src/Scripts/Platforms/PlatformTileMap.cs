@@ -1,5 +1,6 @@
 using Godot;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlatformTileMap : TileMap {
   [Export]
@@ -53,10 +54,10 @@ public partial class PlatformTileMap : TileMap {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
+    EventHandler.Instance.Connect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
+    EventHandler.Instance.Disconnect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
   }
 }

@@ -8,12 +8,13 @@ using Wfc.Screens.MenuManager;
 using System;
 using Wfc.Core.Logger;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 using Wfc.Autoload;
 
 [Meta(typeof(IAutoNode))]
 public partial class DependenciesProvider :
   Node,
-  IProvide<IEvent>,
+  IProvide<IEventHandler>,
   IProvide<ILogger>,
   IProvide<IMenuManager>,
   IProvide<ILocalizationService> {
@@ -25,7 +26,7 @@ public partial class DependenciesProvider :
   IMenuManager IProvide<IMenuManager>.Value() => _menuManager.Value;
   ILocalizationService IProvide<ILocalizationService>.Value() => new LocalizationService();
   ILogger IProvide<ILogger>.Value() => _logger;
-  IEvent IProvide<IEvent>.Value() => AutoloadManager.Instance.EventHandler;
+  IEventHandler IProvide<IEventHandler>.Value() => AutoloadManager.Instance.EventHandler;
 
   public DependenciesProvider() : base() {
     _menuManager = new Lazy<IMenuManager>(() => new MenuManager(this));

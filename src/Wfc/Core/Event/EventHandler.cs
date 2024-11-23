@@ -1,12 +1,13 @@
 namespace Wfc.Core.Event;
 
+using System;
 using Godot;
 using Wfc.Screens.MenuManager;
 
-public partial class Event : Node, IEvent {
+public partial class EventHandler : Node, IEventHandler {
   public override void _EnterTree() {
     base._EnterTree();
-    Instance = GetTree().Root.GetNode<Event>("EventCS");
+    Instance = GetTree().Root.GetNode<EventHandler>("EventCS");
   }
 
   public override void _Ready() {
@@ -14,7 +15,7 @@ public partial class Event : Node, IEvent {
     SetProcess(false);
   }
 
-  public static Event Instance { get; private set; } = null!;
+  public static EventHandler Instance { get; private set; } = null!;
 
   [Signal]
   public delegate void PlayerLandedEventHandler(Node area, Vector2 position);
@@ -153,6 +154,65 @@ public partial class Event : Node, IEvent {
     Connect(eventType.ToString(), callable);
   }
 
+  public bool Connect(EventType eventType, Node caller, Action action) {
+    // "boxing" the action inside one other action to avoid having the same hashcode for different instances
+    var callable = Callable.From(() => action());
+    return Connect(eventType, caller, callable);
+  }
+
+  public bool Connect<T0>(EventType eventType, Node caller, Action<T0> action) {
+    // "boxing" the action inside one other action to avoid having the same hashcode for different instances
+    var callable = Callable.From((T0 v0) => action(v0));
+    return Connect(eventType, caller, callable);
+  }
+
+  public bool Connect<T0, T1>(EventType eventType, Node caller, Action<T0, T1> action) {
+    // "boxing" the action inside one other action to avoid having the same hashcode for different instances
+    var callable = Callable.From((T0 v0, T1 v1) => action(v0, v1));
+    return Connect(eventType, caller, callable);
+  }
+
+  public bool Connect<T0, T1, T2>(EventType eventType, Node caller, Action<T0, T1, T2> action) {
+    // "boxing" the action inside one other action to avoid having the same hashcode for different instances
+    var callable = Callable.From((T0 v0, T1 v1, T2 v2) => action(v0, v1, v2));
+    return Connect(eventType, caller, callable);
+  }
+
+  public bool Connect<T0, T1, T2, T3>(EventType eventType, Node caller, Action<T0, T1, T2, T3> action) {
+    // "boxing" the action inside one other action to avoid having the same hashcode for different instances
+    var callable = Callable.From((T0 v0, T1 v1, T2 v2, T3 v3) => action(v0, v1, v2, v3));
+    return Connect(eventType, caller, callable);
+  }
+
+  public bool Connect<T0, T1, T2, T3, T4>(EventType eventType, Node caller, Action<T0, T1, T2, T3, T4> action) {
+    // "boxing" the action inside one other action to avoid having the same hashcode for different instances
+    var callable = Callable.From((T0 v0, T1 v1, T2 v2, T3 v3, T4 v4) => action(v0, v1, v2, v3, v4));
+    return Connect(eventType, caller, callable);
+  }
+
+  public bool Connect<T0, T1, T2, T3, T4, T5>(EventType eventType, Node caller, Action<T0, T1, T2, T3, T4, T5> action) {
+    // "boxing" the action inside one other action to avoid having the same hashcode for different instances
+    var callable = Callable.From((T0 v0, T1 v1, T2 v2, T3 v3, T4 v4, T5 v5) => action(v0, v1, v2, v3, v4, v5));
+    return Connect(eventType, caller, callable);
+  }
+
+  private bool Connect(EventType eventType, Node caller, Callable callable) {
+    var eventName = eventType.ToString();
+    if (IsConnected(eventName, callable)) {
+    }
+    else {
+      var error = Connect(eventName, callable);
+      if (error == Error.Ok) {
+        caller.TreeExiting += () => Disconnect(eventName, callable);
+        return true;
+      }
+      else {
+        GD.PushError("error: " + error);
+      }
+    }
+    return false;
+  }
+
   public void ConnectOneShot(EventType eventType, Callable callable) {
     Connect(eventType.ToString(), callable, flags: (uint)ConnectFlags.OneShot);
   }
@@ -216,3 +276,4 @@ public partial class Event : Node, IEvent {
   public void EmitLevelCleared() => Instance.EmitSignal(nameof(LevelCleared));
   public void EmitGemPutInTemple() => Instance.EmitSignal(nameof(GemPutInTemple));
 }
+

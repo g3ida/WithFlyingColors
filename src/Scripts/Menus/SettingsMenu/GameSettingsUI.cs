@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class GameSettingsUI : Control, IUITab {
   private CheckBox vsyncCheckbox;
@@ -41,14 +42,14 @@ public partial class GameSettingsUI : Control, IUITab {
   private void _on_VsyncCheckbox_toggled(bool buttonPressed) {
     GameSettings.Instance().Vsync = buttonPressed;
     if (is_ready) {
-      Event.Instance.EmitVsyncToggled(buttonPressed);
+      EventHandler.Instance.EmitVsyncToggled(buttonPressed);
     }
   }
 
   private void _on_FullscreenCheckbox_toggled(bool buttonPressed) {
     GameSettings.Instance().Fullscreen = buttonPressed;
     if (is_ready) {
-      Event.Instance.EmitFullscreenToggled(buttonPressed);
+      EventHandler.Instance.EmitFullscreenToggled(buttonPressed);
     }
     ToggleAutoResolution();
   }
@@ -70,7 +71,7 @@ public partial class GameSettingsUI : Control, IUITab {
     var resolution = value;
     GameSettings.Instance().WindowSize = resolution;
     if (is_ready) {
-      Event.Instance.EmitScreenSizeChanged(resolution);
+      EventHandler.Instance.EmitScreenSizeChanged(resolution);
     }
   }
 
@@ -99,7 +100,7 @@ public partial class GameSettingsUI : Control, IUITab {
 
   private void _on_ResolutionUISelect_selection_changed(bool isEdit) {
     if (is_ready) {
-      Event.Instance.EmitScreenSizeChanged(GameSettings.Instance().WindowSize);
+      EventHandler.Instance.EmitScreenSizeChanged(GameSettings.Instance().WindowSize);
     }
   }
 }

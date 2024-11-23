@@ -8,7 +8,7 @@ using Wfc.Entities.World.Player;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Screens;
-using Wfc.Core.Event;
+using EventHandler = Core.Event.EventHandler;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
@@ -109,7 +109,7 @@ public partial class Menubox : Control {
       _buttons[_activeIndex].disabled = true;
       _activeIndex = (_activeIndex - 1 + _buttons.Length) % _buttons.Length;
       _buttons[_activeIndex].disabled = false;
-      Event.Instance.EmitMenuBoxRotated();
+      EventHandler.Instance.EmitMenuBoxRotated();
     }
   }
 
@@ -119,7 +119,7 @@ public partial class Menubox : Control {
       _buttons[_activeIndex].disabled = true;
       _activeIndex = (_activeIndex + 1) % _buttons.Length;
       _buttons[_activeIndex].disabled = false;
-      Event.Instance.EmitMenuBoxRotated();
+      EventHandler.Instance.EmitMenuBoxRotated();
     }
   }
 
@@ -130,7 +130,7 @@ public partial class Menubox : Control {
 
     if (_currentState is States.MENU or States.SUB_MENU_EXIT) {
       DisplayOrHidePlaySubMenu(true);
-      Event.Instance.EmitMenuButtonPressed(MenuButtons.PLAY);
+      EventHandler.Instance.EmitMenuButtonPressed(MenuButtons.PLAY);
     }
   }
 
@@ -145,7 +145,7 @@ public partial class Menubox : Control {
       return;
     }
     _currentState = States.EXIT;
-    Event.Instance.EmitMenuButtonPressed(menuButton);
+    EventHandler.Instance.EmitMenuButtonPressed(menuButton);
   }
 
   private void ClickOnActiveButton() {

@@ -1,6 +1,5 @@
 using Godot;
-using System;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerDyingState : PlayerBaseState {
   private static readonly PackedScene ExplosionScene = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Explosion/Explosion.tscn");
@@ -20,19 +19,19 @@ public partial class PlayerDyingState : PlayerBaseState {
     player.SetCollisionShapesDisabledFlagDeferred(true);
     if (deathAnimationType == DeathAnimationType.DYING_EXPLOSION_REAL) {
       CallDeferred(nameof(CreateExplosion), player);
-      Event.Instance.EmitPlayerExplode();
+      EventHandler.Instance.EmitPlayerExplode();
       player.lightOccluder.LightMask = 0;
       player.animatedSpriteNode.Play("die");
     }
     else if (deathAnimationType == DeathAnimationType.DYING_EXPLOSION) {
-      Event.Instance.EmitPlayerExplode();
+      EventHandler.Instance.EmitPlayerExplode();
       player.lightOccluder.LightMask = 0;
       player.animatedSpriteNode.Play("die");
       player.animatedSpriteNode.Connect("animation_finished", new Callable(this, nameof(OnAnimationFinished)));
     }
     else // this is the falling case
     {
-      Event.Instance.EmitPlayerFall();
+      EventHandler.Instance.EmitPlayerFall();
       player.fallTimerNode.Start();
       player.fallTimerNode.Timeout += OnFallTimeout;
       fallTimerTriggered = true;
@@ -43,11 +42,11 @@ public partial class PlayerDyingState : PlayerBaseState {
   private void OnAnimationFinished(Player player) {
     player.animatedSpriteNode.Disconnect("animation_finished", new Callable(this, nameof(OnAnimationFinished)));
     player.lightOccluder.LightMask = lightMask;
-    Event.Instance.EmitPlayerDied();
+    EventHandler.Instance.EmitPlayerDied();
   }
 
   private void OnFallTimeout() {
-    Event.Instance.EmitPlayerDied();
+    EventHandler.Instance.EmitPlayerDied();
   }
 
   protected override BaseState<Player> _PhysicsUpdate(Player player, float delta) {
@@ -82,6 +81,6 @@ public partial class PlayerDyingState : PlayerBaseState {
 
   private void OnObjectDetonated(Node explosion) {
     explosion.QueueFree();
-    Event.Instance.EmitPlayerDied();
+    EventHandler.Instance.EmitPlayerDied();
   }
 }

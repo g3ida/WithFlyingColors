@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class SaveGame : Node2D {
   private const string SAVE_FILE_PATH = "user://save_slot_{0}.save";
@@ -57,11 +58,11 @@ public partial class SaveGame : Node2D {
   }
 
   public void ConnectSignals() {
-    Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpoint)));
+    EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpoint)));
   }
 
   public void DisconnectSignals() {
-    Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpoint)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpoint)));
   }
 
   public override void _ExitTree() {

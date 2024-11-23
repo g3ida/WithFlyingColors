@@ -3,6 +3,7 @@ using Chickensoft.Introspection;
 using Godot;
 using System;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 using Wfc.Screens.MenuManager;
 
 [Meta(typeof(IAutoNode))]
@@ -48,17 +49,17 @@ public partial class SceneOrchester : Node2D {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect(EventType.PlayerDied, new Callable(this, nameof(OnGameOver)));
-    Event.Instance.Connect(EventType.LevelCleared, new Callable(this, nameof(OnLevelCleared)));
+    EventHandler.Instance.Connect(EventType.PlayerDied, new Callable(this, nameof(OnGameOver)));
+    EventHandler.Instance.Connect(EventType.LevelCleared, new Callable(this, nameof(OnLevelCleared)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect(EventType.PlayerDied, new Callable(this, nameof(OnGameOver)));
-    Event.Instance.Disconnect(EventType.LevelCleared, new Callable(this, nameof(OnLevelCleared)));
+    EventHandler.Instance.Disconnect(EventType.PlayerDied, new Callable(this, nameof(OnGameOver)));
+    EventHandler.Instance.Disconnect(EventType.LevelCleared, new Callable(this, nameof(OnLevelCleared)));
   }
 
   private void OnGameOver() {
-    Event.Instance.EmitCheckpointLoaded();
+    EventHandler.Instance.EmitCheckpointLoaded();
   }
 
   private void SetupSceneGame(PackedScene sceneResource, bool tryLoad) {

@@ -20,7 +20,7 @@ config/icon="res://icon.png"
 
 AutoloadManager="*res://src/Wfc/Autoload/AutoloadManager.cs"
 GlobalCS="*res://src/Scripts/Autoload/Global.cs"
-EventCS="*res://src/Wfc/Core/Event/Event.cs"
+EventCS="*res://src/Wfc/Core/Event/EventHandler.cs"
 AudioManagerCS="*res://src/Scripts/Autoload/AudioManager.cs"
 SaveGameCS="*res://src/Scripts/Autoload/SaveGame.cs"
 GameSettings="*res://src/Scripts/Autoload/GameSettings.cs"

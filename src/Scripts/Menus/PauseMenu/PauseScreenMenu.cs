@@ -1,6 +1,5 @@
 using Godot;
-using System;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PauseScreenMenu : CanvasLayer {
   private ScreenShaders screenShaders;
@@ -30,7 +29,7 @@ public partial class PauseScreenMenu : CanvasLayer {
     pauseMenu._Hide();
     isPaused = false;
     GetTree().Paused = false;
-    Event.Instance.EmitPauseMenuExit();
+    EventHandler.Instance.EmitPauseMenuExit();
   }
 
   private void PauseGame() {
@@ -40,7 +39,7 @@ public partial class PauseScreenMenu : CanvasLayer {
     pauseMenu._Show();
     isPaused = true;
     GetTree().Paused = true;
-    Event.Instance.EmitPauseMenuEnter();
+    EventHandler.Instance.EmitPauseMenuEnter();
   }
 
   private void OnBackButtonPressed() {

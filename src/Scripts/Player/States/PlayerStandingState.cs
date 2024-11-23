@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerStandingState : PlayerBaseState {
   private const float RAYCAST_LENGTH = 10.0f;
@@ -14,7 +15,7 @@ public partial class PlayerStandingState : PlayerBaseState {
   protected override void _Enter(Player player) {
     player.animatedSpriteNode.Play("idle");
     player.animatedSpriteNode.Stop();
-    Event.Instance.EmitPlayerLand();
+    EventHandler.Instance.EmitPlayerLand();
     player.can_dash = true;
   }
 

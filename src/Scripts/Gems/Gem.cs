@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class Gem : Area2D, IPersistent {
   [Export]
@@ -77,13 +78,13 @@ public partial class Gem : Area2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
+    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
   }
 
   public override void _EnterTree() {

@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class Piano : Node2D {
   private PackedScene NotesPointerScene = (PackedScene)ResourceLoader.Load("res://Assets/Scenes/Piano/NextNotePointer.tscn");
@@ -21,16 +22,16 @@ public partial class Piano : Node2D {
 
   private void _on_piano_note_pressed(PianoNote note) {
     int index = note.index - 1;
-    Event.Instance.EmitPianoNotePressed(notes[index]);
+    EventHandler.Instance.EmitPianoNotePressed(notes[index]);
   }
 
   private void _on_piano_note_released(PianoNote note) {
     int index = note.index - 1;
-    Event.Instance.EmitPianoNoteReleased(notes[index]);
+    EventHandler.Instance.EmitPianoNoteReleased(notes[index]);
   }
 
   private void _on_SolfegeBoard_board_notes_played() {
-    Event.Instance.EmitPianoPuzzleWon();
+    EventHandler.Instance.EmitPianoPuzzleWon();
     _RemovePointerNode();
   }
 
@@ -98,11 +99,11 @@ public partial class Piano : Node2D {
 
   // FIXME logic after migration should change
   public override void _EnterTree() {
-    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, "Reset"));
+    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, "Reset"));
   }
 
   public override void _ExitTree() {
-    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, "Reset"));
+    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, "Reset"));
   }
 
   public bool IsStopped() {

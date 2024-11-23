@@ -1,6 +1,4 @@
 using Godot;
-using System;
-using System.Xml.Serialization;
 using Wfc.Screens.MenuManager;
 using Wfc.Screens;
 using Wfc.Core.Event;
@@ -14,7 +12,7 @@ public partial class LevelClearedMenu : GameMenu {
     base._Input(ev);
     // Handle input based on input type
     if (ev is InputEventKey) {
-      Event.Instance.EmitMenuButtonPressed(MenuButtons.EXIT_LEVEL_CLEAR);
+      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.EXIT_LEVEL_CLEAR);
     }
   }
 

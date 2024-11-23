@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using Godot;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class SolfegeBoard : Node2D {
   private const float DURATION = 0.8f;
@@ -87,7 +87,7 @@ public partial class SolfegeBoard : Node2D {
     paperShaderMaterial.SetShaderParameter("next_page", nextTexture);
     time = 0.0f;
     isFlipping = true;
-    Event.Instance.EmitPageFlipped();
+    EventHandler.Instance.EmitPageFlipped();
   }
 
   private void _InitShader() {
@@ -110,15 +110,15 @@ public partial class SolfegeBoard : Node2D {
   }
 
   public override void _EnterTree() {
-    Event.Instance.Connect(EventType.PianoNotePressed, new Callable(this, "_OnNotePressed"));
-    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, "Reset"));
-    Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, "_OnCheckpointHit"));
+    EventHandler.Instance.Connect(EventType.PianoNotePressed, new Callable(this, "_OnNotePressed"));
+    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, "Reset"));
+    EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, "_OnCheckpointHit"));
   }
 
   public override void _ExitTree() {
-    Event.Instance.Disconnect(EventType.PianoNotePressed, new Callable(this, "_OnNotePressed"));
-    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, "Reset"));
-    Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, "_OnCheckpointHit"));
+    EventHandler.Instance.Disconnect(EventType.PianoNotePressed, new Callable(this, "_OnNotePressed"));
+    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, "Reset"));
+    EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, "_OnCheckpointHit"));
   }
 
   private void _InitState() {
@@ -197,7 +197,7 @@ public partial class SolfegeBoard : Node2D {
   }
 
   private void EmitWrongNoteEvent() {
-    Event.Instance.EmitWrongPianoNotePlayed();
+    EventHandler.Instance.EmitWrongPianoNotePlayed();
     EmitSignal(nameof(wrong_note_played));
   }
 

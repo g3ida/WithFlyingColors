@@ -5,6 +5,7 @@ using Chickensoft.Introspection;
 using Godot;
 using System.Collections.Generic;
 using Wfc.Core.Event;
+using EventHandler = Core.Event.EventHandler;
 using Wfc.Screens.MenuManager;
 
 public partial class GameMenu : Control {
@@ -17,7 +18,7 @@ public partial class GameMenu : Control {
     [Dependency]
     public IMenuManager MenuManager => this.DependOn<IMenuManager>();
     [Dependency]
-    public IEvent EventHandler => this.DependOn<IEvent>();
+    public IEventHandler EventHandler => this.DependOn<IEventHandler>();
 
     public void OnResolved() { }
   }
@@ -40,7 +41,7 @@ public partial class GameMenu : Control {
   // Dependencies
   private DependenciesWrapper _dependenciesWrapper = null!;
   protected IMenuManager MenuManager => _dependenciesWrapper.MenuManager;
-  protected IEvent EventHandler => _dependenciesWrapper.EventHandler;
+  protected IEventHandler EventHandler => _dependenciesWrapper.EventHandler;
 
   public override void _EnterTree() {
     base._EnterTree();
@@ -58,7 +59,6 @@ public partial class GameMenu : Control {
 
   public override void _ExitTree() {
     base._ExitTree();
-    DisconnectSignals();
     OnExit();
   }
 
@@ -147,11 +147,7 @@ public partial class GameMenu : Control {
   }
 
   private void ConnectSignals() {
-    EventHandler.Connect(EventType.MenuButtonPressed, new Callable(this, nameof(InternalOnMenuButtonPressed)));
-  }
-
-  private void DisconnectSignals() {
-    EventHandler.Disconnect(EventType.MenuButtonPressed, new Callable(this, nameof(InternalOnMenuButtonPressed)));
+    EventHandler.Connect(EventType.MenuButtonPressed, this, (MenuButtons mb) => InternalOnMenuButtonPressed(mb));
   }
 
   private void ParseTransitionElements() {

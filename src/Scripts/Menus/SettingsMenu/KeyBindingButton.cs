@@ -1,7 +1,6 @@
 using Godot;
-using System;
 using System.Linq;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class KeyBindingButton : Button {
   private const string DefaultText = "(EMPTY)";
@@ -81,7 +80,7 @@ public partial class KeyBindingButton : Button {
     if (ButtonPressed) {
       ButtonPressed = true;
       isListening = true;
-      Event.Instance.EmitKeyboardActionBiding();
+      EventHandler.Instance.EmitKeyboardActionBiding();
       AnimationPlayer.Play("Blink");
       GetTree().Paused = true;
     }

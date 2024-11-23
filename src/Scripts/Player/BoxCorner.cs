@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BoxCorner : BaseFace {
   public float edgeLength;
@@ -13,20 +14,20 @@ public partial class BoxCorner : BaseFace {
 
   public void _on_area_entered(Area2D area) {
     if (area.IsInGroup("fallzone")) {
-      Event.Instance.EmitPlayerDying(null, GlobalPosition, Constants.EntityType.FALL_ZONE);
+      EventHandler.Instance.EmitPlayerDying(null, GlobalPosition, Constants.EntityType.FALL_ZONE);
       return;
     }
 
     var groups = GetGroups();
     if (!CheckGroup(area, groups)) {
-      Event.Instance.EmitPlayerDying(area, GlobalPosition, Constants.EntityType.PLATFORM);
+      EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, Constants.EntityType.PLATFORM);
     }
     else
     if (area is Gem gem) {
       gem._on_Gem_area_entered(this);
     }
     else if (!Global.Instance().Player.IsStanding()) {
-      Event.Instance.EmitPlayerLanded(area, GlobalPosition);
+      EventHandler.Instance.EmitPlayerLanded(area, GlobalPosition);
     }
   }
 

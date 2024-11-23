@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
 public partial class GemHUD : Node2D, IPersistent {
@@ -47,17 +48,17 @@ public partial class GemHUD : Node2D, IPersistent {
 
   private void ConnectSignals() {
     if (!Engine.IsEditorHint()) {
-      Event.Instance.Connect(EventType.GemCollected, new Callable(this, nameof(OnGemCollected)));
-      Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
-      Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+      EventHandler.Instance.Connect(EventType.GemCollected, new Callable(this, nameof(OnGemCollected)));
+      EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
+      EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
     }
   }
 
   private void DisconnectSignals() {
     if (!Engine.IsEditorHint()) {
-      Event.Instance.Disconnect(EventType.GemCollected, new Callable(this, nameof(OnGemCollected)));
-      Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
-      Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+      EventHandler.Instance.Disconnect(EventType.GemCollected, new Callable(this, nameof(OnGemCollected)));
+      EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
+      EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
     }
   }
 
@@ -75,7 +76,7 @@ public partial class GemHUD : Node2D, IPersistent {
       animation.GlobalPosition = position;
       collectedAnimation = new SlideAnimation();
       collectedAnimation.Set("gem_slide", animation, new Vector2(20, 20), 1);
-      Event.Instance.ConnectOneShot(EventType.SlideAnimationEnded, new Callable(this, nameof(OnSlideAnimEnded)));
+      EventHandler.Instance.ConnectOneShot(EventType.SlideAnimationEnded, new Callable(this, nameof(OnSlideAnimEnded)));
     }
   }
 

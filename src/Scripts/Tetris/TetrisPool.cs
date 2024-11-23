@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class TetrisPool : Node2D {
   [Signal]
@@ -176,7 +177,7 @@ public partial class TetrisPool : Node2D {
     var lines = DetectLines();
     if (lines.Count > 0) {
       EmitSignal(nameof(lines_removed), lines.Count);
-      Event.Instance.EmitTetrisLinesRemoved();
+      EventHandler.Instance.EmitTetrisLinesRemoved();
     }
     foreach (var line in lines) {
       RemoveLineCells(line);
@@ -305,15 +306,15 @@ public partial class TetrisPool : Node2D {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_on_player_dying)));
-    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_on_player_dying)));
+    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
     //Connect(nameof(lines_removed), this, nameof(_on_TetrisPool_lines_removed));
     //Connect(nameof(game_over), this, nameof(_on_TetrisPool_game_over));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_on_player_dying)));
-    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_on_player_dying)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
     //Disconnect(nameof(lines_removed), this, nameof(_on_TetrisPool_lines_removed));
     //Disconnect(nameof(game_over), this, nameof(_on_TetrisPool_game_over));
   }

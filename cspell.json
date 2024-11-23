@@ -103,6 +103,7 @@
     "instantiator",
     "fallzone",
     "gameplay",
-    "Vorbis"
+    "Vorbis",
+    "hashcode"
   ]
 }

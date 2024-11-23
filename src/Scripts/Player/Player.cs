@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class Player : CharacterBody2D, IPersistent {
   public const float SQUEEZE_ANIM_DURATION = 0.17f;
@@ -250,15 +251,15 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(OnPlayerDying)));
-    Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
-    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(OnPlayerDying)));
+    EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
+    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(OnPlayerDying)));
-    Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
-    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(OnPlayerDying)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
   }
 
   public override void _EnterTree() {
@@ -346,7 +347,7 @@ public partial class Player : CharacterBody2D, IPersistent {
       }
     }
     if (!group_found) {
-      Event.Instance.EmitPlayerDying(color_area, GlobalPosition, entity_type);
+      EventHandler.Instance.EmitPlayerDying(color_area, GlobalPosition, entity_type);
     }
   }
 

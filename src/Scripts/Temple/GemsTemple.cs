@@ -1,6 +1,6 @@
 using Godot;
 using System.Collections.Generic;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class GemsTemple : Node2D {
   // Constants
@@ -113,7 +113,7 @@ public partial class GemsTemple : Node2D {
   private void OnGemCollected(Node2D templeGem) {
     if (_currentState == States.COLLECT_PHASE) {
       _numActiveGems -= 1;
-      Event.Instance.EmitGemPutInTemple();
+      EventHandler.Instance.EmitGemPutInTemple();
       if (_numActiveGems <= 0) {
         GoToRotationPhase();
       }
@@ -153,7 +153,7 @@ public partial class GemsTemple : Node2D {
   private void GoToWalkPhase() {
     _currentState = States.WALK_PHASE;
     Global.Instance().Player.Velocity = new Vector2(0, Global.Instance().Player.Velocity.Y);
-    Event.Instance.EmitGemTempleTriggered();
+    EventHandler.Instance.EmitGemTempleTriggered();
     Global.Instance().Cutscene.ShowSomeNode(Global.Instance().Player, 10.0f, 3.2f);
   }
 
@@ -161,7 +161,7 @@ public partial class GemsTemple : Node2D {
     _currentState = States.ROTATION_PHASE;
     RotateGemsTween();
     StartRotationTimer();
-    Event.Instance.EmitGemEngineStarted();
+    EventHandler.Instance.EmitGemEngineStarted();
   }
 
   private void GoToCollectPhase() {
@@ -179,7 +179,7 @@ public partial class GemsTemple : Node2D {
   }
 
   private void GoToEndPhase() {
-    Event.Instance.EmitLevelCleared();
+    EventHandler.Instance.EmitLevelCleared();
   }
 
   // Tween animations

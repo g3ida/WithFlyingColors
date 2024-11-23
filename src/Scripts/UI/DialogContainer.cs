@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class DialogContainer : Control {
   private const float TWEEN_DURATION = 0.2f;
@@ -103,7 +104,7 @@ public partial class DialogContainer : Control {
       return;
     }
 
-    Event.Instance.EmitMenuButtonPressed(MenuButtons.CONFIRM_DIALOG);
+    EventHandler.Instance.EmitMenuButtonPressed(MenuButtons.CONFIRM_DIALOG);
     ShowNodes(); // just to make sure they are visible
     currentState = DialogStates.HIDING;
     PrepareTween(hiddenPosY);

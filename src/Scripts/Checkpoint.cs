@@ -1,7 +1,6 @@
 using Godot;
-using System;
 using System.Collections.Generic;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 // deprecated
 public partial class Checkpoint : Area2D, IPersistent {
@@ -32,7 +31,7 @@ public partial class Checkpoint : Area2D, IPersistent {
       _isChecked = true;
       save_data["is_checked"] = true;
       GetNode<AnimationPlayer>("CheckHole/CheckDot/AnimationPlayer").Play("Checkpoint");
-      Event.Instance.EmitCheckpointReached(this);
+      EventHandler.Instance.EmitCheckpointReached(this);
     }
   }
 

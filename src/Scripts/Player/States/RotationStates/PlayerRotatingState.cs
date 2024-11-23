@@ -1,6 +1,4 @@
-using Godot;
-using System;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerRotatingState : PlayerBaseState {
   private int rotationDirection;
@@ -18,7 +16,7 @@ public partial class PlayerRotatingState : PlayerBaseState {
   protected override void _Enter(Player player) {
     bool cumulateAngle = player.player_state.baseState != PlayerStatesEnum.SLIPPERING;
     playerRotation.Execute(rotationDirection, Constants.PI2, 0.1f, true, cumulateAngle, true);
-    Event.Instance.EmitPlayerRotate(rotationDirection);
+    EventHandler.Instance.EmitPlayerRotate(rotationDirection);
   }
 
   public override BaseState<Player> PhysicsUpdate(Player player, float delta) {
