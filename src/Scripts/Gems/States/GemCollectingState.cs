@@ -1,6 +1,5 @@
-using Godot;
-using System;
-using Wfc.Core.Event;
+
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class GemCollectingState : GemBaseState {
   public GemCollectingState() : base() {
@@ -18,7 +17,7 @@ public partial class GemCollectingState : GemBaseState {
 
   public override BaseState<Gem> OnAnimationFinished(Gem gem, string animName) {
     if (animName == "gem_collected_animation") {
-      Event.Instance.EmitGemCollected(
+      EventHandler.Instance.EmitGemCollected(
           gem.group_name,
           gem.AnimatedSpriteNode.GetGlobalTransformWithCanvas().Origin,
           gem.AnimatedSpriteNode.SpriteFrames);

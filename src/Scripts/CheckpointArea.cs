@@ -1,6 +1,6 @@
 using Godot;
 using System.Collections.Generic;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class CheckpointArea : Area2D, IPersistent {
   [Signal]
@@ -34,7 +34,7 @@ public partial class CheckpointArea : Area2D, IPersistent {
       _isChecked = true;
       _save_data["is_checked"] = true;
       EmitSignal(nameof(checkpoint_hit));
-      Event.Instance.EmitCheckpointReached(this);
+      EventHandler.Instance.EmitCheckpointReached(this);
     }
   }
 

@@ -40,7 +40,7 @@ public partial class LevelSelectMenu : GameMenu {
 
   private void OnBackButtonPressed() {
     if (!IsInTransitionState()) {
-      Event.Instance.EmitMenuButtonPressed(MenuButtons.BACK);
+      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.BACK);
     }
   }
 }

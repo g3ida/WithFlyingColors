@@ -10,6 +10,6 @@ public partial class StatsMenu : GameMenu {
   }
 
   private void OnBackButtonPressed() {
-    Event.Instance.EmitMenuButtonPressed(MenuButtons.BACK);
+    EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.BACK);
   }
 }

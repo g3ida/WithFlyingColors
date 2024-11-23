@@ -1,6 +1,5 @@
 using Godot;
-using System;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerDashingState : PlayerBaseState {
   private static readonly PackedScene DashGhost = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Player/DashGhost.tscn");
@@ -59,7 +58,7 @@ public partial class PlayerDashingState : PlayerBaseState {
       }
       else {
         dashDone = true;
-        Event.Instance.EmitPlayerDash(direction);
+        EventHandler.Instance.EmitPlayerDash(direction);
       }
     }
 

@@ -1,6 +1,5 @@
 using Godot;
-using System;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class KeyBindingController : Control, IUITab {
   [Signal]
@@ -19,7 +18,7 @@ public partial class KeyBindingController : Control, IUITab {
     else {
       GameSettings.Instance().BindActionToKeyboardKey(action, key);
       EmitSignal(nameof(on_action_bound_signal), action, key);
-      Event.Instance.EmitOnActionBound(action, key);
+      EventHandler.Instance.EmitOnActionBound(action, key);
     }
   }
 

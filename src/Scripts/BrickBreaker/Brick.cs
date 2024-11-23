@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
 public partial class Brick : Node2D {
@@ -31,7 +32,7 @@ public partial class Brick : Node2D {
   private void _on_Area2D_area_entered(Area2D area) {
     Vector2 extents = (_collisionShapeNode.Shape as RectangleShape2D).Size;
     EmitSignal(nameof(brick_broken));
-    Event.Instance.EmitBrickBroken(color_group, Position + (GetParent() as Node2D).Position + extents);
+    EventHandler.Instance.EmitBrickBroken(color_group, Position + (GetParent() as Node2D).Position + extents);
     QueueFree();
   }
 }

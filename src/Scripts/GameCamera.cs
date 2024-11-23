@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class GameCamera : Camera2D, IPersistent {
   public const float CAMERA_DRAG_JUMP = 0.45f;
@@ -137,19 +138,19 @@ public partial class GameCamera : Camera2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
-    Event.Instance.Connect(EventType.PlayerJumped, new Callable(this, nameof(_OnPlayerJump)));
-    Event.Instance.Connect(EventType.PlayerLand, new Callable(this, nameof(_OnPlayerLand)));
-    Event.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
+    EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
+    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Connect(EventType.PlayerJumped, new Callable(this, nameof(_OnPlayerJump)));
+    EventHandler.Instance.Connect(EventType.PlayerLand, new Callable(this, nameof(_OnPlayerLand)));
+    EventHandler.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
   }
 
   private void DisconnectSignals() {
-    Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
-    Event.Instance.Disconnect(EventType.PlayerJumped, new Callable(this, nameof(_OnPlayerJump)));
-    Event.Instance.Disconnect(EventType.PlayerLand, new Callable(this, nameof(_OnPlayerLand)));
-    Event.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Disconnect(EventType.PlayerJumped, new Callable(this, nameof(_OnPlayerJump)));
+    EventHandler.Instance.Disconnect(EventType.PlayerLand, new Callable(this, nameof(_OnPlayerLand)));
+    EventHandler.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
   }
 
   public override void _EnterTree() {

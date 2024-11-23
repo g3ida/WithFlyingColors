@@ -1,5 +1,5 @@
 using Godot;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class SlideAnimation : Node2D {
   private Node2D _thisNode;
@@ -36,6 +36,6 @@ public partial class SlideAnimation : Node2D {
   }
 
   private void Notify() {
-    Event.Instance.EmitSlideAnimationEnded(_animationName);
+    EventHandler.Instance.EmitSlideAnimationEnded(_animationName);
   }
 }

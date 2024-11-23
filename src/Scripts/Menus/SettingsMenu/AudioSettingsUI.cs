@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class AudioSettingsUI : Control, IUITab {
   private UISliderButton SfxSliderNode;
@@ -23,17 +24,17 @@ public partial class AudioSettingsUI : Control, IUITab {
 
   private void _on_SfxSlider_drag_ended() {
     GameSettings.Instance().SfxVolume = (float)SfxSliderNode.Value;
-    Event.Instance.EmitSfxVolumeChanged((float)SfxSliderNode.Value);
+    EventHandler.Instance.EmitSfxVolumeChanged((float)SfxSliderNode.Value);
   }
 
   private void _on_SfxSliderButton_value_changed(float value) {
     GameSettings.Instance().SfxVolume = value;
-    Event.Instance.EmitSfxVolumeChanged(value);
+    EventHandler.Instance.EmitSfxVolumeChanged(value);
   }
 
   private void _on_MusicSlider_value_changed(float value) {
     GameSettings.Instance().MusicVolume = value;
-    Event.Instance.EmitMusicVolumeChanged(value);
+    EventHandler.Instance.EmitMusicVolumeChanged(value);
   }
 
   public void on_gain_focus() {
@@ -41,10 +42,10 @@ public partial class AudioSettingsUI : Control, IUITab {
   }
 
   private void _on_SfxSlider_selection_changed(bool isSelected) {
-    Event.Instance.EmitSfxVolumeChanged(GameSettings.Instance().SfxVolume);
+    EventHandler.Instance.EmitSfxVolumeChanged(GameSettings.Instance().SfxVolume);
   }
 
   private void _on_MusicSlider_selection_changed(bool isSelected) {
-    Event.Instance.EmitMusicVolumeChanged(GameSettings.Instance().MusicVolume);
+    EventHandler.Instance.EmitMusicVolumeChanged(GameSettings.Instance().MusicVolume);
   }
 }

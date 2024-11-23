@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class MusicTrackManager : Node2D, IPersistent {
   public partial class Track {
@@ -267,13 +268,13 @@ public partial class MusicTrackManager : Node2D, IPersistent {
 
   public override void _EnterTree() {
     // AddToGroup("persist");
-    Event.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
-    Event.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
+    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
   }
 
   public override void _ExitTree() {
-    Event.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
-    Event.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
   }
 
   public void load(Dictionary<string, object> save_data) {

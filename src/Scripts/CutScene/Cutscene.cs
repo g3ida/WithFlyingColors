@@ -1,6 +1,6 @@
 using Godot;
-using System;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class Cutscene : Node2D {
   private const float DURATION = 0.1f;
@@ -39,13 +39,13 @@ public partial class Cutscene : Node2D {
   }
 
   public override void _EnterTree() {
-    Event.Instance.Connect(EventType.CutSceneRequestStart, new Callable(this, nameof(OnCutsceneRequestStart)));
-    Event.Instance.Connect(EventType.CutSceneRequestEnd, new Callable(this, nameof(OnCutsceneRequestEnd)));
+    EventHandler.Instance.Connect(EventType.CutSceneRequestStart, new Callable(this, nameof(OnCutsceneRequestStart)));
+    EventHandler.Instance.Connect(EventType.CutSceneRequestEnd, new Callable(this, nameof(OnCutsceneRequestEnd)));
   }
 
   public override void _ExitTree() {
-    Event.Instance.Disconnect(EventType.CutSceneRequestStart, new Callable(this, nameof(OnCutsceneRequestStart)));
-    Event.Instance.Disconnect(EventType.CutSceneRequestEnd, new Callable(this, nameof(OnCutsceneRequestEnd)));
+    EventHandler.Instance.Disconnect(EventType.CutSceneRequestStart, new Callable(this, nameof(OnCutsceneRequestStart)));
+    EventHandler.Instance.Disconnect(EventType.CutSceneRequestEnd, new Callable(this, nameof(OnCutsceneRequestEnd)));
   }
 
   public bool IsBusy() {
@@ -118,7 +118,7 @@ public partial class Cutscene : Node2D {
   public async void ShowSomeNode(Node2D node, float duration = 7.0f, float moveSpeed = 3.2f) {
     var cameraLastFocus = Global.Instance().Camera.follow;
     var cameraLastSpeed = Global.Instance().Camera.PositionSmoothingSpeed;
-    Event.Instance.EmitCutsceneRequestStart("my_cutScene");
+    EventHandler.Instance.EmitCutsceneRequestStart("my_cutScene");
 
     if (node != null) {
       Global.Instance().Camera.follow = node;
@@ -134,7 +134,7 @@ public partial class Cutscene : Node2D {
     timerNode.Start();
     await ToSignal(timerNode, "timeout");
 
-    Event.Instance.EmitCutsceneRequestEnd("my_cutScene");
+    EventHandler.Instance.EmitCutsceneRequestEnd("my_cutScene");
     Global.Instance().Camera.PositionSmoothingSpeed = cameraLastSpeed;
   }
 }

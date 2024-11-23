@@ -10,9 +10,8 @@ public partial class AutoloadManager : Node {
     Instance = GetTree().Root.GetNode<AutoloadManager>("AutoloadManager");
   }
 
-
   // TODO: load other scripts
-  public IEvent EventHandler => Event.Instance;
+  public IEventHandler EventHandler => Core.Event.EventHandler.Instance;
 
   public override void _Ready() {
     base._Ready();

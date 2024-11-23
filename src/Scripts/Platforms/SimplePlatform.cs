@@ -1,5 +1,6 @@
 using Godot;
 using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
 public partial class SimplePlatform : StaticBody2D {
@@ -108,12 +109,12 @@ public partial class SimplePlatform : StaticBody2D {
   private void ConnectSignals() {
     if (Engine.IsEditorHint())
       return;
-    Event.Instance.Connect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
+    EventHandler.Instance.Connect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
   }
 
   private void DisconnectSignals() {
     if (Engine.IsEditorHint())
       return;
-    Event.Instance.Disconnect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
+    EventHandler.Instance.Disconnect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
   }
 }

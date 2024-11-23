@@ -1,6 +1,5 @@
 using Godot;
-using System;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerJumpingState : PlayerBaseState {
   private const float TIME_UNTIL_FULL_JUMP_IS_CONSIDERED = 0.15f;
@@ -22,7 +21,7 @@ public partial class PlayerJumpingState : PlayerBaseState {
   protected override void _Enter(Player player) {
     entered = true;
     jumpTimer.Reset();
-    Event.Instance.EmitPlayerJumped();
+    EventHandler.Instance.EmitPlayerJumped();
     player.jumpParticlesNode.Emitting = true;
     player.ScaleCornersBy(FACE_SEPARATOR_SCALE_FACTOR);
   }

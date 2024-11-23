@@ -1,7 +1,7 @@
 using Godot;
 using System;
 using System.Linq;
-using Wfc.Core.Event;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BouncingBall : CharacterBody2D {
   [Export]
@@ -289,7 +289,7 @@ public partial class BouncingBall : CharacterBody2D {
 
   private void _on_Area2D_area_entered(Area2D area) {
     if (area == DeathZone) {
-      Event.Instance.EmitBouncingBallRemoved(this);
+      EventHandler.Instance.EmitBouncingBallRemoved(this);
       QueueFree();
       return;
     }
