@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://da8nidklmg0v"]
 
 [ext_resource type="PackedScene" path="res://Assets/Scenes/Tetris/BlockSprite.tscn" id="1"]
-[ext_resource type="Script" path="res://src/Scripts/Tetris/Block.cs" id="2"]
+[ext_resource type="Script" uid="uid://7cdct6onr7g4" path="res://src/Scripts/Tetris/Block.cs" id="2"]
 
 [sub_resource type="Animation" id="5"]
 resource_name = "Blink"
@@ -37,8 +37,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_re6bt"]
 _data = {
-"Blink": SubResource("5"),
-"RESET": SubResource("6")
+&"Blink": SubResource("5"),
+&"RESET": SubResource("6")
 }
 
 [sub_resource type="RectangleShape2D" id="3"]

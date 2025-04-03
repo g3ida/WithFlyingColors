@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://c4hq2bn66yx0g"]
 
-[ext_resource path="res://Assets/Styles/Themes/Dialog.tres" type="Theme" id=1]
+[ext_resource type="Theme" uid="uid://cd37bkdhivqji" path="res://Assets/Styles/Themes/Dialog.tres" id="1"]
 
 [node name="ResetSlotDialog" type="ConfirmationDialog"]
 anchor_left = 0.5
@@ -11,8 +11,8 @@ offset_left = -750.0
 offset_top = -205.5
 offset_right = 750.0
 offset_bottom = 205.5
-custom_minimum_size = Vector2( 1500, 411 )
-theme = ExtResource( 1 )
+custom_minimum_size = Vector2(1500, 411)
+theme = ExtResource("1")
 window_title = ""
 dialog_text = "Are you sure you want to delete current slot?"
 dialog_autowrap = true

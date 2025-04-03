@@ -1,17 +1,17 @@
 [gd_scene load_steps=5 format=3 uid="uid://6ijyjb4sawd4"]
 
-[ext_resource type="Script" path="res://src/Scripts/Piano/SolfegeBoard.cs" id="1"]
+[ext_resource type="Script" uid="uid://c2mqhmn7gtkoc" path="res://src/Scripts/Piano/SolfegeBoard.cs" id="1"]
 [ext_resource type="Texture2D" uid="uid://vjord6qrwefq" path="res://Assets/Sprites/Piano/music-paper-rect.png" id="2"]
-[ext_resource type="Shader" path="res://Assets/Shaders/FlipPage.gdshader" id="3"]
+[ext_resource type="Shader" uid="uid://xg7n41xe7vh6" path="res://Assets/Shaders/FlipPage.gdshader" id="3"]
 
 [sub_resource type="ShaderMaterial" id="2"]
 shader = ExtResource("3")
-shader_parameter/time = null
-shader_parameter/flip_left = null
-shader_parameter/flip_duration = null
-shader_parameter/cylinder_ratio = null
-shader_parameter/cylinder_direction = null
-shader_parameter/rect = null
+shader_parameter/time = 0.0
+shader_parameter/flip_left = false
+shader_parameter/flip_duration = 0.0
+shader_parameter/cylinder_ratio = 0.0
+shader_parameter/cylinder_direction = Vector2(0, 0)
+shader_parameter/rect = Vector2(0, 0)
 
 [node name="SolfegeBoard" type="Node2D"]
 z_index = -1

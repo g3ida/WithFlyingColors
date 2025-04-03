@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://c5okwit2w3v14" path="res://Assets/Sprites/Canons/canon-stand.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://dp06clfvxi4hb" path="res://Assets/Sprites/Canons/canon.png" id="2"]
-[ext_resource type="Script" path="res://src/Scripts/Canon.cs" id="3"]
+[ext_resource type="Script" uid="uid://dyvj7hrlre8g8" path="res://src/Scripts/Canon.cs" id="3"]
 [ext_resource type="AudioStream" uid="uid://bpom2wb1y45g2" path="res://Assets/sfx/shooting.ogg" id="4"]
 
 [sub_resource type="Animation" id="3"]
@@ -39,8 +39,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_fl6vi"]
 _data = {
-"RESET": SubResource("3"),
-"Shoot": SubResource("4")
+&"RESET": SubResource("3"),
+&"Shoot": SubResource("4")
 }
 
 [sub_resource type="RectangleShape2D" id="1"]

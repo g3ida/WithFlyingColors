@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://c38xg23elqtpo"]
 
-[ext_resource path="res://Assets/Fonts/KeyboardButton.tres" type="FontFile" id=1]
+[ext_resource type="FontFile" path="res://Assets/Fonts/KeyboardButton.tres" id="1"]
 
 [node name="Tutorial Text" type="Label"]
 offset_right = 126.0
 offset_bottom = 51.0
-theme_override_fonts/font = ExtResource( 1 )
+theme_override_fonts/font = ExtResource("1")

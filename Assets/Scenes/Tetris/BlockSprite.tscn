@@ -1,22 +1,22 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://63ve5culn8p0"]
 
 [ext_resource type="Texture2D" uid="uid://1vnb1c5gq8hl" path="res://Assets/Sprites/Tetris/block-base.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://dsooctionix57" path="res://Assets/Sprites/Tetris/block-top.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://ehvuy0sskh6" path="res://Assets/Sprites/Tetris/block-sublayer-1.png" id="3"]
 [ext_resource type="Texture2D" uid="uid://rlth8884jhbw" path="res://Assets/Sprites/Tetris/block-sublayer-2.png" id="4"]
-[ext_resource type="Script" path="res://src/Scripts/Tetris/BlockSprite.cs" id="5"]
+[ext_resource type="Script" uid="uid://d2ga27lrgyy12" path="res://src/Scripts/Tetris/BlockSprite.cs" id="5"]
 
 [node name="BlockSprite" type="Node2D"]
-script = ExtResource( 5 )
+script = ExtResource("5")
 
 [node name="Layer1" type="Sprite2D" parent="."]
-texture = ExtResource( 3 )
+texture = ExtResource("3")
 
 [node name="Layer2" type="Sprite2D" parent="."]
-texture = ExtResource( 4 )
+texture = ExtResource("4")
 
 [node name="TopLayer" type="Sprite2D" parent="."]
-texture = ExtResource( 2 )
+texture = ExtResource("2")
 
 [node name="Base" type="Sprite2D" parent="."]
-texture = ExtResource( 1 )
+texture = ExtResource("1")

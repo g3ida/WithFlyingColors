@@ -1,54 +1,54 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://mse8oeqaols0"]
 
-[ext_resource type="Script" path="res://src/Scripts/UI/SlotButton.cs" id="1"]
+[ext_resource type="Script" uid="uid://ccop7gsj5lyeq" path="res://src/Scripts/UI/SlotButton.cs" id="1"]
 [ext_resource type="Texture2D" uid="uid://cnpug64xvipka" path="res://Assets/Sprites/UI/trash.png" id="2"]
 
-[sub_resource type="Animation" id=2]
+[sub_resource type="Animation" id="2"]
 resource_name = "Blink"
-loop = true
+loop_mode = 1
 tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
 tracks/0/path = NodePath(".:self_modulate")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
 tracks/0/keys = {
-"times": PackedFloat32Array( 0, 0.5, 1 ),
-"transitions": PackedFloat32Array( 1, 1, 1 ),
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [ Color( 1, 1, 1, 1 ), Color( 0.839216, 0.839216, 0.839216, 1 ), Color( 1, 1, 1, 1 ) ]
+"values": [Color(1, 1, 1, 1), Color(0.839216, 0.839216, 0.839216, 1), Color(1, 1, 1, 1)]
 }
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id="3"]
 length = 0.001
 tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
 tracks/0/path = NodePath(".:self_modulate")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
 tracks/0/keys = {
-"times": PackedFloat32Array( 0 ),
-"transitions": PackedFloat32Array( 1 ),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [ Color( 1, 1, 1, 1 ) ]
+"values": [Color(1, 1, 1, 1)]
 }
 
 [node name="SlotButton" type="ColorRect"]
 offset_bottom = 40.0
-color = Color( 0.941176, 0.0431373, 0.0431373, 1 )
-script = ExtResource( 1 )
+color = Color(0.941176, 0.0431373, 0.0431373, 1)
+script = ExtResource("1")
 
 [node name="Button" type="Button" parent="."]
 focus_mode = 0
 focus_mode = 0
-icon = ExtResource( 2 )
+icon = ExtResource("2")
 flat = true
 icon_alignment = 1
 
 [node name="BlinkAnimationPlayer" type="AnimationPlayer" parent="."]
-anims/Blink = SubResource( 2 )
-anims/RESET = SubResource( 3 )
+anims/Blink = SubResource("2")
+anims/RESET = SubResource("3")
 
 [connection signal="mouse_entered" from="Button" to="." method="_on_Button_mouse_entered"]
 [connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]

@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://bijboehpv0gsh"]
 
 [ext_resource type="PackedScene" uid="uid://bmemjogxagwn1" path="res://Assets/Scenes/ScreenShaders.tscn" id="1"]
-[ext_resource type="Script" path="res://src/Scripts/UI/PauseMenu.cs" id="2"]
+[ext_resource type="Script" uid="uid://d20xxw2eye0x0" path="res://src/Scripts/UI/PauseMenu.cs" id="2"]
 [ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="3"]
-[ext_resource type="Script" path="res://src/Scripts/Menus/PauseMenu/PauseScreenMenu.cs" id="4"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/PauseMenuButtons.tscn" id="5"]
+[ext_resource type="Script" uid="uid://b6cgusbhus5ak" path="res://src/Scripts/Menus/PauseMenu/PauseScreenMenu.cs" id="4"]
+[ext_resource type="PackedScene" uid="uid://c2h1gfeegghf7" path="res://Assets/Scenes/UI/PauseMenuButtons.tscn" id="5"]
 
 [node name="PauseScreen" type="CanvasLayer"]
 process_mode = 3

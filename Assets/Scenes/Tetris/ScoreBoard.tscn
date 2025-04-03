@@ -1,27 +1,27 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://bir8vihuohasj"]
 
 [ext_resource type="FontFile" path="res://Assets/Fonts/pixel_scoreboard.tres" id="1"]
-[ext_resource type="Script" path="res://src/Scripts/Tetris/ScoreBoard.cs" id="2"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/Tetris/ScoreBlinkingLabel.tscn" id="3"]
+[ext_resource type="Script" uid="uid://65y4r4f2eep2" path="res://src/Scripts/Tetris/ScoreBoard.cs" id="2"]
+[ext_resource type="PackedScene" uid="uid://bg412nqmnxju3" path="res://Assets/Scenes/Tetris/ScoreBlinkingLabel.tscn" id="3"]
 
 [node name="ScoreBoard" type="Node2D"]
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="Background" type="ColorRect" parent="."]
 offset_right = 504.0
 offset_bottom = 288.0
-color = Color( 0, 0.027451, 0.027451, 1 )
+color = Color(0, 0.027451, 0.027451, 1)
 
 [node name="Background2" type="ColorRect" parent="."]
 offset_left = 18.0
 offset_top = 18.0
 offset_right = 486.0
 offset_bottom = 270.0
-color = Color( 0, 0.12549, 0.12549, 1 )
+color = Color(0, 0.12549, 0.12549, 1)
 
-[node name="Score" parent="." instance=ExtResource( 3 )]
+[node name="Score" parent="." instance=ExtResource("3")]
 
-[node name="Level" parent="." instance=ExtResource( 3 )]
+[node name="Level" parent="." instance=ExtResource("3")]
 offset_top = 133.0
 offset_bottom = 181.0
 text = "LEVEL:"
@@ -31,7 +31,7 @@ offset_left = 35.0
 offset_top = 220.0
 offset_right = 108.0
 offset_bottom = 268.0
-theme_override_fonts/font = ExtResource( 1 )
+theme_override_fonts/font = ExtResource("1")
 text = "HI"
 
 [node name="HiScore2" type="Label" parent="."]
@@ -39,5 +39,5 @@ offset_left = 115.0
 offset_top = 220.0
 offset_right = 335.0
 offset_bottom = 268.0
-theme_override_fonts/font = ExtResource( 1 )
+theme_override_fonts/font = ExtResource("1")
 text = "SCORE:"

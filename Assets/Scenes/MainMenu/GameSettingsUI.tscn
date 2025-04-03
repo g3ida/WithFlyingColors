@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://Assets/Scenes/UI/UISelect.tscn" id="1"]
 [ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="3"]
-[ext_resource type="Script" path="res://src/Scripts/Menus/SettingsMenu/GameSettingsUI.cs" id="4"]
+[ext_resource type="Script" uid="uid://cv7308w3b0xaq" path="res://src/Scripts/Menus/SettingsMenu/GameSettingsUI.cs" id="4"]
 [ext_resource type="PackedScene" path="res://Assets/Scenes/UI/Checkbox.tscn" id="5"]
 
 [node name="Control" type="Control"]
