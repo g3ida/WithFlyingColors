@@ -1,10 +1,10 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://d0peixom16g6r"]
 
-[ext_resource path="res://Assets/Sprites/BrickBreaker/3_balls.png" type="Texture2D" id=1]
-[ext_resource path="res://Assets/Scenes/BrickBreaker/Powerups/TripleBallsPowerUpScript.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Assets/Scenes/BrickBreaker/Powerups/PowerUp.tscn" type="PackedScene" id=3]
+[ext_resource type="Texture2D" uid="uid://cv01irv3wv11p" path="res://Assets/Sprites/BrickBreaker/3_balls.png" id="1"]
+[ext_resource type="PackedScene" path="res://Assets/Scenes/BrickBreaker/Powerups/TripleBallsPowerUpScript.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://b3qln8gue8c2g" path="res://Assets/Scenes/BrickBreaker/Powerups/PowerUp.tscn" id="3"]
 
-[node name="PowerUp" instance=ExtResource( 3 )]
+[node name="PowerUp" instance=ExtResource("3")]
 color_group = "green"
-texture = ExtResource( 1 )
-on_hit_script = ExtResource( 2 )
+texture = ExtResource("1")
+on_hit_script = ExtResource("2")

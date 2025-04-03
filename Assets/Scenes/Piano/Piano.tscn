@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://2w3xtnwrrjwt" path="res://Assets/Scenes/Piano/PianoNote.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://Assets/Scenes/Piano/SharpNotes.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://bhd5qa1cqyrq0" path="res://Assets/Scenes/Piano/PianoBase.tscn" id="3"]
-[ext_resource type="Script" path="res://src/Scripts/Piano/Piano.cs" id="4"]
+[ext_resource type="Script" uid="uid://uq2os6r0ykr5" path="res://src/Scripts/Piano/Piano.cs" id="4"]
 [ext_resource type="PackedScene" uid="uid://6ijyjb4sawd4" path="res://Assets/Scenes/Piano/SolfegeBoard.tscn" id="5"]
 [ext_resource type="Texture2D" uid="uid://b78gdlrqb2xs2" path="res://Assets/Sprites/Piano/letters/letter-f.png" id="6"]
 [ext_resource type="Texture2D" uid="uid://dfsr0q1v1qxfq" path="res://Assets/Sprites/Piano/letters/letter-d.png" id="7"]

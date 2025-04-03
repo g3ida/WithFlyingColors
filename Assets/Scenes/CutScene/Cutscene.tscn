@@ -1,9 +1,9 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://0cgvvyxmoalw"]
 
-[ext_resource type="Script" path="res://src/Scripts/CutScene/Cutscene.cs" id="1"]
+[ext_resource type="Script" uid="uid://bu4hnd1gq2nlg" path="res://src/Scripts/CutScene/Cutscene.cs" id="1"]
 
 [node name="Cutscene" type="Node2D"]
-script = ExtResource( 1 )
+script = ExtResource("1")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 visible = false
@@ -15,14 +15,14 @@ anchor_bottom = 1.0
 [node name="TopRect" type="ColorRect" parent="CanvasLayer/Control"]
 anchor_right = 1.0
 offset_bottom = 20.0
-color = Color( 0, 0, 0, 1 )
+color = Color(0, 0, 0, 1)
 
 [node name="BottomRect" type="ColorRect" parent="CanvasLayer/Control"]
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_bottom = 100.0
-color = Color( 0, 0, 0, 1 )
+color = Color(0, 0, 0, 1)
 
 [node name="Timer" type="Timer" parent="."]
 one_shot = true

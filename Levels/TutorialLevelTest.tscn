@@ -1,10 +1,10 @@
 [gd_scene load_steps=7 format=3 uid="uid://cfjj8aoguabby"]
 
-[ext_resource type="PackedScene" path="res://Assets/Scenes/Level/Level.tscn" id="1_im33u"]
+[ext_resource type="PackedScene" uid="uid://dmrllj22gpdev" path="res://Assets/Scenes/Level/Level.tscn" id="1_im33u"]
 [ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://Assets/Scenes/Fallzone.tscn" id="2_83hh6"]
 [ext_resource type="Shader" uid="uid://dhb7ksqjukmfx" path="res://Assets/Shaders/ColorSplash.tres" id="3_qbyjc"]
 [ext_resource type="TileSet" uid="uid://dsverl2jjlm71" path="res://Assets/Tilesets/TutorialLevel.tres" id="4_04g8t"]
-[ext_resource type="Script" path="res://src/Scripts/Platforms/PlatformTileMap.cs" id="5_r0dup"]
+[ext_resource type="Script" uid="uid://saay1hdwowdk" path="res://src/Scripts/Platforms/PlatformTileMap.cs" id="5_r0dup"]
 
 [sub_resource type="ShaderMaterial" id="32"]
 shader = ExtResource("3_qbyjc")

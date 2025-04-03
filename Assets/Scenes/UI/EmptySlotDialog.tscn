@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://dusghp8vqnc10"]
 
-[ext_resource path="res://Assets/Styles/Themes/Dialog.tres" type="Theme" id=1]
+[ext_resource type="Theme" uid="uid://cd37bkdhivqji" path="res://Assets/Styles/Themes/Dialog.tres" id="1"]
 
 [node name="EmptySlotDialog" type="AcceptDialog"]
 anchor_left = 0.5
@@ -11,6 +11,6 @@ offset_left = -443.5
 offset_top = -81.0
 offset_right = 443.5
 offset_bottom = 81.0
-theme = ExtResource( 1 )
+theme = ExtResource("1")
 window_title = ""
 dialog_text = "You can't load an empty slot."

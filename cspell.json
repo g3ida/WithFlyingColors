@@ -16,6 +16,7 @@
     "**/*.wav",
     "**/*.png",
     "**/*.godot",
+    "**/*.uid",
     "**/PresetSkins.cs",
     "src/Scripts/Skin/SkinLoader.cs",
     "Assets/Locale/**/*.*"

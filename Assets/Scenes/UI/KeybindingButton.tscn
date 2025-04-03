@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://6aenyg5mnntr"]
 
-[ext_resource type="Script" path="res://src/Scripts/Menus/SettingsMenu/KeyBindingButton.cs" id="1"]
+[ext_resource type="Script" uid="uid://b84i603u2gm6" path="res://src/Scripts/Menus/SettingsMenu/KeyBindingButton.cs" id="1"]
 
 [sub_resource type="StyleBoxFlat" id="10"]
 bg_color = Color(1, 1, 1, 0)
@@ -41,8 +41,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_k0smu"]
 _data = {
-"Blink": SubResource("11"),
-"RESET": SubResource("12")
+&"Blink": SubResource("11"),
+&"RESET": SubResource("12")
 }
 
 [node name="KeyBindingButton" type="Button"]

@@ -1,8 +1,8 @@
 [gd_scene load_steps=12 format=3 uid="uid://bmemjogxagwn1"]
 
-[ext_resource type="Script" path="res://src/Scripts/ScreenShaders.cs" id="1"]
-[ext_resource type="Shader" path="res://Assets/Shaders/SimpleBlur.gdshader" id="2"]
-[ext_resource type="Shader" path="res://Assets/Scenes/DarkerShader.gdshader" id="3"]
+[ext_resource type="Script" uid="uid://dfr2ti18d16e0" path="res://src/Scripts/ScreenShaders.cs" id="1"]
+[ext_resource type="Shader" uid="uid://di0wciorqyigp" path="res://Assets/Shaders/SimpleBlur.gdshader" id="2"]
+[ext_resource type="Shader" uid="uid://d2tpumhdksrie" path="res://Assets/Scenes/DarkerShader.gdshader" id="3"]
 
 [sub_resource type="ShaderMaterial" id="6"]
 shader = ExtResource("3")
@@ -41,8 +41,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ffhbl"]
 _data = {
-"Blackout": SubResource("7"),
-"RESET": SubResource("8")
+&"Blackout": SubResource("7"),
+&"RESET": SubResource("8")
 }
 
 [sub_resource type="ShaderMaterial" id="10"]
@@ -82,8 +82,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ua428"]
 _data = {
-"Blur": SubResource("11"),
-"RESET": SubResource("12")
+&"Blur": SubResource("11"),
+&"RESET": SubResource("12")
 }
 
 [node name="ScreenShaders" type="CanvasLayer"]

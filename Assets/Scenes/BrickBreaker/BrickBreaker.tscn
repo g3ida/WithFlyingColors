@@ -2,9 +2,9 @@
 
 [ext_resource type="TileSet" path="res://Assets/Tilesets/Tetrisl.tres" id="1"]
 [ext_resource type="PackedScene" uid="uid://jvha6yhkab4s" path="res://Assets/Scenes/BrickBreaker/SlidingDoor.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/BrickBreaker/Powerups/BrickPowerUpHandler.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://f545keysmn6i" path="res://Assets/Scenes/BrickBreaker/Powerups/BrickPowerUpHandler.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://Assets/Scenes/CheckpointArea.tscn" id="4"]
-[ext_resource type="Script" path="res://src/Scripts/BrickBreaker/BrickBreaker.cs" id="5"]
+[ext_resource type="Script" uid="uid://buts64t08ub7n" path="res://src/Scripts/BrickBreaker/BrickBreaker.cs" id="5"]
 [ext_resource type="PackedScene" uid="uid://byyce56nk7v2h" path="res://Assets/Scenes/Tetris/SlidingFloor.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://cld6ulwmybvf1" path="res://Assets/Scenes/BrickBreaker/DeathZone.tscn" id="8"]

@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://ca0rglirtoscy"]
 
-[ext_resource type="Script" path="res://src/Scripts/BrickBreaker/Powerups/ProtectionArea.cs" id="1"]
-[ext_resource type="Shader" path="res://Assets/Shaders/LazerBeam.gdshader" id="2"]
+[ext_resource type="Script" uid="uid://cjeeg04nm6tgu" path="res://src/Scripts/BrickBreaker/Powerups/ProtectionArea.cs" id="1"]
+[ext_resource type="Shader" uid="uid://clljdlovye5nq" path="res://Assets/Shaders/LazerBeam.gdshader" id="2"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(1224, 5.6)

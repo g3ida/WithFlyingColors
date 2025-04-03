@@ -1,11 +1,11 @@
 [gd_scene load_steps=9 format=3 uid="uid://blvx7jvnm42bp"]
 
-[ext_resource type="Script" path="res://src/Scripts/Menus/LevelSelectMenu/LevelSelectMenu.cs" id="1"]
+[ext_resource type="Script" uid="uid://c5475uonpp1u5" path="res://src/Scripts/Menus/LevelSelectMenu/LevelSelectMenu.cs" id="1"]
 [ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" id="2"]
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="3"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/UITransition.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://Assets/Scenes/UI/UITransition.tscn" id="4"]
 [ext_resource type="StyleBox" path="res://Assets/Styles/MenuButtonPressedStyle.tres" id="5"]
-[ext_resource type="Script" path="res://src/Scripts/Menus/MainMenu/BackButton.cs" id="6"]
+[ext_resource type="Script" uid="uid://bs3qantpxmo15" path="res://src/Scripts/Menus/MainMenu/BackButton.cs" id="6"]
 [ext_resource type="Texture2D" uid="uid://ccjrqyrj01x5f" path="res://Assets/Sprites/MainMenu/ArrowBack.png" id="7"]
 
 [sub_resource type="StyleBoxEmpty" id="1"]

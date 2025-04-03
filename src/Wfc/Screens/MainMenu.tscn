@@ -3,10 +3,10 @@
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="1"]
 [ext_resource type="PackedScene" uid="uid://e4osajb7jluk" path="res://src/Wfc/Entities/Ui/Menubox/MenuBox.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" id="3"]
-[ext_resource type="Script" path="res://src/Wfc/Screens/MainMenu.cs" id="4"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/UITransition.tscn" id="5"]
+[ext_resource type="Script" uid="uid://lgi18xjhl71v" path="res://src/Wfc/Screens/MainMenu.cs" id="4"]
+[ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://Assets/Scenes/UI/UITransition.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://Assets/Scenes/UI/DialogContainer.tscn" id="6"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/ResetSlotDialog.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://c4hq2bn66yx0g" path="res://Assets/Scenes/UI/ResetSlotDialog.tscn" id="7"]
 [ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="8"]
 
 [node name="MainMenu" type="Control"]

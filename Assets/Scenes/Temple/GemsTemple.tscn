@@ -2,8 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://o3dp0as2sa1j" path="res://Assets/Sprites/Temple/gem_temple.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://lvlt35y8k2ss" path="res://Assets/Sprites/Temple/temple_gem.png" id="2"]
-[ext_resource type="Script" path="res://src/Scripts/Temple/GemsTemple.cs" id="3"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" id="4"]
+[ext_resource type="Script" uid="uid://bkuxo70xqwexw" path="res://src/Scripts/Temple/GemsTemple.cs" id="3"]
+[ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://bc7aekxv6ksux" path="res://Assets/Sprites/Temple/temple_bloom.png" id="5"]
 
 [sub_resource type="RectangleShape2D" id="1"]

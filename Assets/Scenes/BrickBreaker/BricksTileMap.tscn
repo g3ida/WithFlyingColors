@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://cmitplat3raxy"]
 
 [ext_resource type="TileSet" path="res://Assets/Tilesets/BricksTileMap.tres" id="1"]
-[ext_resource type="Script" path="res://src/Scripts/BrickBreaker/BricksLevelTilemap.cs" id="3"]
-[ext_resource type="Script" path="res://src/Scripts/BrickBreaker/BricksTileMap.cs" id="4"]
+[ext_resource type="Script" uid="uid://br8pwqgdefaqu" path="res://src/Scripts/BrickBreaker/BricksLevelTilemap.cs" id="3"]
+[ext_resource type="Script" uid="uid://dh4in1qpbwb2c" path="res://src/Scripts/BrickBreaker/BricksTileMap.cs" id="4"]
 
 [node name="BricksTileMap" type="Node2D"]
 script = ExtResource("4")

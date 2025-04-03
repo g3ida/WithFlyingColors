@@ -1,10 +1,10 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://g35jlyo0jxb4"]
 
-[ext_resource type="Script" path="res://src/Scripts/UI/UITransition.cs" id="1"]
+[ext_resource type="Script" uid="uid://caw1hbcbodhph" path="res://src/Scripts/UI/UITransition.cs" id="1"]
 
 [node name="UITransition" type="Control"]
 offset_left = 57.0
 offset_top = 272.0
 offset_right = 97.0
 offset_bottom = 312.0
-script = ExtResource( 1 )
+script = ExtResource("1")

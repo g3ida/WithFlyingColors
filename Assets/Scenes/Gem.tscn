@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://bmm6ljhdxphee"]
 
 [ext_resource type="SpriteFrames" path="res://Assets/Animations/gem_yellow_frames.tres" id="1"]
-[ext_resource type="Script" path="res://src/Scripts/Gems/Gem.cs" id="2"]
+[ext_resource type="Script" uid="uid://dex223j4dwk1r" path="res://src/Scripts/Gems/Gem.cs" id="2"]
 [ext_resource type="Texture2D" uid="uid://chvqjbfg518w8" path="res://Assets/Sprites/Lightmaps/shine_light.png" id="3"]
 [ext_resource type="AudioStream" uid="uid://dtik2lxephkbn" path="res://Assets/sfx/shine.ogg" id="4"]
 
@@ -39,8 +39,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_7562j"]
 _data = {
-"RESET": SubResource("4"),
-"gem_collected_animation": SubResource("3")
+&"RESET": SubResource("4"),
+&"gem_collected_animation": SubResource("3")
 }
 
 [node name="Gem" type="Area2D" groups=["persist"]]
