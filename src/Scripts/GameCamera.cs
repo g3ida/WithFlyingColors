@@ -1,10 +1,10 @@
-using Godot;
 using System;
 using System.Collections.Generic;
+using Godot;
 using Wfc.Core.Event;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-public partial class GameCamera : Camera2D, IPersistent {
+public partial class GameCamera : Camera2D {
   public const float CAMERA_DRAG_JUMP = 0.45f;
 
   [Export] public NodePath follow_path { get; set; }

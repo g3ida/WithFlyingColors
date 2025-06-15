@@ -1,6 +1,10 @@
 namespace Wfc.Screens.MenuManager;
 
+using System;
 using Godot;
+using Wfc.Screens.Levels;
+using Wfc.Screens.MenuManager.Menus.MainMenu;
+using Wfc.Utils.Attributes;
 
 public class MenuManager : IMenuManager {
 
@@ -16,26 +20,31 @@ public class MenuManager : IMenuManager {
   }
 
 
-  public string? LevelScenePath {
+  public LevelId? LevelId {
     get; private set;
   }
 
-  private string? GetMenuScenePath(GameMenus menu) {
+  public string? GetMenuScenePath(GameMenus menu) {
     if (menu == GameMenus.GAME) {
-      return MenuScenes.SCENE_ORCHESTER_SCENE;
+      return GetScenePath<SceneOrchester>();
     }
     else {
-      LevelScenePath = "";
+      LevelId = null;
       return menu switch {
-        GameMenus.SETTINGS_MENU => MenuScenes.SETTINGS_MENU_SCENE,
-        GameMenus.STATS_MENU => MenuScenes.STATS_MENU_SCENE,
-        GameMenus.MAIN_MENU => MenuScenes.MAIN_MENU_SCENE,
-        GameMenus.LEVEL_CLEAR_MENU => MenuScenes.LEVEL_CLEAR_SCENE,
-        GameMenus.SELECT_SLOT => MenuScenes.SELECT_SLOT_SCENE,
-        GameMenus.LEVEL_SELECT_MENU => MenuScenes.LEVEL_SELECT_SCENE,
+        GameMenus.SETTINGS_MENU => GetScenePath<SettingsMenu>(),
+        GameMenus.STATS_MENU => GetScenePath<StatsMenu>(),
+        GameMenus.MAIN_MENU => GetScenePath<MainMenu>(),
+        GameMenus.LEVEL_CLEAR_MENU => GetScenePath<LevelClearedMenu>(),
+        GameMenus.SELECT_SLOT => GetScenePath<SelectSlotMenu>(),
+        GameMenus.LEVEL_SELECT_MENU => GetScenePath<LevelSelectMenu>(),
         _ => null,
       };
     }
+  }
+
+  private static string? GetScenePath<T>() where T : class {
+    var attribute = Attribute.GetCustomAttribute(typeof(T), typeof(ScenePathAttribute)) as ScenePathAttribute;
+    return attribute?.Path;
   }
 
   public void GoToMenu(GameMenus nextMenu) {
@@ -57,16 +66,16 @@ public class MenuManager : IMenuManager {
     return _previousMenu;
   }
 
-  public string? GetCurrentLevelScenePath() {
-    return LevelScenePath;
+  public LevelId? GetCurrentLevelId() {
+    return LevelId;
   }
 
   public void GoToPreviousMenu() {
     GoToMenu(_previousMenu);
   }
 
-  public void SetCurrentLevel(string levelScenePath) {
-    LevelScenePath = levelScenePath;
+  public void SetCurrentLevel(LevelId levelId) {
+    LevelId = levelId;
   }
 
   public void SwitchScene(string scenePath) {

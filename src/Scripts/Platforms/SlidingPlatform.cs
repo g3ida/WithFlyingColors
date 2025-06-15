@@ -1,10 +1,10 @@
-using Godot;
 using System;
 using System.Collections.Generic;
+using Godot;
 using Wfc.Core.Event;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-public partial class SlidingPlatform : Node2D, IPersistent {
+public partial class SlidingPlatform : Node2D {
   public enum State {
     WAIT_1,
     SLIDING_FORTH,
@@ -210,7 +210,8 @@ public partial class SlidingPlatform : Node2D, IPersistent {
         return State.WAIT_1;
       default:
         return state;
-    };
+    }
+    ;
   }
 
   private void OnTweenCompleted() {
@@ -235,7 +236,8 @@ public partial class SlidingPlatform : Node2D, IPersistent {
         return _endPos;
       default:
         return GlobalPosition;
-    };
+    }
+    ;
   }
 
   private Vector2 GetSourcePosition() {
@@ -248,7 +250,8 @@ public partial class SlidingPlatform : Node2D, IPersistent {
         return _startPos;
       default:
         return GlobalPosition;
-    };
+    }
+    ;
   }
 
   public void load(Dictionary<string, object> save_data) {

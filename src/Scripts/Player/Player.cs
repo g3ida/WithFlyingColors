@@ -1,10 +1,10 @@
-using Godot;
 using System;
 using System.Collections.Generic;
+using Godot;
 using Wfc.Core.Event;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-public partial class Player : CharacterBody2D, IPersistent {
+public partial class Player : CharacterBody2D {
   public const float SQUEEZE_ANIM_DURATION = 0.17f;
   public const float SCALE_ANIM_DURATION = 0.17f;
 

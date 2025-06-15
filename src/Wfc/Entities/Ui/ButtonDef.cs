@@ -1,4 +1,6 @@
 namespace Wfc.Entities.Ui;
+
+using Wfc.Core.Persistence;
 using Wfc.Screens.MenuManager;
 
 public class ButtonDef {
@@ -16,9 +18,9 @@ public class ButtonDef {
 }
 
 public static class ButtonsConditionsExtensions {
-  public static bool Verify(this ButtonDef.ButtonCondition buttonDef) => buttonDef switch {
-    ButtonDef.ButtonCondition.IsDirtySlot => SaveGame.Instance().DoesSlotHaveProgress(SaveGame.Instance().CurrentSlotIndex),
-    ButtonDef.ButtonCondition.IsVirginSlot => !SaveGame.Instance().DoesSlotHaveProgress(SaveGame.Instance().CurrentSlotIndex),
+  public static bool Verify(this ButtonDef.ButtonCondition buttonDef, ISaveManager saveManager) => buttonDef switch {
+    ButtonDef.ButtonCondition.IsDirtySlot => (saveManager.GetSlotMetaData()?.Progress ?? 0) > 0,
+    ButtonDef.ButtonCondition.IsVirginSlot => (saveManager.GetSlotMetaData()?.Progress ?? 0) == 0,
     ButtonDef.ButtonCondition.None => false,
     _ => false,
   };

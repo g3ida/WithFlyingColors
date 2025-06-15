@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://c175pcq8mebn3"]
-
-[ext_resource type="Script" uid="uid://8fl71v4iafve" path="res://src/Scripts/SceneOrchester.cs" id="1"]
-
-[node name="SceneOrchester" type="Node2D"]
-script = ExtResource("1")

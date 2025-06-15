@@ -1,9 +1,9 @@
-using Godot;
 using System.Collections.Generic;
+using Godot;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 // deprecated
-public partial class Checkpoint : Area2D, IPersistent {
+public partial class Checkpoint : Area2D {
   [Export]
   public string color_group { get; set; }
   private bool _isChecked = false;
@@ -33,14 +33,5 @@ public partial class Checkpoint : Area2D, IPersistent {
       GetNode<AnimationPlayer>("CheckHole/CheckDot/AnimationPlayer").Play("Checkpoint");
       EventHandler.Instance.EmitCheckpointReached(this);
     }
-  }
-
-  Dictionary<string, object> IPersistent.save() {
-    return save_data;
-  }
-
-  public void load(Dictionary<string, object> save_data) {
-    this.save_data = save_data;
-    reset();
   }
 }
