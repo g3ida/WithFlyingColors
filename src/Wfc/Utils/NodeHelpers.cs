@@ -1,6 +1,7 @@
 
 namespace Wfc.Utils;
 
+using System.Collections.Generic;
 using System.Reflection;
 using Godot;
 using Wfc.Utils.Attributes;
@@ -22,6 +23,16 @@ public static class NodePathHelper {
         else {
           GD.PrintErr($"Unable to assign node at path '{path}' to field '{field.Name}'.");
         }
+      }
+    }
+  }
+
+  public static IEnumerable<Node> GetChildrenRecursive(this Node node) {
+    foreach (var child in node.GetChildren()) {
+      yield return child;
+
+      foreach (var descendant in child.GetChildrenRecursive()) {
+        yield return descendant;
       }
     }
   }

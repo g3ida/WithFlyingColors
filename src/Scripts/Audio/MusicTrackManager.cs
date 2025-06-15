@@ -1,10 +1,10 @@
-using Godot;
 using System;
 using System.Collections.Generic;
+using Godot;
 using Wfc.Core.Event;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-public partial class MusicTrackManager : Node2D, IPersistent {
+public partial class MusicTrackManager : Node2D {
   public partial class Track {
     public string Name { get; }
     public AudioStreamPlayer Stream { get; }

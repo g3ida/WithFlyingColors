@@ -3,11 +3,11 @@ namespace Wfc.Entities.Ui.Menubox;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
-using Wfc.Screens.MenuManager;
 using Wfc.Entities.World.Player;
+using Wfc.Screens;
+using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using Wfc.Screens;
 using EventHandler = Core.Event.EventHandler;
 
 [ScenePath]

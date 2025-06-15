@@ -4,7 +4,7 @@ using Godot;
 
 public class LocalizationService : ILocalizationService {
   public string GetLocalizedString(TranslationKey key) {
-    var keyName = key.ToTranslationKeyString();
+    var keyName = key.ToTranslationKeyStringSafe();
     return TranslationServer.Translate(keyName);
   }
 }

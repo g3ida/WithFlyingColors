@@ -1,94 +1,104 @@
-using Godot;
 using System;
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
+using Godot;
+using Wfc.Core.Persistence;
 
+[Meta(typeof(IAutoNode))]
 public partial class SlotsContainer : Control {
-    [Signal]
-    public delegate void slot_pressedEventHandler(int id, string action);
+  [Signal]
+  public delegate void slot_pressedEventHandler(int id, string action);
 
-    [Export]
-    public bool centered_on_screen_v = false;
-    [Export]
-    public bool centered_on_screen_h = false;
+  [Export]
+  public bool centered_on_screen_v = false;
+  [Export]
+  public bool centered_on_screen_h = false;
 
-    private Control _boxContainerNode;
-    private SaveSlot _saveSlot1Node;
-    private SaveSlot _saveSlot2Node;
-    private SaveSlot _saveSlot3Node;
-    private SaveSlot[] _saveSlots;
+  private Control _boxContainerNode;
+  private SaveSlot _saveSlot1Node;
+  private SaveSlot _saveSlot2Node;
+  private SaveSlot _saveSlot3Node;
+  private SaveSlot[] _saveSlots;
 
-    public override void _Ready() {
-        _boxContainerNode = GetNode<Control>("HBoxContainer");
-        _saveSlot1Node = GetNode<SaveSlot>("HBoxContainer/SaveSlot1");
-        _saveSlot2Node = GetNode<SaveSlot>("HBoxContainer/SaveSlot2");
-        _saveSlot3Node = GetNode<SaveSlot>("HBoxContainer/SaveSlot3");
-        _saveSlots = new SaveSlot[] { _saveSlot1Node, _saveSlot2Node, _saveSlot3Node };
+  [Dependency]
+  public ISaveManager SaveManager => this.DependOn<ISaveManager>();
 
-        SetProcess(false);
-        Size = _boxContainerNode.Size;
+  public override void _Ready() {
+    _boxContainerNode = GetNode<Control>("HBoxContainer");
+    _saveSlot1Node = GetNode<SaveSlot>("HBoxContainer/SaveSlot1");
+    _saveSlot2Node = GetNode<SaveSlot>("HBoxContainer/SaveSlot2");
+    _saveSlot3Node = GetNode<SaveSlot>("HBoxContainer/SaveSlot3");
+    _saveSlots = new SaveSlot[] { _saveSlot1Node, _saveSlot2Node, _saveSlot3Node };
 
-        for (int i = 0; i < _saveSlots.Length; i++) {
-            _saveSlots[i].Texture2D = SaveGame.Instance().LoadSlotImage(i);
-            _saveSlots[i]._id = i;
-            _saveSlots[i].UpdateMetaData();
-            _saveSlots[i].SlotIndexLabel = i;
-        }
+    SetProcess(false);
+    Size = _boxContainerNode.Size;
 
-        for (int i = 0; i < _saveSlots.Length; i++) {
-            if (!_saveSlots[i].IsDisabled) {
-                _saveSlots[i].HasFocus = true;
-                break;
-            }
-        }
-
-        if (centered_on_screen_h) {
-            Position = new Vector2((GetViewportRect().Size.X - Size.X) * 0.5f, Position.Y);
-        }
-        if (centered_on_screen_v) {
-            Position = new Vector2(Position.X, (GetViewportRect().Size.Y - Size.Y) * 0.5f);
-        }
-
-        _saveSlots[SaveGame.Instance().CurrentSlotIndex].SetHasFocus(true);
-
-        // _saveSlot1Node.Connect("pressed", this, nameof(OnSaveSlot1Pressed));
-        // _saveSlot2Node.Connect("pressed", this, nameof(OnSaveSlot2Pressed));
-        // _saveSlot3Node.Connect("pressed", this, nameof(OnSaveSlot3Pressed));
+    for (int i = 0; i < _saveSlots.Length; i++) {
+      var texture = SaveManager.GetSlotImage(i);
+      if (texture != null) {
+        _saveSlots[i].Texture2D = texture;
+      }
+      _saveSlots[i]._id = i;
+      _saveSlots[i].UpdateMetaData();
+      _saveSlots[i].SlotIndexLabel = i;
     }
 
-    private void _on_SaveSlot1_pressed(string action) {
-        EmitSignal(nameof(slot_pressed), 0, action);
+    for (int i = 0; i < _saveSlots.Length; i++) {
+      if (!_saveSlots[i].IsDisabled) {
+        _saveSlots[i].HasFocus = true;
+        break;
+      }
     }
 
-    private void _on_SaveSlot2_pressed(string action) {
-        EmitSignal(nameof(slot_pressed), 1, action);
+    if (centered_on_screen_h) {
+      Position = new Vector2((GetViewportRect().Size.X - Size.X) * 0.5f, Position.Y);
+    }
+    if (centered_on_screen_v) {
+      Position = new Vector2(Position.X, (GetViewportRect().Size.Y - Size.Y) * 0.5f);
     }
 
-    private void _on_SaveSlot3_pressed(string action) {
-        EmitSignal(nameof(slot_pressed), 2, action);
-    }
+    _saveSlots[SaveManager.GetSelectedSlotIndex()].SetHasFocus(true);
 
-    public void UpdateSlots() {
-        foreach (var slot in _saveSlots) {
-            slot.UpdateMetaData();
-        }
-    }
+    // _saveSlot1Node.Connect("pressed", this, nameof(OnSaveSlot1Pressed));
+    // _saveSlot2Node.Connect("pressed", this, nameof(OnSaveSlot2Pressed));
+    // _saveSlot3Node.Connect("pressed", this, nameof(OnSaveSlot3Pressed));
+  }
 
-    public void UpdateSlot(int id, bool setFocus = false) {
-        _saveSlots[id].UpdateMetaData();
-        if (setFocus) {
-            _saveSlots[id].HideActionButtons();
-        }
-    }
+  private void _on_SaveSlot1_pressed(string action) {
+    EmitSignal(nameof(slot_pressed), 0, action);
+  }
 
-    public void SetGameCurrentSelectedSlot(int index) {
-        for (int i = 0; i < _saveSlots.Length; i++) {
-            if (index == i) {
-                _saveSlots[i].UpdateMetaData();
-                _saveSlots[i].SetBorder(true);
-                SaveGame.Instance().UpdateSlotLoadDate(index);
-            }
-            else {
-                _saveSlots[i].SetBorder(false);
-            }
-        }
+  private void _on_SaveSlot2_pressed(string action) {
+    EmitSignal(nameof(slot_pressed), 1, action);
+  }
+
+  private void _on_SaveSlot3_pressed(string action) {
+    EmitSignal(nameof(slot_pressed), 2, action);
+  }
+
+  public void UpdateSlots() {
+    foreach (var slot in _saveSlots) {
+      slot.UpdateMetaData();
     }
+  }
+
+  public void UpdateSlot(int id, bool setFocus = false) {
+    _saveSlots[id].UpdateMetaData();
+    if (setFocus) {
+      _saveSlots[id].HideActionButtons();
+    }
+  }
+
+  public void SetGameCurrentSelectedSlot(int index) {
+    for (int i = 0; i < _saveSlots.Length; i++) {
+      if (index == i) {
+        _saveSlots[i].UpdateMetaData();
+        _saveSlots[i].SetBorder(true);
+        SaveManager.SelectSlot(index);
+      }
+      else {
+        _saveSlots[i].SetBorder(false);
+      }
+    }
+  }
 }

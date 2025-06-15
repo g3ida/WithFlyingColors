@@ -1,10 +1,11 @@
 namespace Wfc.Entities.Ui.Menubox;
 
+using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
-using System.Collections.Generic;
 using Wfc.Core.Localization;
+using Wfc.Core.Persistence;
 using Wfc.Core.Types;
 using Wfc.Screens.MenuManager;
 
@@ -15,6 +16,9 @@ public partial class PlaySubMenu : Control {
 
   [Dependency]
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
+
+  [Dependency]
+  public ISaveManager SaveManager => this.DependOn<ISaveManager>();
 
   public void OnResolved() {
     List<ButtonDef> subMenuButtonsDef = [
@@ -31,12 +35,12 @@ public partial class PlaySubMenu : Control {
         },
         new()
         {
-            Text = LocalizationService.GetLocalizedString(TranslationKey.SelectedSlot) + $": {SaveGame.Instance().CurrentSlotIndex + 1}",
+            Text = LocalizationService.GetLocalizedString(TranslationKey.SelectedSlot) + $": {SaveManager.GetSelectedSlotIndex() + 1}",
             MenuAction = MenuAction.GoToSlotSelect,
             DisplayCondition = ButtonDef.ButtonCondition.None
         },
     ];
-    var subMenuNode = SubMenuSceneBuilder.Create(this, subMenuButtonsDef, ColorGroup.Blue);
+    var subMenuNode = SubMenuSceneBuilder.Create(this, subMenuButtonsDef, ColorGroup.Blue, SaveManager);
     CustomMinimumSize = subMenuNode.CustomMinimumSize;
     Size = subMenuNode.Size;
   }

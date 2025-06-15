@@ -1,8 +1,8 @@
-using Godot;
 using System.Collections.Generic;
+using Godot;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-public partial class CheckpointArea : Area2D, IPersistent {
+public partial class CheckpointArea : Area2D {
   [Signal]
   public delegate void checkpoint_hitEventHandler();
 

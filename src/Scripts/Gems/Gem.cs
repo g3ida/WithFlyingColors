@@ -1,11 +1,11 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 using Wfc.Core.Event;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-public partial class Gem : Area2D, IPersistent {
+public partial class Gem : Area2D {
   [Export]
   public string group_name;
 

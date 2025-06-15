@@ -464,3 +464,9 @@ dotnet_diagnostic.IDE0046.severity = none
 dotnet_diagnostic.IDE0022.severity = none
 # Don't make me populate a switch expression redundantly
 dotnet_diagnostic.IDE0072.severity = none
+
+# Default severity for analyzer diagnostics with category 'Style'
+dotnet_analyzer_diagnostic.category-Style.severity = none
+
+# IDE1006: Naming Styles
+dotnet_diagnostic.IDE1006.severity = none

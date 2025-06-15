@@ -1,11 +1,11 @@
-using Godot;
 using System;
 using System.Collections.Generic;
+using Godot;
 using Wfc.Core.Event;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
-public partial class GemHUD : Node2D, IPersistent {
+public partial class GemHUD : Node2D {
   private const string TextureCollectedPath = "res://Assets/Sprites/HUD/gem_hud_collected.png";
   private const string TextureEmptyPath = "res://Assets/Sprites/HUD/gem_hud.png";
 

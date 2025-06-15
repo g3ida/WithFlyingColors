@@ -1,10 +1,10 @@
-using Godot;
 using System;
 using System.Collections.Generic;
+using Godot;
 using Wfc.Core.Event;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-public partial class BrickBreaker : Node2D, IPersistent {
+public partial class BrickBreaker : Node2D {
   private const float FACE_SEPARATOR_SCALE_FACTOR = 3.5f;
   private const int NUM_LEVELS = 2;
   private const float LEVELS_Y_GAP = 36 * 4;
