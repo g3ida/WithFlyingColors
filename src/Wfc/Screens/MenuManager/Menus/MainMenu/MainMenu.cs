@@ -3,6 +3,7 @@ namespace Wfc.Screens.MenuManager.Menus.MainMenu;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
 using Wfc.Entities.Ui.Menubox;
 using Wfc.Screens.MenuManager;
@@ -24,7 +25,8 @@ public partial class MainMenu : GameMenu {
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
-    _currentSlotLabelNode.Text = $"Current slot: {SaveManager.GetSelectedSlotIndex()}";
+    TranslationServer.SetLocale("fr");
+    _currentSlotLabelNode.Text = $"{LocalizationService.GetLocalizedString(TranslationKey.CurrentSlot)}: {SaveManager.GetSelectedSlotIndex()}";
   }
 
   public void ShowResetDataDialog() => _resetSlotDialogNode.ShowDialog();
