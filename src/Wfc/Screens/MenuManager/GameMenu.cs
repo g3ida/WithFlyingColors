@@ -5,6 +5,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
 using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
@@ -23,6 +24,8 @@ public partial class GameMenu : Control {
     public IEventHandler EventHandler => this.DependOn<IEventHandler>();
     [Dependency]
     public ISaveManager SaveManager => this.DependOn<ISaveManager>();
+    [Dependency]
+    public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
 
     public void OnResolved() { }
   }
@@ -47,6 +50,7 @@ public partial class GameMenu : Control {
   protected IMenuManager MenuManager => _dependenciesWrapper.MenuManager;
   protected IEventHandler EventHandler => _dependenciesWrapper.EventHandler;
   protected ISaveManager SaveManager => _dependenciesWrapper.SaveManager;
+  protected ILocalizationService LocalizationService => _dependenciesWrapper.LocalizationService;
 
   public override void _EnterTree() {
     base._EnterTree();
