@@ -13,9 +13,10 @@ public partial class GameLevel : Node2D {
 
   [Export]
   public string Track { get; set; } = null!;
-
   [NodePath("Cutscene")]
   private Cutscene CutsceneNode = null!;
+  [NodePath("Player")]
+  private Player Player = null!;
   public LevelId LevelId { get; set; }
 
   public override void _EnterTree() {
@@ -33,5 +34,6 @@ public partial class GameLevel : Node2D {
     SetProcess(false);
     this.WireNodes();
     Global.Instance().Cutscene = CutsceneNode;
+    Global.Instance().Player = Player;
   }
 }

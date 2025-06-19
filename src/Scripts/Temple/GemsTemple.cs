@@ -1,5 +1,5 @@
-using Godot;
 using System.Collections.Generic;
+using Godot;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class GemsTemple : Node2D {
@@ -188,7 +188,7 @@ public partial class GemsTemple : Node2D {
       tweener.Kill();
     }
     tweener = GetTree().CreateTween();
-    tweener.TweenProperty(this, "gemsAngularVelocity", MAX_GEM_TEMPLE_ANGULAR_VELOCITY, DURATION_TO_FULL_GEM_ROTATION_SPEED)
+    tweener.TweenProperty(this, nameof(_gemsAngularVelocity), MAX_GEM_TEMPLE_ANGULAR_VELOCITY, DURATION_TO_FULL_GEM_ROTATION_SPEED)
         .From(_gemsAngularVelocity)
         .SetTrans(Tween.TransitionType.Linear)
         .SetEase(Tween.EaseType.Out);
@@ -199,7 +199,7 @@ public partial class GemsTemple : Node2D {
       tweener.Kill();
     }
     tweener = GetTree().CreateTween();
-    tweener.TweenProperty(this, "bloomSpriteScale", BLOOM_SPRITE_MAX_SCALE, BLOOM_SPRITE_SCALE_DURATION)
+    tweener.TweenProperty(this, nameof(_bloomSpriteScale), BLOOM_SPRITE_MAX_SCALE, BLOOM_SPRITE_SCALE_DURATION)
         .From(_bloomSpriteScale)
         .SetTrans(Tween.TransitionType.Linear)
         .SetEase(Tween.EaseType.Out);
