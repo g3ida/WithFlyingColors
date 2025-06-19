@@ -1,17 +1,16 @@
 namespace Wfc.Screens.Levels;
 
 using System.Collections.Generic;
+using Godot;
 using Wfc.Core.Localization;
-using Wfc.Screens.Levels.LevelList;
 using Wfc.Utils;
 
 public static class LevelDispatcher {
   public static GameLevel? InstantiateLevel(LevelId levelId) {
-    return levelId switch {
-      LevelId.Tutorial => SceneHelpers.InstantiateNode<TutorialLevel>(),
-      LevelId.Level1 => SceneHelpers.InstantiateNode<Level1>(),
-      _ => null,
-    };
+    var levelScene = GD.Load<PackedScene>(levelId.GetLevelPath());
+    var level = levelScene.Instantiate<GameLevel>();
+    level.LevelId = levelId;
+    return level;
   }
 
 
