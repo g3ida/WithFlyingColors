@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://0cgvvyxmoalw" path="res://Assets/Scenes/CutScene/Cutscene.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://nvn44bv2puaj" path="res://Assets/Scenes/Player.tscn" id="2"]
-[ext_resource type="Script" uid="uid://eiavpbssgij4" path="res://src/Scripts/Level.cs" id="3"]
+[ext_resource type="Script" uid="uid://eiavpbssgij4" path="res://src/Wfc/Screens/Levels/GameLevel/GameLevel.cs" id="3"]
 [ext_resource type="PackedScene" uid="uid://c34ryx01v1y06" path="res://Assets/Scenes/Camera.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://Assets/Scenes/Platforms/SimplePlatform.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://Assets/Scenes/Fallzone.tscn" id="9"]
