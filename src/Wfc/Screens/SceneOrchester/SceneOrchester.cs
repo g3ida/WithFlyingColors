@@ -47,8 +47,6 @@ public partial class SceneOrchester : Node2D {
     var metaData = SaveManager.GetSlotMetaData();
     var isNewGame = (metaData == null) || (metaData.Progress == 0);
 
-    // PackedScene? sceneResource = null;
-
     var levelId = MenuManager.GetCurrentLevelId();
     if (levelId != null) {
       _loadLevel((LevelId)levelId);
