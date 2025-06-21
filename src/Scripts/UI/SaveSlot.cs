@@ -7,6 +7,7 @@ using Wfc.Core.Persistence;
 [Meta(typeof(IAutoNode))]
 public partial class SaveSlot : PanelContainer {
 
+  public override void _Notification(int what) => this.Notify(what);
   [Dependency]
   public ISaveManager SaveManager => this.DependOn<ISaveManager>();
 
@@ -40,6 +41,8 @@ public partial class SaveSlot : PanelContainer {
   private AnimationPlayer _animationPlayerNode;
 
   private float _posX;
+
+  public void OnResolved() { }
 
   public override void _Ready() {
     _descriptionNode = GetNode<Label>("HBoxContainer/VBoxContainer/Description");

@@ -6,6 +6,8 @@ using Wfc.Core.Persistence;
 
 [Meta(typeof(IAutoNode))]
 public partial class SlotActionButtons : HBoxContainer {
+
+  public override void _Notification(int what) => this.Notify(what);
   [Signal]
   public delegate void select_button_pressedEventHandler(int slotIndex);
   [Signal]
@@ -19,6 +21,8 @@ public partial class SlotActionButtons : HBoxContainer {
   private SlotButton _deleteButtonNode;
   private SlotButton _confirmButtonNode;
   private Control _spaceNode;
+
+  public void OnResolved() { }
 
   public override void _Ready() {
     _deleteButtonNode = GetNode<SlotButton>("DeleteButton");

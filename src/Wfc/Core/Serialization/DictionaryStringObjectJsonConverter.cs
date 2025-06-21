@@ -1,4 +1,4 @@
-namespace Wfc.Utils.Json;
+namespace Wfc.Core.Serialization;
 
 using System;
 using System.Collections.Generic;

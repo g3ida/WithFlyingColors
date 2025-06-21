@@ -5,6 +5,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Autoload;
+using Wfc.Core.Audio;
 using Wfc.Core.Event;
 using Wfc.Core.Exceptions;
 using Wfc.Core.Localization;
@@ -19,19 +20,21 @@ public partial class DependenciesProvider :
   IProvide<ILogger>,
   IProvide<IMenuManager>,
   IProvide<ISaveManager>,
-  IProvide<ILocalizationService> {
+  IProvide<ILocalizationService>,
+  IProvide<ISfxManager>,
+  IProvide<IMusicTrackManager> {
   public override void _Notification(int what) => this.Notify(what);
 
   private readonly Lazy<IMenuManager> _menuManager;
   private readonly ILogger _logger = new GDLogger();
-
   private readonly ISaveManager _saveManager = new SaveManager();
-
   IMenuManager IProvide<IMenuManager>.Value() => _menuManager.Value;
   ISaveManager IProvide<ISaveManager>.Value() => _saveManager;
   ILocalizationService IProvide<ILocalizationService>.Value() => new LocalizationService();
   ILogger IProvide<ILogger>.Value() => _logger;
   IEventHandler IProvide<IEventHandler>.Value() => AutoloadManager.Instance.EventHandler;
+  ISfxManager IProvide<ISfxManager>.Value() => AutoloadManager.Instance.SfxManager;
+  IMusicTrackManager IProvide<IMusicTrackManager>.Value() => AutoloadManager.Instance.MusicTrackManager;
 
   public DependenciesProvider() : base() {
     _menuManager = new Lazy<IMenuManager>(() => new MenuManager(this));

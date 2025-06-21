@@ -6,17 +6,16 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Godot;
+using Wfc.Core.Serialization;
 
-public partial class SaveManager : Node, ISaveManager {
+public partial class SaveManager : ISaveManager {
 
-  private readonly JsonSerializerOptions _serializerOptions = new() {
-    WriteIndented = true
-  };
   private const int NUM_SLOTS = 3;
-  private readonly SaveSlot[] _saveSlots = [.. Enumerable.Range(1, NUM_SLOTS).Select(i => new SaveSlot(i))];
-  public int LatestLoadedSlot { get; private set; }
   private readonly string LATEST_LOADED_SLOT_FIELD_NAME = "latest_loaded_slot";
   private readonly string SLOT_INFO_PATH = $"user://slots/slots_info.save";
+  public int LatestLoadedSlot { get; private set; }
+  private readonly SaveSlot[] _saveSlots = [.. Enumerable.Range(1, NUM_SLOTS).Select(i => new SaveSlot(i))];
+  private readonly ISerializer _serializer = new SimpleJsonSerializer();
 
   public void SaveGame(SceneTree tree, int slotIndex) {
     slotIndex = slotIndex == -1 ? Math.Max(0, LatestLoadedSlot) : slotIndex;
@@ -24,7 +23,7 @@ public partial class SaveManager : Node, ISaveManager {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
     }
-    _saveSlots[slotIndex].Save(tree, false);
+    _saveSlots[slotIndex].Save(_serializer, tree, false);
     _loadSlotsMetaData();
     GD.Print("Game saved!");
   }
@@ -35,7 +34,7 @@ public partial class SaveManager : Node, ISaveManager {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
     }
-    _saveSlots[slotIndex].Load(tree);
+    _saveSlots[slotIndex].Load(_serializer, tree);
     // Update camera position to the player position avoiding smoothing
     // which would make you see the camera move quickly to the checkpoint position
     // when we load a level. We put it here instead of the reset method because
@@ -75,7 +74,7 @@ public partial class SaveManager : Node, ISaveManager {
 
   private void _loadSlotsMetaData() {
     foreach (var slot in _saveSlots) {
-      slot.LoadMetaData();
+      slot.LoadMetaData(_serializer);
     }
   }
 

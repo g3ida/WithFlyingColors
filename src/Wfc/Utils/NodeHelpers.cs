@@ -6,7 +6,7 @@ using System.Reflection;
 using Godot;
 using Wfc.Utils.Attributes;
 
-public static class NodePathHelper {
+public static class NodeHelpers {
   public static void WireNodes(this Node node) {
     var fields = node.GetType().GetFields(BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
 
@@ -35,5 +35,12 @@ public static class NodePathHelper {
         yield return descendant;
       }
     }
+  }
+
+  public static T InstantiateChildNode<T>(this Node parent) where T : Node {
+    var node = SceneHelpers.InstantiateNode<T>();
+    parent.AddChild(node);
+    node.Owner = parent;
+    return node;
   }
 }

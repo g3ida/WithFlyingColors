@@ -1,10 +1,16 @@
-using Godot;
 using System;
 using System.Collections.Generic;
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
+using Godot;
+using Wfc.Core.Audio;
 using Wfc.Core.Event;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
+[Meta(typeof(IAutoNode))]
 public partial class TetrisPool : Node2D {
+
+  public override void _Notification(int what) => this.Notify(what);
   [Signal]
   public delegate void lines_removedEventHandler(int count);
 
@@ -46,6 +52,12 @@ public partial class TetrisPool : Node2D {
   private Marker2D levelUpPositionNode;
   private SlidingPlatform slidingFloorSliderNode;
   private Area2D triggerEnterAreaNode;
+
+  [Dependency]
+  public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
+
+  public void OnResolved() { }
+
 
   public override void _Ready() {
     spawnPosNode = GetNode<Marker2D>("SpawnPosition");
@@ -264,7 +276,7 @@ public partial class TetrisPool : Node2D {
       scoreBoardNode.SetLevel(level);
       int speed = Math.Min(level, Constants.TETRIS_MAX_LEVELS);
       shapeWaitTimerNode.WaitTime = Constants.TETRIS_SPEEDS[speed];
-      AudioManager.Instance().MusicTrackManager.SetPitchScale(1 + (speed - 1) * 0.1f);
+      MusicTrackManager.SetPitchScale(1 + (speed - 1) * 0.1f);
       if (level > 1) {
         var levelUpNode = LevelUp.Instantiate<Node2D>();
         AddChild(levelUpNode);
@@ -296,8 +308,8 @@ public partial class TetrisPool : Node2D {
     slidingFloorSliderNode.StopSlider(false);
     isVirgin = false;
 
-    AudioManager.Instance().MusicTrackManager.LoadTrack("tetris");
-    AudioManager.Instance().MusicTrackManager.PlayTrack("tetris");
+    MusicTrackManager.LoadTrack("tetris");
+    MusicTrackManager.PlayTrack("tetris");
 
     if (triggerEnterAreaNode != null) {
       triggerEnterAreaNode.QueueFree();

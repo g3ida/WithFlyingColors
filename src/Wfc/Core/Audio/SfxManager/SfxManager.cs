@@ -1,97 +1,48 @@
-using Godot;
+namespace Wfc.Core.Audio;
+
 using System;
 using System.Collections.Generic;
+using Godot;
 using Wfc.Core.Event;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-public partial class AudioManager : Node {
+[ScenePath]
+public partial class SfxManager : Node2D, ISfxManager {
   [Signal]
   public delegate void PlaySfxEventHandler(string sfxName);
 
-  private readonly PackedScene _musicTrackManagerScene = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Audio/MusicTrackManager.tscn");
-
-  private const string BASE_PATH = "res://Assets/sfx/";
-
-  private Dictionary<string, Dictionary<string, object>> _sfxData = new()
-    {
-        {"brick", new Dictionary<string, object> {{"path", BASE_PATH + "brick.ogg"}, {"volume", -4}}},
-        {"bricksSlide", new Dictionary<string, object> {{"path", BASE_PATH + "bricks_slide.ogg"}, {"volume", 0}}},
-        {"gemCollect", new Dictionary<string, object> {{"path", BASE_PATH + "gem.ogg"}, {"volume", -15}}},
-        {"GemEngine", new Dictionary<string, object> {{"path", BASE_PATH + "gems/gem-engine.ogg"}, {"volume", 8}}},
-        {"GemPut", new Dictionary<string, object> {{"path", BASE_PATH + "gems/temple_put_gem.ogg"}, {"volume", -5}}},
-        {"jump", new Dictionary<string, object> {{"path", BASE_PATH + "jumping.ogg"}, {"volume", -5}}},
-        {"land", new Dictionary<string, object> {{"path", BASE_PATH + "stand.ogg"}, {"volume", -8}}},
-        {"menuFocus", new Dictionary<string, object> {{"path", BASE_PATH + "click2.ogg"}}},
-        {"menuMove", new Dictionary<string, object> {{"path", BASE_PATH + "menu_move.ogg"}, {"volume", 0}}},
-        {"menuSelect", new Dictionary<string, object> {{"path", BASE_PATH + "menu_select.ogg"}, {"volume", 0}}},
-        {"menuValueChange", new Dictionary<string, object> {{"path", BASE_PATH + "click.ogg"}, {"volume", 0}}},
-        {"pageFlip", new Dictionary<string, object> {{"path", BASE_PATH + "piano/page-flip.ogg"}, {"volume", 5}}},
-        {"piano_do", new Dictionary<string, object> {{"path", BASE_PATH + "piano/do.ogg"}, {"volume", -3}}},
-        {"piano_re", new Dictionary<string, object> {{"path", BASE_PATH + "piano/re.ogg"}, {"volume", -3}}},
-        {"piano_mi", new Dictionary<string, object> {{"path", BASE_PATH + "piano/mi.ogg"}, {"volume", -3}}},
-        {"piano_fa", new Dictionary<string, object> {{"path", BASE_PATH + "piano/fa.ogg"}, {"volume", -3}}},
-        {"piano_sol", new Dictionary<string, object> {{"path", BASE_PATH + "piano/sol.ogg"}, {"volume", -3}}},
-        {"piano_la", new Dictionary<string, object> {{"path", BASE_PATH + "piano/la.ogg"}, {"volume", -3}}},
-        {"piano_si", new Dictionary<string, object> {{"path", BASE_PATH + "piano/si.ogg"}, {"volume", -3}}},
-        {"pickup", new Dictionary<string, object> {{"path", BASE_PATH + "pickup.ogg"}, {"volume", -4}}},
-        {"playerExplode", new Dictionary<string, object> {{"path", BASE_PATH + "die.ogg"}, {"volume", -10}}},
-        {"playerFalling", new Dictionary<string, object> {{"path", BASE_PATH + "falling.ogg"}, {"volume", -10}}},
-        {"rotateLeft", new Dictionary<string, object> {{"path", BASE_PATH + "rotate-box.ogg"}, {"volume", -20}, {"pitch_scale", 0.9}}},
-        {"rotateRight", new Dictionary<string, object> {{"path", BASE_PATH + "rotate-box.ogg"}, {"volume", -20}}},
-        {"shine", new Dictionary<string, object> {{"path", BASE_PATH + "shine.ogg"}, {"volume", -5}}},
-        {"success", new Dictionary<string, object> {{"path", BASE_PATH + "success.ogg"}, {"volume", -1}}},
-        {"tetrisLine", new Dictionary<string, object> {{"path", BASE_PATH + "tetris_line.ogg"}, {"volume", -7}}},
-        {"winMiniGame", new Dictionary<string, object> {{"path", BASE_PATH + "win_mini_game.ogg"}, {"volume", 1}}},
-        {"wrongAnswer", new Dictionary<string, object> {{"path", BASE_PATH + "piano/wrong-answer.ogg"}, {"volume", 10}}}
-    };
-
   private readonly Dictionary<string, AudioStreamPlayer> _sfxPool = [];
-  public required MusicTrackManager MusicTrackManager;
-
-  private static AudioManager _instance = null!;
-
-  public static AudioManager Instance() {
-    return _instance;
-  }
+  // public required MusicTrackManager MusicTrackManager;
 
   public override void _EnterTree() {
     base._EnterTree();
-    _instance = GetTree().Root.GetNode<AudioManager>("AudioManagerCS");
-    MusicTrackManager = _musicTrackManagerScene.Instantiate<MusicTrackManager>();
+
+    // MusicTrackManager = SceneHelpers.InstantiateNode<MusicTrackManager>();
     ConnectSignals();
   }
 
   public override void _Ready() {
     ProcessMode = ProcessModeEnum.Always;
     SetProcess(false);
-    /// FIXME: make this an extension function and use all over any node CreateChild<NodeType>()
-    AddChild(MusicTrackManager);
-    MusicTrackManager.Owner = this;
-    ///
+    // AddChild(MusicTrackManager);
+    // MusicTrackManager.Owner = this;
     FillSfxPool();
   }
 
   private void FillSfxPool() {
-    foreach (var key in _sfxData.Keys) {
-      var stream = GD.Load<AudioStream>(_sfxData[key]["path"].ToString());
-      var audioPlayer = new AudioStreamPlayer();
+    foreach (var (key, data) in GameSfx.Data) {
+      var stream = GD.Load<AudioStream>(data.Path);
+      var audioPlayer = new AudioStreamPlayer {
+        Stream = stream,
+        VolumeDb = data.Volume,
+        Bus = data.Bus
+      };
       Helpers.SetLooping(stream, false);
-      audioPlayer.Stream = stream;
+      if (data.PitchScale is not null)
+        audioPlayer.PitchScale = data.PitchScale.Value;
 
-      if (_sfxData[key].TryGetValue("volume", out var volume)) {
-        audioPlayer.VolumeDb = Convert.ToSingle(volume);
-      }
-
-      if (_sfxData[key].TryGetValue("pitch_scale", out var pitchScale)) {
-        audioPlayer.PitchScale = Convert.ToSingle(pitchScale);
-      }
-
-      var bus = "sfx";
-      if (_sfxData[key].TryGetValue("bus", out var busValue)) {
-        bus = busValue.ToString();
-      }
-
-      audioPlayer.Bus = bus;
       _sfxPool[key] = audioPlayer;
       AddChild(audioPlayer);
       audioPlayer.Owner = this;
@@ -179,9 +130,12 @@ public partial class AudioManager : Node {
     if (_sfxPool.TryGetValue(sfx, out var value)) {
       value.Play();
     }
+    else {
+      GD.PushError("Invalid sfx name: ", sfx);
+    }
   }
 
-  public void StopAllSfx() {
+  public void StopAll() {
     foreach (var sfx in _sfxPool.Values) {
       sfx.Stop();
     }
@@ -199,7 +153,7 @@ public partial class AudioManager : Node {
     EmitSignal(nameof(PlaySfx), sfxName);
   }
 
-  public void PauseAllSfx() {
+  public void PauseAll() {
     foreach (var sfx in _sfxPool.Values) {
       if (sfx.Playing) {
         sfx.StreamPaused = true;
@@ -207,7 +161,7 @@ public partial class AudioManager : Node {
     }
   }
 
-  public void ResumeAllSfx() {
+  public void ResumeAll() {
     foreach (var sfx in _sfxPool.Values) {
       if (sfx.Playing) {
         sfx.StreamPaused = false;
@@ -215,115 +169,32 @@ public partial class AudioManager : Node {
     }
   }
 
-  private void OnPlayerJumped() {
-    OnPlaySfx("jump");
-  }
-
-  private void OnPlayerRotate(int dir) {
-    OnPlaySfx(dir == -1 ? "rotateLeft" : "rotateRight");
-  }
-
-  private void OnPlayerLand() {
-    OnPlaySfx("land");
-  }
-
-  private void OnMenuButtonPressed(int menuButton) {
-    OnPlaySfx("menuSelect");
-  }
-
-  private void OnGemCollected(string color, Vector2 position, SpriteFrames x) {
-    OnPlaySfx("gemCollect");
-  }
-
-  private void OnButtonToggle(bool value) {
-    OnPlaySfx("menuValueChange");
-  }
-
-  private void OnKeyBound(bool value, bool value2) {
-    OnPlaySfx("menuValueChange");
-  }
-
-  private void OnTabChanged() {
-    OnPlaySfx("menuFocus");
-  }
-
-  private void OnFocusChanged() {
-    OnPlaySfx("menuFocus");
-  }
-
-  private void OnMenuBoxRotated() {
-    OnPlaySfx("rotateRight");
-  }
-
-  private void OnKeyboardActionBinding() {
-    OnPlaySfx("menuValueChange");
-  }
-
-  private void OnPlayerExplode() {
-    OnPlaySfx("playerExplode");
-  }
-
-  private void OnPlayerFalling() {
-    OnPlaySfx("playerFalling");
-  }
-
-  private void OnTetrisLinesRemoved() {
-    OnPlaySfx("tetrisLine");
-  }
-
-  private void OnPickedPowerup() {
-    OnPlaySfx("pickup");
-  }
-
-  private void OnBrickBroken(string color, Vector2 position) {
-    OnPlaySfx("brick");
-  }
-
-  private void OnWinMiniGame() {
-    OnPlaySfx("winMiniGame");
-  }
-
-  private void OnBrickBreakerStart() {
-    OnPlaySfx("bricksSlide");
-  }
-
-  private void OnPianoNotePressed(string note) {
-    OnPlaySfx("piano_" + note);
-  }
-
-  private void OnPianoNoteReleased(string note) {
-    // do nothing
-  }
-
-  private void OnPageFlipped() {
-    OnPlaySfx("pageFlip");
-  }
-
-  private void OnWrongPianoNotePlayed() {
-    OnPlaySfx("wrongAnswer");
-  }
-
-  private void OnPianoPuzzleWon() {
-    OnPlaySfx("success");
-  }
-
-  private void OnGemTempleTriggered() {
-    OnPlaySfx("shine");
-  }
-
-  private void OnGemEngineStarted() {
-    OnPlaySfx("GemEngine");
-  }
-
-  private void OnGemPutInTemple() {
-    OnPlaySfx("GemPut");
-  }
-
-  private void OnPauseMenuEnter() {
-    OnPlaySfx("menuSelect");
-  }
-
-  private void OnPauseMenuExit() {
-    OnPlaySfx("menuSelect");
-  }
+  private void OnPlayerJumped() => OnPlaySfx("jump");
+  private void OnPlayerRotate(int dir) => OnPlaySfx(dir == -1 ? "rotateLeft" : "rotateRight");
+  private void OnPlayerLand() => OnPlaySfx("land");
+  private void OnMenuButtonPressed(int menuButton) => OnPlaySfx("menuSelect");
+  private void OnGemCollected(string color, Vector2 position, SpriteFrames x) => OnPlaySfx("gemCollect");
+  private void OnButtonToggle(bool value) => OnPlaySfx("menuValueChange");
+  private void OnKeyBound(bool value, bool value2) => OnPlaySfx("menuValueChange");
+  private void OnTabChanged() => OnPlaySfx("menuFocus");
+  private void OnFocusChanged() => OnPlaySfx("menuFocus");
+  private void OnMenuBoxRotated() => OnPlaySfx("rotateRight");
+  private void OnKeyboardActionBinding() => OnPlaySfx("menuValueChange");
+  private void OnPlayerExplode() => OnPlaySfx("playerExplode");
+  private void OnPlayerFalling() => OnPlaySfx("playerFalling");
+  private void OnTetrisLinesRemoved() => OnPlaySfx("tetrisLine");
+  private void OnPickedPowerup() => OnPlaySfx("pickup");
+  private void OnBrickBroken(string color, Vector2 _) => OnPlaySfx("brick");
+  private void OnWinMiniGame() => OnPlaySfx("winMiniGame");
+  private void OnBrickBreakerStart() => OnPlaySfx("bricksSlide");
+  private void OnPianoNotePressed(string note) => OnPlaySfx("piano_" + note);
+  private void OnPianoNoteReleased(string note) { /* do nothing */}
+  private void OnPageFlipped() => OnPlaySfx("pageFlip");
+  private void OnWrongPianoNotePlayed() => OnPlaySfx("wrongAnswer");
+  private void OnPianoPuzzleWon() => OnPlaySfx("success");
+  private void OnGemTempleTriggered() => OnPlaySfx("shine");
+  private void OnGemEngineStarted() => OnPlaySfx("GemEngine");
+  private void OnGemPutInTemple() => OnPlaySfx("GemPut");
+  private void OnPauseMenuEnter() => OnPlaySfx("menuSelect");
+  private void OnPauseMenuExit() => OnPlaySfx("menuSelect");
 }

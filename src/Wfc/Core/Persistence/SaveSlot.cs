@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Godot;
+using Wfc.Core.Serialization;
 using Wfc.Screens.Levels;
-using Wfc.Utils.Json;
 
 public partial class SaveSlot {
   private readonly int _slotIndex;
@@ -18,8 +18,6 @@ public partial class SaveSlot {
 
   public SlotMetaData? MetaData { get; private set; }
 
-  private readonly JsonSerializerOptions _serializationOptions = new();
-
   private const string SAVE_TIMESTAMP_KEY = "save_timestamp";
   private const string LAST_LOAD_TIMESTAMP_KEY = "last_load_timestamp";
   private const string LEVEL_ID_KEY = "level_id";
@@ -29,16 +27,14 @@ public partial class SaveSlot {
 
   public SaveSlot(int slotIndex) {
     _slotIndex = slotIndex;
-    _serializationOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
-    _serializationOptions.Converters.Add(new JsonStringEnumConverter());
-    _serializationOptions.Converters.Add(new SlotMetaDataJsonConverter());
+
   }
 
-  public void Load(SceneTree sceneTree) {
+  public void Load(ISerializer serializer, SceneTree sceneTree) {
     if (IsFilled) {
-      LoadMetaData();
+      LoadMetaData(serializer);
       if (HasProgress) {
-        _loadLevelState(sceneTree);
+        _loadLevelState(serializer, sceneTree);
       }
     }
     if (MetaData != null) {
@@ -55,21 +51,21 @@ public partial class SaveSlot {
     }
   }
 
-  public void Save(SceneTree sceneTree, bool newEmptySlot = false) {
-    _saveMetaData(sceneTree, newEmptySlot);
+  public void Save(ISerializer serializer, SceneTree sceneTree, bool newEmptySlot = false) {
+    _saveMetaData(serializer, sceneTree, newEmptySlot);
     _saveScreenshot(sceneTree);
     if (!newEmptySlot) {
-      _saveLevelState(sceneTree, newEmptySlot);
+      _saveLevelState(serializer, sceneTree, newEmptySlot);
     }
   }
 
-  public void LoadMetaData() {
+  public void LoadMetaData(ISerializer serializer) {
     if (!IsFilled) {
       return; // We don't have a save slot to load.
     }
 
     var saveGameMetaDataFile = FileAccess.Open(MetaPath, FileAccess.ModeFlags.Read);
-    MetaData = JsonSerializer.Deserialize<SlotMetaData>(saveGameMetaDataFile.GetLine(), _serializationOptions);
+    MetaData = serializer.Deserialize<SlotMetaData>(saveGameMetaDataFile.GetLine());
     saveGameMetaDataFile.Close();
     _loadImage();
   }
@@ -86,13 +82,13 @@ public partial class SaveSlot {
     }
   }
 
-  private void _loadLevelState(SceneTree sceneTree) {
+  private void _loadLevelState(ISerializer serializer, SceneTree sceneTree) {
     if (!HasProgress) {
       return; // We don't have progress to load.
     }
 
     var saveFile = FileAccess.Open(Path, FileAccess.ModeFlags.Read);
-    var nodesData = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(saveFile.GetLine(), _serializationOptions);
+    var nodesData = serializer.Deserialize<Dictionary<string, string>>(saveFile.GetLine());
     var persistingNodes = sceneTree
       .GetNodesInGroup("persist")
       .OfType<IPersistent>()
@@ -105,7 +101,7 @@ public partial class SaveSlot {
     if (nodesData != null) {
       foreach (var nodeData in nodesData) {
         if (persistingNodes.TryGetValue(nodeData.Key, out var node)) {
-          node.Load(nodeData.Value);
+          node.Load(serializer, nodeData.Value);
         }
         else {
           // not found
@@ -118,15 +114,15 @@ public partial class SaveSlot {
     saveFile.Close();
   }
 
-  private void _saveMetaData(SceneTree sceneTree, bool newEmptySlot = false) {
+  private void _saveMetaData(ISerializer serializer, SceneTree sceneTree, bool newEmptySlot = false) {
     var metaDataFile = FileAccess.Open(MetaPath, FileAccess.ModeFlags.Write);
-    metaDataFile.StoreLine(JsonSerializer.Serialize(MetaData));
+    metaDataFile.StoreLine(serializer.Serialize(MetaData));
     metaDataFile.Close();
   }
 
-  private void _saveLevelState(SceneTree sceneTree, bool newEmptySlot = false) {
+  private void _saveLevelState(ISerializer serializer, SceneTree sceneTree, bool newEmptySlot = false) {
     var saveFile = FileAccess.Open(Path, FileAccess.ModeFlags.Write);
-    var saveData = new Dictionary<string, Dictionary<string, object>>();
+    var saveData = new Dictionary<string, string>();
     var saveNodes = sceneTree.GetNodesInGroup("persist");
     foreach (var node in saveNodes) {
       if (node.SceneFilePath.Length == 0) {
@@ -137,7 +133,7 @@ public partial class SaveSlot {
         GD.PushError($"persistent node '{node.Name}' does not implement IPersistent, skipped");
         continue;
       }
-      var nodeData = persistent.Save();
+      var nodeData = persistent.Save(serializer);
       saveData[persistent.GetSaveId()] = nodeData;
     }
     saveFile.StoreLine(JsonSerializer.Serialize(saveData));

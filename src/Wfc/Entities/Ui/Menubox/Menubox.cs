@@ -13,8 +13,8 @@ using EventHandler = Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class Menubox : Control {
-  public override void _Notification(int what) => this.Notify(what);
 
+  public override void _Notification(int what) => this.Notify(what);
   [Dependency]
   public IMenuManager MenuManager => this.DependOn<IMenuManager>();
 

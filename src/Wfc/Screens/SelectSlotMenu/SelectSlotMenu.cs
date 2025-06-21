@@ -10,6 +10,7 @@ using Wfc.Utils.Attributes;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class SelectSlotMenu : GameMenu {
+  public override void _Notification(int what) => this.Notify(what);
   [Dependency]
   public ISaveManager SaveManager => this.DependOn<ISaveManager>();
   private Button BackButtonNode;
@@ -20,6 +21,10 @@ public partial class SelectSlotMenu : GameMenu {
   private int currentSlotOnFocus;
   private int deleteTmpId = 0; // Used to save the currently deleting slot
 
+  public void OnResolved() {
+
+  }
+
   public override void _Ready() {
     base._Ready();
     BackButtonNode = GetNode<Button>("BackButton");
@@ -28,7 +33,6 @@ public partial class SelectSlotMenu : GameMenu {
     NoSelectedSlotDialogContainer = GetNode<DialogContainer>("NoSelectedSlotDialogContainer");
     CurrentSlotLabelNode = GetNode<Label>("CurrentSlotLabel");
     currentSlotOnFocus = SaveManager.GetSelectedSlotIndex();
-
     SlotsContainer.SetGameCurrentSelectedSlot(SaveManager.GetSelectedSlotIndex());
     SetSelectedSlotLabel();
   }

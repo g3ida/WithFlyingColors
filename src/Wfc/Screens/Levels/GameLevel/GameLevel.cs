@@ -4,13 +4,14 @@ using System;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Audio;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [Meta(typeof(IAutoNode))]
 public partial class GameLevel : Node2D {
-
+  public override void _Notification(int what) => this.Notify(what);
   [Export]
   public string Track { get; set; } = null!;
   [NodePath("Cutscene")]
@@ -19,15 +20,20 @@ public partial class GameLevel : Node2D {
   private Player Player = null!;
   public LevelId LevelId { get; set; }
 
-  public override void _EnterTree() {
+  public void OnResolved() {
     if (Track != null) {
-      AudioManager.Instance().MusicTrackManager.LoadTrack(Track);
-      AudioManager.Instance().MusicTrackManager.PlayTrack(Track);
+      MusicTrackManager.LoadTrack(Track);
+      MusicTrackManager.PlayTrack(Track);
     }
   }
 
+  [Dependency]
+  public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
+
+  public override void _EnterTree() { }
+
   public override void _ExitTree() {
-    AudioManager.Instance().MusicTrackManager.Stop();
+    MusicTrackManager.Stop();
   }
 
   public override void _Ready() {

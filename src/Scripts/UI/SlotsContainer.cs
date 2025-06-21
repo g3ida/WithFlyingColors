@@ -6,6 +6,8 @@ using Wfc.Core.Persistence;
 
 [Meta(typeof(IAutoNode))]
 public partial class SlotsContainer : Control {
+
+  public override void _Notification(int what) => this.Notify(what);
   [Signal]
   public delegate void slot_pressedEventHandler(int id, string action);
 
@@ -19,6 +21,8 @@ public partial class SlotsContainer : Control {
   private SaveSlot _saveSlot2Node;
   private SaveSlot _saveSlot3Node;
   private SaveSlot[] _saveSlots;
+
+  public void OnResolved() { }
 
   [Dependency]
   public ISaveManager SaveManager => this.DependOn<ISaveManager>();

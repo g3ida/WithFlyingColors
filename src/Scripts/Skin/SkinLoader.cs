@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using Godot;
-using Wfc.Utils.Json;
+using Wfc.Core.Serialization;
 
 public static class SkinLoader {
   public static readonly string[] KEYS = { "basic", "dark", "light", "dark2", "light2", "background" };
