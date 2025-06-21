@@ -1,10 +1,15 @@
 using System;
 using System.Collections.Generic;
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Audio;
 using Wfc.Core.Event;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
+[Meta(typeof(IAutoNode))]
 public partial class BrickBreaker : Node2D {
+  public override void _Notification(int what) => this.Notify(what);
   private const float FACE_SEPARATOR_SCALE_FACTOR = 3.5f;
   private const int NUM_LEVELS = 2;
   private const float LEVELS_Y_GAP = 36 * 4;
@@ -13,6 +18,11 @@ public partial class BrickBreaker : Node2D {
 
   private PackedScene BricksTileMap = (PackedScene)GD.Load("res://Assets/Scenes/BrickBreaker/BricksTileMap.tscn");
   private PackedScene BouncingBallScene = (PackedScene)GD.Load("res://Assets/Scenes/BrickBreaker/BouncingBall.tscn");
+
+  [Dependency]
+  public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
+
+  public void OnResolved() { }
 
   private Area2D DeathZoneNode;
   private Node2D BricksTileMapNode = null;
@@ -140,7 +150,7 @@ public partial class BrickBreaker : Node2D {
   private void reset() {
     current_state = (BrickBreakerState)Helpers.ParseSaveDataInt(save_data, "state");
     if (current_state == BrickBreakerState.INIT_PLAYING) {
-      AudioManager.Instance().MusicTrackManager.SetPitchScale(1);
+      MusicTrackManager.SetPitchScale(1);
       Play();
     }
     else if (current_state == BrickBreakerState.WIN) {
@@ -207,8 +217,8 @@ public partial class BrickBreaker : Node2D {
       CallDeferred("Play");
       SlidingFloorSliderNode.SetLooping(false);
       SlidingFloorSliderNode.StopSlider(false);
-      AudioManager.Instance().MusicTrackManager.LoadTrack("brickBreaker");
-      AudioManager.Instance().MusicTrackManager.PlayTrack("brickBreaker");
+      MusicTrackManager.LoadTrack("brickBreaker");
+      MusicTrackManager.PlayTrack("brickBreaker");
     }
 
     if (current_state == BrickBreakerState.WIN) {
@@ -228,7 +238,7 @@ public partial class BrickBreaker : Node2D {
     }
     CreateBricksMoveTweener();
     MoveBricksDownBy(LEVELS_Y_GAP);
-    AudioManager.Instance().MusicTrackManager.SetPitchScale(1 + (current_level - 1) * 0.1f);
+    MusicTrackManager.SetPitchScale(1 + (current_level - 1) * 0.1f);
     IncrementBallsSpeed();
   }
 
@@ -256,7 +266,7 @@ public partial class BrickBreaker : Node2D {
       CreateBricksMoveTweener();
       MoveBricksDownBy(LEVELS_WIN_GAP, 3.0f);
       await ToSignal(bricksMoveTweener, "finished");
-      AudioManager.Instance().MusicTrackManager.SetPitchScale(1);
+      MusicTrackManager.SetPitchScale(1);
       SlidingDoorNode.ResumeSlider();
       ChangeCameraViewAfterWin();
       Helpers.TriggerFunctionalCheckpoint();

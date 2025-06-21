@@ -1,4 +1,4 @@
-namespace Wfc.Utils.Json;
+namespace Wfc.Core.Serialization;
 
 using System;
 using System.Text.Json;
@@ -41,7 +41,6 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
           lastLoadDate = reader.GetUInt64();
           break;
         case nameof(SlotMetaData.LevelId):
-          // Assumes LevelId is serializable as string or int; adjust as needed
           levelId = JsonSerializer.Deserialize<LevelId>(ref reader, options);
           break;
         case nameof(SlotMetaData.Progress):

@@ -26,6 +26,8 @@ public partial class LevelSelectMenu : GameMenu {
   [Dependency]
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
 
+  public void OnResolved() { }
+
   public override void _Ready() {
     base._Ready();
     PopulateWithCards();

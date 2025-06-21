@@ -5,6 +5,7 @@ using System.Linq;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Audio;
 using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Screens.Levels;
@@ -23,6 +24,9 @@ public partial class SceneOrchester : Node2D {
   [Dependency]
   public ISaveManager SaveManager => this.DependOn<ISaveManager>();
 
+  [Dependency]
+  public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
+
   public override void _EnterTree() {
     base._EnterTree();
     ConnectSignals();
@@ -31,7 +35,7 @@ public partial class SceneOrchester : Node2D {
   public override void _ExitTree() {
     base._ExitTree();
     DisconnectSignals();
-    AudioManager.Instance().MusicTrackManager.Stop();
+    MusicTrackManager.Stop();
   }
 
   public override void _Ready() {
@@ -43,7 +47,7 @@ public partial class SceneOrchester : Node2D {
     var metaData = SaveManager.GetSlotMetaData();
     var isNewGame = (metaData == null) || (metaData.Progress == 0);
 
-    PackedScene? sceneResource = null;
+    // PackedScene? sceneResource = null;
 
     var levelId = MenuManager.GetCurrentLevelId();
     if (levelId != null) {

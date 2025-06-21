@@ -82,6 +82,7 @@ public class MenuManager : IMenuManager {
     _currentScene?.QueueFree();
     var newScene = GD.Load<PackedScene>(scenePath).Instantiate();
     _rootNode.AddChild(newScene);
+    newScene.Owner = _rootNode;
     _currentScene = newScene;
   }
 }

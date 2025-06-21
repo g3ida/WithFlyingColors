@@ -1,10 +1,23 @@
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Audio;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
+[Meta(typeof(IAutoNode))]
 public partial class PauseScreenMenu : CanvasLayer {
+  public override void _Notification(int what) => this.Notify(what);
   private ScreenShaders screenShaders;
   private PauseMenu pauseMenu;
   private bool isPaused = false;
+
+  [Dependency]
+  public ISfxManager SfxManager => this.DependOn<ISfxManager>();
+
+  [Dependency]
+  public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
+
+  public void OnResolved() { }
 
   public override void _Ready() {
     screenShaders = GetNode<ScreenShaders>("ScreenShaders");
@@ -23,8 +36,8 @@ public partial class PauseScreenMenu : CanvasLayer {
   }
 
   private void Resume() {
-    AudioManager.Instance().ResumeAllSfx();
-    AudioManager.Instance().MusicTrackManager.SetPauseMenuEffect(false);
+    SfxManager.ResumeAll();
+    MusicTrackManager.SetPauseMenuEffect(false);
     screenShaders.DisablePauseShader();
     pauseMenu._Hide();
     isPaused = false;
@@ -33,8 +46,8 @@ public partial class PauseScreenMenu : CanvasLayer {
   }
 
   private void PauseGame() {
-    AudioManager.Instance().PauseAllSfx();
-    AudioManager.Instance().MusicTrackManager.SetPauseMenuEffect(true);
+    SfxManager.PauseAll();
+    MusicTrackManager.SetPauseMenuEffect(true);
     screenShaders.Call("ActivatePauseShader");
     pauseMenu._Show();
     isPaused = true;
@@ -43,7 +56,7 @@ public partial class PauseScreenMenu : CanvasLayer {
   }
 
   private void OnBackButtonPressed() {
-    AudioManager.Instance().StopAllSfx();
+    SfxManager.StopAll();
     Resume();
     pauseMenu.GoToMainMenu();
   }
@@ -55,7 +68,7 @@ public partial class PauseScreenMenu : CanvasLayer {
   }
 
   private void _on_LevelSelectButton_pressed() {
-    AudioManager.Instance().StopAllSfx();
+    SfxManager.StopAll();
     Resume();
     pauseMenu.GoToLevelSelectMenu();
   }

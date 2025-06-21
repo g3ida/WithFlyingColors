@@ -15,8 +15,8 @@ public static class LevelDispatcher {
 
 
   public static readonly List<LevelInfo> LEVELS = [
-          new() { Id = LevelId.Tutorial, Name = TranslationKey.LevelTutorial },
           new() { Id = LevelId.Level1, Name = TranslationKey.LevelDarkGames },
+          new() { Id = LevelId.Tutorial, Name = TranslationKey.LevelTutorial },
           new() { Id = LevelId.oneMoreLevel, Name = TranslationKey.LevelDarkGames }
   ];
 

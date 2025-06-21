@@ -108,9 +108,9 @@ public partial class GameMenu : Control {
     }
   }
 
-  public void NavigateToScreen(GameMenus menu_screen) {
+  public void NavigateToScreen(GameMenus menuScreen) {
     if (_screenState is MenuScreenState.ENTERING or MenuScreenState.ENTERED) {
-      _destinationScreen = menu_screen;
+      _destinationScreen = menuScreen;
       if (HasNoTransitionElements()) {
         _screenState = MenuScreenState.EXITED;
         MenuManager.GoToMenu(_destinationScreen);
@@ -130,17 +130,17 @@ public partial class GameMenu : Control {
     NavigateToScreen(GameMenus.GAME);
   }
 
-  private void InternalOnMenuButtonPressed(MenuButtons menu_button) {
+  private void InternalOnMenuButtonPressed(MenuButtons menuButton) {
     if (_screenState != MenuScreenState.ENTERED) {
       return;
     }
 
-    if (!OnMenuButtonPressed(menu_button) && menu_button == MenuButtons.BACK) {
+    if (!OnMenuButtonPressed(menuButton) && menuButton == MenuButtons.BACK) {
       NavigateToScreen(MenuManager.GetPreviousMenu());
     }
   }
 
-  public virtual bool OnMenuButtonPressed(MenuButtons menu_button) {
+  public virtual bool OnMenuButtonPressed(MenuButtons menuButton) {
     return false;
   }
 

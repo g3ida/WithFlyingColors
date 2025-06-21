@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://d08j7k1bbopta"]
+
+[ext_resource type="Script" uid="uid://dswac2psr2hds" path="res://src/Wfc/Core/Audio/SfxManager/SfxManager.cs" id="1_wrfyk"]
+
+[node name="SfxManager" type="Node2D"]
+script = ExtResource("1_wrfyk")

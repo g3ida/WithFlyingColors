@@ -29,6 +29,7 @@ size = Vector2(29, 92)
 
 [node name="Level1" type="Node2D"]
 script = ExtResource("3")
+Track = "level1"
 
 [node name="Checkpoint" parent="." instance=ExtResource("18")]
 position = Vector2(-425, -141)
