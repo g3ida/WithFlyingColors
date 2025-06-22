@@ -1,9 +1,9 @@
 using Godot;
+using Wfc.Entities.World.Player.Explosion;
+using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerDyingState : PlayerBaseState {
-  private static readonly PackedScene ExplosionScene = ResourceLoader.Load<PackedScene>("res://Assets/Scenes/Explosion/Explosion.tscn");
-
   public DeathAnimationType deathAnimationType = DeathAnimationType.DYING_EXPLOSION;
   private int lightMask;
   private bool fallTimerTriggered = false;
@@ -67,9 +67,7 @@ public partial class PlayerDyingState : PlayerBaseState {
   }
 
   private void CreateExplosion(Player player) {
-    var explosion = ExplosionScene.Instantiate<Explosion>();
-    explosion.player = player;
-    explosion.playerTexture = Global.Instance().GetPlayerSprite();
+    var explosion = SceneHelpers.InstantiateNode<Explosion>();
     explosion.Connect(nameof(Explosion.ObjectDetonated), new Callable(this, nameof(OnObjectDetonated)), flags: (uint)ConnectFlags.OneShot);
     explosion.Connect("ready", Callable.From(() => {
       explosion.Setup();
