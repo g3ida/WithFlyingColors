@@ -17,6 +17,13 @@ public partial class PauseMenu : CanvasLayer {
   private ScreenShaders _screenShaders = null!;
   [NodePath("PauseMenuImpl")]
   private PauseMenuImpl _pauseMenu = null!;
+  [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/LevelSelectButton")]
+  private Button _levelSelectButton = null!;
+  [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/ResumeButton")]
+  private Button _resumeButton = null!;
+  [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/BackButton")]
+  private Button _backButtonButton = null!;
+
   private bool _isPaused;
 
   [Dependency]
@@ -28,6 +35,9 @@ public partial class PauseMenu : CanvasLayer {
 
   public override void _Ready() {
     this.WireNodes();
+    _levelSelectButton.Pressed += _onLevelSelectButtonPressed;
+    _resumeButton.Pressed += _onResumeButtonPressed;
+    _backButtonButton.Pressed += _onBackButtonPressed;
   }
 
   public override void _Process(double delta) {
@@ -61,19 +71,19 @@ public partial class PauseMenu : CanvasLayer {
     EventHandler.Instance.EmitPauseMenuEnter();
   }
 
-  private void OnBackButtonPressed() {
+  private void _onBackButtonPressed() {
     SfxManager.StopAll();
     Resume();
     _pauseMenu.GoToMainMenu();
   }
 
-  private void _on_ResumeButton2_pressed() {
+  private void _onResumeButtonPressed() {
     if (_isPaused) {
       Resume();
     }
   }
 
-  private void _on_LevelSelectButton_pressed() {
+  private void _onLevelSelectButtonPressed() {
     SfxManager.StopAll();
     Resume();
     _pauseMenu.GoToLevelSelectMenu();
