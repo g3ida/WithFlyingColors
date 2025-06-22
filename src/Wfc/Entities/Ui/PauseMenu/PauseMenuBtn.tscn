@@ -1,7 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://c2h1gfeegghf7"]
+[gd_scene load_steps=7 format=3 uid="uid://c2h1gfeegghf7"]
 
 [ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="1"]
-[ext_resource type="Script" uid="uid://c0sqjoykvhy8u" path="res://src/Scripts/UI/PauseMenuButtons.cs" id="2"]
+[ext_resource type="Script" uid="uid://c0sqjoykvhy8u" path="res://src/Wfc/Entities/Ui/PauseMenu/PauseMenuBtn.cs" id="2"]
 
 [sub_resource type="Animation" id="3"]
 resource_name = "Hidden"
@@ -50,21 +50,26 @@ tracks/0/keys = {
 "values": [Color(1, 1, 1, 1)]
 }
 
-[node name="PauseMenuButtons" type="Button"]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_6fg57"]
+_data = {
+&"Hidden": SubResource("3"),
+&"Hide": SubResource("1"),
+&"Shown": SubResource("2")
+}
+
+[node name="PauseMenuBtn" type="Button"]
 modulate = Color(1, 1, 1, 0)
 offset_right = 476.0
 offset_bottom = 82.0
 theme = ExtResource("1")
-theme_override_colors/font_focus_color = Color(1, 1, 0, 1)
-theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 0, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 0, 1)
 theme_override_colors/font_pressed_color = Color(1, 1, 0, 1)
 text = "RESUME GAME"
 script = ExtResource("2")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/Hidden = SubResource("3")
-anims/Hide = SubResource("1")
-anims/Shown = SubResource("2")
-
-[connection signal="mouse_entered" from="." to="." method="_on_PauseMenuButtons_mouse_entered"]
+libraries = {
+&"": SubResource("AnimationLibrary_6fg57")
+}
