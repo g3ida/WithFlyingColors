@@ -27,6 +27,7 @@
     </DefaultItemExcludes>
     <!-- Catch compiler-mismatch issues with the Introspection generator -->
     <WarningsAsErrors>CS9057</WarningsAsErrors>
+    <NoWarn>$(NoWarn);CA1805</NoWarn>
   </PropertyGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' or '$(Configuration)' == 'ExportDebug' ">
     <!-- Test dependencies go here! -->
