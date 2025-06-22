@@ -1,6 +1,7 @@
-using Godot;
 using System;
+using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Settings;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class AudioSettingsUI : Control, IUITab {
@@ -11,8 +12,8 @@ public partial class AudioSettingsUI : Control, IUITab {
     SfxSliderNode = GetNode<UISliderButton>("GridContainer/SfxSlider");
     MusicSliderNode = GetNode<UISliderButton>("GridContainer/MusicSlider");
 
-    SfxSliderNode.Value = GameSettings.Instance().SfxVolume;
-    MusicSliderNode.Value = GameSettings.Instance().MusicVolume;
+    SfxSliderNode.Value = GameSettings.SfxVolume;
+    MusicSliderNode.Value = GameSettings.MusicVolume;
 
     // SfxSliderNode.Connect("drag_ended", this, nameof(_on_SfxSlider_drag_ended));
     // SfxSliderNode.Connect("value_changed", this, nameof(_on_SfxSliderButton_value_changed));
@@ -23,17 +24,17 @@ public partial class AudioSettingsUI : Control, IUITab {
   }
 
   private void _on_SfxSlider_drag_ended() {
-    GameSettings.Instance().SfxVolume = (float)SfxSliderNode.Value;
+    GameSettings.SfxVolume = (float)SfxSliderNode.Value;
     EventHandler.Instance.EmitSfxVolumeChanged((float)SfxSliderNode.Value);
   }
 
   private void _on_SfxSliderButton_value_changed(float value) {
-    GameSettings.Instance().SfxVolume = value;
+    GameSettings.SfxVolume = value;
     EventHandler.Instance.EmitSfxVolumeChanged(value);
   }
 
   private void _on_MusicSlider_value_changed(float value) {
-    GameSettings.Instance().MusicVolume = value;
+    GameSettings.MusicVolume = value;
     EventHandler.Instance.EmitMusicVolumeChanged(value);
   }
 
@@ -42,10 +43,10 @@ public partial class AudioSettingsUI : Control, IUITab {
   }
 
   private void _on_SfxSlider_selection_changed(bool isSelected) {
-    EventHandler.Instance.EmitSfxVolumeChanged(GameSettings.Instance().SfxVolume);
+    EventHandler.Instance.EmitSfxVolumeChanged(GameSettings.SfxVolume);
   }
 
   private void _on_MusicSlider_selection_changed(bool isSelected) {
-    EventHandler.Instance.EmitMusicVolumeChanged(GameSettings.Instance().MusicVolume);
+    EventHandler.Instance.EmitMusicVolumeChanged(GameSettings.MusicVolume);
   }
 }

@@ -1,6 +1,7 @@
-using Godot;
 using System;
+using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Settings;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class GameSettingsUI : Control, IUITab {
@@ -25,8 +26,8 @@ public partial class GameSettingsUI : Control, IUITab {
     fullScreenCheckbox = GetNode<CheckBox>("GridContainer/FullscreenCheckbox");
     autoResolutionLabel = GetNode<Label>("GridContainer/AutoResolutionLabel");
 
-    vsyncCheckbox.ButtonPressed = GameSettings.Instance().Vsync;
-    fullScreenCheckbox.ButtonPressed = GameSettings.Instance().Fullscreen;
+    vsyncCheckbox.ButtonPressed = GameSettings.Vsync;
+    fullScreenCheckbox.ButtonPressed = GameSettings.Fullscreen;
     ToggleAutoResolution();
     on_gain_focus();
     is_ready = true;
@@ -40,14 +41,14 @@ public partial class GameSettingsUI : Control, IUITab {
   }
 
   private void _on_VsyncCheckbox_toggled(bool buttonPressed) {
-    GameSettings.Instance().Vsync = buttonPressed;
+    GameSettings.Vsync = buttonPressed;
     if (is_ready) {
       EventHandler.Instance.EmitVsyncToggled(buttonPressed);
     }
   }
 
   private void _on_FullscreenCheckbox_toggled(bool buttonPressed) {
-    GameSettings.Instance().Fullscreen = buttonPressed;
+    GameSettings.Fullscreen = buttonPressed;
     if (is_ready) {
       EventHandler.Instance.EmitFullscreenToggled(buttonPressed);
     }
@@ -55,7 +56,7 @@ public partial class GameSettingsUI : Control, IUITab {
   }
 
   private void ToggleAutoResolution() {
-    if (GameSettings.Instance().Fullscreen) {
+    if (GameSettings.Fullscreen) {
       autoResolutionLabel.Visible = true;
       resolutionSelect.Visible = false;
     }
@@ -69,7 +70,7 @@ public partial class GameSettingsUI : Control, IUITab {
   private void _on_UISelect_Value_changed(Vector2I value) {
     //var resolution = (Vector2)GD.Convert(value, Variant.Type.Vector2);
     var resolution = value;
-    GameSettings.Instance().WindowSize = resolution;
+    GameSettings.WindowSize = resolution;
     if (is_ready) {
       EventHandler.Instance.EmitScreenSizeChanged(resolution);
     }
@@ -86,7 +87,7 @@ public partial class GameSettingsUI : Control, IUITab {
   }
 
   private void on_rescale_timeout() {
-    GameSettings.Instance().WindowSize = (Vector2I)resolutionSelect.selected_value;
+    GameSettings.WindowSize = (Vector2I)resolutionSelect.selected_value;
   }
 
   public void on_gain_focus() {
@@ -100,7 +101,7 @@ public partial class GameSettingsUI : Control, IUITab {
 
   private void _on_ResolutionUISelect_selection_changed(bool isEdit) {
     if (is_ready) {
-      EventHandler.Instance.EmitScreenSizeChanged(GameSettings.Instance().WindowSize);
+      EventHandler.Instance.EmitScreenSizeChanged(GameSettings.WindowSize);
     }
   }
 }

@@ -2,6 +2,7 @@ namespace Wfc.Screens;
 
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Settings;
 using Wfc.Utils.Attributes;
 
 [ScenePath]
@@ -27,15 +28,15 @@ public partial class SettingsMenu : GameMenu {
     }
   }
 
-  public override bool OnMenuButtonPressed(MenuButtons menu_button) {
-    base.OnMenuButtonPressed(menu_button);
-    switch (menu_button) {
+  public override bool OnMenuButtonPressed(MenuButtons menuButton) {
+    base.OnMenuButtonPressed(menuButton);
+    switch (menuButton) {
       case MenuButtons.SHOW_DIALOG:
         DialogContainerNode.ShowDialog();
         return true;
       case MenuButtons.BACK:
         if (IsValidState()) {
-          GameSettings.Instance().SaveGameSettings();
+          GameSettings.Save();
           return false; // We don't return true here because we want the default behavior to be called
         }
         else {
@@ -48,7 +49,7 @@ public partial class SettingsMenu : GameMenu {
   }
 
   private static bool IsValidState() {
-    return GameSettings.Instance().AreActionKeysValid();
+    return GameSettings.AreActionKeysValid();
   }
 
   private void OnBackButtonPressed() {

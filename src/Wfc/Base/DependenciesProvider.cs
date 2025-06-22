@@ -11,6 +11,7 @@ using Wfc.Core.Exceptions;
 using Wfc.Core.Localization;
 using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
+using Wfc.Core.Settings;
 using Wfc.Screens.MenuManager;
 
 [Meta(typeof(IAutoNode))]
@@ -41,11 +42,11 @@ public partial class DependenciesProvider :
   }
 
   public void OnReady() {
+    GameSettings.Load();
     this.Provide();
   }
 
-  public void OnEnterTree() {
-  }
+  public void OnEnterTree() { }
 
   public void OnProvided() {
     // You can optionally implement this method. It gets called once you call
