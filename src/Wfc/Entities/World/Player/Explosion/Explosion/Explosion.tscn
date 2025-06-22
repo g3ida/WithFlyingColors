@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dkk1foidw6l08"]
+
+[ext_resource type="Script" uid="uid://uqmbeucp4i0p" path="res://src/Wfc/Entities/World/Player/Explosion/Explosion/Explosion.cs" id="1"]
+
+[node name="Explosion" type="Node2D"]
+script = ExtResource("1")
