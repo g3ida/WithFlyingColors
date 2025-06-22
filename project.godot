@@ -21,7 +21,6 @@ config/icon="res://icon.png"
 EventCS="*res://src/Wfc/Core/Event/EventHandler.cs"
 AutoloadManager="*res://src/Wfc/Autoload/AutoloadManager.cs"
 GlobalCS="*res://src/Scripts/Autoload/Global.cs"
-GameSettings="*res://src/Scripts/Autoload/GameSettings.cs"
 
 [display]
 
