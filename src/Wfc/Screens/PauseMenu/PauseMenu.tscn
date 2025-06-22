@@ -46,7 +46,3 @@ layout_mode = 2
 text = "Back to main menu"
 
 [node name="ScreenShaders" parent="." instance=ExtResource("1")]
-
-[connection signal="pressed" from="PauseMenuImpl/CenterContainer/VBoxContainer/ResumeButton" to="." method="_on_ResumeButton2_pressed"]
-[connection signal="pressed" from="PauseMenuImpl/CenterContainer/VBoxContainer/LevelSelectButton" to="." method="_on_LevelSelectButton_pressed"]
-[connection signal="pressed" from="PauseMenuImpl/CenterContainer/VBoxContainer/BackButton" to="." method="OnBackButtonPressed"]
