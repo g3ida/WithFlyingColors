@@ -1,0 +1,52 @@
+[gd_scene load_steps=6 format=3 uid="uid://bijboehpv0gsh"]
+
+[ext_resource type="PackedScene" uid="uid://bmemjogxagwn1" path="res://Assets/Scenes/ScreenShaders.tscn" id="1"]
+[ext_resource type="Script" uid="uid://d20xxw2eye0x0" path="res://src/Wfc/Screens/PauseMenu/PauseMenuImpl.cs" id="2"]
+[ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="3"]
+[ext_resource type="Script" uid="uid://b6cgusbhus5ak" path="res://src/Wfc/Screens/PauseMenu/PauseMenu.cs" id="4"]
+[ext_resource type="PackedScene" uid="uid://c2h1gfeegghf7" path="res://src/Wfc/Entities/Ui/PauseMenu/PauseMenuBtn.tscn" id="5"]
+
+[node name="PauseMenu" type="CanvasLayer"]
+process_mode = 3
+layer = 100
+script = ExtResource("4")
+
+[node name="PauseMenuImpl" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3")
+script = ExtResource("2")
+
+[node name="CenterContainer" type="CenterContainer" parent="PauseMenuImpl"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PauseMenuImpl/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ResumeButton" parent="PauseMenuImpl/CenterContainer/VBoxContainer" instance=ExtResource("5")]
+visible = false
+layout_mode = 2
+text = "Resume Game"
+
+[node name="LevelSelectButton" parent="PauseMenuImpl/CenterContainer/VBoxContainer" instance=ExtResource("5")]
+visible = false
+layout_mode = 2
+text = "Back To Level Selection"
+
+[node name="BackButton" parent="PauseMenuImpl/CenterContainer/VBoxContainer" instance=ExtResource("5")]
+visible = false
+layout_mode = 2
+text = "Back to main menu"
+
+[node name="ScreenShaders" parent="." instance=ExtResource("1")]
+
+[connection signal="pressed" from="PauseMenuImpl/CenterContainer/VBoxContainer/ResumeButton" to="." method="_on_ResumeButton2_pressed"]
+[connection signal="pressed" from="PauseMenuImpl/CenterContainer/VBoxContainer/LevelSelectButton" to="." method="_on_LevelSelectButton_pressed"]
+[connection signal="pressed" from="PauseMenuImpl/CenterContainer/VBoxContainer/BackButton" to="." method="OnBackButtonPressed"]

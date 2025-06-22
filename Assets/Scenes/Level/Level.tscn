@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://nvn44bv2puaj" path="res://Assets/Scenes/Player.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://c34ryx01v1y06" path="res://Assets/Scenes/Camera.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://we8kyl5cdqe6" path="res://Assets/Scenes/Cam/CameraShake.tscn" id="5"]
-[ext_resource type="PackedScene" uid="uid://bijboehpv0gsh" path="res://Assets/Scenes/PauseScreen.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://bijboehpv0gsh" path="res://src/Wfc/Screens/PauseMenu/PauseMenu.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://lycx13j354o3" path="res://Assets/Scenes/HUD/GemsHUDContainer.tscn" id="8"]
 
 [node name="Level2" type="Node2D"]
