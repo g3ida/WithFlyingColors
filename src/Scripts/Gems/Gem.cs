@@ -109,6 +109,7 @@ public partial class Gem : Area2D {
     SwitchState((GemBaseState)StatesStore.GetState(state));
   }
 
+  // FIXME: This does not override IsInGroup(StringName grp)
   public bool IsInGroup(string grp) {
     // if the player is dying we don't want to collect it
     if (Global.Instance().Player.IsDying()) {

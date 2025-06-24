@@ -1,6 +1,7 @@
-using Godot;
 using System;
 using System.Linq;
+using Godot;
+using Wfc.Entities.World.Player;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BouncingBall : CharacterBody2D {

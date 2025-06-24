@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Entities.World.Player;
 using Wfc.Screens;
 
 public partial class Global : Node2D {

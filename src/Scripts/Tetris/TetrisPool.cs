@@ -286,7 +286,7 @@ public partial class TetrisPool : Node2D {
     }
   }
 
-  private void _on_player_dying(Node area, Vector2 position, int entityType) {
+  private void _on_player_dying(Node? area, Vector2 position, int entityType) {
     isPaused = true;
   }
 
