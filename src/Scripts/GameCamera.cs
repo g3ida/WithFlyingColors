@@ -110,7 +110,7 @@ public partial class GameCamera : Camera2D {
     RestoreDragMargins();
   }
 
-  private void _OnPlayerDying(Node area, Vector2 position, int entityType) {
+  private void _OnPlayerDying(Node? area, Vector2 position, int entityType) {
     RestoreDragMargins();
   }
 

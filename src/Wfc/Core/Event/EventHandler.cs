@@ -21,7 +21,7 @@ public partial class EventHandler : Node, IEventHandler {
   public delegate void PlayerLandedEventHandler(Node area, Vector2 position);
 
   [Signal]
-  public delegate void PlayerDyingEventHandler(Node area, Vector2 position, int entityType);
+  public delegate void PlayerDyingEventHandler(Node? area, Vector2 position, int entityType);
 
   [Signal]
   public delegate void PlayerDiedEventHandler();
@@ -230,6 +230,7 @@ public partial class EventHandler : Node, IEventHandler {
 
   public void EmitPlayerLanded(Node area, Vector2 position) => Instance.EmitSignal(nameof(PlayerLanded), area, position);
   public void EmitPlayerDying(Node area, Vector2 position, Constants.EntityType entityType) => Instance.EmitSignal(nameof(PlayerDying), area, position, (int)entityType);
+  public void EmitPlayerDying(Vector2 position, Constants.EntityType entityType) => Instance.EmitSignal(nameof(PlayerDying), default(Variant), position, (int)entityType);
   public void EmitPlayerDied() => Instance.EmitSignal(nameof(PlayerDied));
   public void EmitPlayerSlippering() => Instance.EmitSignal(nameof(PlayerSlippering));
   public void EmitPlayerJumped() => Instance.EmitSignal(nameof(PlayerJumped));

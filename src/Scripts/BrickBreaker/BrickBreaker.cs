@@ -175,7 +175,7 @@ public partial class BrickBreaker : Node2D {
     }
   }
 
-  private void _OnPlayerDying(Node _area, Vector2 _position, int _entityType) {
+  private void _OnPlayerDying(Node? _area, Vector2 _position, int _entityType) {
     if (current_state == BrickBreakerState.PLAYING) {
       current_state = BrickBreakerState.LOSE;
       Stop();

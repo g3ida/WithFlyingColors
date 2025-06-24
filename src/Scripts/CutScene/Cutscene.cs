@@ -65,7 +65,7 @@ public partial class Cutscene : Node2D {
       currentState = CutsceneState.ENABLING;
       currentCutsceneId = id;
       canvasNode.Visible = true;
-      Global.Instance().Player.handle_input_is_disabled = true;
+      Global.Instance().Player.HandleInputIsDisabled = true;
       ShowStripes();
     }
   }
@@ -111,7 +111,7 @@ public partial class Cutscene : Node2D {
     if (currentState == CutsceneState.DISABLING) {
       currentState = CutsceneState.DISABLED;
       canvasNode.Visible = false;
-      Global.Instance().Player.handle_input_is_disabled = false;
+      Global.Instance().Player.HandleInputIsDisabled = false;
     }
   }
 
