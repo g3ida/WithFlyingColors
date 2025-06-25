@@ -2,11 +2,12 @@ namespace Wfc.Entities.World.Player;
 
 using Godot;
 using Wfc.Entities.World.Explosion;
+using Wfc.State;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerDyingState : PlayerBaseState {
-  public DeathAnimationType deathAnimationType = DeathAnimationType.DYING_EXPLOSION;
+  public DeathAnimationType deathAnimationType = DeathAnimationType.Explosion;
   private int lightMask;
   private bool fallTimerTriggered = false;
 
@@ -19,13 +20,13 @@ public partial class PlayerDyingState : PlayerBaseState {
     lightMask = player.LightOccluder.LightMask;
     player.HideColorAreas();
     player.SetCollisionShapesDisabledFlagDeferred(true);
-    if (deathAnimationType == DeathAnimationType.DYING_EXPLOSION_REAL) {
+    if (deathAnimationType == DeathAnimationType.ExplosionReal) {
       CallDeferred(nameof(CreateExplosion), player);
       EventHandler.Instance.EmitPlayerExplode();
       player.LightOccluder.LightMask = 0;
       player.AnimatedSpriteNode.Play("die");
     }
-    else if (deathAnimationType == DeathAnimationType.DYING_EXPLOSION) {
+    else if (deathAnimationType == DeathAnimationType.Explosion) {
       EventHandler.Instance.EmitPlayerExplode();
       player.LightOccluder.LightMask = 0;
       player.AnimatedSpriteNode.Play("die");
@@ -51,11 +52,11 @@ public partial class PlayerDyingState : PlayerBaseState {
     EventHandler.Instance.EmitPlayerDied();
   }
 
-  protected override BaseState<Player> _PhysicsUpdate(Player player, float delta) {
+  protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
     return base._PhysicsUpdate(player, delta);
   }
 
-  public BaseState<Player> OnPlayerDying(Node area, Vector2 position, int entityType) {
+  public BaseState<Player>? OnPlayerDying(Node area, Vector2 position, int entityType) {
     return null;
   }
 

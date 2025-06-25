@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Player;
 
 using System;
 using Godot;
+using Wfc.State;
 
 public partial class PlayerBaseState : BaseState<Player> {
   public PlayerStatesEnum baseState;
@@ -27,17 +28,16 @@ public partial class PlayerBaseState : BaseState<Player> {
   protected virtual void _Exit(Player player) { }
 
   public sealed override void _Input(Player player, InputEvent ev) {
-    input(player, ev);
+    Input(player, ev);
   }
 
-  // FIXME: rename to uppercase after c# migration so I don't clash with input class.
-  protected virtual void input(Player player, InputEvent ev) { }
+  protected virtual void Input(Player player, InputEvent ev) { }
 
   protected bool DashActionPressed(Player player) {
-    return Input.IsActionJustPressed("dash") && player.CanDash && !player.HandleInputIsDisabled;
+    return Godot.Input.IsActionJustPressed("dash") && player.CanDash && !player.HandleInputIsDisabled;
   }
 
-  public override BaseState<Player> PhysicsUpdate(Player player, float delta) {
+  public override BaseState<Player>? PhysicsUpdate(Player player, float delta) {
     if (player.PlayerState != player.StatesStore.GetState(PlayerStatesEnum.DYING)) {
       if (DashActionPressed(player)) {
         return OnDash(player);
@@ -45,12 +45,12 @@ public partial class PlayerBaseState : BaseState<Player> {
 
       if (!player.HandleInputIsDisabled) {
         if (player.PlayerState != player.StatesStore.GetState(PlayerStatesEnum.DASHING)) {
-          if (Input.IsActionPressed("move_right")) {
+          if (Godot.Input.IsActionPressed("move_right")) {
             playerMoved = true;
             player.Velocity = new Vector2(Mathf.Clamp(player.Velocity.X + player.SpeedUnit, 0, player.SpeedLimit), player.Velocity.Y);
 
           }
-          else if (Input.IsActionPressed("move_left")) {
+          else if (Godot.Input.IsActionPressed("move_left")) {
             playerMoved = true;
             player.Velocity = new Vector2(Mathf.Clamp(player.Velocity.X - player.SpeedUnit, -player.SpeedLimit, 0), player.Velocity.Y);
 
@@ -75,24 +75,26 @@ public partial class PlayerBaseState : BaseState<Player> {
     }
   }
 
-  protected virtual BaseState<Player> _PhysicsUpdate(Player player, float delta) { return null; }
+  protected virtual BaseState<Player>? _PhysicsUpdate(Player player, float delta) { return null; }
 
   protected void SetPlayerDeathAnimationType(PlayerDyingState dyingState, Constants.EntityType entityType) {
     if (entityType == Constants.EntityType.FALL_ZONE) {
-      dyingState.deathAnimationType = DeathAnimationType.DYING_FALL;
+      dyingState.deathAnimationType = DeathAnimationType.Fall;
     }
     else {
-      dyingState.deathAnimationType = DeathAnimationType.DYING_EXPLOSION_REAL;
+      dyingState.deathAnimationType = DeathAnimationType.ExplosionReal;
     }
   }
 
-  public PlayerBaseState OnPlayerDying(Player player, Node? area, Vector2 position, Constants.EntityType entityType) {
+  public PlayerBaseState? OnPlayerDying(Player player, Node? area, Vector2 position, Constants.EntityType entityType) {
     if (entityType != Constants.EntityType.FALL_ZONE) {
       player.Velocity = Vector2.Zero;
     }
 
-    var dyingState = (PlayerDyingState)player.StatesStore.GetState(PlayerStatesEnum.DYING);
-    SetPlayerDeathAnimationType(dyingState, entityType);
+    var dyingState = player.StatesStore.GetState(PlayerStatesEnum.DYING) as PlayerDyingState;
+    if (dyingState != null) {
+      SetPlayerDeathAnimationType(dyingState, entityType);
+    }
     return dyingState;
   }
 
@@ -104,12 +106,12 @@ public partial class PlayerBaseState : BaseState<Player> {
     return null;
   }
 
-  protected BaseState<Player> OnDash(Player player) {
-    var dashingState = (PlayerDashingState)player.StatesStore.GetState(PlayerStatesEnum.DASHING);
+  protected BaseState<Player>? OnDash(Player player) {
+    var dashingState = player.StatesStore.GetState(PlayerStatesEnum.DASHING);
     return dashingState;
   }
 
-  protected BaseState<Player> OnJump(Player player) {
+  protected BaseState<Player>? OnJump(Player player) {
     var jumpState = player.StatesStore.GetState(PlayerStatesEnum.JUMPING);
     return jumpState;
   }
@@ -117,15 +119,15 @@ public partial class PlayerBaseState : BaseState<Player> {
   protected bool JumpPressed(Player player) {
     if (player.HandleInputIsDisabled)
       return false;
-    return Input.IsActionJustPressed("jump");
+    return Godot.Input.IsActionJustPressed("jump");
   }
 
-  protected BaseState<Player> HandleRotate(Player player) {
+  protected BaseState<Player>? HandleRotate(Player player) {
     if (player.PlayerState.baseState != PlayerStatesEnum.DYING && !player.HandleInputIsDisabled) {
-      if (Input.IsActionJustPressed("rotate_left")) {
+      if (Godot.Input.IsActionJustPressed("rotate_left")) {
         return player.StatesStore.GetState(PlayerStatesEnum.ROTATING_LEFT);
       }
-      if (Input.IsActionJustPressed("rotate_right")) {
+      if (Godot.Input.IsActionJustPressed("rotate_right")) {
         return player.StatesStore.GetState(PlayerStatesEnum.ROTATING_RIGHT);
       }
     }

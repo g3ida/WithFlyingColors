@@ -3,6 +3,7 @@ namespace Wfc.Entities.World.Player;
 using System;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.State;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerStandingState : PlayerBaseState {
@@ -24,17 +25,19 @@ public partial class PlayerStandingState : PlayerBaseState {
   protected override void _Exit(Player player) {
   }
 
-  public override BaseState<Player> PhysicsUpdate(Player player, float delta) {
+  public override BaseState<Player>? PhysicsUpdate(Player player, float delta) {
     return base.PhysicsUpdate(player, delta);
   }
 
-  protected override BaseState<Player> _PhysicsUpdate(Player player, float delta) {
+  protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (JumpPressed(player) && player.IsOnFloor()) {
       return OnJump(player);
     }
     if (!player.IsOnFloor()) {
-      var fallingState = (PlayerFallingState)player.StatesStore.GetState(PlayerStatesEnum.FALLING) as PlayerFallingState;
-      fallingState.wasOnFloor = true;
+      var fallingState = player.StatesStore.GetState(PlayerStatesEnum.FALLING) as PlayerFallingState;
+      if (fallingState != null) {
+        fallingState.wasOnFloor = true;
+      }
       return fallingState;
     }
     else {
@@ -46,7 +49,7 @@ public partial class PlayerStandingState : PlayerBaseState {
     return null;
   }
 
-  private BaseState<Player> RaycastFloor(Player player) {
+  private static BaseState<Player>? RaycastFloor(Player player) {
     var spaceState = player.GetWorld2D().DirectSpaceState;
     var playerHalfSize = player.GetCollisionShapeSize() * 0.5f * player.Scale;
 
@@ -75,7 +78,9 @@ public partial class PlayerStandingState : PlayerBaseState {
     if (combination == 1 || combination == 8) // flag values
     {
       var slipperingState = player.StatesStore.GetState(PlayerStatesEnum.SLIPPERING) as PlayerSlipperingState;
-      slipperingState.direction = combination == 1 ? 1 : -1;
+      if (slipperingState != null) {
+        slipperingState.direction = combination == 1 ? 1 : -1;
+      }
       return slipperingState;
     }
     return null;

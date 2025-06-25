@@ -1,4 +1,5 @@
 
+using Wfc.State;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class GemCollectingState : GemBaseState {
@@ -15,7 +16,7 @@ public partial class GemCollectingState : GemBaseState {
     gem.CollisionShapeNode.SetDeferred("disabled", false);
   }
 
-  public override BaseState<Gem> OnAnimationFinished(Gem gem, string animName) {
+  public override BaseState<Gem>? OnAnimationFinished(Gem gem, string animName) {
     if (animName == "gem_collected_animation") {
       EventHandler.Instance.EmitGemCollected(
           gem.group_name,

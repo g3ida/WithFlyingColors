@@ -193,10 +193,10 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   public override void _PhysicsProcess(double delta) {
-    var nextState = (PlayerBaseState)PlayerRotationState.PhysicsUpdate(this, (float)delta);
+    var nextState = PlayerRotationState.PhysicsUpdate(this, (float)delta) as PlayerBaseState;
     SwitchRotationState(nextState);
 
-    var nextPlayerState = (PlayerBaseState)PlayerState.PhysicsUpdate(this, (float)delta);
+    var nextPlayerState = PlayerState.PhysicsUpdate(this, (float)delta) as PlayerBaseState;
     SwitchState(nextPlayerState);
 
     if (IsJustHitTheFloor()) {
@@ -214,8 +214,8 @@ public partial class Player : CharacterBody2D, IPersistent {
     Rotate(_saveData.Angle - Rotation);
     CurrentDefaultCornerScaleFactor = _saveData.DefaultCornerScaleFactor;
     ShowColorAreas();
-    SwitchRotationState((PlayerBaseState)StatesStore.GetState(PlayerStatesEnum.IDLE));
-    SwitchState((PlayerBaseState)StatesStore.GetState(PlayerStatesEnum.FALLING));
+    SwitchRotationState(StatesStore.GetState(PlayerStatesEnum.IDLE) as PlayerBaseState);
+    SwitchState(StatesStore.GetState(PlayerStatesEnum.FALLING) as PlayerBaseState);
     HandleInputIsDisabled = false;
   }
 
@@ -279,7 +279,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     SwitchState(next_player_state);
   }
 
-  private void SwitchState(PlayerBaseState new_state) {
+  private void SwitchState(PlayerBaseState? new_state) {
     if (new_state != null) {
       PlayerState.Exit(this);
       PlayerState = new_state;
@@ -287,7 +287,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     }
   }
 
-  private void SwitchRotationState(PlayerBaseState new_state) {
+  private void SwitchRotationState(PlayerBaseState? new_state) {
     if (new_state != null) {
       PlayerRotationState.Exit(this);
       PlayerRotationState = new_state;
