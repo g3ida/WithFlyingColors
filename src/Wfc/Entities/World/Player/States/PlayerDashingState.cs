@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Player;
 
 using Godot;
+using Wfc.State;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -52,7 +53,7 @@ public partial class PlayerDashingState : PlayerBaseState {
     direction = Vector2.Zero;
   }
 
-  protected override BaseState<Player> _PhysicsUpdate(Player player, float delta) {
+  protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (!dashDone && !permissivenessTimer.IsRunning()) {
       SetDashDirection(player);
       if (direction.LengthSquared() < 0.01f) {
@@ -88,13 +89,13 @@ public partial class PlayerDashingState : PlayerBaseState {
 
   private void SetDashDirection(Player player) {
     direction = Vector2.Zero;
-    if (Input.IsActionPressed("move_right") && Input.IsActionPressed("move_left")) {
+    if (Godot.Input.IsActionPressed("move_right") && Godot.Input.IsActionPressed("move_left")) {
       direction.X = 0;
     }
-    else if (Input.IsActionPressed("move_left")) {
+    else if (Godot.Input.IsActionPressed("move_left")) {
       direction.X = -1;
     }
-    else if (Input.IsActionPressed("move_right")) {
+    else if (Godot.Input.IsActionPressed("move_right")) {
       direction.X = 1;
     }
     else if (Mathf.Abs(player.Velocity.X) > 0.1f) {
@@ -103,7 +104,7 @@ public partial class PlayerDashingState : PlayerBaseState {
     else {
       direction.X = 0;
     }
-    if (Input.IsActionPressed("down")) {
+    if (Godot.Input.IsActionPressed("down")) {
       direction.Y = 1;
     }
   }

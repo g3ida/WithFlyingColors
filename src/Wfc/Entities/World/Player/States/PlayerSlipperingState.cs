@@ -3,12 +3,11 @@ namespace Wfc.Entities.World.Player;
 using System;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.State;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerSlipperingState : PlayerBaseState {
   public int direction = 1;
-  private PlayerRotationAction playerRotation;
-
   private const float RAYCAST_Y_OFFSET = -3.0f;
   private const float RAYCAST_LENGTH = 5.0f;
   private const float CORRECT_ROTATION_FALL_SPEED = 0.3f;
@@ -25,12 +24,11 @@ public partial class PlayerSlipperingState : PlayerBaseState {
   }
 
   protected override void _Enter(Player player) {
-    playerRotation = player.PlayerRotationAction;
     player.AnimatedSpriteNode.Play("idle");
     player.AnimatedSpriteNode.Stop();
     skipExitRotation = false;
     exitRotationSpeed = CORRECT_ROTATION_JUMP_SPEED;
-    playerRotation.Execute(direction, Constants.PI2, SLIPPERING_ROTATION_DURATION, true, false, true);
+    player.PlayerRotationAction.Execute(direction, Constants.PI2, SLIPPERING_ROTATION_DURATION, true, false, true);
     EventHandler.Instance.EmitPlayerSlippering();
     player.CanDash = true;
   }
@@ -42,27 +40,29 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     //   # 2- to make falling less sudden (rotation should be slow for visual appeal and fast
     //   #    for gameplay so the combination is the best option )
     if (!skipExitRotation) {
-      playerRotation.Execute(-direction, Constants.PI2, SLIPPERING_RECOVERY_INITIAL_DURATION, true, false, false);
+      player.PlayerRotationAction.Execute(-direction, Constants.PI2, SLIPPERING_RECOVERY_INITIAL_DURATION, true, false, false);
       player.GetTree().CreateTimer(0.05f).Connect("timeout", Callable.From(() => {
-        playerRotation.Execute(-direction, Constants.PI2, exitRotationSpeed, true, false, false);
+        player.PlayerRotationAction.Execute(-direction, Constants.PI2, exitRotationSpeed, true, false, false);
       }));
     }
   }
 
-  protected override BaseState<Player> _PhysicsUpdate(Player player, float delta) {
+  protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (JumpPressed(player) && player.IsOnFloor()) {
       exitRotationSpeed = CORRECT_ROTATION_JUMP_SPEED;
       return OnJump(player);
     }
 
     if (!player.IsOnFloor()) {
-      var fallingState = (PlayerFallingState)player.StatesStore.GetState(PlayerStatesEnum.FALLING);
-      // added to avoid complete rotation when falling if the current angle is small enough or if the floor is
-      // too close
-      if (Mathf.Abs(player.Rotation - playerRotation.ThetaZero) > Constants.PI8 && !CheckIfGroundIsNear(player)) {
-        exitRotationSpeed = CORRECT_ROTATION_FALL_SPEED;
-        fallingState.wasOnFloor = true;
-        direction = -direction;
+      var fallingState = player.StatesStore.GetState(PlayerStatesEnum.FALLING) as PlayerFallingState;
+      if (fallingState != null) {
+        // added to avoid complete rotation when falling if the current angle is small enough or if the floor is
+        // too close
+        if (Mathf.Abs(player.Rotation - player.PlayerRotationAction.ThetaZero) > Constants.PI8 && !CheckIfGroundIsNear(player)) {
+          exitRotationSpeed = CORRECT_ROTATION_FALL_SPEED;
+          fallingState.wasOnFloor = true;
+          direction = -direction;
+        }
       }
       return fallingState;
     }
@@ -72,7 +72,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
       return player.StatesStore.GetState(PlayerStatesEnum.STANDING);
     }
 
-    if (playerRotation.CanRotate || playerMoved) {
+    if (player.PlayerRotationAction.CanRotate || playerMoved) {
       return player.StatesStore.GetState(PlayerStatesEnum.STANDING);
     }
 
@@ -91,7 +91,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
       var cp = cc.GlobalPosition;
       if (Mathf.Sign(pp.X - cp.X) == -direction && cp.Y > position.Y) {
         position = cp;
-        size = (cc.Shape as RectangleShape2D).Size;
+        size = (cc.Shape as RectangleShape2D)?.Size ?? Vector2.Zero;
       }
     }
 
@@ -112,7 +112,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     return result.ContainsKey("collider");
   }
 
-  private BaseState<Player> HandleGroundIsNear(Player player) {
+  private BaseState<Player>? HandleGroundIsNear(Player player) {
     if (CheckIfGroundIsNear(player)) {
       player.Velocity = new Vector2(player.Velocity.X - player.Scale.X * direction * PLAYER_SPEED_THRESHOLD_TO_STAND, player.Velocity.Y);
       return player.StatesStore.GetState(PlayerStatesEnum.STANDING);

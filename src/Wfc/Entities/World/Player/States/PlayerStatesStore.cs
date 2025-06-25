@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Player;
 
 using System;
 using Godot;
+using Wfc.State;
 
 public partial class PlayerStatesStore : BaseStatesStore<Player, PlayerStatesEnum> {
   // Player states
@@ -35,7 +36,7 @@ public partial class PlayerStatesStore : BaseStatesStore<Player, PlayerStatesEnu
     slipperingState = new PlayerSlipperingState();
   }
 
-  public override BaseState<Player> GetState(PlayerStatesEnum state) {
+  public override BaseState<Player>? GetState(PlayerStatesEnum state) {
     switch (state) {
       case PlayerStatesEnum.IDLE:
         return idleState;

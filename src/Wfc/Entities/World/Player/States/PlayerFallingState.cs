@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Player;
 
 using System;
 using Godot;
+using Wfc.State;
 
 public partial class PlayerFallingState : PlayerBaseState {
   private CountdownTimer permissivenessTimer = new CountdownTimer();
@@ -27,7 +28,7 @@ public partial class PlayerFallingState : PlayerBaseState {
     player.JumpParticlesNode.Emitting = false;
   }
 
-  protected override BaseState<Player> _PhysicsUpdate(Player player, float delta) {
+  protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (player.IsOnFloor()) {
       return player.StatesStore.GetState(PlayerStatesEnum.STANDING);
     }
@@ -39,7 +40,7 @@ public partial class PlayerFallingState : PlayerBaseState {
     return null;
   }
 
-  public BaseState<Player> OnAnimationFinished(string animName) {
+  public BaseState<Player>? OnAnimationFinished(string animName) {
     return null;
   }
 }

@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Player;
 
 using Godot;
+using Wfc.State;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerJumpingState : PlayerBaseState {
@@ -37,11 +38,11 @@ public partial class PlayerJumpingState : PlayerBaseState {
     touchJumpPower = 1.0f;
   }
 
-  public override BaseState<Player> PhysicsUpdate(Player player, float delta) {
+  public override BaseState<Player>? PhysicsUpdate(Player player, float delta) {
     return base.PhysicsUpdate(player, delta);
   }
 
-  protected override BaseState<Player> _PhysicsUpdate(Player player, float delta) {
+  protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (entered) {
       entered = false;
       player.Velocity = new Vector2(player.Velocity.X, player.Velocity.Y - JUMP_FORCE * touchJumpPower);
@@ -59,7 +60,7 @@ public partial class PlayerJumpingState : PlayerBaseState {
       permissivenessTimer.Reset();
     }
 
-    if (jumpTimer.IsRunning() && Input.IsActionJustReleased("jump")) {
+    if (jumpTimer.IsRunning() && Godot.Input.IsActionJustReleased("jump")) {
       jumpTimer.Stop();
       if (player.Velocity.Y < 0) {
         player.Velocity = new Vector2(player.Velocity.X * 0.5f, player.Velocity.Y);
