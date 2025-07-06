@@ -1,7 +1,7 @@
 [gd_scene load_steps=12 format=3 uid="uid://nvn44bv2puaj"]
 
 [ext_resource type="SpriteFrames" path="res://Assets/Animations/player_frames.tres" id="1"]
-[ext_resource type="Script" uid="uid://btfa8iyy5gce2" path="res://src/Wfc/Entities/World/Player/Player.cs" id="2"]
+[ext_resource type="Script" uid="uid://btfa8iyy5gce2" path="res://src/Wfc/Entities/World/Player/Player/Player.cs" id="2"]
 [ext_resource type="PackedScene" uid="uid://bcrcp4q2theea" path="res://src/Wfc/Entities/World/Player/Face/BoxFace/BoxFace.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://byaynnxa1dwb6" path="res://src/Wfc/Entities/World/Player/Face/BoxCorner/FaceSeparator.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://l65bdg6xvfrs" path="res://src/Wfc/Entities/World/Player/Face/BoxFace/FaceCollisionShape.tscn" id="5"]

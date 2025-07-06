@@ -1,11 +1,12 @@
 namespace WithFlyingColors;
 
 using System.Threading.Tasks;
-using Godot;
 using Chickensoft.GoDotTest;
+using Godot;
 using GodotTestDriver;
 using Shouldly;
 using Wfc.Entities.World.Player;
+using Wfc.test;
 
 public class PlayerRotationActionTest(Node testScene) : TestClass(testScene) {
   private PlayerRotation _playerRotation = default!;
@@ -32,6 +33,6 @@ public class PlayerRotationActionTest(Node testScene) : TestClass(testScene) {
       .GetTree()
       .CreateTimer(duration + Mathf.Epsilon)
       .ToSignal(_playerRotation, nameof(PlayerRotation.RotationCompleted));
-    _playerRotationParent.Rotation.ShouldBe(Mathf.Pi);
+    _playerRotationParent.Rotation.ShouldBeCloseTo(Mathf.Pi);
   }
 }

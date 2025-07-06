@@ -32,14 +32,14 @@ public partial class BoxFace : BaseFace {
     }
 
     if (area is Gem gem) {
-      if (!gem.IsInGroup((string)groups[0])) {
+      if (!gem.IsInGroup(groups[0])) {
         EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, Constants.EntityType.PLATFORM);
       }
       else {
         gem._on_Gem_area_entered(this);
       }
     }
-    else if (!area.IsInGroup((string)groups[0])) {
+    else if (!area.IsInGroup(groups[0])) {
       EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, Constants.EntityType.PLATFORM);
     }
     else if (!Global.Instance().Player.IsStanding()) {

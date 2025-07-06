@@ -67,12 +67,7 @@ public partial class PlayerBaseState : BaseState<Player> {
     player.Velocity = new Vector2(Mathf.Lerp(player.Velocity.X, 0, 0.25f), player.Velocity.Y);
     player.CurrentAnimation.Step(player, player.AnimatedSpriteNode, delta);
 
-    if (newState != null) {
-      return newState;
-    }
-    else {
-      return null;
-    }
+    return newState;
   }
 
   protected virtual BaseState<Player>? _PhysicsUpdate(Player player, float delta) { return null; }
