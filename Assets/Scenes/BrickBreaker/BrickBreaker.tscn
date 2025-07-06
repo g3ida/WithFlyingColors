@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://byyce56nk7v2h" path="res://Assets/Scenes/Tetris/SlidingFloor.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://cld6ulwmybvf1" path="res://Assets/Scenes/BrickBreaker/DeathZone.tscn" id="8"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" id="9"]
+[ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" id="9"]
 
 [sub_resource type="RectangleShape2D" id="4"]
 size = Vector2(252.5, 44.75)

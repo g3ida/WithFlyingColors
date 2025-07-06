@@ -36,8 +36,14 @@ public partial class PlayerRotationAction : GodotObject {
     }
   }
 
-  // FIXME: remove commented optional params after c# migration
-  public bool Execute(int direction, float angleRadians /*= Mathf.Pi * 2*/, float _duration /*= DEFAULT_ROTATION_DURATION*/, bool shouldForce /*= true*/, bool cumulateTarget /*= true*/, bool useRound /*= true*/) {
+  public bool Execute(
+    int direction,
+    float angleRadians = Constants.PI2,
+    float _duration = DEFAULT_ROTATION_DURATION,
+    bool shouldForce = true,
+    bool cumulateTarget = true,
+    bool useRound = true
+  ) {
     if (!CanRotate && !shouldForce)
       return false;
     CanRotate = false;

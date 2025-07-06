@@ -1,4 +1,4 @@
-namespace Wfc.Utils.Attributes.Tests;
+namespace Wfc.Utils.Attributes.Test;
 
 using System;
 using System.IO;

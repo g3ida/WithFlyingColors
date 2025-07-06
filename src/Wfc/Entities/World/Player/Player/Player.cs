@@ -34,7 +34,7 @@ public partial class Player : CharacterBody2D, IPersistent {
   public TransformAnimation CurrentAnimation { get; set; } = null!;
 
   private int _spriteSize;
-  private bool _wasOnFloor = true;
+  public bool WasOnFloor { get; private set; } = true;
 
   public PlayerStatesStore StatesStore { get; private set; } = null!;
   public PlayerBaseState PlayerState { get; set; } = null!;
@@ -148,7 +148,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     AnimatedSpriteNode.SpriteFrames.SetFrame("idle", 0, Global.Instance().GetPlayerSprite());
     _spriteSize = AnimatedSpriteNode.SpriteFrames.GetFrameTexture("idle", 0).GetWidth();
     InitSpriteAnimation();
-    _wasOnFloor = IsOnFloor();
+    WasOnFloor = IsOnFloor();
     UpDirection = Vector2.Up;
     InitFacesAreas();
     InitState();
@@ -203,7 +203,7 @@ public partial class Player : CharacterBody2D, IPersistent {
       OnLand();
     }
 
-    _wasOnFloor = IsOnFloor();
+    WasOnFloor = IsOnFloor();
   }
 
   public void reset() {
@@ -271,7 +271,7 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   private bool IsJustHitTheFloor() {
-    return !_wasOnFloor && IsOnFloor();
+    return !WasOnFloor && IsOnFloor();
   }
 
   private void OnLand() {
