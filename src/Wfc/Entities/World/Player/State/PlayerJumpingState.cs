@@ -52,6 +52,7 @@ public partial class PlayerJumpingState : PlayerBaseState {
         return player.StatesStore.GetState(PlayerStatesEnum.JUMPING);
       }
       else {
+        EventHandler.Instance.EmitPlayerLand();
         return player.StatesStore.GetState(PlayerStatesEnum.STANDING);
       }
     }
