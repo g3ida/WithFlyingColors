@@ -1,7 +1,7 @@
 namespace Wfc.Entities.World.Player;
 
-using System;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.State;
 
 public partial class PlayerFallingState : PlayerBaseState {
@@ -30,6 +30,7 @@ public partial class PlayerFallingState : PlayerBaseState {
 
   protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (player.IsOnFloor()) {
+      EventHandler.Instance.EmitPlayerLand();
       return player.StatesStore.GetState(PlayerStatesEnum.STANDING);
     }
     if (JumpPressed(player) && permissivenessTimer.IsRunning()) {

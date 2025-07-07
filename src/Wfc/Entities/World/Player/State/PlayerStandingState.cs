@@ -18,7 +18,6 @@ public partial class PlayerStandingState : PlayerBaseState {
   protected override void _Enter(Player player) {
     player.AnimatedSpriteNode.Play("idle");
     player.AnimatedSpriteNode.Stop();
-    EventHandler.Instance.EmitPlayerLand();
     player.CanDash = true;
   }
 
