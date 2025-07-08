@@ -93,7 +93,7 @@ public partial class PlayerBaseState : BaseState<Player> {
     return dyingState;
   }
 
-  public PlayerBaseState OnLand(Player player) {
+  public PlayerBaseState? OnLand(Player player) {
     player.CurrentAnimation = player.ScaleAnimation;
     if (!player.CurrentAnimation.IsRunning()) {
       player.CurrentAnimation.Start();

@@ -1,20 +1,50 @@
-[gd_resource type="SpriteFrames" load_steps=11 format=2]
+[gd_resource type="SpriteFrames" load_steps=11 format=3 uid="uid://b26sfd0oc5q5s"]
 
-[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_2.png" type="Texture2D" id=1]
-[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_4.png" type="Texture2D" id=2]
-[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_9.png" type="Texture2D" id=3]
-[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_6.png" type="Texture2D" id=4]
-[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_7.png" type="Texture2D" id=5]
-[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_8.png" type="Texture2D" id=6]
-[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_0.png" type="Texture2D" id=7]
-[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_5.png" type="Texture2D" id=8]
-[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_1.png" type="Texture2D" id=9]
-[ext_resource path="res://Assets/Sprites/Gems/frames/diamond_3.png" type="Texture2D" id=10]
+[ext_resource type="Texture2D" uid="uid://b6x28klrctcfd" path="res://Assets/Sprites/Gems/frames/diamond_2.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://bhgdr40q5h5ml" path="res://Assets/Sprites/Gems/frames/diamond_4.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://dayagoubkx8jy" path="res://Assets/Sprites/Gems/frames/diamond_9.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://davdjd4y6uo3f" path="res://Assets/Sprites/Gems/frames/diamond_6.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://dho28skwfdl16" path="res://Assets/Sprites/Gems/frames/diamond_7.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://duq46embtyhvl" path="res://Assets/Sprites/Gems/frames/diamond_8.png" id="6"]
+[ext_resource type="Texture2D" uid="uid://cbp1pbq0aus3t" path="res://Assets/Sprites/Gems/frames/diamond_0.png" id="7"]
+[ext_resource type="Texture2D" uid="uid://dbdf57qur7kjy" path="res://Assets/Sprites/Gems/frames/diamond_5.png" id="8"]
+[ext_resource type="Texture2D" uid="uid://bc44vgc655j53" path="res://Assets/Sprites/Gems/frames/diamond_1.png" id="9"]
+[ext_resource type="Texture2D" uid="uid://ci7k74py38q4p" path="res://Assets/Sprites/Gems/frames/diamond_3.png" id="10"]
 
 [resource]
-animations = [ {
-"frames": [ ExtResource( 7 ), ExtResource( 9 ), ExtResource( 1 ), ExtResource( 10 ), ExtResource( 2 ), ExtResource( 8 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ), ExtResource( 3 ) ],
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3")
+}],
 "loop": true,
-"name": "default",
+"name": &"default",
 "speed": 30.0
-} ]
+}]

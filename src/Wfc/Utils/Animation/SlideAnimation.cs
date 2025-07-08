@@ -1,3 +1,6 @@
+namespace Wfc.Utils.Animation;
+
+using System;
 using Godot;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -10,8 +13,9 @@ public partial class SlideAnimation : Node2D {
   private float _duration;
   private float _timer;
   private Vector2 _oldPosition;
+  private Action? _callback = null;
 
-  public void Set(string animationName, Node2D @this, Vector2 destination, float duration) {
+  public SlideAnimation(string animationName, Node2D @this, Vector2 destination, float duration) {
     _thisNode = @this;
     this._destination = destination;
     this._animationName = animationName;
@@ -35,7 +39,11 @@ public partial class SlideAnimation : Node2D {
     }
   }
 
+  public void SetOnAnimationEndedCallback(Action callback) {
+    _callback = callback;
+  }
+
   private void Notify() {
-    EventHandler.Instance.EmitSlideAnimationEnded(_animationName);
+    _callback?.Invoke();
   }
 }
