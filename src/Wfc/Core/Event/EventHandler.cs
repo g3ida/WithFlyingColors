@@ -51,9 +51,6 @@ public partial class EventHandler : Node, IEventHandler {
   public delegate void GemCollectedEventHandler(string color, Vector2 position, SpriteFrames frames);
 
   [Signal]
-  public delegate void SlideAnimationEndedEventHandler(string animationName);
-
-  [Signal]
   public delegate void CheckpointReachedEventHandler(Node checkpointObject);
 
   [Signal]
@@ -240,7 +237,6 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitPlayerFall() => Instance.EmitSignal(nameof(PlayerFall));
   public void EmitPlayerDash(Vector2 dir) => Instance.EmitSignal(nameof(PlayerDash), dir);
   public void EmitGemCollected(string color, Vector2 position, SpriteFrames frames) => Instance.EmitSignal(nameof(GemCollected), color, position, frames);
-  public void EmitSlideAnimationEnded(string animationName) => Instance.EmitSignal(nameof(SlideAnimationEnded), animationName);
   public void EmitCheckpointReached(Node checkpoint) => Instance.EmitSignal(nameof(CheckpointReached), checkpoint);
   public void EmitCheckpointLoaded() => Instance.EmitSignal(nameof(CheckpointLoaded));
 

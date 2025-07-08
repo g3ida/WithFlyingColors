@@ -7,7 +7,9 @@ using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils;
+using Wfc.Utils.Animation;
 using Wfc.Utils.Attributes;
+using Wfc.Utils.Interpolation;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class Player : CharacterBody2D, IPersistent {

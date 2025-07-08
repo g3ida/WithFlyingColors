@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Utils.Animation;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
@@ -74,28 +75,23 @@ public partial class GemHUD : Node2D {
       animation.Owner = this;
 
       animation.GlobalPosition = position;
-      collectedAnimation = new SlideAnimation();
-      collectedAnimation.Set("gem_slide", animation, new Vector2(20, 20), 1);
-      EventHandler.Instance.ConnectOneShot(EventType.SlideAnimationEnded, new Callable(this, nameof(OnSlideAnimEnded)));
+      collectedAnimation = new SlideAnimation("gem_slide", animation, new Vector2(20, 20), 1);
+      collectedAnimation.SetOnAnimationEndedCallback(this.OnSlideAnimEnded);
     }
   }
 
-  private void OnSlideAnimEnded(string animName) {
-    if (animName == "gem_slide") {
-      if (animation != null) {
-        RemoveChild(animation);
-      }
-
-      if (currentState == State.COLLECTING) {
-        textureRectNode.Texture = textureCollected;
-        textureRectAnimationNode.Play("coin_collected_HUD");
-        backgroundNode.Visible = true;
-        backgroundAnimationPlayerNode.Play("coin_collected_HUD");
-        currentState = State.COLLECTED;
-      }
-
-      collectedAnimation = null;
+  private void OnSlideAnimEnded() {
+    if (animation != null) {
+      RemoveChild(animation);
     }
+    if (currentState == State.COLLECTING) {
+      textureRectNode.Texture = textureCollected;
+      textureRectAnimationNode.Play("coin_collected_HUD");
+      backgroundNode.Visible = true;
+      backgroundAnimationPlayerNode.Play("coin_collected_HUD");
+      currentState = State.COLLECTED;
+    }
+    collectedAnimation = null;
   }
 
   public override void _EnterTree() {

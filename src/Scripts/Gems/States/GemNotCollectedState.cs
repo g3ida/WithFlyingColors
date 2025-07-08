@@ -1,6 +1,7 @@
 using System;
 using Godot;
 using Wfc.State;
+using Wfc.Utils.Animation;
 
 public partial class GemNotCollectedState : GemBaseState {
   private const float AMPLITUDE = 4.0f;
@@ -16,13 +17,13 @@ public partial class GemNotCollectedState : GemBaseState {
 
   public override void Init(Gem gem) {
     base.Init(gem);
-    oscillator = new NodeOscillator();
-    oscillator.Set(gem, AMPLITUDE, ANIMATION_DURATION);
+    oscillator = new NodeOscillator(gem, AMPLITUDE, ANIMATION_DURATION);
   }
 
   public override void Enter(Gem gem) {
     isActive = true;
     gem.AnimationPlayerNode.Play("RESET");
+    gem.AnimatedSpriteNode.Play("default");
     gem.ShineNode.Play();
 
   }

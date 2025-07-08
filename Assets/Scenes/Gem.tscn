@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://bmm6ljhdxphee"]
 
-[ext_resource type="SpriteFrames" path="res://Assets/Animations/gem_yellow_frames.tres" id="1"]
+[ext_resource type="SpriteFrames" uid="uid://b26sfd0oc5q5s" path="res://Assets/Animations/gem_yellow_frames.tres" id="1"]
 [ext_resource type="Script" uid="uid://dex223j4dwk1r" path="res://src/Scripts/Gems/Gem.cs" id="2"]
 [ext_resource type="Texture2D" uid="uid://chvqjbfg518w8" path="res://Assets/Sprites/Lightmaps/shine_light.png" id="3"]
 [ext_resource type="AudioStream" uid="uid://dtik2lxephkbn" path="res://Assets/sfx/shine.ogg" id="4"]
@@ -54,11 +54,11 @@ polygon = PackedVector2Array(0, 24, 26, -8, 17, -23, -17, -23, -26, -8)
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 z_index = 101
 sprite_frames = ExtResource("1")
-frame = 2
+frame_progress = 0.970604
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="AnimatedSprite2D"]
 libraries = {
-"": SubResource("AnimationLibrary_7562j")
+&"": SubResource("AnimationLibrary_7562j")
 }
 
 [node name="PointLight2D" type="PointLight2D" parent="."]
