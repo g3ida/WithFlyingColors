@@ -24,7 +24,11 @@ public partial class PlayerDashingState : PlayerBaseState {
 
   protected override void _Enter(Player player) {
     player.DashGhostTimerNode.WaitTime = DASH_GHOST_INSTANCE_DELAY;
-    player.DashGhostTimerNode.Connect("timeout", new Callable(this, "_OnDashGhostTimerTimeout"));
+
+    player.DashGhostTimerNode.Connect(
+      Timer.SignalName.Timeout,
+      new Callable(this, nameof(_OnDashGhostTimerTimeout))
+    );
     if (direction == Vector2.Zero) {
       permissivenessTimer.Reset();
       SetDashDirection(player);
@@ -49,7 +53,10 @@ public partial class PlayerDashingState : PlayerBaseState {
     dashTimer.Stop();
     permissivenessTimer.Stop();
     player.DashGhostTimerNode.Stop();
-    player.DashGhostTimerNode.Disconnect("timeout", new Callable(this, "_OnDashGhostTimerTimeout"));
+    player.DashGhostTimerNode.Disconnect(
+      Timer.SignalName.Timeout,
+      new Callable(this, nameof(_OnDashGhostTimerTimeout))
+    );
     direction = Vector2.Zero;
   }
 

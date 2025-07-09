@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://lycx13j354o3"]
 
-[ext_resource type="PackedScene" uid="uid://c1k32ye5xn8fw" path="res://Assets/Scenes/HUD/GemHUD.tscn" id="1"]
-[ext_resource type="Script" uid="uid://ctyqtv7kyta4m" path="res://src/Scripts/HUD/GemsHUDContainer.cs" id="2"]
+[ext_resource type="PackedScene" uid="uid://c1k32ye5xn8fw" path="res://Assets/Scenes/HUD/GemHUD/GemHUD.tscn" id="1"]
+[ext_resource type="Script" uid="uid://ctyqtv7kyta4m" path="res://src/Wfc/Entities/HUD/GemsHUDContainer/GemsHUDContainer.cs" id="2"]
 [ext_resource type="StyleBox" path="res://Assets/StyleBorderHUD.tres" id="10"]
 
 [node name="GemContainerHUD" type="Panel"]

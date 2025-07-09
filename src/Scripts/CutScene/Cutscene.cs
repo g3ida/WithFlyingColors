@@ -80,7 +80,11 @@ public partial class Cutscene : Node2D {
   private void RenewTween() {
     tweener?.Kill();
     tweener = CreateTween();
-    tweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);
+    tweener.Connect(
+      Tween.SignalName.Finished,
+      new Callable(this, nameof(OnTweenCompleted)),
+      flags: (uint)ConnectFlags.OneShot
+    );
   }
 
   private void ShowStripes() {

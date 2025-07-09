@@ -1,3 +1,5 @@
+namespace Wfc.Entities.World.Gems;
+
 using System;
 using Godot;
 using Wfc.State;
@@ -11,7 +13,7 @@ public partial class GemNotCollectedState : GemBaseState {
 
   private bool isActive = false;
 
-  private NodeOscillator oscillator;
+  private NodeOscillator? oscillator;
 
   public GemNotCollectedState() : base() { }
 
@@ -24,19 +26,20 @@ public partial class GemNotCollectedState : GemBaseState {
     isActive = true;
     gem.AnimationPlayerNode.Play("RESET");
     gem.AnimatedSpriteNode.Play("default");
-    gem.ShineNode.Play();
+    gem.ShineSfxNode.Play();
 
   }
 
   public override void Exit(Gem gem) {
     isActive = false;
-    gem.ShineNode.Stop();
+    gem.ShineSfxNode.Stop();
   }
 
   public override BaseState<Gem>? PhysicsUpdate(Gem gem, float delta) {
     gem.LightNode.Position = gem.AnimatedSpriteNode.Position;
-    oscillator.Update(delta);
-    gem.LightNode.Energy = 1 + SHINE_VARIANCE * (float)Math.Sin(2 * Mathf.Pi * oscillator.Timer / ANIMATION_DURATION);
+    oscillator?.Update(delta);
+    var timer = oscillator?.Timer ?? 0f;
+    gem.LightNode.Energy = 1 + SHINE_VARIANCE * (float)Math.Sin(2 * Mathf.Pi * timer / ANIMATION_DURATION);
     gem.LightNode.Rotate(ROTATION_SPEED);
     return null;
   }

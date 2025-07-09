@@ -1,6 +1,6 @@
-using Godot;
 using System;
 using System.Collections.Generic;
+using Godot;
 using Wfc.Core.Event;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -38,14 +38,15 @@ public partial class DialogContainer : Control {
     hiddenPosY = shownPosY - 1000;
 
     HideDialog();
-    DialogNode.Connect("close_requested", new Callable(this, nameof(StartHidingDialog)));
-    DialogNode.Connect("confirmed", new Callable(this, nameof(StartHidingDialog)));
+
+    DialogNode.Connect(AcceptDialog.SignalName.CloseRequested, new Callable(this, nameof(StartHidingDialog)));
+    DialogNode.Connect(AcceptDialog.SignalName.Confirmed, new Callable(this, nameof(StartHidingDialog)));
     //dialogButtons = GetDialogButtons();
   }
 
   public override void _ExitTree() {
-    DialogNode.Disconnect("close_requested", new Callable(this, nameof(StartHidingDialog)));
-    DialogNode.Disconnect("confirmed", new Callable(this, nameof(StartHidingDialog)));
+    DialogNode.Disconnect(AcceptDialog.SignalName.CloseRequested, new Callable(this, nameof(StartHidingDialog)));
+    DialogNode.Disconnect(AcceptDialog.SignalName.Confirmed, new Callable(this, nameof(StartHidingDialog)));
   }
 
   public void ShowDialog() {
@@ -92,7 +93,11 @@ public partial class DialogContainer : Control {
   private void PrepareTween(float targetPosY) {
     tweener?.Kill();
     tweener = CreateTween();
-    tweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);
+    tweener.Connect(
+      Tween.SignalName.Finished,
+      new Callable(this, nameof(OnTweenCompleted)),
+      flags: (uint)ConnectFlags.OneShot
+    );
 
     tweener.TweenProperty(DialogNode, "position:y", targetPosY, TWEEN_DURATION)
            .SetTrans(Tween.TransitionType.Linear)

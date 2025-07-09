@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Player;
 
 using System;
 using Godot;
+using Wfc.Entities.World.Gems;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 

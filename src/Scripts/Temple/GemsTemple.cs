@@ -203,7 +203,11 @@ public partial class GemsTemple : Node2D {
         .From(_bloomSpriteScale)
         .SetTrans(Tween.TransitionType.Linear)
         .SetEase(Tween.EaseType.Out);
-    tweener.Connect("finished", new Callable(this, nameof(OnBloomSpriteResizeEnd)), (uint)ConnectFlags.OneShot);
+    tweener.Connect(
+      Tween.SignalName.Finished,
+      new Callable(this, nameof(OnBloomSpriteResizeEnd)),
+      (uint)ConnectFlags.OneShot
+    );
   }
 
   private void OnBloomSpriteResizeEnd() {

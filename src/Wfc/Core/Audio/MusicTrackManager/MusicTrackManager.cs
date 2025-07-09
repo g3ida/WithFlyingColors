@@ -49,8 +49,8 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
 
   private State _currentState = State.STOPPED;
 
-  private record SaveInfo(string? Track = null, float Scale = 1.0f);
-  private SaveInfo _saveData = new SaveInfo();
+  private record SaveData(string? Track = null, float Scale = 1.0f);
+  private SaveData _saveData = new SaveData();
 
 
 
@@ -164,7 +164,11 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
   private void PrepareFadeTween() {
     _fadeTweener?.Kill();
     _fadeTweener = CreateTween();
-    _fadeTweener.Connect("finished", new Callable(this, nameof(OnTweenCompleted)), flags: (uint)ConnectFlags.OneShot);
+    _fadeTweener.Connect(
+      Tween.SignalName.Finished,
+      new Callable(this, nameof(OnTweenCompleted)),
+      flags: (uint)ConnectFlags.OneShot
+    );
   }
 
   private void FadeOut() {
@@ -213,14 +217,14 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
   private void OnCheckpointHit(Node _checkpoint) {
     if (_currentState == State.FADE_OUT) {
       if (_nextTrack != null) {
-        _saveData = new SaveInfo(_nextTrack.Name, _pitchScale);
+        _saveData = new SaveData(_nextTrack.Name, _pitchScale);
       }
     }
     else if (_currentState != State.STOPPED) {
-      _saveData = new SaveInfo(_currentTrack?.Name, _pitchScale);
+      _saveData = new SaveData(_currentTrack?.Name, _pitchScale);
     }
     else {
-      _saveData = new SaveInfo(_saveData.Track, _pitchScale);
+      _saveData = new SaveData(_saveData.Track, _pitchScale);
     }
   }
 
@@ -250,8 +254,8 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
   public string GetSaveId() => this.GetPath();
   public string Save(ISerializer serializer) => serializer.Serialize(_saveData);
   public void Load(ISerializer serializer, string data) {
-    var deserializedData = serializer.Deserialize<SaveInfo>(data);
-    this._saveData = deserializedData ?? new SaveInfo();
+    var deserializedData = serializer.Deserialize<SaveData>(data);
+    this._saveData = deserializedData ?? new SaveData();
     Reset();
   }
 }

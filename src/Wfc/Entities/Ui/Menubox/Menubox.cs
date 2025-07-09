@@ -194,7 +194,11 @@ public partial class Menubox : Control {
   private void InterpolateSubMenu(Vector2 source, Vector2 destination) {
     _subMenuTweener?.Kill();
     _subMenuTweener = CreateTween();
-    _subMenuTweener.Connect("finished", new Callable(this, nameof(SubmenuTweenCompleted)), (uint)ConnectFlags.OneShot);
+    _subMenuTweener.Connect(
+      Tween.SignalName.Finished,
+      new Callable(this, nameof(SubmenuTweenCompleted)),
+      (uint)ConnectFlags.OneShot
+    );
 
     _playSubMenuPos = source;
     _subMenuTweener.TweenProperty(this, nameof(_playSubMenuPos), destination, SUB_MENU_POPUP_DURATION)

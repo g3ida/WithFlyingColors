@@ -35,8 +35,15 @@ public partial class SceneCard : Control {
     this.WireNodes();
     base._Ready();
 
-    _buttonNode.Connect("pressed", new Callable(this, nameof(OnButtonPressed)), (uint)ConnectFlags.OneShot);
-    _buttonNode.Connect("mouse_entered", new Callable(this, nameof(OnButtonMouseEntered)), (uint)ConnectFlags.OneShot);
+    _buttonNode.Connect(
+      Button.SignalName.Pressed,
+      new Callable(this, nameof(OnButtonPressed)),
+      (uint)ConnectFlags.OneShot
+    );
+    _buttonNode.Connect(
+      Button.SignalName.MouseEntered,
+      new Callable(this, nameof(OnButtonMouseEntered)),
+      (uint)ConnectFlags.OneShot);
   }
 
   private void SetLevelName(string name) {

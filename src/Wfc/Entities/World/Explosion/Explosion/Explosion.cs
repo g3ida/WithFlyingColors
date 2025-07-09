@@ -91,7 +91,7 @@ public partial class Explosion : Node2D {
   }
 
   private void _setDebrisTimer() {
-    _explosionInfo.DebrisTimer.Connect("timeout", new Callable(this, nameof(_onDebrisTimerTimeout)), (uint)ConnectFlags.OneShot);
+    _explosionInfo.DebrisTimer.Connect(Timer.SignalName.Timeout, new Callable(this, nameof(_onDebrisTimerTimeout)), (uint)ConnectFlags.OneShot);
     _explosionInfo.DebrisTimer.OneShot = true;
     _explosionInfo.DebrisTimer.WaitTime = DEBRIS_MAX_TIME;
     _explosionInfo.DebrisTimer.Name = "debris_timer";

@@ -22,11 +22,18 @@ public partial class CutsceneTrigger : Area2D {
   }
 
   public override void _EnterTree() {
-    Connect("body_entered", new Callable(this, nameof(_onBodyEntered)), (uint)ConnectFlags.Persist);
+    Connect(
+      Area2D.SignalName.BodyEntered,
+      new Callable(this, nameof(_onBodyEntered)),
+      (uint)ConnectFlags.Persist
+    );
 
   }
 
   public override void _ExitTree() {
-    Disconnect("body_entered", new Callable(this, nameof(_onBodyEntered)));
+    Disconnect(
+      Area2D.SignalName.BodyEntered,
+      new Callable(this, nameof(_onBodyEntered))
+    );
   }
 }

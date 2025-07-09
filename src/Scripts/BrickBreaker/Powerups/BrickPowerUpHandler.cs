@@ -1,5 +1,5 @@
-using Godot;
 using System.Collections.Generic;
+using Godot;
 using Wfc.Core.Event;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -90,8 +90,8 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
     var powerUp = powerUpNode.Instantiate<Node2D>();
     powerUp.Set("color_group", color);
     powerUp.Position = position - Position;
-    fallingPowerUpsContainer.CallDeferred("add_child", powerUp);
-    powerUp.CallDeferred("set_owner", fallingPowerUpsContainer);
+    fallingPowerUpsContainer.CallDeferred(Node.MethodName.AddChild, powerUp);
+    powerUp.CallDeferred(Node.MethodName.SetOwner, fallingPowerUpsContainer);
     powerUp.Connect("on_player_hit", new Callable(this, nameof(OnPlayerHit)));
     cooldownTimer.Start();
   }
@@ -137,7 +137,7 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
       var hit = hitNode.Instantiate<PowerUpScript>();
       activePowerupNodes.Add(hit);
       hit.SetBrickBreakerNode(brickBreakerNode);
-      CallDeferred("add_child", hit);
+      CallDeferred(Node.MethodName.AddChild, hit);
     }
     powerUp?.Disconnect("on_player_hit", new Callable(this, nameof(OnPlayerHit)));
     EventHandler.Instance.EmitPickedPowerup();
