@@ -31,8 +31,8 @@ public partial class MainMenu : GameMenu {
 
   public void ShowResetDataDialog() => _resetSlotDialogNode.ShowDialog();
 
-  public override bool OnMenuButtonPressed(MenuButtons menu_button) {
-    switch (menu_button) {
+  public override bool OnMenuButtonPressed(MenuButtons menuButton) {
+    switch (menuButton) {
       case MenuButtons.QUIT:
         if (_screenState == MenuScreenState.ENTERED) {
           GetTree().Quit();
@@ -50,7 +50,7 @@ public partial class MainMenu : GameMenu {
         _menuBoxNode.HideSubMenuIfNeeded();
         return true;
       default:
-        return ProcessPlaySubMenus(menu_button);
+        return ProcessPlaySubMenus(menuButton);
     }
   }
 

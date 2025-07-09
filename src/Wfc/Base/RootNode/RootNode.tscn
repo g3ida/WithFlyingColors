@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cddcjr33vtub"]
+
+[ext_resource type="Script" uid="uid://dd1lso6g05rpn" path="res://src/Wfc/Base/RootNode/RootNode.cs" id="1_3tcw4"]
+
+[node name="RootNode" type="Node"]
+script = ExtResource("1_3tcw4")

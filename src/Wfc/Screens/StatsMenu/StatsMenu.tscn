@@ -28,7 +28,7 @@ underline_color = Color(0.0627451, 0.92549, 1, 1)
 underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
 
 [node name="UITransition" parent="GAME" instance=ExtResource("7")]
-hidden_relative_position = Vector2(-900, 0)
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="STATS" parent="." instance=ExtResource("1")]
 offset_top = 250.0
@@ -40,8 +40,8 @@ underline_color = Color(0.843137, 1, 0.219608, 1)
 underline_shadow_color = Color(0.717647, 0.898039, 0, 1)
 
 [node name="UITransition" parent="STATS" instance=ExtResource("7")]
-delay = 0.5
-hidden_relative_position = Vector2(-900, 0)
+Delay = 0.5
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="BackButton" type="Button" parent="."]
 offset_left = 50.0
@@ -55,7 +55,7 @@ flat = true
 script = ExtResource("4")
 
 [node name="UITransition" parent="BackButton" instance=ExtResource("7")]
-delay = 0.6
-hidden_relative_position = Vector2(-900, 0)
+Delay = 0.6
+HiddenRelativePosition = Vector2(-900, 0)
 
 [connection signal="pressed" from="BackButton" to="." method="OnBackButtonPressed"]

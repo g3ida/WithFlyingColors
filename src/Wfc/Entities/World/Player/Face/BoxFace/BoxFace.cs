@@ -8,6 +8,16 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BoxFace : BaseFace {
 
+  public override void _EnterTree() {
+    base._EnterTree();
+    AreaEntered += _onAreaEntered;
+  }
+
+  public override void _ExitTree() {
+    base._ExitTree();
+    AreaEntered -= _onAreaEntered;
+  }
+
   public override void _Ready() {
     base._Ready();
     EdgeLength = ((CollisionShapeNode.Shape as RectangleShape2D)?.Size.X) ?? 0f;
@@ -18,28 +28,22 @@ public partial class BoxFace : BaseFace {
     Scale = new Vector2(scaleFactor, scaleFactor);
 
     Position = new Vector2(
-        positionX + Extents.Y * (scaleFactor - 1.0f) * Math.Sign(Position.Y) * Mathf.Sin(Rotation),
-        positionY - Extents.Y * (scaleFactor - 1.0f) * Math.Sign(Position.Y) * Mathf.Cos(Rotation)
+        PositionX + Extents.Y * (scaleFactor - 1.0f) * Math.Sign(Position.Y) * Mathf.Sin(Rotation),
+        PositionY - Extents.Y * (scaleFactor - 1.0f) * Math.Sign(Position.Y) * Mathf.Cos(Rotation)
     );
   }
 
-  public void _on_bottomFace_area_entered(Area2D area) {
+  public void _onAreaEntered(Area2D area) {
+    if (Global.Instance().Player.IsDying()) {
+      return;
+    }
     var groups = GetGroups();
-    //GD.Assert(groups.Count == 1);
 
     if (area.IsInGroup("fallzone")) {
       EventHandler.Instance.EmitPlayerDying(GlobalPosition, Constants.EntityType.FALL_ZONE);
       return;
     }
 
-    if (area is Gem gem) {
-      if (!gem.IsInGroup(groups[0])) {
-        EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, Constants.EntityType.PLATFORM);
-      }
-      else {
-        gem._on_Gem_area_entered(this);
-      }
-    }
     else if (!area.IsInGroup(groups[0])) {
       EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, Constants.EntityType.PLATFORM);
     }

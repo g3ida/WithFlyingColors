@@ -1,0 +1,95 @@
+[gd_scene load_steps=10 format=3 uid="uid://e4osajb7jluk"]
+
+[ext_resource type="Texture2D" uid="uid://xou2h1cnhhfl" path="res://Assets/Sprites/MainMenu/menu_cube.png" id="1"]
+[ext_resource type="Script" uid="uid://bh3o3rj6xpmmy" path="res://src/Wfc/Entities/Ui/Menubox/Menubox/Menubox.cs" id="1_xah6c"]
+[ext_resource type="Texture2D" uid="uid://o7v5wnvga4uj" path="res://Assets/Sprites/MainMenu/arrow_left.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://wi5gn4n5ktwd" path="res://Assets/Sprites/MainMenu/arrow_right.png" id="4"]
+[ext_resource type="StyleBox" path="res://Assets/Styles/MenuButtonPressedStyle.tres" id="6"]
+[ext_resource type="PackedScene" uid="uid://b7n42mqeet15h" path="res://Assets/Scenes/MainMenu/MenuBoxButton.tscn" id="8"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+
+[sub_resource type="StyleBoxEmpty" id="2"]
+
+[sub_resource type="StyleBoxEmpty" id="7"]
+
+[node name="Control" type="Control"]
+z_index = 1
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_xah6c")
+
+[node name="OutsideButton" type="Button" parent="."]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -3682.0
+offset_top = -2308.0
+offset_right = 3668.0
+offset_bottom = 2618.0
+focus_mode = 0
+
+[node name="MenuBox" type="CharacterBody2D" parent="."]
+
+[node name="Spr" type="Sprite2D" parent="MenuBox"]
+position = Vector2(-4, -3)
+texture = ExtResource("1")
+
+[node name="PlayBoxButton" parent="MenuBox/Spr" instance=ExtResource("8")]
+offset_top = -234.0
+offset_bottom = -234.0
+text = "PLAY"
+
+[node name="QuitBoxButton" parent="MenuBox/Spr" instance=ExtResource("8")]
+offset_left = -234.0
+offset_right = -234.0
+rotation = -1.5708
+text = "QUIT"
+
+[node name="SettingsBoxButton" parent="MenuBox/Spr" instance=ExtResource("8")]
+offset_left = 234.0
+offset_right = 234.0
+rotation = 1.5708
+text = "SETTINGS"
+
+[node name="StatsBoxButton" parent="MenuBox/Spr" instance=ExtResource("8")]
+offset_top = 234.0
+offset_bottom = 234.0
+rotation = 3.14159
+text = "STATS"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MenuBox"]
+shape = SubResource("1")
+
+[node name="RightButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 516.0
+offset_top = -221.0
+offset_right = 662.0
+offset_bottom = -3.0
+focus_mode = 0
+theme_override_styles/focus = SubResource("2")
+theme_override_styles/pressed = ExtResource("6")
+icon = ExtResource("4")
+flat = true
+
+[node name="LeftButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = -670.0
+offset_top = -221.0
+offset_right = -524.0
+offset_bottom = -3.0
+focus_mode = 0
+theme_override_styles/focus = SubResource("7")
+theme_override_styles/pressed = ExtResource("6")
+icon = ExtResource("3")
+flat = true
+
+[connection signal="pressed" from="OutsideButton" to="." method="OnOutsideButtonPressed"]
+[connection signal="pressed" from="MenuBox/Spr/PlayBoxButton" to="." method="OnPlayButtonPressed"]
+[connection signal="pressed" from="MenuBox/Spr/QuitBoxButton" to="." method="OnQuitButtonPressed"]
+[connection signal="pressed" from="MenuBox/Spr/SettingsBoxButton" to="." method="OnSettingsButtonPressed"]
+[connection signal="pressed" from="MenuBox/Spr/StatsBoxButton" to="." method="OnStatsButtonPressed"]
+[connection signal="pressed" from="RightButton" to="." method="OnRightButtonPressed"]
+[connection signal="pressed" from="LeftButton" to="." method="OnLeftButtonPressed"]

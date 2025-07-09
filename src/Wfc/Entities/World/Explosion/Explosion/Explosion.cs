@@ -20,10 +20,10 @@ public partial class Explosion : Node2D {
   private readonly bool _isRandomizeSeed = false;
   private ExplosionInfo _explosionInfo = new ExplosionInfo();
 
-  public required CharacterBody2D player;
+  public required CharacterBody2D Player;
 
   public override void _Ready() {
-    player = GetParent<CharacterBody2D>();
+    Player = GetParent<CharacterBody2D>();
   }
 
   public void FireExplosion() {
@@ -131,8 +131,8 @@ public partial class Explosion : Node2D {
       float childScale = (float)GD.RandRange(0.5, 1.5);
       child.Scale = new Vector2(childScale, childScale);
       child.Mass = childScale;
-      child.CollisionLayer = GD.Randf() < 0.08f ? 0 : player.CollisionLayer;
-      child.CollisionMask = GD.Randf() < 0.08f ? 0 : player.CollisionMask;
+      child.CollisionLayer = GD.Randf() < 0.08f ? 0 : Player.CollisionLayer;
+      child.CollisionMask = GD.Randf() < 0.08f ? 0 : Player.CollisionMask;
       child.ZIndex = GD.Randf() < 0.5f ? 0 : -1;
       _setRigidBodyMode(child, isStatic: false);
 

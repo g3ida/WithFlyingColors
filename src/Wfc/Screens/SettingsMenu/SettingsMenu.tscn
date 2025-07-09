@@ -44,7 +44,7 @@ underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
 
 [node name="UITransition" parent="GAME" instance=ExtResource("13")]
 anchors_preset = 0
-hidden_relative_position = Vector2(-900, 0)
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="SETTINGS" parent="." instance=ExtResource("1")]
 layout_mode = 0
@@ -58,8 +58,8 @@ underline_shadow_color = Color(0.717647, 0.898039, 0, 1)
 
 [node name="UITransition" parent="SETTINGS" instance=ExtResource("13")]
 anchors_preset = 0
-delay = 0.5
-hidden_relative_position = Vector2(-900, 0)
+Delay = 0.5
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="BackButton" type="Button" parent="."]
 layout_mode = 0
@@ -76,8 +76,8 @@ script = ExtResource("5")
 
 [node name="UITransition" parent="BackButton" instance=ExtResource("13")]
 anchors_preset = 0
-delay = 0.75
-hidden_relative_position = Vector2(-900, 0)
+Delay = 0.75
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="TabContainer" type="TabContainer" parent="."]
 layout_mode = 0

@@ -22,8 +22,8 @@ public partial class Gem : Area2D, IPersistent {
   [NodePath("ShineSfx")]
   public AudioStreamPlayer2D ShineSfxNode = null!;
 
-  public GemStatesStore StatesStore;
-  public GemBaseState CurrentState;
+  public GemStatesStore StatesStore = new GemStatesStore();
+  public GemBaseState CurrentState = null!;
 
   public GemState GemState {
     get {
@@ -63,7 +63,7 @@ public partial class Gem : Area2D, IPersistent {
     _saveData = new SaveData(GemState);
   }
 
-  private void SwitchState(GemBaseState newState) {
+  private void SwitchState(GemBaseState? newState) {
     if (newState != null) {
       CurrentState.Exit(this);
       CurrentState = newState;
@@ -72,22 +72,7 @@ public partial class Gem : Area2D, IPersistent {
   }
 
   public override void _PhysicsProcess(double delta) {
-    GemBaseState state = (GemBaseState)CurrentState.PhysicsUpdate(this, (float)delta);
-    SwitchState(state);
-  }
-
-  public void _on_Gem_area_entered(Area2D area) {
-    if (Global.Instance().Player.IsDying() || CurrentState != StatesStore.NotCollected) {
-      return;
-    }
-
-    var state = (GemBaseState)CurrentState.OnCollisionWithBody(this, area);
-    SwitchState(state);
-  }
-
-  public void _on_AnimationPlayer_animation_finished(string animName) {
-    var state = (GemBaseState)CurrentState.OnAnimationFinished(this, animName);
-    SwitchState(state);
+    SwitchState((GemBaseState?)CurrentState.PhysicsUpdate(this, (float)delta));
   }
 
   private void ConnectSignals() {
@@ -114,27 +99,13 @@ public partial class Gem : Area2D, IPersistent {
   }
 
   public void Reset() {
-    SwitchState((GemBaseState)StatesStore.GetState(_saveData.currentState));
-  }
-
-  // FIXME: This does not override IsInGroup(StringName grp)
-  public bool IsInGroup(string grp) {
-    // if the player is dying we don't want to collect it
-    if (Global.Instance().Player.IsDying()) {
-      return false;
-    }
-    // if the gem is already collecting we don't wan't the player to die
-    if (CurrentState == StatesStore.Collecting) {
-      if (Constants.COLOR_GROUPS.Contains(grp)) {
-        return true;
-      }
-    }
-    // return super method
-    return base.IsInGroup(grp);
+    SwitchState((GemBaseState?)StatesStore.GetState(_saveData.currentState));
   }
 
   public string GetSaveId() => this.GetPath();
+
   public string Save(ISerializer serializer) => serializer.Serialize(this._saveData);
+
   public void Load(ISerializer serializer, string data) {
     var deserializedData = serializer.Deserialize<SaveData>(data);
     this._saveData = deserializedData ?? new SaveData();

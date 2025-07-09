@@ -45,7 +45,7 @@ _data = {
 
 [node name="Gem" type="Area2D" groups=["persist"]]
 collision_layer = 32
-collision_mask = 2
+collision_mask = 18
 script = ExtResource("2")
 
 [node name="CollisionShape2D" type="CollisionPolygon2D" parent="."]
@@ -76,6 +76,3 @@ volume_db = -5.0
 autoplay = true
 max_distance = 800.0
 bus = &"sfx2d"
-
-[connection signal="area_entered" from="." to="." method="_on_Gem_area_entered"]
-[connection signal="animation_finished" from="AnimatedSprite2D/AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

@@ -8,13 +8,26 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BoxCorner : BaseFace {
 
+  public override void _EnterTree() {
+    base._EnterTree();
+    AreaEntered += _onAreaEntered;
+  }
+
+  public override void _ExitTree() {
+    base._ExitTree();
+    AreaEntered -= _onAreaEntered;
+  }
+
   public override void _Ready() {
     base._Ready();
     RectangleShape2D? collisionShape = CollisionShapeNode.Shape as RectangleShape2D;
     EdgeLength = collisionShape?.Size.X ?? 0;
   }
 
-  public void _on_area_entered(Area2D area) {
+  public void _onAreaEntered(Area2D area) {
+    if (Global.Instance().Player.IsDying()) {
+      return;
+    }
     if (area.IsInGroup("fallzone")) {
       EventHandler.Instance.EmitPlayerDying(GlobalPosition, Constants.EntityType.FALL_ZONE);
       return;
@@ -24,9 +37,8 @@ public partial class BoxCorner : BaseFace {
     if (!_checkGroup(area, groups)) {
       EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, Constants.EntityType.PLATFORM);
     }
-    else
-    if (area is Gem gem) {
-      gem._on_Gem_area_entered(this);
+    else if (area is Gem gem) {
+      // do nothing
     }
     else if (!Global.Instance().Player.IsStanding()) {
       EventHandler.Instance.EmitPlayerLanded(area, GlobalPosition);
@@ -34,19 +46,9 @@ public partial class BoxCorner : BaseFace {
   }
 
   private static bool _checkGroup(Area2D area, Godot.Collections.Array<StringName> groups) {
-    // FIXME: remove redundant code
-    if (area is Gem gem) {
-      foreach (string group in groups) {
-        if (gem.IsInGroup(group)) {
-          return true;
-        }
-      }
-    }
-    else {
-      foreach (string group in groups) {
-        if (area.IsInGroup(group)) {
-          return true;
-        }
+    foreach (string group in groups) {
+      if (area.IsInGroup(group)) {
+        return true;
       }
     }
     return false;

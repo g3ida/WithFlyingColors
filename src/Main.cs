@@ -36,5 +36,5 @@ public partial class Main : Node2D {
 #endif
 
   private void RunScene() =>
-    GetTree().ChangeSceneToFile("res://src/Wfc/Base/RootNode.tscn");
+    GetTree().ChangeSceneToFile("res://src/Wfc/Base/RootNode/RootNode.tscn");
 }
