@@ -1,10 +1,10 @@
 [gd_scene load_steps=9 format=3 uid="uid://cy5vdq71nl27c"]
 
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="1"]
-[ext_resource type="PackedScene" uid="uid://e4osajb7jluk" path="res://src/Wfc/Entities/Ui/Menubox/MenuBox.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://e4osajb7jluk" path="res://src/Wfc/Entities/Ui/Menubox/Menubox/MenuBox.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://Assets/Scenes/MainMenu/TitleLabel.tscn" id="3"]
 [ext_resource type="Script" uid="uid://lgi18xjhl71v" path="res://src/Wfc/Screens/MenuManager/Menus/MainMenu/MainMenu.cs" id="4"]
-[ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://Assets/Scenes/UI/UITransition.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://src/Wfc/Entities/Ui/UITransition/UITransition.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://Assets/Scenes/UI/DialogContainer.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://c4hq2bn66yx0g" path="res://Assets/Scenes/UI/ResetSlotDialog.tscn" id="7"]
 [ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="8"]
@@ -37,8 +37,11 @@ underline_color = Color(0.0627451, 0.92549, 1, 1)
 underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
 
 [node name="UITransition" parent="WITH" instance=ExtResource("5")]
-anchors_preset = 0
-hidden_relative_position = Vector2(-900, 0)
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 40.0
+offset_bottom = 40.0
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="FLYING" parent="." instance=ExtResource("3")]
 layout_mode = 0
@@ -52,9 +55,12 @@ underline_color = Color(0.843137, 1, 0.219608, 1)
 underline_shadow_color = Color(0.717647, 0.898039, 0, 1)
 
 [node name="UITransition" parent="FLYING" instance=ExtResource("5")]
-anchors_preset = 0
-delay = 0.5
-hidden_relative_position = Vector2(-900, 0)
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 40.0
+offset_bottom = 40.0
+Delay = 0.5
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="COLORS" parent="." instance=ExtResource("3")]
 layout_mode = 0
@@ -68,9 +74,12 @@ underline_color = Color(1, 0.317647, 0.67451, 1)
 underline_shadow_color = Color(0.898039, 0, 0.470588, 1)
 
 [node name="UITransition" parent="COLORS" instance=ExtResource("5")]
-anchors_preset = 0
-delay = 0.75
-hidden_relative_position = Vector2(-900, 0)
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 40.0
+offset_bottom = 40.0
+Delay = 0.75
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="MenuBox" parent="." instance=ExtResource("2")]
 offset_left = 1224.0
@@ -79,9 +88,12 @@ offset_right = 1264.0
 offset_bottom = 1025.0
 
 [node name="UITransition" parent="MenuBox" instance=ExtResource("5")]
-anchors_preset = 0
-delay = 0.5
-hidden_relative_position = Vector2(0, 950)
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 40.0
+offset_bottom = 40.0
+Delay = 0.5
+HiddenRelativePosition = Vector2(0, 950)
 
 [node name="ResetDialogContainer" parent="." instance=ExtResource("6")]
 layout_mode = 1
@@ -109,8 +121,11 @@ theme = ExtResource("8")
 text = "Current slot:"
 
 [node name="UITransition" parent="CurrentSlotLabel" instance=ExtResource("5")]
-anchors_preset = 0
-delay = 0.5
-hidden_relative_position = Vector2(0, 950)
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 40.0
+offset_bottom = 40.0
+Delay = 0.5
+HiddenRelativePosition = Vector2(0, 950)
 
 [connection signal="confirmed" from="ResetDialogContainer/ResetSlotDialog" to="." method="OnResetSlotConfirmed"]

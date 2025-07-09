@@ -46,8 +46,8 @@ script = ExtResource("9")
 
 [node name="UITransition" parent="BackButton" instance=ExtResource("11")]
 anchors_preset = 0
-delay = 0.5
-hidden_relative_position = Vector2(-900, 0)
+Delay = 0.5
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="SlotsContainer" parent="." instance=ExtResource("4")]
 offset_left = 734.0
@@ -61,8 +61,8 @@ offset_top = 417.0
 offset_right = 240.0
 offset_bottom = 417.0
 time = 0.5
-delay = 0.5
-hidden_relative_position = Vector2(0, 1000)
+Delay = 0.5
+HiddenRelativePosition = Vector2(0, 1000)
 
 [node name="SELECT" parent="." instance=ExtResource("3")]
 layout_mode = 0
@@ -74,7 +74,7 @@ underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
 
 [node name="UITransition" parent="SELECT" instance=ExtResource("11")]
 anchors_preset = 0
-hidden_relative_position = Vector2(-900, 0)
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="SLOT" parent="." instance=ExtResource("3")]
 layout_mode = 0
@@ -88,8 +88,8 @@ underline_shadow_color = Color(0.717647, 0.898039, 0, 1)
 
 [node name="UITransition" parent="SLOT" instance=ExtResource("11")]
 anchors_preset = 0
-delay = 0.5
-hidden_relative_position = Vector2(-900, 0)
+Delay = 0.5
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="ResetDialogContainer" parent="." instance=ExtResource("1")]
 layout_mode = 1
@@ -131,8 +131,8 @@ offset_top = 417.0
 offset_right = 240.0
 offset_bottom = 417.0
 time = 0.5
-delay = 0.7
-hidden_relative_position = Vector2(2000, 0)
+Delay = 0.7
+HiddenRelativePosition = Vector2(2000, 0)
 
 [node name="CurrentSlotLabel2" type="Label" parent="CurrentSlotLabel"]
 layout_mode = 0

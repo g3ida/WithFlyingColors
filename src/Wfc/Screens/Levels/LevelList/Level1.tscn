@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="11"]
 [ext_resource type="PackedScene" uid="uid://lycx13j354o3" path="res://src/Wfc/Entities/HUD/GemsHUDContainer/GemsHUDContainer.tscn" id="16"]
 [ext_resource type="PackedScene" uid="uid://cblfcag52yydu" path="res://Assets/Scenes/Checkpoint.tscn" id="18"]
-[ext_resource type="PackedScene" uid="uid://bijboehpv0gsh" path="res://src/Wfc/Screens/PauseMenu/PauseMenu.tscn" id="19"]
+[ext_resource type="PackedScene" uid="uid://bijboehpv0gsh" path="res://src/Wfc/Screens/PauseMenu/PauseMenu/PauseMenu.tscn" id="19"]
 [ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" id="20"]
 [ext_resource type="PackedScene" uid="uid://dhoxs1h5dhijp" path="res://Assets/Scenes/Platforms/Platform.tscn" id="21"]
 [ext_resource type="PackedScene" uid="uid://cgut5po1y8ibm" path="res://Assets/Scenes/LazerBeam.tscn" id="22"]
@@ -62,7 +62,7 @@ follow_path = NodePath("../Player")
 [node name="CameraShake" parent="Camera2D" instance=ExtResource("30")]
 
 [node name="Player" parent="." instance=ExtResource("2")]
-position = Vector2(-662, -409)
+position = Vector2(-7, -216)
 collision_mask = 13
 
 [node name="PinkPlatform" parent="." instance=ExtResource("7")]

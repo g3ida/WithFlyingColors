@@ -32,4 +32,4 @@ underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
 
 [node name="UITransition" parent="LevelClearedLabel" instance=ExtResource("4")]
 anchors_preset = 0
-hidden_relative_position = Vector2(0, -500)
+HiddenRelativePosition = Vector2(0, -500)

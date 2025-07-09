@@ -32,7 +32,7 @@ offset_bottom = 190.0
 
 [node name="UITransition" parent="LevelsContainer" instance=ExtResource("4")]
 layout_mode = 2
-hidden_relative_position = Vector2(2000, 0)
+HiddenRelativePosition = Vector2(2000, 0)
 
 [node name="WITH" parent="." instance=ExtResource("2")]
 layout_mode = 0
@@ -43,7 +43,7 @@ underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
 
 [node name="UITransition" parent="WITH" instance=ExtResource("4")]
 anchors_preset = 0
-hidden_relative_position = Vector2(-900, 0)
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="FLYING" parent="." instance=ExtResource("2")]
 layout_mode = 0
@@ -57,8 +57,8 @@ underline_shadow_color = Color(0.717647, 0.898039, 0, 1)
 
 [node name="UITransition" parent="FLYING" instance=ExtResource("4")]
 anchors_preset = 0
-delay = 0.5
-hidden_relative_position = Vector2(-900, 0)
+Delay = 0.5
+HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="BackButton" type="Button" parent="."]
 layout_mode = 0
@@ -75,7 +75,7 @@ script = ExtResource("6")
 
 [node name="UITransition" parent="BackButton" instance=ExtResource("4")]
 anchors_preset = 0
-delay = 0.5
-hidden_relative_position = Vector2(-500, 0)
+Delay = 0.5
+HiddenRelativePosition = Vector2(-500, 0)
 
 [connection signal="pressed" from="BackButton" to="." method="OnBackButtonPressed"]

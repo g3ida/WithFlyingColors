@@ -14,7 +14,7 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class Player : CharacterBody2D, IPersistent {
 
-  private record SaveData(
+  private sealed record SaveData(
     float PositionX = 0f,
     float PositionY = 0f,
     float Angle = 0f,

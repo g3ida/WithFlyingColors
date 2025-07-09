@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://vfkclqwlp6xk"]
 
-[ext_resource type="Script" uid="uid://btnc3wqrk6lcc" path="res://src/Wfc/Entities/Ui/SceneCard/SceneCard.cs" id="1"]
+[ext_resource type="Script" uid="uid://djn7wv107pllo" path="res://src/Wfc/Entities/Ui/SceneCard/SceneCard.cs" id="1"]
 [ext_resource type="Theme" uid="uid://dl05mrk646cas" path="res://Assets/Styles/Themes/SaveSlotBg.tres" id="2"]
 [ext_resource type="FontFile" path="res://Assets/Fonts/SaveSlotFont.tres" id="3"]
 [ext_resource type="Theme" uid="uid://dsajhxb3mxvf0" path="res://Assets/Styles/Themes/SaveSlot.tres" id="4"]
