@@ -81,7 +81,10 @@ public partial class GameSettingsUI : Control, IUITab {
       WaitTime = 0.4f,
       OneShot = true
     };
-    rescaleTimer.Connect("timeout", new Callable(this, nameof(on_rescale_timeout)));
+    rescaleTimer.Connect(
+      Timer.SignalName.Timeout,
+      new Callable(this, nameof(on_rescale_timeout))
+    );
     AddChild(rescaleTimer, true);
     rescaleTimer.Start();
   }

@@ -30,7 +30,10 @@ public partial class PlayerDyingState : PlayerBaseState {
       EventHandler.Instance.EmitPlayerExplode();
       player.LightOccluder.LightMask = 0;
       player.AnimatedSpriteNode.Play("die");
-      player.AnimatedSpriteNode.Connect("animation_finished", new Callable(this, nameof(OnAnimationFinished)));
+      player.AnimatedSpriteNode.Connect(
+        AnimatedSprite2D.SignalName.AnimationFinished,
+        new Callable(this, nameof(OnAnimationFinished))
+      );
     }
     else // this is the falling case
     {
@@ -38,12 +41,15 @@ public partial class PlayerDyingState : PlayerBaseState {
       player.FallTimerNode.Start();
       player.FallTimerNode.Timeout += OnFallTimeout;
       fallTimerTriggered = true;
-      //player.fallTimerNode.Connect("timeout", new Callable(this, nameof(OnFallTimeout)), (uint)ConnectFlags.OneShot);
+      //player.fallTimerNode.Connect(Timer.SignalName.Timeout, new Callable(this, nameof(OnFallTimeout)), (uint)ConnectFlags.OneShot);
     }
   }
 
   private void OnAnimationFinished(Player player) {
-    player.AnimatedSpriteNode.Disconnect("animation_finished", new Callable(this, nameof(OnAnimationFinished)));
+    player.AnimatedSpriteNode.Disconnect(
+      AnimatedSprite2D.SignalName.AnimationFinished,
+      new Callable(this, nameof(OnAnimationFinished))
+    );
     player.LightOccluder.LightMask = lightMask;
     EventHandler.Instance.EmitPlayerDied();
   }
@@ -72,7 +78,7 @@ public partial class PlayerDyingState : PlayerBaseState {
   private void CreateExplosion(Player player) {
     var explosion = SceneHelpers.InstantiateNode<Explosion>();
     explosion.Connect(nameof(Explosion.ObjectDetonated), new Callable(this, nameof(OnObjectDetonated)), flags: (uint)ConnectFlags.OneShot);
-    explosion.Connect("ready", Callable.From(() => {
+    explosion.Connect(Node.SignalName.Ready, Callable.From(() => {
       explosion.Setup();
       explosion.FireExplosion();
     }), (uint)ConnectFlags.OneShot);

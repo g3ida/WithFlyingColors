@@ -1,7 +1,9 @@
+namespace Wfc.Entities.World.Gems;
+
 using Godot;
 using Wfc.State;
 
-public partial class GemStatesStore : BaseStatesStore<Gem, GemStatesEnum> {
+public partial class GemStatesStore : BaseStatesStore<Gem, GemState> {
   public readonly GemBaseState NotCollected;
   public readonly GemBaseState Collecting;
   public readonly GemBaseState Collected;
@@ -18,26 +20,26 @@ public partial class GemStatesStore : BaseStatesStore<Gem, GemStatesEnum> {
     Collected.Init(gem);
   }
 
-  public override BaseState<Gem>? GetState(GemStatesEnum state) {
-    if (state == GemStatesEnum.NOT_COLLECTED) {
+  public override BaseState<Gem>? GetState(GemState state) {
+    if (state == GemState.NotCollected) {
       return NotCollected;
     }
-    if (state == GemStatesEnum.COLLECTING) {
+    if (state == GemState.Collecting) {
       return Collecting;
     }
-    if (state == GemStatesEnum.COLLECTED) {
+    if (state == GemState.Collected) {
       return Collected;
     }
     return null;
   }
 
-  public GemStatesEnum GetStateEnum(GemBaseState state) {
+  public GemState GetStateEnum(GemBaseState state) {
     if (state == NotCollected) {
-      return GemStatesEnum.NOT_COLLECTED;
+      return GemState.NotCollected;
     }
     if (state == Collecting) {
-      return GemStatesEnum.COLLECTING;
+      return GemState.Collecting;
     }
-    return GemStatesEnum.COLLECTED;
+    return GemState.Collected;
   }
 }

@@ -1,38 +1,51 @@
+namespace Wfc.Entities.World.Gems;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Persistence;
+using Wfc.Core.Serialization;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-public partial class Gem : Area2D {
+[ScenePath]
+public partial class Gem : Area2D, IPersistent {
   [Export]
   public string group_name;
 
-  public PointLight2D LightNode;
-  public AudioStreamPlayer2D ShineNode;
+  [NodePath("PointLight2D")]
+  public PointLight2D LightNode = null!;
+
+  [NodePath("ShineSfx")]
+  public AudioStreamPlayer2D ShineSfxNode = null!;
 
   public GemStatesStore StatesStore;
   public GemBaseState CurrentState;
 
-  public GemStatesEnum GemState {
+  public GemState GemState {
     get {
       return StatesStore.GetStateEnum(CurrentState);
     }
   }
 
-  public CollisionPolygon2D CollisionShapeNode;
+  [NodePath("CollisionShape2D")]
+  public CollisionPolygon2D CollisionShapeNode = null!;
+  [NodePath("AnimatedSprite2D")]
+  public AnimatedSprite2D AnimatedSpriteNode = null!;
+  [NodePath("AnimatedSprite2D/AnimationPlayer")]
+  public AnimationPlayer AnimationPlayerNode = null!;
 
-  public AnimatedSprite2D AnimatedSpriteNode;
-
-  public AnimationPlayer AnimationPlayerNode;
-
-  private Dictionary<string, object> save_data = new Dictionary<string, object> { { "state", null } };
+  public record SaveData(GemState currentState = GemState.NotCollected);
+  private SaveData _saveData = null!;
 
   public override void _Ready() {
+    this.WireNodes();
     CollisionShapeNode = GetNode<CollisionPolygon2D>("CollisionShape2D");
     LightNode = GetNode<PointLight2D>("PointLight2D");
-    ShineNode = GetNode<AudioStreamPlayer2D>("ShineSfx");
+    ShineSfxNode = GetNode<AudioStreamPlayer2D>("ShineSfx");
     AnimatedSpriteNode = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
     AnimationPlayerNode = GetNode<AnimationPlayer>("AnimatedSprite2D/AnimationPlayer");
 
@@ -46,8 +59,8 @@ public partial class Gem : Area2D {
     StatesStore.Init(this);
 
     CurrentState = StatesStore.NotCollected;
-    save_data["state"] = (int)StatesStore.GetStateEnum(CurrentState);
     CurrentState.Enter(this);
+    _saveData = new SaveData(GemState);
   }
 
   private void SwitchState(GemBaseState newState) {
@@ -79,12 +92,12 @@ public partial class Gem : Area2D {
 
   private void ConnectSignals() {
     EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
   }
 
   private void DisconnectSignals() {
     EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
   }
 
   public override void _EnterTree() {
@@ -97,16 +110,11 @@ public partial class Gem : Area2D {
 
   private void _OnCheckpointHit(Node checkpoint) {
     GemBaseState savedState = CurrentState != StatesStore.Collecting ? CurrentState : StatesStore.Collected;
-    save_data["state"] = (int)StatesStore.GetStateEnum(savedState);
+    _saveData = new SaveData(GemState);
   }
 
-  public Dictionary<string, object> save() {
-    return save_data;
-  }
-
-  public void reset() {
-    var state = (GemStatesEnum)Helpers.ParseSaveDataInt(save_data, "state");
-    SwitchState((GemBaseState)StatesStore.GetState(state));
+  public void Reset() {
+    SwitchState((GemBaseState)StatesStore.GetState(_saveData.currentState));
   }
 
   // FIXME: This does not override IsInGroup(StringName grp)
@@ -125,8 +133,11 @@ public partial class Gem : Area2D {
     return base.IsInGroup(grp);
   }
 
-  public void load(Dictionary<string, object> save_data) {
-    this.save_data = save_data;
-    reset();
+  public string GetSaveId() => this.GetPath();
+  public string Save(ISerializer serializer) => serializer.Serialize(this._saveData);
+  public void Load(ISerializer serializer, string data) {
+    var deserializedData = serializer.Deserialize<SaveData>(data);
+    this._saveData = deserializedData ?? new SaveData();
+    Reset();
   }
 }

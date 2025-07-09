@@ -1,3 +1,5 @@
+namespace Wfc.Entities.World.Gems;
+
 using System;
 using Godot;
 using Wfc.State;

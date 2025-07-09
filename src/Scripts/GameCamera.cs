@@ -164,8 +164,8 @@ public partial class GameCamera : Camera2D {
   public async void update_position(Vector2 pos) {
     PositionSmoothingEnabled = false;
     GlobalPosition = pos;
-    await ToSignal(GetTree(), "process_frame");
-    SetDeferred("smoothing_enabled", true);
+    await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+    SetDeferred(Camera2D.PropertyName.PositionSmoothingEnabled, true);
   }
 
   public void set_follow_node(Node2D followNode) {

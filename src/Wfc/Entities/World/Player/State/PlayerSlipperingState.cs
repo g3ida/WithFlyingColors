@@ -49,7 +49,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     //    for gameplay so the combination is the best option )
     if (!_skipExitRotation) {
       player.PlayerRotationAction.Execute(-direction, Constants.PI2, SLIPPERING_RECOVERY_INITIAL_DURATION, true, false, false);
-      player.GetTree().CreateTimer(0.05f).Connect("timeout", Callable.From(() => {
+      player.GetTree().CreateTimer(0.05f).Connect(Timer.SignalName.Timeout, Callable.From(() => {
         player.PlayerRotationAction.Execute(-direction, Constants.PI2, _exitRotationSpeed, true, false, false);
       }));
     }

@@ -25,7 +25,7 @@ public partial class BrickBreaker : Node2D {
   public void OnResolved() { }
 
   private Area2D DeathZoneNode;
-  private Node2D BricksTileMapNode = null;
+  private BricksTileMap? BricksTileMapNode = null;
   public Node2D BallsContainer;
   private Marker2D BallsSpawnPos;
   private Marker2D BallSpawnPosNode;
@@ -33,7 +33,7 @@ public partial class BrickBreaker : Node2D {
   private Timer BricksTimerNode;
   private IPowerUpHandler bricksPowerUpHandler;
   private Area2D Checkpoint;
-  private Area2D TriggerEnterAreaNode;
+  private Area2D? TriggerEnterAreaNode;
   private Node2D SlidingFloorNode;
   private SlidingPlatform SlidingFloorSliderNode;
   public Node2D ProtectionAreaSpawnerPositionNode;
@@ -73,9 +73,9 @@ public partial class BrickBreaker : Node2D {
     var bouncingBall = BouncingBallScene.Instantiate<BouncingBall>();
     bouncingBall.DeathZone = DeathZoneNode;
     bouncingBall.color_group = color;
-    BallsContainer.CallDeferred("add_child", bouncingBall);
-    bouncingBall.CallDeferred("set_position", BallSpawnPosNode.Position);
-    bouncingBall.CallDeferred("set_owner", BallsContainer);
+    BallsContainer.CallDeferred(Node.MethodName.AddChild, bouncingBall);
+    bouncingBall.CallDeferred(Node2D.MethodName.SetPosition, BallSpawnPosNode.Position);
+    bouncingBall.CallDeferred(Node.MethodName.SetOwner, BallsContainer);
     bouncingBall.CallDeferred(nameof(BouncingBall.SetColor), color);
     bouncingBall.GlobalPosition = BallsSpawnPos.GlobalPosition;
     num_balls += 1;
@@ -84,19 +84,25 @@ public partial class BrickBreaker : Node2D {
 
   private void RemoveBricks() {
     if (BricksTileMapNode != null) {
-      BricksTileMapNode.Disconnect("bricks_cleared", new Callable(this, nameof(_OnBricksCleared)));
-      BricksTileMapNode.Disconnect("level_cleared", new Callable(this, nameof(_OnLevelCleared)));
+      BricksTileMapNode.Disconnect(
+        nameof(BricksTileMapNode.bricks_cleared),
+        new Callable(this, nameof(_OnBricksCleared))
+      );
+      BricksTileMapNode.Disconnect(
+        nameof(BricksTileMapNode.level_cleared),
+        new Callable(this, nameof(_OnLevelCleared))
+      );
       BricksTileMapNode.QueueFree();
       BricksTileMapNode = null;
     }
   }
 
-  private Node2D SpawnBricks(bool shouldInstanceBricks = true, bool shouldTranslateDown = true) {
+  private BricksTileMap SpawnBricks(bool shouldInstanceBricks = true, bool shouldTranslateDown = true) {
     var bricks = BricksTileMap.Instantiate<BricksTileMap>();
     bricks.should_instance_bricks = shouldInstanceBricks;
     bricks.Position = BricksSpawnPosNode.Position + (shouldTranslateDown ? Vector2.Up * BRICKS_TRANSLATION_Y_AMOUNT : Vector2.Zero);
-    CallDeferred("add_child", bricks);
-    bricks.CallDeferred("set_owner", this);
+    CallDeferred(Node.MethodName.AddChild, bricks);
+    bricks.CallDeferred(Node.MethodName.SetOwner, this);
     if (shouldTranslateDown) {
       CreateBricksMoveTweener();
       CallDeferred(nameof(MoveBricksDownBy), BRICKS_TRANSLATION_Y_AMOUNT, 5.0f);
@@ -155,7 +161,7 @@ public partial class BrickBreaker : Node2D {
     }
     else if (current_state == BrickBreakerState.WIN) {
       if (BricksTileMapNode == null) {
-        BricksTileMapNode = (Node2D)SpawnBricks(false, false);
+        BricksTileMapNode = SpawnBricks(false, false);
         BricksTileMapNode.Position += new Vector2(0, LEVELS_Y_GAP * NUM_LEVELS + LEVELS_WIN_GAP);
       }
     }
@@ -192,13 +198,19 @@ public partial class BrickBreaker : Node2D {
     if (current_state != BrickBreakerState.PLAYING) {
       current_state = BrickBreakerState.PLAYING;
       current_level = 0;
-      BricksTileMapNode = (Node2D)SpawnBricks();
+      BricksTileMapNode = SpawnBricks();
       EventHandler.Instance.EmitBrickBreakerStart();
-      await ToSignal(bricksMoveTweener, "finished");
+      await ToSignal(bricksMoveTweener, Tween.SignalName.Finished);
       SpawnBall();
       BricksTimerNode.Start();
-      BricksTileMapNode.Connect("bricks_cleared", new Callable(this, nameof(_OnBricksCleared)));
-      BricksTileMapNode.Connect("level_cleared", new Callable(this, nameof(_OnLevelCleared)));
+      BricksTileMapNode.Connect(
+        nameof(BricksTileMapNode.bricks_cleared),
+        new Callable(this, nameof(_OnBricksCleared))
+      );
+      BricksTileMapNode.Connect(
+        nameof(BricksTileMapNode.level_cleared),
+        new Callable(this, nameof(_OnLevelCleared))
+      );
       Global.Instance().Player.CurrentDefaultCornerScaleFactor = FACE_SEPARATOR_SCALE_FACTOR;
     }
   }
@@ -265,7 +277,7 @@ public partial class BrickBreaker : Node2D {
       CleanUpGame();
       CreateBricksMoveTweener();
       MoveBricksDownBy(LEVELS_WIN_GAP, 3.0f);
-      await ToSignal(bricksMoveTweener, "finished");
+      await ToSignal(bricksMoveTweener, Tween.SignalName.Finished);
       MusicTrackManager.SetPitchScale(1);
       SlidingDoorNode.ResumeSlider();
       ChangeCameraViewAfterWin();

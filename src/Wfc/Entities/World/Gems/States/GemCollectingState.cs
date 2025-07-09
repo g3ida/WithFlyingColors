@@ -1,4 +1,6 @@
+namespace Wfc.Entities.World.Gems;
 
+using Godot;
 using Wfc.State;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -7,13 +9,13 @@ public partial class GemCollectingState : GemBaseState {
   }
 
   public override void Enter(Gem gem) {
-    gem.CollisionShapeNode.SetDeferred("disabled", true);
+    gem.CollisionShapeNode.SetDeferred(CollisionPolygon2D.PropertyName.Disabled, true);
     gem.AnimationPlayerNode.Play("gem_collected_animation");
-    gem.ShineNode.Stop();
+    gem.ShineSfxNode.Stop();
   }
 
   public override void Exit(Gem gem) {
-    gem.CollisionShapeNode.SetDeferred("disabled", false);
+    gem.CollisionShapeNode.SetDeferred(CollisionPolygon2D.PropertyName.Disabled, false);
   }
 
   public override BaseState<Gem>? OnAnimationFinished(Gem gem, string animName) {

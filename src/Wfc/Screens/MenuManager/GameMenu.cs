@@ -162,18 +162,20 @@ public partial class GameMenu : Control {
       foreach (var grandchild in ch.GetChildren()) {
         if (grandchild is UITransition transition) {
           _transitionElements.Add(transition);
-          transition.Connect("entered", new Callable(this, nameof(OnTransitionElementEntered)));
-          transition.Connect("exited", new Callable(this, nameof(OnTransitionElementExited)));
+
+          transition.Connect(UITransition.SignalName.entered, new Callable(this, nameof(OnTransitionElementEntered)));
+          transition.Connect(UITransition.SignalName.exited, new Callable(this, nameof(OnTransitionElementExited)));
           break;
         }
       }
     }
   }
 
+
   private void ClearTransitionElements() {
     foreach (var transition in _transitionElements) {
-      transition.Disconnect("entered", new Callable(this, nameof(OnTransitionElementEntered)));
-      transition.Disconnect("exited", new Callable(this, nameof(OnTransitionElementExited)));
+      transition.Disconnect(UITransition.SignalName.entered, new Callable(this, nameof(OnTransitionElementEntered)));
+      transition.Disconnect(UITransition.SignalName.exited, new Callable(this, nameof(OnTransitionElementExited)));
     }
   }
 

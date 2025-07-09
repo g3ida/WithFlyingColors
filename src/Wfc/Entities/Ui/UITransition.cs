@@ -1,4 +1,5 @@
 namespace Wfc.Entities.Ui;
+
 using Godot;
 
 public partial class UITransition : Control {
@@ -65,10 +66,20 @@ public partial class UITransition : Control {
   private void StartTween(Vector2 destinationPos, float duration) {
     _tweener?.Kill();
     _tweener = CreateTween();
-    _tweener.TweenProperty(_parent, "position", destinationPos, duration)
+    _tweener.TweenProperty(
+      _parent,
+      Control.PropertyName.Position.ToString(),
+      destinationPos,
+      duration
+    )
           .SetTrans(Tween.TransitionType.Quad)
           .SetEase(Tween.EaseType.InOut);
-    _tweener.Connect("finished", new Callable(this, nameof(UpdateState)), flags: (uint)ConnectFlags.OneShot);
+
+    _tweener.Connect(
+      Tween.SignalName.Finished,
+      new Callable(this, nameof(UpdateState)),
+      flags: (uint)ConnectFlags.OneShot
+    );
   }
 
   private void Prepare() {

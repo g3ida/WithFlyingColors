@@ -3,6 +3,7 @@ namespace Wfc.Entities.World.Player;
 using System;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Entities.World.Gems;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BoxFace : BaseFace {

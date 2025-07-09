@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://c1k32ye5xn8fw"]
 
-[ext_resource type="Script" uid="uid://k07j7en1q03l" path="res://src/Scripts/HUD/GemHUD.cs" id="1"]
+[ext_resource type="Script" uid="uid://k07j7en1q03l" path="res://src//Wfc/Entities/HUD/GemHUD/GemHUD.cs" id="1"]
 [ext_resource type="Texture2D" uid="uid://byanyd350jh3d" path="res://Assets/Sprites/HUD/gem_hud.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://d1iyb40rpw538" path="res://Assets/Sprites/HUD/gem_hud_bg.png" id="3"]
 

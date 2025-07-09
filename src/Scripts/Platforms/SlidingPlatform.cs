@@ -117,7 +117,11 @@ public partial class SlidingPlatform : Node2D {
         .SetEase(Tween.EaseType.InOut)
         .SetDelay(wait)
         .From(start)
-        .Connect("finished", new Callable(this, nameof(OnTweenCompleted)), (uint)ConnectFlags.OneShot);
+        .Connect(
+          Tween.SignalName.Finished,
+          new Callable(this, nameof(OnTweenCompleted)),
+          (uint)ConnectFlags.OneShot
+        );
   }
 
   public void SetLooping(bool looping) {
