@@ -9,10 +9,8 @@ public partial class AutoloadManager : Node {
 
   // TODO: load other scripts
   public IEventHandler EventHandler => Core.Event.EventHandler.Instance;
-  public required IMusicTrackManager MusicTrackManager;
-  public required ISfxManager SfxManager;
-
-
+  public IMusicTrackManager MusicTrackManager = null!;
+  public ISfxManager SfxManager = null!;
   public override void _EnterTree() {
     base._EnterTree();
     Instance = GetTree().Root.GetNode<AutoloadManager>("AutoloadManager");

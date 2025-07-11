@@ -15,38 +15,37 @@ public partial class GemNotCollectedState : GemBaseState {
   private bool _isActive = false;
   private NodeOscillator? _oscillator;
   private AreaEnteredEventHandler? _areaEnteredEventHandler;
-  private BaseState<Gem>? _requestedState = null;
+  private IState<Gem>? _requestedState = null;
 
 
   public GemNotCollectedState() : base() { }
 
-  public override void Init(Gem gem) {
-    base.Init(gem);
-    _oscillator = new NodeOscillator(gem, AMPLITUDE, ANIMATION_DURATION);
+  public override void Init(Gem o) {
+    _oscillator = new NodeOscillator(o, AMPLITUDE, ANIMATION_DURATION);
   }
 
-  public override void Enter(Gem gem) {
+  public override void Enter(Gem o) {
     _isActive = true;
-    gem.AnimationPlayerNode.Play("RESET");
-    gem.AnimatedSpriteNode.Play("default");
-    gem.ShineSfxNode.Play();
+    o.AnimationPlayerNode.Play("RESET");
+    o.AnimatedSpriteNode.Play("default");
+    o.ShineSfxNode.Play();
 
     _areaEnteredEventHandler = (Area2D area) => {
-      _requestedState = _handleAreaEntered(gem, area);
+      _requestedState = _handleAreaEntered(o, area);
     };
-    gem.AreaEntered += _areaEnteredEventHandler;
+    o.AreaEntered += _areaEnteredEventHandler;
   }
 
-  public override void Exit(Gem gem) {
+  public override void Exit(Gem o) {
     _isActive = false;
-    gem.ShineSfxNode.Stop();
+    o.ShineSfxNode.Stop();
     if (_areaEnteredEventHandler != null) {
-      gem.AreaEntered -= _areaEnteredEventHandler;
+      o.AreaEntered -= _areaEnteredEventHandler;
       _areaEnteredEventHandler = null;
     }
   }
 
-  public override BaseState<Gem>? PhysicsUpdate(Gem gem, float delta) {
+  public override IState<Gem>? PhysicsUpdate(Gem gem, float delta) {
     gem.LightNode.Position = gem.AnimatedSpriteNode.Position;
     _oscillator?.Update(delta);
     var timer = _oscillator?.Timer ?? 0f;
@@ -55,7 +54,7 @@ public partial class GemNotCollectedState : GemBaseState {
     return _requestedState;
   }
 
-  public BaseState<Gem>? _handleAreaEntered(Gem gem, Area2D area) {
+  public IState<Gem>? _handleAreaEntered(Gem gem, Area2D area) {
     if (!_isActive)
       return null;
     // FIXME: We should remove the player area or make it inactive instead of doing

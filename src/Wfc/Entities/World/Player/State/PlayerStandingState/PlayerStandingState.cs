@@ -3,6 +3,7 @@ namespace Wfc.Entities.World.Player;
 using System;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Input;
 using Wfc.State;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -11,7 +12,8 @@ public partial class PlayerStandingState : PlayerBaseState {
   private const float RAYCAST_Y_OFFSET = -5.0f; // https://godotengine.org/qa/63336/raycast2d-doesnt-collide-with-tilemap
   private const float SLIPPERING_LIMIT = 0.42f; // higher is less slippering
 
-  public PlayerStandingState() : base() {
+  public PlayerStandingState(IPlayerStatesStore statesStore, IInputManager inputManager)
+    : base(statesStore, inputManager) {
     baseState = PlayerStatesEnum.STANDING;
   }
 
@@ -24,11 +26,7 @@ public partial class PlayerStandingState : PlayerBaseState {
   protected override void _Exit(Player player) {
   }
 
-  public override BaseState<Player>? PhysicsUpdate(Player player, float delta) {
-    return base.PhysicsUpdate(player, delta);
-  }
-
-  protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
+  protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (JumpPressed(player) && player.IsOnFloor()) {
       return OnJump(player);
     }
@@ -41,14 +39,14 @@ public partial class PlayerStandingState : PlayerBaseState {
     }
     else {
       if (Math.Abs(player.Velocity.X) < player.SpeedUnit
-          && player.PlayerRotationState.baseState == PlayerStatesEnum.IDLE) {
+          && player.PlayerRotationState?.baseState == PlayerStatesEnum.IDLE) {
         return RaycastFloor(player);
       }
     }
     return null;
   }
 
-  private static BaseState<Player>? RaycastFloor(Player player) {
+  private static PlayerSlipperingState? RaycastFloor(Player player) {
     var spaceState = player.GetWorld2D().DirectSpaceState;
     var playerHalfSize = player.GetCollisionShapeSize() * 0.5f * player.Scale;
 

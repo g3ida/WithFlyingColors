@@ -1,11 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://w42e2y2vjjw8"]
+[gd_scene load_steps=5 format=3 uid="uid://w42e2y2vjjw8"]
 
+[ext_resource type="Script" uid="uid://b45ralkf4psvk" path="res://test/Instrumented/src/Helpers/Fakes/FakeDependenciesProvider.cs" id="1_6shdc"]
 [ext_resource type="PackedScene" uid="uid://nvn44bv2puaj" path="res://src/Wfc/Entities/World/Player/Player/Player.tscn" id="1_7a4kl"]
 [ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://Assets/Scenes/Fallzone.tscn" id="2_dgyen"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5ju7t"]
 
 [node name="PlayerOnEdgeTest" type="Node2D"]
+script = ExtResource("1_6shdc")
 
 [node name="Player" parent="." instance=ExtResource("1_7a4kl")]
 position = Vector2(424, 96)

@@ -2,11 +2,13 @@ namespace Wfc.Entities.World.Player;
 
 using System;
 using Godot;
+using Wfc.Core.Input;
 using Wfc.State;
 
 public partial class PlayerRotatingIdleState : PlayerBaseState {
 
-  public PlayerRotatingIdleState() : base() {
+  public PlayerRotatingIdleState(IPlayerStatesStore statesStore, IInputManager inputManager)
+    : base(statesStore, inputManager) {
     baseState = PlayerStatesEnum.IDLE;
   }
 
@@ -14,7 +16,7 @@ public partial class PlayerRotatingIdleState : PlayerBaseState {
 
   protected override void _Exit(Player player) { }
 
-  public override BaseState<Player>? PhysicsUpdate(Player player, float delta) {
+  public override IState<Player>? PhysicsUpdate(Player player, float delta) {
     player.PlayerRotationAction.Step(delta);
     return HandleRotate(player);
   }

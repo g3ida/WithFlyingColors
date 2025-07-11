@@ -8,6 +8,7 @@ using Wfc.Autoload;
 using Wfc.Core.Audio;
 using Wfc.Core.Event;
 using Wfc.Core.Exceptions;
+using Wfc.Core.Input;
 using Wfc.Core.Localization;
 using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
@@ -23,10 +24,12 @@ public partial class DependenciesProvider :
   IProvide<ISaveManager>,
   IProvide<ILocalizationService>,
   IProvide<ISfxManager>,
-  IProvide<IMusicTrackManager> {
+  IProvide<IMusicTrackManager>,
+  IProvide<IInputManager> {
   public override void _Notification(int what) => this.Notify(what);
 
   private readonly Lazy<IMenuManager> _menuManager;
+  private readonly Lazy<IInputManager> _inputManager;
   private readonly ILogger _logger = new GDLogger();
   private readonly SaveManager _saveManager = new SaveManager();
   IMenuManager IProvide<IMenuManager>.Value() => _menuManager.Value;
@@ -36,9 +39,11 @@ public partial class DependenciesProvider :
   IEventHandler IProvide<IEventHandler>.Value() => AutoloadManager.Instance.EventHandler;
   ISfxManager IProvide<ISfxManager>.Value() => AutoloadManager.Instance.SfxManager;
   IMusicTrackManager IProvide<IMusicTrackManager>.Value() => AutoloadManager.Instance.MusicTrackManager;
+  IInputManager IProvide<IInputManager>.Value() => _inputManager.Value;
 
   public DependenciesProvider() : base() {
     _menuManager = new Lazy<IMenuManager>(() => new MenuManager(this));
+    _inputManager = new Lazy<IInputManager>(() => new InputManager());
   }
 
   public void OnReady() {

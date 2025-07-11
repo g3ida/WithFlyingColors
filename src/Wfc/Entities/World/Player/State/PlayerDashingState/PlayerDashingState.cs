@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Player;
 
 using Godot;
+using Wfc.Core.Input;
 using Wfc.State;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -11,14 +12,15 @@ public partial class PlayerDashingState : PlayerBaseState {
   private const float DASH_SPEED = 20 * Constants.WORLD_TO_SCREEN;
   private const float DASH_GHOST_INSTANCE_DELAY = 0.04f;
 
-  private CountdownTimer dashTimer = new CountdownTimer();
-  private CountdownTimer permissivenessTimer = new CountdownTimer();
-  public Vector2 direction = Vector2.Zero;
-  private bool dashDone = false;
+  private CountdownTimer _dashTimer = new CountdownTimer();
+  private CountdownTimer _permissivenessTimer = new CountdownTimer();
+  private bool _dashDone = false;
+  public Vector2 Direction = Vector2.Zero;
 
-  public PlayerDashingState() : base() {
-    dashTimer.Set(DASH_DURATION, false);
-    permissivenessTimer.Set(PERMISSIVENESS, false);
+  public PlayerDashingState(IPlayerStatesStore statesStore, IInputManager inputManager)
+    : base(statesStore, inputManager) {
+    _dashTimer.Set(DASH_DURATION, false);
+    _permissivenessTimer.Set(PERMISSIVENESS, false);
     this.baseState = PlayerStatesEnum.DASHING;
   }
 
@@ -27,19 +29,19 @@ public partial class PlayerDashingState : PlayerBaseState {
 
     player.DashGhostTimerNode.Connect(
       Timer.SignalName.Timeout,
-      new Callable(this, nameof(_OnDashGhostTimerTimeout))
+      new Callable(this, nameof(_onDashGhostTimerTimeout))
     );
-    if (direction == Vector2.Zero) {
-      permissivenessTimer.Reset();
-      SetDashDirection(player);
-      dashDone = false;
+    if (Direction == Vector2.Zero) {
+      _permissivenessTimer.Reset();
+      _setDashDirection(player);
+      _dashDone = false;
     }
     else {
-      dashDone = true;
-      permissivenessTimer.Stop();
+      _dashDone = true;
+      _permissivenessTimer.Stop();
     }
 
-    dashTimer.Reset();
+    _dashTimer.Reset();
     player.CanDash = false;
     Global.Instance().Camera.GetNode<CameraShake>("CameraShake").Start();
     InstanceGhost(player);
@@ -47,76 +49,76 @@ public partial class PlayerDashingState : PlayerBaseState {
   }
 
   protected override void _Exit(Player player) {
-    if (dashDone) {
+    if (_dashDone) {
       player.Velocity = new Vector2(0, player.Velocity.Y);
     }
-    dashTimer.Stop();
-    permissivenessTimer.Stop();
+    _dashTimer.Stop();
+    _permissivenessTimer.Stop();
     player.DashGhostTimerNode.Stop();
     player.DashGhostTimerNode.Disconnect(
       Timer.SignalName.Timeout,
-      new Callable(this, nameof(_OnDashGhostTimerTimeout))
+      new Callable(this, nameof(_onDashGhostTimerTimeout))
     );
-    direction = Vector2.Zero;
+    Direction = Vector2.Zero;
   }
 
-  protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
-    if (!dashDone && !permissivenessTimer.IsRunning()) {
-      SetDashDirection(player);
-      if (direction.LengthSquared() < 0.01f) {
-        dashTimer.Stop();
+  protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
+    if (!_dashDone && !_permissivenessTimer.IsRunning()) {
+      _setDashDirection(player);
+      if (Direction.LengthSquared() < 0.01f) {
+        _dashTimer.Stop();
       }
       else {
-        dashDone = true;
-        EventHandler.Instance.EmitPlayerDash(direction);
+        _dashDone = true;
+        EventHandler.Instance.EmitPlayerDash(Direction);
       }
     }
 
-    if (dashDone) {
-      if (Mathf.Abs(direction.X) > 0.01f) {
-        player.Velocity = new Vector2(DASH_SPEED * direction.X, player.Velocity.Y);
+    if (_dashDone) {
+      if (Mathf.Abs(Direction.X) > 0.01f) {
+        player.Velocity = new Vector2(DASH_SPEED * Direction.X, player.Velocity.Y);
       }
-      if (Mathf.Abs(direction.Y) > 0.01f) {
-        player.Velocity = new Vector2(player.Velocity.X, DASH_SPEED * direction.Y);
+      if (Mathf.Abs(Direction.Y) > 0.01f) {
+        player.Velocity = new Vector2(player.Velocity.X, DASH_SPEED * Direction.Y);
       }
     }
 
-    if (!dashTimer.IsRunning()) {
+    if (!_dashTimer.IsRunning()) {
       return player.StatesStore.GetState(PlayerStatesEnum.FALLING);
     }
     else {
       player.Velocity = new Vector2(player.Velocity.X, 0);
     }
 
-    dashTimer.Step(delta);
-    permissivenessTimer.Step(delta);
+    _dashTimer.Step(delta);
+    _permissivenessTimer.Step(delta);
 
     return null;
   }
 
-  private void SetDashDirection(Player player) {
-    direction = Vector2.Zero;
-    if (Godot.Input.IsActionPressed("move_right") && Godot.Input.IsActionPressed("move_left")) {
-      direction.X = 0;
+  private void _setDashDirection(Player player) {
+    Direction = Vector2.Zero;
+    if (inputManager.IsPressed(IInputManager.Action.MoveRight) && inputManager.IsPressed(IInputManager.Action.MoveLeft)) {
+      Direction.X = 0;
     }
-    else if (Godot.Input.IsActionPressed("move_left")) {
-      direction.X = -1;
+    else if (inputManager.IsPressed(IInputManager.Action.MoveLeft)) {
+      Direction.X = -1;
     }
-    else if (Godot.Input.IsActionPressed("move_right")) {
-      direction.X = 1;
+    else if (inputManager.IsPressed(IInputManager.Action.MoveRight)) {
+      Direction.X = 1;
     }
     else if (Mathf.Abs(player.Velocity.X) > 0.1f) {
-      direction.X = 1 * Mathf.Sign(player.Velocity.X);
+      Direction.X = 1 * Mathf.Sign(player.Velocity.X);
     }
     else {
-      direction.X = 0;
+      Direction.X = 0;
     }
-    if (Godot.Input.IsActionPressed("down")) {
-      direction.Y = 1;
+    if (inputManager.IsPressed(IInputManager.Action.Down)) {
+      Direction.Y = 1;
     }
   }
 
-  private void _OnDashGhostTimerTimeout() {
+  private static void _onDashGhostTimerTimeout() {
     InstanceGhost(Global.Instance().Player);
   }
 

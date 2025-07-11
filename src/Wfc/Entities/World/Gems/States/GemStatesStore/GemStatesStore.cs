@@ -3,7 +3,7 @@ namespace Wfc.Entities.World.Gems;
 using Godot;
 using Wfc.State;
 
-public partial class GemStatesStore : BaseStatesStore<Gem, GemState> {
+public partial class GemStatesStore : IStatesStore<Gem, GemState> {
   public readonly GemBaseState NotCollected;
   public readonly GemBaseState Collecting;
   public readonly GemBaseState Collected;
@@ -20,7 +20,7 @@ public partial class GemStatesStore : BaseStatesStore<Gem, GemState> {
     Collected.Init(gem);
   }
 
-  public override BaseState<Gem>? GetState(GemState state) {
+  public IState<Gem>? GetState(GemState state) {
     if (state == GemState.NotCollected) {
       return NotCollected;
     }

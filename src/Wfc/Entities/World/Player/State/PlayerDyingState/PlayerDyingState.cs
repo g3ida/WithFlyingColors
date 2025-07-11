@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Player;
 
 using Godot;
+using Wfc.Core.Input;
 using Wfc.Entities.World.Explosion;
 using Wfc.State;
 using Wfc.Utils;
@@ -11,7 +12,8 @@ public partial class PlayerDyingState : PlayerBaseState {
   private int lightMask;
   private bool fallTimerTriggered = false;
 
-  public PlayerDyingState() : base() {
+  public PlayerDyingState(IPlayerStatesStore statesStore, IInputManager inputManager)
+    : base(statesStore, inputManager) {
     this.baseState = PlayerStatesEnum.DYING;
   }
 
@@ -58,11 +60,11 @@ public partial class PlayerDyingState : PlayerBaseState {
     EventHandler.Instance.EmitPlayerDied();
   }
 
-  protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
+  protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
     return base._PhysicsUpdate(player, delta);
   }
 
-  public BaseState<Player>? OnPlayerDying(Node area, Vector2 position, int entityType) {
+  public IState<Player>? OnPlayerDying(Node area, Vector2 position, int entityType) {
     return null;
   }
 
@@ -86,7 +88,7 @@ public partial class PlayerDyingState : PlayerBaseState {
     explosion.Owner = player;
   }
 
-  private void OnObjectDetonated(Node explosion) {
+  private static void OnObjectDetonated(Node explosion) {
     explosion.QueueFree();
     EventHandler.Instance.EmitPlayerDied();
   }
