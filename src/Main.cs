@@ -21,13 +21,13 @@ public partial class Main : Node2D {
     // command line arguments and determine if we should run tests.
     Environment = TestEnvironment.From(OS.GetCmdlineArgs());
     if (Environment.ShouldRunTests) {
-      CallDeferred("RunTests");
+      CallDeferred(nameof(RunTests));
       return;
     }
 #endif
 
     // If we don't need to run tests, we can just switch to the game scene.
-    CallDeferred("RunScene");
+    CallDeferred(nameof(RunScene));
   }
 
 #if DEBUG

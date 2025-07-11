@@ -2,7 +2,7 @@ namespace Wfc.Utils.Animation;
 
 using Godot;
 
-public partial class NodeOscillator : Node {
+public partial class NodeOscillator {
   private Vector2 _initialPosition;
   private Node2D _node;
   private float _amplitude = 1.0f;

@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Player;
 
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Input;
 using Wfc.State;
 
 public partial class PlayerFallingState : PlayerBaseState {
@@ -9,7 +10,8 @@ public partial class PlayerFallingState : PlayerBaseState {
   public bool wasOnFloor = false;
   private const float PERMISSIVENESS = 0.04f;
 
-  public PlayerFallingState() : base() {
+  public PlayerFallingState(IPlayerStatesStore statesStore, IInputManager inputManager)
+    : base(statesStore, inputManager) {
     permissivenessTimer.Set(PERMISSIVENESS, false);
     this.baseState = PlayerStatesEnum.FALLING;
   }
@@ -28,7 +30,7 @@ public partial class PlayerFallingState : PlayerBaseState {
     player.JumpParticlesNode.Emitting = false;
   }
 
-  protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
+  protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (player.IsOnFloor()) {
       EventHandler.Instance.EmitPlayerLand();
       return player.StatesStore.GetState(PlayerStatesEnum.STANDING);
@@ -41,7 +43,7 @@ public partial class PlayerFallingState : PlayerBaseState {
     return null;
   }
 
-  public BaseState<Player>? OnAnimationFinished(string animName) {
+  public IState<Player>? OnAnimationFinished(string animName) {
     return null;
   }
 }

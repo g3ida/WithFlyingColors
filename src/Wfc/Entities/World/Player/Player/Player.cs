@@ -2,8 +2,11 @@ namespace Wfc.Entities.World.Player;
 
 using System;
 using System.Collections.Generic;
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Input;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils;
@@ -12,7 +15,9 @@ using Wfc.Utils.Attributes;
 using Wfc.Utils.Interpolation;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
+[Meta(typeof(IAutoNode))]
 public partial class Player : CharacterBody2D, IPersistent {
+  public override void _Notification(int what) => this.Notify(what);
 
   private sealed record SaveData(
     float PositionX = 0f,
@@ -21,31 +26,34 @@ public partial class Player : CharacterBody2D, IPersistent {
     float DefaultCornerScaleFactor = 1f
 );
 
+  #region Dependencies
+  [Dependency]
+  public IInputManager InputManager => this.DependOn<IInputManager>();
+  #endregion Dependencies
+
+  #region Constants
   public const float SQUEEZE_ANIM_DURATION = 0.17f;
   public const float SCALE_ANIM_DURATION = 0.17f;
 
   public const float SPEED = 3.5f * Constants.WORLD_TO_SCREEN;
   public const float SPEED_UNIT = 0.7f * Constants.WORLD_TO_SCREEN;
+  #endregion Constants
   public float SpeedLimit { get; set; } = SPEED;
   public float SpeedUnit { get; set; } = SPEED_UNIT;
-
   public PlayerRotationAction PlayerRotationAction { get; private set; } = new();
-
   public TransformAnimation ScaleAnimation { get; private set; } = null!;
   public TransformAnimation IdleAnimation { get; set; } = null!;
   public TransformAnimation CurrentAnimation { get; set; } = null!;
-
-  private int _spriteSize;
   public bool WasOnFloor { get; private set; } = true;
-
   public PlayerStatesStore StatesStore { get; private set; } = null!;
-  public PlayerBaseState PlayerState { get; set; } = null!;
-  public PlayerBaseState PlayerRotationState { get; private set; } = null!;
+  public PlayerBaseState? PlayerState { get; set; } = null;
+  public PlayerBaseState? PlayerRotationState { get; private set; } = null!;
 
   public bool CanDash = true;
   public bool HandleInputIsDisabled = false;
+  private int _spriteSize;
 
-
+  #region Nodes
   [NodePath("JumpParticles")]
   public CpuParticles2D JumpParticlesNode = null!;
   [NodePath("FallTimer")]
@@ -82,19 +90,17 @@ public partial class Player : CharacterBody2D, IPersistent {
   public CollisionShape2D FaceCollisionShapeBL_node = null!;
   [NodePath("FaceCollisionShapeBR")]
   public CollisionShape2D FaceCollisionShapeBR_node = null!;
-
   [NodePath("CollisionShape2D")]
   private CollisionShape2D _collisionShapeNode = null!;
   [NodePath("AnimatedSprite2D")]
   public AnimatedSprite2D AnimatedSpriteNode = null!;
   [NodePath("DashGhostTimer")]
   public Timer DashGhostTimerNode = null!;
-
   private List<BoxCorner> faceSeparatorNodes = new List<BoxCorner>();
   private List<BoxFace> faceNodes = new List<BoxFace>();
   private List<CollisionShape2D> faceCollisionNodes = new List<CollisionShape2D>();
   private List<CollisionShape2D> faceCornerCollisionNodes = new List<CollisionShape2D>();
-
+  #endregion Nodes
 
   private SaveData _saveData = new SaveData();
 
@@ -142,6 +148,11 @@ public partial class Player : CharacterBody2D, IPersistent {
         };
   }
 
+  public void OnResolved() {
+    // The OnResolved method will be called after _Ready/OnReady, but before the first frame
+    // if (and only if) all the providers it depends on call this.Provide() before the first frame.
+    InitState();
+  }
 
   public override void _Ready() {
     base._Ready();
@@ -153,7 +164,6 @@ public partial class Player : CharacterBody2D, IPersistent {
     WasOnFloor = IsOnFloor();
     UpDirection = Vector2.Up;
     InitFacesAreas();
-    InitState();
 
     _saveData = new SaveData(GlobalPosition.X, GlobalPosition.Y, 0f, 1f);
   }
@@ -165,7 +175,7 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   private void InitState() {
-    StatesStore = new PlayerStatesStore(this);
+    StatesStore = new PlayerStatesStore(InputManager);
     PlayerState = StatesStore.fallingState;
     PlayerState.Enter(this);
     PlayerRotationState = StatesStore.idleState;
@@ -185,24 +195,20 @@ public partial class Player : CharacterBody2D, IPersistent {
       }
     }
 
-    FillFaceNodesBackup();
-    FillFaceSeparatorsBackup();
-  }
-
-  public override void _Input(InputEvent @event) {
-    PlayerState._Input(@event);
-    PlayerRotationState._Input(@event);
+    _fillFaceNodesBackup();
+    _fillFaceSeparatorsBackup();
   }
 
   public override void _PhysicsProcess(double delta) {
-    var nextState = PlayerRotationState.PhysicsUpdate(this, (float)delta) as PlayerBaseState;
-    SwitchRotationState(nextState);
+    base._PhysicsProcess(delta);
+    var nextState = PlayerRotationState?.PhysicsUpdate(this, (float)delta) as PlayerBaseState;
+    _switchRotationState(nextState);
 
-    var nextPlayerState = PlayerState.PhysicsUpdate(this, (float)delta) as PlayerBaseState;
-    SwitchState(nextPlayerState);
+    var nextPlayerState = PlayerState?.PhysicsUpdate(this, (float)delta) as PlayerBaseState;
+    _switchState(nextPlayerState);
 
-    if (IsJustHitTheFloor()) {
-      OnLand();
+    if (_isJustHitTheFloor()) {
+      _onLand();
     }
 
     WasOnFloor = IsOnFloor();
@@ -216,8 +222,8 @@ public partial class Player : CharacterBody2D, IPersistent {
     Rotate(_saveData.Angle - Rotation);
     CurrentDefaultCornerScaleFactor = _saveData.DefaultCornerScaleFactor;
     ShowColorAreas();
-    SwitchRotationState(StatesStore.GetState(PlayerStatesEnum.IDLE) as PlayerBaseState);
-    SwitchState(StatesStore.GetState(PlayerStatesEnum.FALLING) as PlayerBaseState);
+    _switchRotationState(StatesStore.GetState(PlayerStatesEnum.IDLE) as PlayerBaseState);
+    _switchState(StatesStore.GetState(PlayerStatesEnum.FALLING) as PlayerBaseState);
     HandleInputIsDisabled = false;
   }
 
@@ -246,64 +252,66 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(OnPlayerDying)));
+    EventHandler.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_onPlayerDying)));
     EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
     EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(OnPlayerDying)));
+    EventHandler.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_onPlayerDying)));
     EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
     EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
   }
 
   public override void _EnterTree() {
+    base._EnterTree();
     this.WireNodes();
     Global.Instance().Player = this;
     ConnectSignals();
   }
 
   public override void _ExitTree() {
+    base._EnterTree();
     DisconnectSignals();
   }
 
-  private void OnPlayerDying(Node? area, Vector2 position, int entity_type) {
-    var next_state = (PlayerState).OnPlayerDying(this, area, position, (Constants.EntityType)entity_type);
-    SwitchState(next_state);
+  private void _onPlayerDying(Node? area, Vector2 position, int entity_type) {
+    var next_state = PlayerState?.OnPlayerDying(this, area, position, (Constants.EntityType)entity_type);
+    _switchState(next_state);
   }
 
-  private bool IsJustHitTheFloor() {
+  private bool _isJustHitTheFloor() {
     return !WasOnFloor && IsOnFloor();
   }
 
-  private void OnLand() {
-    var next_player_state = PlayerState.OnLand(this);
-    SwitchState(next_player_state);
+  private void _onLand() {
+    var next_player_state = PlayerState?.OnLand(this);
+    _switchState(next_player_state);
   }
 
-  private void SwitchState(PlayerBaseState? new_state) {
+  private void _switchState(PlayerBaseState? new_state) {
     if (new_state != null) {
-      PlayerState.Exit(this);
+      PlayerState?.Exit(this);
       PlayerState = new_state;
       PlayerState.Enter(this);
     }
   }
 
-  private void SwitchRotationState(PlayerBaseState? new_state) {
+  private void _switchRotationState(PlayerBaseState? new_state) {
     if (new_state != null) {
-      PlayerRotationState.Exit(this);
+      PlayerRotationState?.Exit(this);
       PlayerRotationState = new_state;
       PlayerRotationState.Enter(this);
     }
   }
 
-  private void ScaleFaceSeparatorsBy(float factor) {
+  private void _scaleFaceSeparatorsBy(float factor) {
     foreach (var face_sep in faceSeparatorNodes) {
       face_sep.ScaleBy(factor);
     }
   }
 
-  private void ScaleFacesBy(float factor) {
+  private void _scaleFacesBy(float factor) {
     foreach (var face_sep in faceNodes) {
       face_sep.ScaleBy(factor);
     }
@@ -317,8 +325,8 @@ public partial class Player : CharacterBody2D, IPersistent {
     var face = faceNodes[0].EdgeLength;
     var total_length = 2 * edge + face;
     var reverse_factor = (total_length - 2f * edge * factor) / face;
-    ScaleFaceSeparatorsBy(factor);
-    ScaleFacesBy(reverse_factor);
+    _scaleFaceSeparatorsBy(factor);
+    _scaleFacesBy(reverse_factor);
   }
 
   public Vector2 GetCollisionShapeSize() {
@@ -348,7 +356,7 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   // Face areas backup
-  private void FillFaceNodesBackup() {
+  private void _fillFaceNodesBackup() {
     _faceNodesMaskBackup.Clear();
     foreach (var face in faceNodes) {
       _faceNodesMaskBackup.Add(new Dictionary<string, int>
@@ -359,7 +367,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     }
   }
 
-  private void FillFaceSeparatorsBackup() {
+  private void _fillFaceSeparatorsBackup() {
     _faceSeparatorsMaskBackup.Clear();
     foreach (var face in faceSeparatorNodes) {
       _faceSeparatorsMaskBackup.Add(new Dictionary<string, int>
@@ -371,12 +379,12 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   public void HideColorAreas() {
-    FillFaceSeparatorsBackup();
+    _fillFaceSeparatorsBackup();
     foreach (var face in faceSeparatorNodes) {
       face.CollisionLayer = 0;
       face.CollisionMask = 0;
     }
-    FillFaceNodesBackup();
+    _fillFaceNodesBackup();
     foreach (var face in faceNodes) {
       face.CollisionLayer = 0;
       face.CollisionMask = 0;
@@ -384,10 +392,10 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   public void SetCollisionShapesDisabledFlagDeferred(bool disable) {
-    CallDeferred(nameof(SetCollisionShapesDisabledFlag), disable);
+    CallDeferred(nameof(_setCollisionShapesDisabledFlag), disable);
   }
 
-  private void SetCollisionShapesDisabledFlag(bool disable) {
+  private void _setCollisionShapesDisabledFlag(bool disable) {
     foreach (var face in faceCollisionNodes) {
       face.Disabled = disable;
     }
@@ -410,7 +418,7 @@ public partial class Player : CharacterBody2D, IPersistent {
 
   // Methods added to convert PianoNote to C#
   public bool IsJumpingState() {
-    return PlayerState.baseState == PlayerStatesEnum.JUMPING;
+    return PlayerState != null && PlayerState.baseState == PlayerStatesEnum.JUMPING;
   }
 
   public bool IsFalling() {
@@ -418,16 +426,16 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   public bool IsRotationIdle() {
-    return PlayerRotationState.baseState == PlayerStatesEnum.IDLE;
+    return PlayerRotationState != null && PlayerRotationState.baseState == PlayerStatesEnum.IDLE;
   }
 
 
   public bool IsStanding() {
-    return PlayerState.baseState == PlayerStatesEnum.STANDING;
+    return PlayerState != null && PlayerState.baseState == PlayerStatesEnum.STANDING;
   }
 
   public bool IsDying() {
-    return PlayerState.baseState == PlayerStatesEnum.DYING;
+    return PlayerState != null && PlayerState.baseState == PlayerStatesEnum.DYING;
   }
 
   public void SetMaxSpeed() {

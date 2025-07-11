@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Player;
 
 using Godot;
+using Wfc.Core.Input;
 using Wfc.State;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -10,45 +11,42 @@ public partial class PlayerJumpingState : PlayerBaseState {
   private const float FACE_SEPARATOR_SCALE_FACTOR = 4.5f;
   private const float JUMP_FORCE = 1200f;
 
-  private bool entered = false;
-  private CountdownTimer jumpTimer = new CountdownTimer();
-  private CountdownTimer permissivenessTimer = new CountdownTimer();
-  public float touchJumpPower = 1.0f;
+  private bool _entered = false;
+  private CountdownTimer _jumpTimer = new CountdownTimer();
+  private CountdownTimer _permissivenessTimer = new CountdownTimer();
+  public float TouchJumpPower = 1.0f;
 
-  public PlayerJumpingState() : base() {
-    jumpTimer.Set(TIME_UNTIL_FULL_JUMP_IS_CONSIDERED, false);
-    permissivenessTimer.Set(PERMISSIVENESS, false);
+  public PlayerJumpingState(IPlayerStatesStore statesStore, IInputManager inputManager)
+    : base(statesStore, inputManager) {
+    _jumpTimer.Set(TIME_UNTIL_FULL_JUMP_IS_CONSIDERED, false);
+    _permissivenessTimer.Set(PERMISSIVENESS, false);
     this.baseState = PlayerStatesEnum.JUMPING;
   }
 
   protected override void _Enter(Player player) {
-    entered = true;
-    jumpTimer.Reset();
+    _entered = true;
+    _jumpTimer.Reset();
     EventHandler.Instance.EmitPlayerJumped();
     player.JumpParticlesNode.Emitting = true;
     player.ScaleCornersBy(FACE_SEPARATOR_SCALE_FACTOR);
   }
 
   protected override void _Exit(Player player) {
-    entered = false;
-    jumpTimer.Stop();
-    permissivenessTimer.Stop();
+    _entered = false;
+    _jumpTimer.Stop();
+    _permissivenessTimer.Stop();
     player.JumpParticlesNode.Emitting = false;
     player.ScaleCornersBy(1);
-    touchJumpPower = 1.0f;
+    TouchJumpPower = 1.0f;
   }
 
-  public override BaseState<Player>? PhysicsUpdate(Player player, float delta) {
-    return base.PhysicsUpdate(player, delta);
-  }
-
-  protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
-    if (entered) {
-      entered = false;
-      player.Velocity = new Vector2(player.Velocity.X, player.Velocity.Y - JUMP_FORCE * touchJumpPower);
+  protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
+    if (_entered) {
+      _entered = false;
+      player.Velocity = new Vector2(player.Velocity.X, player.Velocity.Y - JUMP_FORCE * TouchJumpPower);
     }
     else if (player.IsOnFloor()) {
-      if (permissivenessTimer.IsRunning()) {
+      if (_permissivenessTimer.IsRunning()) {
         return player.StatesStore.GetState(PlayerStatesEnum.JUMPING);
       }
       else {
@@ -58,23 +56,23 @@ public partial class PlayerJumpingState : PlayerBaseState {
     }
 
     if (JumpPressed(player)) {
-      permissivenessTimer.Reset();
+      _permissivenessTimer.Reset();
     }
 
-    if (jumpTimer.IsRunning() && Godot.Input.IsActionJustReleased("jump")) {
-      jumpTimer.Stop();
+    if (_jumpTimer.IsRunning() && inputManager.IsJustReleased(IInputManager.Action.Jump)) {
+      _jumpTimer.Stop();
       if (player.Velocity.Y < 0) {
         player.Velocity = new Vector2(player.Velocity.X * 0.5f, player.Velocity.Y);
       }
     }
 
-    jumpTimer.Step(delta);
-    permissivenessTimer.Step(delta);
+    _jumpTimer.Step(delta);
+    _permissivenessTimer.Step(delta);
     return null;
   }
 
   public PlayerJumpingState WithJumpPower(float jumpPower) {
-    touchJumpPower = jumpPower;
+    TouchJumpPower = jumpPower;
     return this;
   }
 }

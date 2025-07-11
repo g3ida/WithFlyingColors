@@ -2,9 +2,10 @@ namespace Wfc.Entities.World.Player;
 
 using System;
 using Godot;
+using Wfc.Core.Input;
 using Wfc.State;
 
-public partial class PlayerStatesStore : BaseStatesStore<Player, PlayerStatesEnum> {
+public partial class PlayerStatesStore : GodotObject, IPlayerStatesStore {
   // Player states
   public PlayerStandingState standingState;
   public PlayerJumpingState jumpingState;
@@ -18,25 +19,20 @@ public partial class PlayerStatesStore : BaseStatesStore<Player, PlayerStatesEnu
   public PlayerRotatingState rotatingLeftState;
   public PlayerRotatingIdleState idleState;
 
-  public PlayerStatesStore(Player player) {
-
-    standingState = new PlayerStandingState();
-    jumpingState = new PlayerJumpingState();
-    fallingState = new PlayerFallingState();
-    dyingState = new PlayerDyingState();
-    dashingState = new PlayerDashingState();
-
-    rotatingRightState = new PlayerRotatingState();
-    rotatingRightState.Init(player, 1);
-    rotatingLeftState = new PlayerRotatingState();
-    rotatingLeftState.Init(player, -1);
-
-    idleState = new PlayerRotatingIdleState();
-
-    slipperingState = new PlayerSlipperingState();
+  public PlayerStatesStore(IInputManager inputManager) {
+    standingState = new PlayerStandingState(this, inputManager);
+    jumpingState = new PlayerJumpingState(this, inputManager);
+    fallingState = new PlayerFallingState(this, inputManager);
+    dyingState = new PlayerDyingState(this, inputManager);
+    dashingState = new PlayerDashingState(this, inputManager);
+    slipperingState = new PlayerSlipperingState(this, inputManager);
+    // rotation states
+    rotatingRightState = new PlayerRotatingState(this, 1, inputManager);
+    rotatingLeftState = new PlayerRotatingState(this, -1, inputManager);
+    idleState = new PlayerRotatingIdleState(this, inputManager);
   }
 
-  public override BaseState<Player>? GetState(PlayerStatesEnum state) {
+  public IState<Player>? GetState(PlayerStatesEnum state) {
     switch (state) {
       case PlayerStatesEnum.IDLE:
         return idleState;

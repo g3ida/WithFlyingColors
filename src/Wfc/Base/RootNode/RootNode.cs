@@ -1,4 +1,5 @@
 namespace Wfc.Base;
+
 using Wfc.Utils.Attributes;
 
 [ScenePath]

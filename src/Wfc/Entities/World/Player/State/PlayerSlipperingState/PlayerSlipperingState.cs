@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Input;
 using Wfc.State;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -26,7 +27,8 @@ public partial class PlayerSlipperingState : PlayerBaseState {
   private float _initialRotation = 0f;
 
 
-  public PlayerSlipperingState() : base() {
+  public PlayerSlipperingState(IPlayerStatesStore statesStore, IInputManager inputManager)
+    : base(statesStore, inputManager) {
     this.baseState = PlayerStatesEnum.SLIPPERING;
   }
 
@@ -59,7 +61,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     return player.IsOnFloor() || _checkIfGroundIsNear(player, -direction, RAY_LEN_FOR_ON_GROUND);
   }
 
-  protected override BaseState<Player>? _PhysicsUpdate(Player player, float delta) {
+  protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (JumpPressed(player) && _isPlayerTouchingTheFloor(player)) {
       _exitRotationSpeed = CORRECT_ROTATION_JUMP_SPEED;
       return OnJump(player);
@@ -81,7 +83,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
       return fallingState;
     }
 
-    if (player.PlayerRotationState.baseState != PlayerStatesEnum.IDLE) {
+    if (player.PlayerRotationState?.baseState != PlayerStatesEnum.IDLE) {
       _skipExitRotation = true;
       return player.StatesStore.GetState(PlayerStatesEnum.STANDING);
     }
