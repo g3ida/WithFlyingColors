@@ -415,7 +415,7 @@ public partial class Player : CharacterBody2D, IPersistent {
   public bool IsFalling() => Velocity.Y >= -Constants.EPSILON;
   public bool IsRotationIdle() => PlayerRotationState?.GetType()?.IsAssignableFrom(typeof(PlayerRotatingIdleState)) ?? false;
   public bool IsStanding() => PlayerState is PlayerStandingState;
-  public bool IsDying() => PlayerState is PlayerDyingState;
+  public bool IsDying() => PlayerState is PlayerFallZoneDyingState || PlayerState is PlayerExplosionState;
   public bool IsDashing() => PlayerState is PlayerDashingState;
   public bool IsSlippering() => PlayerState is PlayerSlipperingState;
 

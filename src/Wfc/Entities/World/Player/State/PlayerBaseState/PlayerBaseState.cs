@@ -13,7 +13,7 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
   private Constants.EntityType _deathCollisionEntityType = Constants.EntityType.NONE;
   protected IInputManager inputManager;
   protected IPlayerStatesStore statesStore;
-  public bool playerMoved = false;
+  protected bool playerMoved = false;
 
   public PlayerBaseState(IPlayerStatesStore statesStore, IInputManager inputManager) {
     this.inputManager = inputManager;
@@ -21,6 +21,7 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
   }
 
   public void Enter(Player player) {
+    _deathCollisionEntityType = Constants.EntityType.NONE;
     player.ScaleCornersBy(player.CurrentDefaultCornerScaleFactor);
     EventHandler.Instance.PlayerDying += _onPlayerDying;
     playerMoved = false;
@@ -73,28 +74,18 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
 
   protected virtual IState<Player>? _PhysicsUpdate(Player player, float delta) { return null; }
 
-  protected void SetPlayerDeathAnimationType(PlayerDyingState dyingState, Constants.EntityType entityType) {
-    if (entityType == Constants.EntityType.FALL_ZONE) {
-      dyingState.deathAnimationType = DeathAnimationType.Fall;
-    }
-    else {
-      dyingState.deathAnimationType = DeathAnimationType.ExplosionReal;
-    }
-  }
-
   private void _onPlayerDying(Node? area, Vector2 position, int entityType) {
     _deathCollisionEntityType = (Constants.EntityType)entityType;
   }
 
-  private PlayerDyingState? _handlePlayerDying(Player player) {
-    if (_deathCollisionEntityType != Constants.EntityType.FALL_ZONE) {
+  private PlayerBaseState? _handlePlayerDying(Player player) {
+    if (_deathCollisionEntityType == Constants.EntityType.FALL_ZONE) {
+      return statesStore.GetState<PlayerFallZoneDyingState>();
+    }
+    else {
       player.Velocity = Vector2.Zero;
+      return statesStore.GetState<PlayerExplosionState>();
     }
-    var dyingState = statesStore.GetState<PlayerDyingState>();
-    if (dyingState != null) {
-      SetPlayerDeathAnimationType(dyingState, _deathCollisionEntityType);
-    }
-    return dyingState;
   }
 
   public PlayerBaseState? OnLand(Player player) {

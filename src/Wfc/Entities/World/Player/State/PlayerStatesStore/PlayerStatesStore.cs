@@ -18,7 +18,8 @@ public partial class PlayerStatesStore : GodotObject, IPlayerStatesStore {
             { typeof(PlayerStandingState), new PlayerStandingState(this, inputManager)},
             { typeof(PlayerJumpingState), new PlayerJumpingState(this, inputManager) },
             { typeof(PlayerFallingState), new PlayerFallingState(this, inputManager) },
-            { typeof(PlayerDyingState), new PlayerDyingState(this, inputManager) },
+            { typeof(PlayerFallZoneDyingState), new PlayerFallZoneDyingState(this, inputManager) },
+            { typeof(PlayerExplosionState), new PlayerExplosionState(this, inputManager) },
             { typeof(PlayerDashingState), new PlayerDashingState(this, inputManager) },
             { typeof(PlayerSlipperingState), new PlayerSlipperingState(this, inputManager) }
         };
