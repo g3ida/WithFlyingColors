@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Skin;
+using Wfc.Utils;
 
 public partial class PianoNote : AnimatableBody2D {
   private enum NoteStates {
@@ -256,8 +258,10 @@ public partial class PianoNote : AnimatableBody2D {
 
   private void SetColorGroup(string _color_group) {
     color_group = _color_group;
-    int color_index = ColorUtils.GetGroupColorIndex(color_group);
-    Color color = ColorUtils.GetBasicColor(color_index);
+    Color color = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(color_group),
+      SkinColorIntensity.Basic
+    );
     GetNode<Sprite2D>("NoteEdge").Modulate = color;
     var area = GetNode<Area2D>("ColorArea");
     foreach (string grp in area.GetGroups()) {

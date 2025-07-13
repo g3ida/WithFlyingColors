@@ -1,6 +1,9 @@
 using System;
 using Godot;
+using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
+using Wfc.Skin;
+using Wfc.Utils;
 
 public partial class Bullet : Node2D, IBullet {
   private const float SPEED = 10.0f * Constants.WORLD_TO_SCREEN;
@@ -29,8 +32,11 @@ public partial class Bullet : Node2D, IBullet {
 
   public void SetColorGroup(string groupName) {
     colorAreaNode.AddToGroup(groupName);
-    int colorIndex = ColorUtils.GetGroupColorIndex(groupName);
-    spriteNode.Modulate = ColorUtils.GetBasicColor(colorIndex);
+    Color color = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(groupName),
+      SkinColorIntensity.Basic
+    );
+    spriteNode.Modulate = color;
   }
 
   public override void _PhysicsProcess(double delta) {
@@ -54,7 +60,7 @@ public partial class Bullet : Node2D, IBullet {
 
     // Assuming the body has an appropriate method `OnFastAreaCollidingWithPlayerShape`
     if (body is Player player) {
-      player.OnFastAreaCollidingWithPlayerShape(bodyShapeIndex, colorAreaNode, Constants.EntityType.BULLET);
+      player.OnFastAreaCollidingWithPlayerShape(bodyShapeIndex, colorAreaNode, EntityType.Bullet);
     }
   }
 }

@@ -6,6 +6,7 @@ using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
+using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerSlipperingState : PlayerBaseState {
@@ -35,7 +36,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     player.AnimatedSpriteNode.Stop();
     _skipExitRotation = false;
     _exitRotationSpeed = CORRECT_ROTATION_JUMP_SPEED;
-    player.PlayerRotationAction.Execute(direction, Constants.PI2, SLIPPERING_ROTATION_DURATION, true, false, true);
+    player.PlayerRotationAction.Execute(direction, MathUtils.PI2, SLIPPERING_ROTATION_DURATION, true, false, true);
     EventHandler.Instance.EmitPlayerSlippering();
     player.CanDash = true;
     _initialRotation = player.Rotation;
@@ -48,9 +49,9 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     //  2- to make falling less sudden (rotation should be slow for visual appeal and fast
     //    for gameplay so the combination is the best option )
     if (!_skipExitRotation) {
-      player.PlayerRotationAction.Execute(-direction, Constants.PI2, SLIPPERING_RECOVERY_INITIAL_DURATION, true, false, false);
+      player.PlayerRotationAction.Execute(-direction, MathUtils.PI2, SLIPPERING_RECOVERY_INITIAL_DURATION, true, false, false);
       player.GetTree().CreateTimer(0.05f).Connect(Timer.SignalName.Timeout, Callable.From(() => {
-        player.PlayerRotationAction.Execute(-direction, Constants.PI2, _exitRotationSpeed, true, false, false);
+        player.PlayerRotationAction.Execute(-direction, MathUtils.PI2, _exitRotationSpeed, true, false, false);
       }));
     }
   }
@@ -70,11 +71,11 @@ public partial class PlayerSlipperingState : PlayerBaseState {
       if (fallingState != null) {
         // added to avoid complete rotation when falling if the current angle is small enough or if the floor is
         // too close
-        if (Mathf.Abs(player.Rotation - player.PlayerRotationAction.ThetaZero) > Constants.PI10
+        if (Mathf.Abs(player.Rotation - player.PlayerRotationAction.ThetaZero) > MathUtils.PI10
             && !_checkIfGroundIsNear(player, direction, RAY_LEN_FOR_FALLING)
         ) {
           _exitRotationSpeed = CORRECT_ROTATION_FALL_SPEED;
-          fallingState!.wasOnFloor = true;
+          fallingState!.WasOnFloor = true;
           direction = -direction;
         }
       }
@@ -99,7 +100,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     }
 
     // A small speed depending on the current angle to simulate a slippering effect
-    var rotCoef = Mathf.Abs(_initialRotation - player.Rotation) / Constants.PI2;
+    var rotCoef = Mathf.Abs(_initialRotation - player.Rotation) / MathUtils.PI2;
     player.Velocity = new Vector2(
       player.Velocity.X + player.Scale.X * direction * rotCoef * PLAYER_GROUND_SLIPPERING_FACTOR,
       player.Velocity.Y

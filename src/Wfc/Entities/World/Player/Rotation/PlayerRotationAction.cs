@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Player;
 
 using System;
 using Godot;
+using Wfc.Utils;
 
 public partial class PlayerRotationAction : GodotObject {
   private const float DEFAULT_ROTATION_DURATION = 0.1f;
@@ -38,7 +39,7 @@ public partial class PlayerRotationAction : GodotObject {
 
   public bool Execute(
     int direction,
-    float angleRadians = Constants.PI2,
+    float angleRadians = MathUtils.PI2,
     float _duration = DEFAULT_ROTATION_DURATION,
     bool shouldForce = true,
     bool cumulateTarget = true,

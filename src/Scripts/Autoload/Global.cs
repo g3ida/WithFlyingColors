@@ -28,23 +28,10 @@ public partial class Global : Node2D {
 
   public Texture2D _playerSprite;
 
-  private Dictionary<string, string[]> selectedSkin = SkinLoader.GOOGL_SKIN;
-
   public Texture2D GetPlayerSprite() {
     if (_playerSprite == null) {
       _playerSprite = PlayerSpriteGenerator.GetTexture();
     }
     return _playerSprite;
-  }
-
-  public void SetSelectedSkin(Dictionary<string, string[]> skin) {
-    if (selectedSkin != skin) {
-      selectedSkin = skin;
-      _playerSprite = PlayerSpriteGenerator.GetTexture();
-    }
-  }
-
-  public Dictionary<string, string[]> GetSelectedSkin() {
-    return selectedSkin;
   }
 }

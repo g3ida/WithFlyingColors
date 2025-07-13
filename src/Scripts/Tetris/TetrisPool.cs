@@ -5,6 +5,7 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Audio;
 using Wfc.Core.Event;
+using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Meta(typeof(IAutoNode))]

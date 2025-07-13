@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
@@ -97,7 +98,7 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   }
 
   private void OnBrickBroken(string color, Vector2 position) {
-    if (cooldownTimer.TimeLeft < Constants.EPSILON && isActive) {
+    if (cooldownTimer.TimeLeft < MathUtils.EPSILON && isActive) {
       if (GD.Randi() % ITEM_INV_PROBABILITY == 0) {
         var powerUp = GetRandomPowerup();
         CreatePowerup(powerUp, color, position);

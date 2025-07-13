@@ -1,5 +1,7 @@
 using Godot;
+using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
+using Wfc.Skin;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
@@ -20,9 +22,14 @@ public partial class LazerBeam : Node2D {
     particlesNode = GetNode<CpuParticles2D>("Particles");
     baseNode = GetNode<Sprite2D>("Base");
 
-    int colorIndex = ColorUtils.GetGroupColorIndex(color_group);
-    Color color = ColorUtils.GetBasicColor(colorIndex);
-    Color darkColor = ColorUtils.GetDarkColor(colorIndex);
+    Color color = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(color_group),
+      SkinColorIntensity.Basic
+    );
+    Color darkColor = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(color_group),
+      SkinColorIntensity.Dark
+    );
     beamNode.DefaultColor = color;
     beamBgNode.DefaultColor = color;
     beamBgNode.DefaultColor = new Color(beamBgNode.DefaultColor, 0.63f);
@@ -62,7 +69,7 @@ public partial class LazerBeam : Node2D {
         // Play some SFX maybe?
       }
       else {
-        EventHandler.Instance.EmitPlayerDying(GlobalPosition, Constants.EntityType.LAZER);
+        EventHandler.Instance.EmitPlayerDying(GlobalPosition, EntityType.Lazer);
       }
     }
   }

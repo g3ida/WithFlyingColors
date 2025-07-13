@@ -2,6 +2,7 @@ namespace Wfc.Core.Event;
 
 using System;
 using Godot;
+using Wfc.Entities.World;
 using Wfc.Screens.MenuManager;
 
 public partial class EventHandler : Node, IEventHandler {
@@ -226,8 +227,8 @@ public partial class EventHandler : Node, IEventHandler {
     => EmitSignal(eventType.ToString(), args);
 
   public void EmitPlayerLanded(Node area, Vector2 position) => Instance.EmitSignal(nameof(PlayerLanded), area, position);
-  public void EmitPlayerDying(Node area, Vector2 position, Constants.EntityType entityType) => Instance.EmitSignal(nameof(PlayerDying), area, position, (int)entityType);
-  public void EmitPlayerDying(Vector2 position, Constants.EntityType entityType) => Instance.EmitSignal(nameof(PlayerDying), default(Variant), position, (int)entityType);
+  public void EmitPlayerDying(Node area, Vector2 position, EntityType entityType) => Instance.EmitSignal(nameof(PlayerDying), area, position, (int)entityType);
+  public void EmitPlayerDying(Vector2 position, EntityType entityType) => Instance.EmitSignal(nameof(PlayerDying), default(Variant), position, (int)entityType);
   public void EmitPlayerDied() => Instance.EmitSignal(nameof(PlayerDied));
   public void EmitPlayerSlippering() => Instance.EmitSignal(nameof(PlayerSlippering));
   public void EmitPlayerJumped() => Instance.EmitSignal(nameof(PlayerJumped));

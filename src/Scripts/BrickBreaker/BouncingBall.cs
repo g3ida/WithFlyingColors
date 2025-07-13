@@ -1,7 +1,10 @@
 using System;
 using System.Linq;
 using Godot;
+using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
+using Wfc.Utils;
+using Wfc.Utils.Colors;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BouncingBall : CharacterBody2D {
@@ -95,7 +98,7 @@ public partial class BouncingBall : CharacterBody2D {
   }
 
   private bool IsFallingStraightAndCollidingWithSide(bool sideCollision, float angleDegrees) {
-    return sideCollision && velocity.Y > Constants.EPSILON && Math.Abs(Math.Abs(angleDegrees) - 90.0f) < 45.0f;
+    return sideCollision && velocity.Y > MathUtils.EPSILON && Math.Abs(Math.Abs(angleDegrees) - 90.0f) < 45.0f;
   }
 
   private bool _HandlePlayerCollision(CollisionResolutionInfo info) {
@@ -119,7 +122,7 @@ public partial class BouncingBall : CharacterBody2D {
           velocity = new Vector2(info.side, 0).Rotated(-info.side * Mathf.DegToRad((float)GD.RandRange(0.0f, 5.0f)));
         else {
           velocity = info.w - info.u;
-          if (velocity.Y > Constants.EPSILON) //check ratio
+          if (velocity.Y > MathUtils.EPSILON) //check ratio
             velocity.Y = -velocity.Y;
         }
         // avoid player sticking to the ball
@@ -132,7 +135,7 @@ public partial class BouncingBall : CharacterBody2D {
   }
 
   private bool _IsVerticalWall(CollisionResolutionInfo info) {
-    return Mathf.Abs(info.n.X) > 0.5f && Mathf.Abs(info.n.Y) < Constants.EPSILON;
+    return Mathf.Abs(info.n.X) > 0.5f && Mathf.Abs(info.n.Y) < MathUtils.EPSILON;
   }
 
   private bool _IsBallAlmostHorizontal(CollisionResolutionInfo info) {
@@ -144,7 +147,7 @@ public partial class BouncingBall : CharacterBody2D {
   }
 
   private bool _IsHorizontalWall(CollisionResolutionInfo info) {
-    return Mathf.Abs(info.n.Y) > 0.5f && Mathf.Abs(info.n.X) < Constants.EPSILON;
+    return Mathf.Abs(info.n.Y) > 0.5f && Mathf.Abs(info.n.X) < MathUtils.EPSILON;
   }
 
   private void _HandleDefaultCollision(CollisionResolutionInfo info) {
@@ -192,7 +195,7 @@ public partial class BouncingBall : CharacterBody2D {
           velocity.X = s * Mathf.Abs(velocity.X);
         }
         else if (IsPlayerFallingOverTheFallingBall()) {
-          if (velocity.X > Constants.EPSILON) {
+          if (velocity.X > MathUtils.EPSILON) {
             velocity = new Vector2(0.0f, -Mathf.Abs(velocity.Y));
           }
           else {
@@ -221,10 +224,10 @@ public partial class BouncingBall : CharacterBody2D {
 
   private bool IsPlayerFollowingTheBall() {
     var player = Global.Instance().Player;
-    if (player.Velocity.X > Constants.EPSILON) {
+    if (player.Velocity.X > MathUtils.EPSILON) {
       return player.GlobalPosition.X < GlobalPosition.X;
     }
-    else if (player.Velocity.X < -Constants.EPSILON) {
+    else if (player.Velocity.X < -MathUtils.EPSILON) {
       return player.GlobalPosition.X > GlobalPosition.X;
     }
     else {
@@ -238,7 +241,7 @@ public partial class BouncingBall : CharacterBody2D {
   }
 
   private bool IsPlayerPushingAFlyingBall() {
-    bool bothUp = Global.Instance().Player.Velocity.Y < -Constants.EPSILON && velocity.Y < -Constants.EPSILON;
+    bool bothUp = Global.Instance().Player.Velocity.Y < -MathUtils.EPSILON && velocity.Y < -MathUtils.EPSILON;
     return bothUp && IsBallOverThePlayer();
   }
 
@@ -264,7 +267,7 @@ public partial class BouncingBall : CharacterBody2D {
     var player = Global.Instance().Player;
     var player_size = player.GetCollisionShapeSize() * player.Scale;
     bool is_idle = player.IsRotationIdle();
-    return is_idle && Helpers.Intersects(
+    return is_idle && GeometryHelpers.Intersects(
         GlobalPosition,
         (AreaCollisionShape.Shape as CircleShape2D).Radius * Scale.X + 10.0f,
         player.GlobalPosition,
@@ -273,7 +276,7 @@ public partial class BouncingBall : CharacterBody2D {
   }
 
   private void VelocityPostProcess(CollisionResolutionInfo resInf) {
-    if (resInf.n.X > Constants.EPSILON) {
+    if (resInf.n.X > MathUtils.EPSILON) {
       velocity.X = Mathf.Sign(resInf.n.X) * Mathf.Abs(velocity.X);
     }
     velocity = velocity.Normalized() * speed;
@@ -296,7 +299,7 @@ public partial class BouncingBall : CharacterBody2D {
     }
     var groups = area.GetGroups();
     if (IsProbablyABrick(area, groups)) {
-      if (ColorUtils.COLORS.Contains((string)groups[0])) {
+      if (ColorUtils.COLOR_GROUPS.Contains((string)groups[0])) {
         var current_groups = AreaNode.GetGroups();
         foreach (var group in current_groups) {
           AreaNode.RemoveFromGroup((string)group);
@@ -326,7 +329,7 @@ public partial class BouncingBall : CharacterBody2D {
     if (body != Global.Instance().Player)
       return;
     // FIXME: fix this dynamic call after c# migration
-    body.Call("OnFastAreaCollidingWithPlayerShape", body_shape_index, AreaNode, (int)Constants.EntityType.BALL);
+    body.Call("OnFastAreaCollidingWithPlayerShape", body_shape_index, AreaNode, (int)EntityType.Ball);
   }
 
   // Add the missing methods here

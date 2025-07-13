@@ -4,30 +4,31 @@ using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
+using Wfc.Utils;
 
 public partial class PlayerFallingState : PlayerBaseState {
-  private CountdownTimer permissivenessTimer = new CountdownTimer();
-  public bool wasOnFloor = false;
+  public bool WasOnFloor = false;
   private const float PERMISSIVENESS = 0.04f;
+  private CountdownTimer _permissivenessTimer = new CountdownTimer();
 
   public PlayerFallingState(IPlayerStatesStore statesStore, IInputManager inputManager)
     : base(statesStore, inputManager) {
-    permissivenessTimer.Set(PERMISSIVENESS, false);
+    _permissivenessTimer.Set(PERMISSIVENESS, false);
   }
 
   protected override void _Enter(Player player) {
     player.AnimatedSpriteNode.Play("idle");
     player.AnimatedSpriteNode.Stop();
-    if (wasOnFloor) {
-      permissivenessTimer.Reset();
+    if (WasOnFloor) {
+      _permissivenessTimer.Reset();
     }
     player.JumpParticlesNode.Emitting = true;
   }
 
   protected override void _Exit(Player player) {
-    permissivenessTimer.Stop();
+    _permissivenessTimer.Stop();
     player.JumpParticlesNode.Emitting = false;
-    wasOnFloor = false;
+    WasOnFloor = false;
   }
 
   protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
@@ -35,11 +36,11 @@ public partial class PlayerFallingState : PlayerBaseState {
       EventHandler.Instance.EmitPlayerLand();
       return statesStore.GetState<PlayerStandingState>();
     }
-    if (JumpPressed(player) && permissivenessTimer.IsRunning()) {
-      permissivenessTimer.Stop();
+    if (JumpPressed(player) && _permissivenessTimer.IsRunning()) {
+      _permissivenessTimer.Stop();
       return OnJump(player);
     }
-    permissivenessTimer.Step(delta);
+    _permissivenessTimer.Step(delta);
     return null;
   }
 

@@ -5,6 +5,7 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Audio;
 using Wfc.Core.Event;
+using Wfc.Entities.World;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Meta(typeof(IAutoNode))]
@@ -69,7 +70,7 @@ public partial class BrickBreaker : Node2D {
     CameraLocalizerNode = GetNode<CameraLocalizer>("CameraLocalizer");
   }
 
-  public Node2D SpawnBall(string color = "blue") {
+  public BouncingBall SpawnBall(string color = "blue") {
     var bouncingBall = BouncingBallScene.Instantiate<BouncingBall>();
     bouncingBall.DeathZone = DeathZoneNode;
     bouncingBall.color_group = color;
@@ -218,7 +219,7 @@ public partial class BrickBreaker : Node2D {
   private void _OnBouncingBallRemoved(Node2D _ball) {
     num_balls -= 1;
     if (num_balls <= 0) {
-      EventHandler.Instance.EmitPlayerDying(DeathZoneNode, _ball.GlobalPosition, Constants.EntityType.BRICK_BREAKER);
+      EventHandler.Instance.EmitPlayerDying(DeathZoneNode, _ball.GlobalPosition, EntityType.BrickBreaker);
     }
   }
 

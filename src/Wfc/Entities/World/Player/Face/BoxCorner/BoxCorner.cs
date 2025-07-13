@@ -29,13 +29,13 @@ public partial class BoxCorner : BaseFace {
       return;
     }
     if (area.IsInGroup("fallzone")) {
-      EventHandler.Instance.EmitPlayerDying(GlobalPosition, Constants.EntityType.FALL_ZONE);
+      EventHandler.Instance.EmitPlayerDying(GlobalPosition, EntityType.FallZone);
       return;
     }
 
     var groups = GetGroups();
     if (!_checkGroup(area, groups)) {
-      EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, Constants.EntityType.PLATFORM);
+      EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, EntityType.Platform);
     }
     else if (area is Gem gem) {
       // do nothing

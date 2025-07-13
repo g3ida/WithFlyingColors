@@ -1,6 +1,7 @@
 using System;
 using Godot;
 using Wfc.Entities.World.Player;
+using Wfc.Utils;
 
 public partial class SlowPowerUp : PowerUpScript {
   public override void _EnterTree() {
@@ -23,6 +24,6 @@ public partial class SlowPowerUp : PowerUpScript {
 
   public override bool IsStillRelevant() {
     var player = Global.Instance().Player;
-    return Mathf.Abs(player.SpeedLimit - 0.5f * Player.SPEED) < Constants.EPSILON;
+    return Mathf.Abs(player.SpeedLimit - 0.5f * Player.SPEED) < MathUtils.EPSILON;
   }
 }

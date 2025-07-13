@@ -40,12 +40,12 @@ public partial class BoxFace : BaseFace {
     var groups = GetGroups();
 
     if (area.IsInGroup("fallzone")) {
-      EventHandler.Instance.EmitPlayerDying(GlobalPosition, Constants.EntityType.FALL_ZONE);
+      EventHandler.Instance.EmitPlayerDying(GlobalPosition, EntityType.FallZone);
       return;
     }
 
     else if (!area.IsInGroup(groups[0])) {
-      EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, Constants.EntityType.PLATFORM);
+      EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, EntityType.Platform);
     }
     else if (!Global.Instance().Player.IsStanding()) {
       EventHandler.Instance.EmitPlayerLanded(area, GlobalPosition);

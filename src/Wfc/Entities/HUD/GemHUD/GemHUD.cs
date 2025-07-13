@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Skin;
 using Wfc.Utils.Animation;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -43,8 +44,11 @@ public partial class GemHUD : Node2D {
 
     textureRectNode.Texture = textureEmpty;
     backgroundNode.Visible = false;
-    var colorIndex = ColorUtils.GetGroupColorIndex(Color);
-    textureRectNode.Modulate = ColorUtils.GetBasicColor(colorIndex);
+    var color = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(Color),
+      SkinColorIntensity.Basic
+    );
+    textureRectNode.Modulate = color;
   }
 
   private void ConnectSignals() {

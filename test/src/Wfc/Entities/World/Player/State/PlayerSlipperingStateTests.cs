@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Player.Test;
 
+using System;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
@@ -8,6 +9,8 @@ using Shouldly;
 using Wfc.Core.Event;
 using Wfc.Entities.World.Player;
 using Wfc.test;
+using Wfc.Utils;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public class PlayerSlipperingStateTest(Node testScene) : TestClass(testScene) {
   private Fixture _fixture = null!;
@@ -37,7 +40,7 @@ public class PlayerSlipperingStateTest(Node testScene) : TestClass(testScene) {
 
     await PlayerOnEdgeNode.ToSignal(EventHandler.Instance, nameof(EventHandler.Instance.PlayerDied));
 
-    player.Rotation.ShouldBeCloseTo(Constants.PI2);
+    player.Rotation.ShouldBeCloseTo(MathUtils.PI2);
     _signalsCounter.getCallCount("slippering").ShouldBe(1);
   }
 
@@ -51,7 +54,7 @@ public class PlayerSlipperingStateTest(Node testScene) : TestClass(testScene) {
 
     await PlayerOnEdgeNode.ToSignal(EventHandler.Instance, nameof(EventHandler.Instance.PlayerDied));
 
-    player.Rotation.ShouldBeCloseTo(-Constants.PI2);
+    player.Rotation.ShouldBeCloseTo(-MathUtils.PI2);
     _signalsCounter.getCallCount("slippering").ShouldBe(1);
   }
 

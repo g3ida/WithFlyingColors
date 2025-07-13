@@ -109,7 +109,7 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
       Bus = BUS_NAME,
       VolumeDb = volume
     };
-    Helpers.SetLooping(audio_player.Stream, true);
+    audio_player.Stream.SetLooping(true);
 
     _musicPool[name] = new Track(name, audio_player, volume);
     AddChild(audio_player);

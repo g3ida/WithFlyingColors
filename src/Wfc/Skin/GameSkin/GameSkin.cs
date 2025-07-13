@@ -1,8 +1,9 @@
 namespace Wfc.Skin;
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
+using Wfc.Core.Exceptions;
 
 public partial record GameSkin {
   public string Name { get; }
@@ -48,5 +49,20 @@ public partial record GameSkin {
       throw new KeyNotFoundException("No colors found for intensity: " + intensity);
     }
     return colors[skinColor];
+  }
+
+  public static SkinColor ColorGroupToSkinColor(string colorGroup) {
+    switch (colorGroup) {
+      case "blue":
+        return SkinColor.BottomFace;
+      case "yellow":
+        return SkinColor.LeftFace;
+      case "purple":
+        return SkinColor.TopFace;
+      case "pink":
+        return SkinColor.RightFace;
+      default:
+        throw new GameExceptions.InvalidArgumentException("Invalid color group");
+    }
   }
 }

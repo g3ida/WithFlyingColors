@@ -1,6 +1,7 @@
 using System;
 using Godot;
 using Wfc.Entities.World.Player;
+using Wfc.Utils;
 
 public partial class ScaleUpPowerUp : PowerUpScript {
   private const float TWEEN_TIME = 0.7f;
@@ -36,6 +37,6 @@ public partial class ScaleUpPowerUp : PowerUpScript {
 
   public override bool IsStillRelevant() {
     Player player = Global.Instance().Player;
-    return Mathf.Abs(player.Scale.X - SCALE_FACTOR) < Constants.EPSILON;
+    return Mathf.Abs(player.Scale.X - SCALE_FACTOR) < MathUtils.EPSILON;
   }
 }

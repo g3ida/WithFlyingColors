@@ -1,4 +1,5 @@
 using Godot;
+using Wfc.Skin;
 
 public partial class TempleGem : Node2D {
   // Enum for states
@@ -33,9 +34,16 @@ public partial class TempleGem : Node2D {
 
   public void SetColorGroup(string colorGroup) {
     color_group = colorGroup;
-    var colorIndex = ColorUtils.GetGroupColorIndex(colorGroup);
-    GetNode<AnimatedSprite2D>("GemAnimatedSprite").Modulate = ColorUtils.GetBasicColor(colorIndex);
-    lightNode.Color = ColorUtils.GetDarkColor(colorIndex);
+    Color color = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(colorGroup),
+      SkinColorIntensity.Basic
+    );
+    Color darkColor = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(colorGroup),
+      SkinColorIntensity.Dark
+    );
+    GetNode<AnimatedSprite2D>("GemAnimatedSprite").Modulate = color;
+    lightNode.Color = darkColor;
   }
 
   public void SetLightIntensity(float intensity) {
