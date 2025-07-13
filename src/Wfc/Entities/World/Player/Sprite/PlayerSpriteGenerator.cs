@@ -3,6 +3,9 @@ namespace Wfc.Entities.World.Player;
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Skin;
+using Wfc.Utils;
+using Wfc.Utils.Images;
 
 public partial class PlayerSpriteGenerator : Node {
   public static readonly Vector2I SPRITE_SIZE = new Vector2I(96, 96);
@@ -16,66 +19,72 @@ public partial class PlayerSpriteGenerator : Node {
 
   public struct FaceData {
 
-    public FaceData(Texture2D texture, string colorId, ImageAlignment alignment) {
+    public FaceData(Texture2D texture, SkinColor color, SkinColorIntensity intensity, ImageAlignment alignment) {
       Texture = texture;
-      ColorId = colorId;
+      Color = color;
+      Intensity = intensity;
       Align = alignment;
     }
 
     public Texture2D Texture { get; set; }
-    public string ColorId { get; set; }
+    public SkinColor Color { get; set; }
+    public SkinColorIntensity Intensity { get; set; }
     public ImageAlignment Align { get; set; }
   }
 
   public static readonly Dictionary<string, FaceData> FacesTextures = new() {
     ["left"] = new(
               texture: GD.Load<Texture2D>("res://Assets/Sprites/Player/player-left.png"),
-              colorId: "3-basic",
+              color: SkinColor.LeftFace,
+              intensity: SkinColorIntensity.Basic,
               alignment: ImageAlignment.TopLeft
           ),
     ["top"] = new(
               texture: GD.Load<Texture2D>("res://Assets/Sprites/Player/player-top.png"),
-              colorId: "2-basic",
+              color: SkinColor.TopFace,
+              intensity: SkinColorIntensity.Basic,
               alignment: ImageAlignment.TopRight
           ),
     ["bottom"] = new(
               texture: GD.Load<Texture2D>("res://Assets/Sprites/Player/player-bottom.png"),
-              colorId: "0-basic",
+              color: SkinColor.BottomFace,
+              intensity: SkinColorIntensity.Basic,
               alignment: ImageAlignment.BottomRight
           ),
     ["right"] = new(
               texture: GD.Load<Texture2D>("res://Assets/Sprites/Player/player-right.png"),
-              colorId: "1-basic",
+              color: SkinColor.RightFace,
+              intensity: SkinColorIntensity.Basic,
               alignment: ImageAlignment.TopRight
           ),
     ["left-edge"] = new(
               texture: GD.Load<Texture2D>("res://Assets/Sprites/Player/player-left-edge.png"),
-              colorId: "3-dark",
+              color: SkinColor.LeftFace,
+              intensity: SkinColorIntensity.Dark,
               alignment: ImageAlignment.TopLeft
           ),
     ["right-edge"] = new(
               texture: GD.Load<Texture2D>("res://Assets/Sprites/Player/player-right-edge.png"),
-              colorId: "1-dark",
+              color: SkinColor.RightFace,
+              intensity: SkinColorIntensity.Dark,
               alignment: ImageAlignment.TopRight
           ),
     ["bottom-edge"] = new(
               texture: GD.Load<Texture2D>("res://Assets/Sprites/Player/player-bottom-edge.png"),
-              colorId: "0-dark",
+              color: SkinColor.BottomFace,
+              intensity: SkinColorIntensity.Dark,
               alignment: ImageAlignment.BottomLeft
           ),
     ["top-edge"] = new(
               texture: GD.Load<Texture2D>("res://Assets/Sprites/Player/player-top-edge.png"),
-              colorId: "2-dark",
+              color: SkinColor.TopFace,
+              intensity: SkinColorIntensity.Dark,
               alignment: ImageAlignment.TopLeft
           )
   };
 
 
   public static Texture2D? GetTexture() {
-    if (Global.Instance().GetSelectedSkin() == null) {
-      GD.PushError("There are no selected skin!!!");
-      return null;
-    }
     return _mergeIntoSingleTexture();
   }
 
@@ -92,7 +101,7 @@ public partial class PlayerSpriteGenerator : Node {
     foreach (var entry in FacesTextures) {
       var faceData = entry.Value;
       var texture = faceData.Texture;
-      var color = ColorUtils.GetColor(faceData.ColorId);
+      var color = SkinManager.Instance.CurrentSkin.GetColor(faceData.Color, faceData.Intensity);
       var alignment = faceData.Align;
       var img = _createColoredCopyFromImage(texture.GetImage(), color);
       var pos = _getPositionFromAlignment(texture, alignment);

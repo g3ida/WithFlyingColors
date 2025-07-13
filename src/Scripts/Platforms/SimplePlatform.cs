@@ -1,5 +1,8 @@
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Skin;
+using Wfc.Utils.Colors;
+using Wfc.Utils.Images;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
@@ -32,16 +35,19 @@ public partial class SimplePlatform : StaticBody2D {
     _colorAreaShape = GetNode<CollisionShape2D>("Area2D/ColorAreaShape");
 
     SetPlatformTexture();
-    NinePatchTextureUtils.ScaleTexture(_ninePatchRectNode, Scale);
+    _ninePatchRectNode.ScaleTexture(Scale);
     correctAreaSize();
 
     if (!string.IsNullOrEmpty(group)) {
-      int colorIndex = ColorUtils.GetGroupColorIndex(group);
-      _ninePatchRectNode.Modulate = ColorUtils.GetBasicColor(colorIndex);
+      Color color = SkinManager.Instance.CurrentSkin.GetColor(
+        GameSkin.ColorGroupToSkinColor(group),
+        SkinColorIntensity.Basic
+      );
+      _ninePatchRectNode.Modulate = color;
       _areaNode.AddToGroup(group);
     }
     else {
-      foreach (var colorGroup in Constants.COLOR_GROUPS) {
+      foreach (var colorGroup in ColorUtils.COLOR_GROUPS) {
         _areaNode.AddToGroup(colorGroup);
       }
     }
@@ -99,10 +105,10 @@ public partial class SimplePlatform : StaticBody2D {
 
   private void SetPlatformTexture() {
     if (geared) {
-      NinePatchTextureUtils.SetTexture(_ninePatchRectNode, GearedTexture);
+      _ninePatchRectNode.SetTexture(GearedTexture);
     }
     else {
-      NinePatchTextureUtils.SetTexture(_ninePatchRectNode, SimpleTexture);
+      _ninePatchRectNode.SetTexture(SimpleTexture);
     }
   }
 

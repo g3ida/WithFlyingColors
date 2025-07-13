@@ -72,7 +72,7 @@ public partial class SceneOrchester : Node2D {
     EventHandler.Instance.Disconnect(EventType.LevelCleared, new Callable(this, nameof(OnLevelCleared)));
   }
 
-  private void OnGameOver() {
+  private static void OnGameOver() {
     EventHandler.Instance.EmitCheckpointLoaded();
   }
 

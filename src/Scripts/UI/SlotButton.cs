@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using Wfc.Skin;
 
 [Tool]
 public partial class SlotButton : ColorRect {
@@ -36,7 +37,10 @@ public partial class SlotButton : ColorRect {
     Visible = false;
     _buttonNode.Disabled = true;
     UpdateHeight();
-    Color = ColorUtils.GetBasicColor(ColorUtils.GetGroupColorIndex(node_color));
+    Color = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(node_color),
+      SkinColorIntensity.Basic
+    );
     _buttonNode.Icon = iconTexture;
   }
 

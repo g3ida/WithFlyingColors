@@ -3,6 +3,7 @@ namespace Wfc.Entities.World.Player;
 using Godot;
 using Wfc.Core.Input;
 using Wfc.State;
+using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public abstract partial class PlayerRotatingState : PlayerRotatingIdleState {
@@ -15,7 +16,7 @@ public abstract partial class PlayerRotatingState : PlayerRotatingIdleState {
   public override void Enter(Player player) {
     base.Enter(player);
     bool cumulateAngle = !player.IsSlippering();
-    player.PlayerRotationAction.Execute(rotationDirection, Constants.PI2, 0.1f, true, cumulateAngle, true);
+    player.PlayerRotationAction.Execute(rotationDirection, MathUtils.PI2, 0.1f, true, cumulateAngle, true);
     EventHandler.Instance.EmitPlayerRotate(rotationDirection);
   }
 

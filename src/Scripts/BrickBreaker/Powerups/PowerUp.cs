@@ -1,5 +1,7 @@
 using System;
 using Godot;
+using Wfc.Skin;
+using Wfc.Utils;
 
 public partial class PowerUp : Node2D {
   [Export]
@@ -26,8 +28,10 @@ public partial class PowerUp : Node2D {
     SpriteNode = GetNode<Sprite2D>("Spr");
 
     SpriteNode.Texture = texture;
-    int colorIndex = ColorUtils.GetGroupColorIndex(color_group);
-    Color color = ColorUtils.GetBasicColor(colorIndex);
+    Color color = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(color_group),
+      SkinColorIntensity.Basic
+    );
     BackgroundNode.Modulate = color;
     AreaNode.AddToGroup(color_group);
   }

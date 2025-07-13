@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using Wfc.Utils.Colors;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class GemsTemple : Node2D {
@@ -56,7 +57,7 @@ public partial class GemsTemple : Node2D {
 
   private bool CreateTempleGems() {
     int i = 0;
-    foreach (string colorGrp in Constants.COLOR_GROUPS) {
+    foreach (string colorGrp in ColorUtils.COLOR_GROUPS) {
       if (Global.Instance().GemHUD.IsGemCollected(colorGrp)) {
         var templeGem = CreateTempleGem(
             colorGrp,

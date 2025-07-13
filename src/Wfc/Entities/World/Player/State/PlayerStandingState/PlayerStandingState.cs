@@ -31,7 +31,7 @@ public partial class PlayerStandingState : PlayerBaseState {
     if (!player.IsOnFloor()) {
       var fallingState = statesStore.GetState<PlayerFallingState>();
       if (fallingState != null) {
-        fallingState.wasOnFloor = true;
+        fallingState.WasOnFloor = true;
       }
       return fallingState;
     }

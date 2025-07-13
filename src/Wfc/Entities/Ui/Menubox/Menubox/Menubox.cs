@@ -105,7 +105,7 @@ public partial class Menubox : Control {
 
   public void OnRightButtonPressed() {
     HideSubMenuIfNeeded();
-    if (_boxRotationNode.Fire(Constants.PI2, 0.1f, forceRotationIfBusy: false)) {
+    if (_boxRotationNode.Fire(MathUtils.PI2, 0.1f, forceRotationIfBusy: false)) {
       _buttons[_activeIndex].disabled = true;
       _activeIndex = (_activeIndex - 1 + _buttons.Length) % _buttons.Length;
       _buttons[_activeIndex].disabled = false;
@@ -115,7 +115,7 @@ public partial class Menubox : Control {
 
   public void OnLeftButtonPressed() {
     HideSubMenuIfNeeded();
-    if (_boxRotationNode.Fire(-Constants.PI2, 0.1f, forceRotationIfBusy: false)) {
+    if (_boxRotationNode.Fire(-MathUtils.PI2, 0.1f, forceRotationIfBusy: false)) {
       _buttons[_activeIndex].disabled = true;
       _activeIndex = (_activeIndex + 1) % _buttons.Length;
       _buttons[_activeIndex].disabled = false;

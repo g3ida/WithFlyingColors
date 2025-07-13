@@ -20,9 +20,9 @@ public partial class LevelClearedMenu : GameMenu {
     }
   }
 
-  public override bool OnMenuButtonPressed(MenuButtons menu_button) {
-    base.OnMenuButtonPressed(menu_button);
-    if (menu_button == MenuButtons.EXIT_LEVEL_CLEAR) {
+  public override bool OnMenuButtonPressed(MenuButtons menuButton) {
+    base.OnMenuButtonPressed(menuButton);
+    if (menuButton == MenuButtons.EXIT_LEVEL_CLEAR) {
       NavigateToScreen(GameMenus.MAIN_MENU);
       return true;
     }

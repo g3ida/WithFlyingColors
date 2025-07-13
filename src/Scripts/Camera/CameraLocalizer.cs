@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using Wfc.Utils;
 
 public partial class CameraLocalizer : Node2D {
   private static readonly CameraLimit[] X_AXIS_LIMITS =

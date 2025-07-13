@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class SlidingPlatform : Node2D {

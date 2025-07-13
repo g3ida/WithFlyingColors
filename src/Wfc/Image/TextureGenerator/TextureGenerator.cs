@@ -3,6 +3,8 @@ namespace Wfc.Image;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Skin;
+using Wfc.Utils;
+using Wfc.Utils.Images;
 
 public static partial class TextureGenerator {
 

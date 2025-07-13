@@ -1,6 +1,8 @@
-using Godot;
 using System;
+using Godot;
 using Wfc.Core.Event;
+using Wfc.Skin;
+using Wfc.Utils.Images;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
@@ -29,11 +31,14 @@ public partial class Platform : AnimatableBody2D {
     areaNode = GetNode<Area2D>("Area2D");
 
     SetPlatformTexture();
-    NinePatchTextureUtils.ScaleTexture(ninePatchRectNode, Scale);
+    ninePatchRectNode.ScaleTexture(Scale);
 
     if (!string.IsNullOrEmpty(group)) {
-      int colorIndex = ColorUtils.GetGroupColorIndex(group);
-      ninePatchRectNode.Modulate = ColorUtils.GetBasicColor(colorIndex);
+      Color color = SkinManager.Instance.CurrentSkin.GetColor(
+        GameSkin.ColorGroupToSkinColor(group),
+        SkinColorIntensity.Basic
+      );
+      ninePatchRectNode.Modulate = color;
       areaNode.AddToGroup(group);
     }
   }
@@ -85,10 +90,10 @@ public partial class Platform : AnimatableBody2D {
 
   private void SetPlatformTexture() {
     if (geared) {
-      NinePatchTextureUtils.SetTexture(ninePatchRectNode, GearedTexture);
+      ninePatchRectNode.SetTexture(GearedTexture);
     }
     else {
-      NinePatchTextureUtils.SetTexture(ninePatchRectNode, SimpleTexture);
+      ninePatchRectNode.SetTexture(SimpleTexture);
     }
   }
 

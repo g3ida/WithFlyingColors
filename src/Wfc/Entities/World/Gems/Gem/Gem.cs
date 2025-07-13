@@ -7,6 +7,7 @@ using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
+using Wfc.Skin;
 using Wfc.State;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -45,10 +46,16 @@ public partial class Gem : Area2D, IPersistent {
     AnimationPlayerNode = GetNode<AnimationPlayer>("AnimatedSprite2D/AnimationPlayer");
 
     AddToGroup(group_name);
-    int colorIndex = ColorUtils.GetGroupColorIndex(group_name);
-    Color color = ColorUtils.GetLight2Color(colorIndex);
-    LightNode.Color = ColorUtils.GetBasicColor(colorIndex);
-    GetNode<AnimatedSprite2D>("AnimatedSprite2D").Modulate = color;
+    var color = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(group_name),
+      SkinColorIntensity.Basic
+    );
+    var lightColor = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(group_name),
+      SkinColorIntensity.VeryLight
+    );
+    LightNode.Color = color;
+    GetNode<AnimatedSprite2D>("AnimatedSprite2D").Modulate = lightColor;
 
     _statesStore = new GemStatesStore(this);
     _currentState = _statesStore.GetState<GemNotCollectedState>();
