@@ -14,7 +14,7 @@ public partial class PlayerJumpingState : PlayerBaseState {
   private bool _entered = false;
   private CountdownTimer _jumpTimer = new CountdownTimer();
   private CountdownTimer _permissivenessTimer = new CountdownTimer();
-  public float TouchJumpPower = 1.0f;
+  private float _touchJumpPower = 1.0f;
 
   public PlayerJumpingState(IPlayerStatesStore statesStore, IInputManager inputManager)
     : base(statesStore, inputManager) {
@@ -36,13 +36,13 @@ public partial class PlayerJumpingState : PlayerBaseState {
     _permissivenessTimer.Stop();
     player.JumpParticlesNode.Emitting = false;
     player.ScaleCornersBy(1);
-    TouchJumpPower = 1.0f;
+    _touchJumpPower = 1.0f;
   }
 
   protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (_entered) {
       _entered = false;
-      player.Velocity = new Vector2(player.Velocity.X, player.Velocity.Y - JUMP_FORCE * TouchJumpPower);
+      player.Velocity = new Vector2(player.Velocity.X, player.Velocity.Y - JUMP_FORCE * _touchJumpPower);
     }
     else if (player.IsOnFloor()) {
       if (_permissivenessTimer.IsRunning()) {
@@ -71,7 +71,7 @@ public partial class PlayerJumpingState : PlayerBaseState {
   }
 
   public PlayerJumpingState WithJumpPower(float jumpPower) {
-    TouchJumpPower = jumpPower;
+    _touchJumpPower = jumpPower;
     return this;
   }
 }

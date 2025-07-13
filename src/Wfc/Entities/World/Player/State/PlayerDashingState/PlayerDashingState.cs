@@ -15,7 +15,7 @@ public partial class PlayerDashingState : PlayerBaseState {
   private CountdownTimer _dashTimer = new CountdownTimer();
   private CountdownTimer _permissivenessTimer = new CountdownTimer();
   private bool _dashDone = false;
-  public Vector2 Direction = Vector2.Zero;
+  private Vector2 _direction = Vector2.Zero;
 
   public PlayerDashingState(IPlayerStatesStore statesStore, IInputManager inputManager)
     : base(statesStore, inputManager) {
@@ -30,7 +30,7 @@ public partial class PlayerDashingState : PlayerBaseState {
       Timer.SignalName.Timeout,
       new Callable(this, nameof(_onDashGhostTimerTimeout))
     );
-    if (Direction == Vector2.Zero) {
+    if (_direction == Vector2.Zero) {
       _permissivenessTimer.Reset();
       _setDashDirection(player);
       _dashDone = false;
@@ -58,27 +58,27 @@ public partial class PlayerDashingState : PlayerBaseState {
       Timer.SignalName.Timeout,
       new Callable(this, nameof(_onDashGhostTimerTimeout))
     );
-    Direction = Vector2.Zero;
+    _direction = Vector2.Zero;
   }
 
   protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (!_dashDone && !_permissivenessTimer.IsRunning()) {
       _setDashDirection(player);
-      if (Direction.LengthSquared() < 0.01f) {
+      if (_direction.LengthSquared() < 0.01f) {
         _dashTimer.Stop();
       }
       else {
         _dashDone = true;
-        EventHandler.Instance.EmitPlayerDash(Direction);
+        EventHandler.Instance.EmitPlayerDash(_direction);
       }
     }
 
     if (_dashDone) {
-      if (Mathf.Abs(Direction.X) > 0.01f) {
-        player.Velocity = new Vector2(DASH_SPEED * Direction.X, player.Velocity.Y);
+      if (Mathf.Abs(_direction.X) > 0.01f) {
+        player.Velocity = new Vector2(DASH_SPEED * _direction.X, player.Velocity.Y);
       }
-      if (Mathf.Abs(Direction.Y) > 0.01f) {
-        player.Velocity = new Vector2(player.Velocity.X, DASH_SPEED * Direction.Y);
+      if (Mathf.Abs(_direction.Y) > 0.01f) {
+        player.Velocity = new Vector2(player.Velocity.X, DASH_SPEED * _direction.Y);
       }
     }
 
@@ -96,24 +96,24 @@ public partial class PlayerDashingState : PlayerBaseState {
   }
 
   private void _setDashDirection(Player player) {
-    Direction = Vector2.Zero;
+    _direction = Vector2.Zero;
     if (inputManager.IsPressed(IInputManager.Action.MoveRight) && inputManager.IsPressed(IInputManager.Action.MoveLeft)) {
-      Direction.X = 0;
+      _direction.X = 0;
     }
     else if (inputManager.IsPressed(IInputManager.Action.MoveLeft)) {
-      Direction.X = -1;
+      _direction.X = -1;
     }
     else if (inputManager.IsPressed(IInputManager.Action.MoveRight)) {
-      Direction.X = 1;
+      _direction.X = 1;
     }
     else if (Mathf.Abs(player.Velocity.X) > 0.1f) {
-      Direction.X = 1 * Mathf.Sign(player.Velocity.X);
+      _direction.X = 1 * Mathf.Sign(player.Velocity.X);
     }
     else {
-      Direction.X = 0;
+      _direction.X = 0;
     }
     if (inputManager.IsPressed(IInputManager.Action.Down)) {
-      Direction.Y = 1;
+      _direction.Y = 1;
     }
   }
 
