@@ -5,8 +5,7 @@ using Godot;
 using Wfc.State;
 
 public partial class GemCollectedState : GemBaseState {
-  public GemCollectedState() : base() {
-  }
+  public GemCollectedState() : base() { }
 
   public override void Enter(Gem o) {
     o.CollisionShapeNode.SetDeferred(CollisionPolygon2D.PropertyName.Disabled, true);
@@ -18,6 +17,5 @@ public partial class GemCollectedState : GemBaseState {
     o.SetDeferred(Area2D.PropertyName.Visible, true);
   }
 
-  public override void Init(Gem o) { }
   public override IState<Gem>? PhysicsUpdate(Gem gem, float delta) { return null; }
 }

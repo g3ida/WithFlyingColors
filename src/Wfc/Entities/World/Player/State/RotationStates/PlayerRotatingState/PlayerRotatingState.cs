@@ -1,29 +1,29 @@
 namespace Wfc.Entities.World.Player;
 
+using Godot;
 using Wfc.Core.Input;
 using Wfc.State;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-public partial class PlayerRotatingState : PlayerBaseState {
-  private int rotationDirection = 0;
+public abstract partial class PlayerRotatingState : PlayerRotatingIdleState {
+  protected abstract int rotationDirection { get; }
 
-  public PlayerRotatingState(IPlayerStatesStore statesStore, int direction, IInputManager inputManager)
+  public PlayerRotatingState(IPlayerStatesStore statesStore, IInputManager inputManager)
     : base(statesStore, inputManager) {
-    rotationDirection = direction;
-    this.baseState = direction == -1 ? PlayerStatesEnum.ROTATING_LEFT : PlayerStatesEnum.ROTATING_RIGHT;
   }
 
-  protected override void _Enter(Player player) {
-    bool cumulateAngle = player.PlayerState?.baseState != PlayerStatesEnum.SLIPPERING;
+  public override void Enter(Player player) {
+    base.Enter(player);
+    bool cumulateAngle = !player.IsSlippering();
     player.PlayerRotationAction.Execute(rotationDirection, Constants.PI2, 0.1f, true, cumulateAngle, true);
     EventHandler.Instance.EmitPlayerRotate(rotationDirection);
   }
 
   public override IState<Player>? PhysicsUpdate(Player player, float delta) {
-    player.PlayerRotationAction.Step(delta);
+    var baseResult = base.PhysicsUpdate(player, delta);
     if (player.PlayerRotationAction.CanRotate) {
-      return player.StatesStore.GetState(PlayerStatesEnum.IDLE);
+      return baseResult ?? statesStore.GetState<PlayerRotatingIdleState>();
     }
-    return HandleRotate(player);
+    return baseResult;
   }
 }

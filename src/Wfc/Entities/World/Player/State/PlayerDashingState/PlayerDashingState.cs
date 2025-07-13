@@ -21,7 +21,6 @@ public partial class PlayerDashingState : PlayerBaseState {
     : base(statesStore, inputManager) {
     _dashTimer.Set(DASH_DURATION, false);
     _permissivenessTimer.Set(PERMISSIVENESS, false);
-    this.baseState = PlayerStatesEnum.DASHING;
   }
 
   protected override void _Enter(Player player) {
@@ -84,7 +83,7 @@ public partial class PlayerDashingState : PlayerBaseState {
     }
 
     if (!_dashTimer.IsRunning()) {
-      return player.StatesStore.GetState(PlayerStatesEnum.FALLING);
+      return statesStore.GetState<PlayerFallingState>();
     }
     else {
       player.Velocity = new Vector2(player.Velocity.X, 0);

@@ -1,33 +1,34 @@
 namespace Wfc.Entities.World.Player;
 
-using System;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
+using static Wfc.Core.Event.EventHandler;
 
 public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
-  public PlayerStatesEnum baseState;
-
   const float GRAVITY = 9.8f * Constants.WORLD_TO_SCREEN;
   const float FALL_FACTOR = 2.5f;
 
+  private Constants.EntityType _deathCollisionEntityType = Constants.EntityType.NONE;
   protected IInputManager inputManager;
   protected IPlayerStatesStore statesStore;
+  public bool playerMoved = false;
 
   public PlayerBaseState(IPlayerStatesStore statesStore, IInputManager inputManager) {
     this.inputManager = inputManager;
     this.statesStore = statesStore;
   }
 
-  public bool playerMoved = false;
-
   public void Enter(Player player) {
     player.ScaleCornersBy(player.CurrentDefaultCornerScaleFactor);
+    EventHandler.Instance.PlayerDying += _onPlayerDying;
     playerMoved = false;
     _Enter(player);
   }
 
   public void Exit(Player player) {
+    EventHandler.Instance.PlayerDying -= _onPlayerDying;
     _Exit(player);
   }
 
@@ -39,26 +40,25 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
   }
 
   public virtual IState<Player>? PhysicsUpdate(Player player, float delta) {
-    if (player.PlayerState != statesStore.GetState(PlayerStatesEnum.DYING)) {
+    if (_deathCollisionEntityType != Constants.EntityType.NONE) {
+      return _handlePlayerDying(player);
+    }
+    if (!player.IsDying()) {
       if (DashActionPressed(player)) {
         return OnDash(player);
       }
-
       if (!player.HandleInputIsDisabled) {
-        if (player.PlayerState != statesStore.GetState(PlayerStatesEnum.DASHING)) {
+        if (!player.IsDashing()) {
           if (inputManager.IsPressed(IInputManager.Action.MoveRight)) {
             playerMoved = true;
             player.Velocity = new Vector2(Mathf.Clamp(player.Velocity.X + player.SpeedUnit, 0, player.SpeedLimit), player.Velocity.Y);
-
           }
           else if (inputManager.IsPressed(IInputManager.Action.MoveLeft)) {
             playerMoved = true;
             player.Velocity = new Vector2(Mathf.Clamp(player.Velocity.X - player.SpeedUnit, -player.SpeedLimit, 0), player.Velocity.Y);
-
           }
         }
       }
-
       player.Velocity = new Vector2(player.Velocity.X, player.Velocity.Y + GRAVITY * delta * FALL_FACTOR);
     }
 
@@ -82,14 +82,17 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
     }
   }
 
-  public PlayerBaseState? OnPlayerDying(Player player, Node? area, Vector2 position, Constants.EntityType entityType) {
-    if (entityType != Constants.EntityType.FALL_ZONE) {
+  private void _onPlayerDying(Node? area, Vector2 position, int entityType) {
+    _deathCollisionEntityType = (Constants.EntityType)entityType;
+  }
+
+  private PlayerDyingState? _handlePlayerDying(Player player) {
+    if (_deathCollisionEntityType != Constants.EntityType.FALL_ZONE) {
       player.Velocity = Vector2.Zero;
     }
-
-    var dyingState = statesStore.GetState(PlayerStatesEnum.DYING) as PlayerDyingState;
+    var dyingState = statesStore.GetState<PlayerDyingState>();
     if (dyingState != null) {
-      SetPlayerDeathAnimationType(dyingState, entityType);
+      SetPlayerDeathAnimationType(dyingState, _deathCollisionEntityType);
     }
     return dyingState;
   }
@@ -103,12 +106,12 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
   }
 
   protected IState<Player>? OnDash(Player player) {
-    var dashingState = statesStore.GetState(PlayerStatesEnum.DASHING);
+    var dashingState = statesStore.GetState<PlayerDashingState>();
     return dashingState;
   }
 
   protected IState<Player>? OnJump(Player player) {
-    var jumpState = statesStore.GetState(PlayerStatesEnum.JUMPING);
+    var jumpState = statesStore.GetState<PlayerJumpingState>();
     return jumpState;
   }
 
@@ -117,18 +120,4 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
       return false;
     return inputManager.IsJustPressed(IInputManager.Action.Jump);
   }
-
-  protected IState<Player>? HandleRotate(Player player) {
-    if (player.PlayerState?.baseState != PlayerStatesEnum.DYING && !player.HandleInputIsDisabled) {
-      if (inputManager.IsJustPressed(IInputManager.Action.RotateLeft)) {
-        return statesStore.GetState(PlayerStatesEnum.ROTATING_LEFT);
-      }
-      if (inputManager.IsJustPressed(IInputManager.Action.RotateRight)) {
-        return statesStore.GetState(PlayerStatesEnum.ROTATING_RIGHT);
-      }
-    }
-    return null;
-  }
-
-  public void Init(Player o) { }
 }

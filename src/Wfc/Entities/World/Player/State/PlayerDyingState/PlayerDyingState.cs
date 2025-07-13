@@ -14,7 +14,6 @@ public partial class PlayerDyingState : PlayerBaseState {
 
   public PlayerDyingState(IPlayerStatesStore statesStore, IInputManager inputManager)
     : base(statesStore, inputManager) {
-    this.baseState = PlayerStatesEnum.DYING;
   }
 
   protected override void _Enter(Player player) {

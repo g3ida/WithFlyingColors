@@ -20,7 +20,6 @@ public partial class PlayerJumpingState : PlayerBaseState {
     : base(statesStore, inputManager) {
     _jumpTimer.Set(TIME_UNTIL_FULL_JUMP_IS_CONSIDERED, false);
     _permissivenessTimer.Set(PERMISSIVENESS, false);
-    this.baseState = PlayerStatesEnum.JUMPING;
   }
 
   protected override void _Enter(Player player) {
@@ -47,11 +46,11 @@ public partial class PlayerJumpingState : PlayerBaseState {
     }
     else if (player.IsOnFloor()) {
       if (_permissivenessTimer.IsRunning()) {
-        return player.StatesStore.GetState(PlayerStatesEnum.JUMPING);
+        return statesStore.GetState<PlayerJumpingState>();
       }
       else {
         EventHandler.Instance.EmitPlayerLand();
-        return player.StatesStore.GetState(PlayerStatesEnum.STANDING);
+        return statesStore.GetState<PlayerStandingState>();
       }
     }
 

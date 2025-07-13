@@ -212,8 +212,8 @@ public partial class PianoNote : AnimatableBody2D {
 
   private bool IsPlayerStandingOrFalling() {
     var player = Global.Instance().Player;
-    bool isJumping = Convert.ToBoolean(player.IsJumpingState());
-    bool isFalling = Convert.ToBoolean(player.IsFalling());
+    bool isJumping = player.IsJumping();
+    bool isFalling = player.IsFalling();
     return !isJumping && isFalling;
   }
 
