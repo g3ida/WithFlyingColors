@@ -27,6 +27,7 @@ public partial class PlayerFallingState : PlayerBaseState {
   protected override void _Exit(Player player) {
     permissivenessTimer.Stop();
     player.JumpParticlesNode.Emitting = false;
+    wasOnFloor = false;
   }
 
   protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
