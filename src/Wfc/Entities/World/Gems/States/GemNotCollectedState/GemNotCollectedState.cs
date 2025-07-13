@@ -16,12 +16,11 @@ public partial class GemNotCollectedState : GemBaseState {
   private NodeOscillator? _oscillator;
   private AreaEnteredEventHandler? _areaEnteredEventHandler;
   private IState<Gem>? _requestedState = null;
+  private IStatesStore<Gem> _statesStore;
 
-
-  public GemNotCollectedState() : base() { }
-
-  public override void Init(Gem o) {
-    _oscillator = new NodeOscillator(o, AMPLITUDE, ANIMATION_DURATION);
+  public GemNotCollectedState(IStatesStore<Gem> statesStore, Gem gem) : base() {
+    _statesStore = statesStore;
+    _oscillator = new NodeOscillator(gem, AMPLITUDE, ANIMATION_DURATION);
   }
 
   public override void Enter(Gem o) {
@@ -63,7 +62,7 @@ public partial class GemNotCollectedState : GemBaseState {
       return null;
     if (area.IsInGroup(gem.group_name)) {
       _isActive = false;
-      return gem.StatesStore.Collecting;
+      return _statesStore.GetState<GemCollectingState>();
     }
     return null;
   }

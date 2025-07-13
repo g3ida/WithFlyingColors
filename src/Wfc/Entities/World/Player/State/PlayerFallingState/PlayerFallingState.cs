@@ -13,7 +13,6 @@ public partial class PlayerFallingState : PlayerBaseState {
   public PlayerFallingState(IPlayerStatesStore statesStore, IInputManager inputManager)
     : base(statesStore, inputManager) {
     permissivenessTimer.Set(PERMISSIVENESS, false);
-    this.baseState = PlayerStatesEnum.FALLING;
   }
 
   protected override void _Enter(Player player) {
@@ -33,7 +32,7 @@ public partial class PlayerFallingState : PlayerBaseState {
   protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (player.IsOnFloor()) {
       EventHandler.Instance.EmitPlayerLand();
-      return player.StatesStore.GetState(PlayerStatesEnum.STANDING);
+      return statesStore.GetState<PlayerStandingState>();
     }
     if (JumpPressed(player) && permissivenessTimer.IsRunning()) {
       permissivenessTimer.Stop();

@@ -5,19 +5,36 @@ using Godot;
 using Wfc.Core.Input;
 using Wfc.State;
 
-public partial class PlayerRotatingIdleState : PlayerBaseState {
+public partial class PlayerRotatingIdleState : IState<Player> {
 
-  public PlayerRotatingIdleState(IPlayerStatesStore statesStore, IInputManager inputManager)
-    : base(statesStore, inputManager) {
-    baseState = PlayerStatesEnum.IDLE;
+  protected IPlayerStatesStore statesStore;
+  protected IInputManager inputManager;
+
+  public PlayerRotatingIdleState(IPlayerStatesStore statesStore, IInputManager inputManager) {
+    this.statesStore = statesStore;
+    this.inputManager = inputManager;
   }
 
-  protected override void _Enter(Player player) { }
+  public virtual void Enter(Player player) { }
 
-  protected override void _Exit(Player player) { }
+  public virtual void Exit(Player player) { }
 
-  public override IState<Player>? PhysicsUpdate(Player player, float delta) {
+  public virtual IState<Player>? PhysicsUpdate(Player player, float delta) {
     player.PlayerRotationAction.Step(delta);
-    return HandleRotate(player);
+    return _handleRotate(player);
   }
+
+  private IState<Player>? _handleRotate(Player player) {
+    if (!player.IsDying() && !player.HandleInputIsDisabled) {
+      if (inputManager.IsJustPressed(IInputManager.Action.RotateLeft)) {
+        return statesStore.GetState<PlayerRotatingLeftState>();
+      }
+      if (inputManager.IsJustPressed(IInputManager.Action.RotateRight)) {
+        return statesStore.GetState<PlayerRotatingRightState>();
+      }
+    }
+    return null;
+  }
+
+  public void Init(Player o) { }
 }

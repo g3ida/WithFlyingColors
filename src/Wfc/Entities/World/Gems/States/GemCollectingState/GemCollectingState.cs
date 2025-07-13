@@ -11,8 +11,10 @@ public partial class GemCollectingState : GemBaseState {
   private IState<Gem>? _requestedState = null;
   private StringName _gemCollectedAnimationStringName = "gem_collected_animation";
   private uint _cachedCollisionMask = 0;
+  private IStatesStore<Gem> _statesStore;
 
-  public GemCollectingState() : base() {
+  public GemCollectingState(IStatesStore<Gem> statesStore) : base() {
+    _statesStore = statesStore;
   }
 
   public override void Enter(Gem o) {
@@ -42,13 +44,11 @@ public partial class GemCollectingState : GemBaseState {
 
   public override IState<Gem>? PhysicsUpdate(Gem gem, float delta) => _requestedState;
 
-  private static GemBaseState? _handleAnimationFinished(Gem gem) {
+  private GemCollectedState? _handleAnimationFinished(Gem gem) {
     EventHandler.Instance.EmitGemCollected(
         gem.group_name,
         gem.AnimatedSpriteNode.GetGlobalTransformWithCanvas().Origin,
         gem.AnimatedSpriteNode.SpriteFrames);
-    return gem.StatesStore.Collected;
+    return _statesStore.GetState<GemCollectedState>();
   }
-
-  public override void Init(Gem o) { }
 }

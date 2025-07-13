@@ -9,6 +9,7 @@ using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
+using Wfc.State;
 using Wfc.Utils;
 using Wfc.Utils.Animation;
 using Wfc.Utils.Attributes;
@@ -45,9 +46,10 @@ public partial class Player : CharacterBody2D, IPersistent {
   public TransformAnimation IdleAnimation { get; set; } = null!;
   public TransformAnimation CurrentAnimation { get; set; } = null!;
   public bool WasOnFloor { get; private set; } = true;
-  public PlayerStatesStore StatesStore { get; private set; } = null!;
+
+  private PlayerStatesStore? _statesStore = null;
   public PlayerBaseState? PlayerState { get; set; } = null;
-  public PlayerBaseState? PlayerRotationState { get; private set; } = null!;
+  public IState<Player>? PlayerRotationState { get; private set; } = null!;
 
   public bool CanDash = true;
   public bool HandleInputIsDisabled = false;
@@ -175,11 +177,11 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   private void InitState() {
-    StatesStore = new PlayerStatesStore(InputManager);
-    PlayerState = StatesStore.fallingState;
-    PlayerState.Enter(this);
-    PlayerRotationState = StatesStore.idleState;
-    PlayerRotationState.Enter(this);
+    _statesStore = new PlayerStatesStore(InputManager);
+    PlayerState = _statesStore.GetState<PlayerFallingState>();
+    PlayerState?.Enter(this);
+    PlayerRotationState = _statesStore.GetState<PlayerRotatingIdleState>();
+    PlayerRotationState?.Enter(this);
   }
 
   private void InitFacesAreas() {
@@ -201,7 +203,7 @@ public partial class Player : CharacterBody2D, IPersistent {
 
   public override void _PhysicsProcess(double delta) {
     base._PhysicsProcess(delta);
-    var nextState = PlayerRotationState?.PhysicsUpdate(this, (float)delta) as PlayerBaseState;
+    var nextState = PlayerRotationState?.PhysicsUpdate(this, (float)delta);
     _switchRotationState(nextState);
 
     var nextPlayerState = PlayerState?.PhysicsUpdate(this, (float)delta) as PlayerBaseState;
@@ -222,8 +224,8 @@ public partial class Player : CharacterBody2D, IPersistent {
     Rotate(_saveData.Angle - Rotation);
     CurrentDefaultCornerScaleFactor = _saveData.DefaultCornerScaleFactor;
     ShowColorAreas();
-    _switchRotationState(StatesStore.GetState(PlayerStatesEnum.IDLE) as PlayerBaseState);
-    _switchState(StatesStore.GetState(PlayerStatesEnum.FALLING) as PlayerBaseState);
+    _switchRotationState(_statesStore?.GetState<PlayerRotatingIdleState>());
+    _switchState(_statesStore?.GetState<PlayerFallingState>());
     HandleInputIsDisabled = false;
   }
 
@@ -252,13 +254,11 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_onPlayerDying)));
     EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
     EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_onPlayerDying)));
     EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
     EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
   }
@@ -273,11 +273,6 @@ public partial class Player : CharacterBody2D, IPersistent {
   public override void _ExitTree() {
     base._EnterTree();
     DisconnectSignals();
-  }
-
-  private void _onPlayerDying(Node? area, Vector2 position, int entity_type) {
-    var next_state = PlayerState?.OnPlayerDying(this, area, position, (Constants.EntityType)entity_type);
-    _switchState(next_state);
   }
 
   private bool _isJustHitTheFloor() {
@@ -297,7 +292,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     }
   }
 
-  private void _switchRotationState(PlayerBaseState? new_state) {
+  private void _switchRotationState(IState<Player>? new_state) {
     if (new_state != null) {
       PlayerRotationState?.Exit(this);
       PlayerRotationState = new_state;
@@ -416,27 +411,13 @@ public partial class Player : CharacterBody2D, IPersistent {
     }
   }
 
-  // Methods added to convert PianoNote to C#
-  public bool IsJumpingState() {
-    return PlayerState != null && PlayerState.baseState == PlayerStatesEnum.JUMPING;
-  }
-
-  public bool IsFalling() {
-    return Velocity.Y >= -Constants.EPSILON;
-  }
-
-  public bool IsRotationIdle() {
-    return PlayerRotationState != null && PlayerRotationState.baseState == PlayerStatesEnum.IDLE;
-  }
-
-
-  public bool IsStanding() {
-    return PlayerState != null && PlayerState.baseState == PlayerStatesEnum.STANDING;
-  }
-
-  public bool IsDying() {
-    return PlayerState != null && PlayerState.baseState == PlayerStatesEnum.DYING;
-  }
+  public bool IsJumping() => PlayerState is PlayerJumpingState;
+  public bool IsFalling() => Velocity.Y >= -Constants.EPSILON;
+  public bool IsRotationIdle() => PlayerRotationState is PlayerRotatingIdleState;
+  public bool IsStanding() => PlayerState is PlayerStandingState;
+  public bool IsDying() => PlayerState is PlayerDyingState;
+  public bool IsDashing() => PlayerState is PlayerDashingState;
+  public bool IsSlippering() => PlayerState is PlayerSlipperingState;
 
   public void SetMaxSpeed() {
     Velocity = new Vector2(SPEED, Velocity.Y);

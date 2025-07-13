@@ -7,6 +7,7 @@ using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
+using Wfc.State;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -22,14 +23,8 @@ public partial class Gem : Area2D, IPersistent {
   [NodePath("ShineSfx")]
   public AudioStreamPlayer2D ShineSfxNode = null!;
 
-  public GemStatesStore StatesStore = new GemStatesStore();
-  public GemBaseState CurrentState = null!;
-
-  public GemState GemState {
-    get {
-      return StatesStore.GetStateEnum(CurrentState);
-    }
-  }
+  private GemStatesStore _statesStore = null!;
+  private IState<Gem>? _currentState = null;
 
   [NodePath("CollisionShape2D")]
   public CollisionPolygon2D CollisionShapeNode = null!;
@@ -38,8 +33,8 @@ public partial class Gem : Area2D, IPersistent {
   [NodePath("AnimatedSprite2D/AnimationPlayer")]
   public AnimationPlayer AnimationPlayerNode = null!;
 
-  public record SaveData(GemState currentState = GemState.NotCollected);
-  private SaveData _saveData = null!;
+  public record SaveData(bool isGemCollected = false);
+  private SaveData _saveData = new SaveData();
 
   public override void _Ready() {
     this.WireNodes();
@@ -55,24 +50,21 @@ public partial class Gem : Area2D, IPersistent {
     LightNode.Color = ColorUtils.GetBasicColor(colorIndex);
     GetNode<AnimatedSprite2D>("AnimatedSprite2D").Modulate = color;
 
-    StatesStore = new GemStatesStore();
-    StatesStore.Init(this);
-
-    CurrentState = StatesStore.NotCollected;
-    CurrentState.Enter(this);
-    _saveData = new SaveData(GemState);
+    _statesStore = new GemStatesStore(this);
+    _currentState = _statesStore.GetState<GemNotCollectedState>();
+    _currentState?.Enter(this);
   }
 
-  private void SwitchState(GemBaseState? newState) {
+  private void SwitchState(IState<Gem>? newState) {
     if (newState != null) {
-      CurrentState.Exit(this);
-      CurrentState = newState;
-      CurrentState.Enter(this);
+      _currentState?.Exit(this);
+      _currentState = newState;
+      _currentState?.Enter(this);
     }
   }
 
   public override void _PhysicsProcess(double delta) {
-    SwitchState((GemBaseState?)CurrentState.PhysicsUpdate(this, (float)delta));
+    SwitchState(_currentState?.PhysicsUpdate(this, (float)delta));
   }
 
   private void ConnectSignals() {
@@ -94,12 +86,16 @@ public partial class Gem : Area2D, IPersistent {
   }
 
   private void _OnCheckpointHit(Node checkpoint) {
-    GemBaseState savedState = CurrentState != StatesStore.Collecting ? CurrentState : StatesStore.Collected;
-    _saveData = new SaveData(GemState);
+    _saveData = new SaveData(_currentState! is GemNotCollectedState);
   }
 
   public void Reset() {
-    SwitchState((GemBaseState?)StatesStore.GetState(_saveData.currentState));
+    if (_saveData.isGemCollected) {
+      SwitchState(_statesStore.GetState<GemCollectedState>());
+    }
+    else {
+      SwitchState(_statesStore.GetState<GemNotCollectedState>());
+    }
   }
 
   public string GetSaveId() => this.GetPath();

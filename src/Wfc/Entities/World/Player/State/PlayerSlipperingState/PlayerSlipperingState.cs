@@ -28,9 +28,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
 
 
   public PlayerSlipperingState(IPlayerStatesStore statesStore, IInputManager inputManager)
-    : base(statesStore, inputManager) {
-    this.baseState = PlayerStatesEnum.SLIPPERING;
-  }
+    : base(statesStore, inputManager) { }
 
   protected override void _Enter(Player player) {
     player.AnimatedSpriteNode.Play("idle");
@@ -68,7 +66,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     }
 
     if (!_isPlayerTouchingTheFloor(player)) {
-      var fallingState = player.StatesStore.GetState(PlayerStatesEnum.FALLING) as PlayerFallingState;
+      var fallingState = statesStore.GetState<PlayerFallingState>();
       if (fallingState != null) {
         // added to avoid complete rotation when falling if the current angle is small enough or if the floor is
         // too close
@@ -83,13 +81,13 @@ public partial class PlayerSlipperingState : PlayerBaseState {
       return fallingState;
     }
 
-    if (player.PlayerRotationState?.baseState != PlayerStatesEnum.IDLE) {
+    if (!player.IsRotationIdle()) {
       _skipExitRotation = true;
-      return player.StatesStore.GetState(PlayerStatesEnum.STANDING);
+      return statesStore.GetState<PlayerStandingState>();
     }
 
     if (player.PlayerRotationAction.CanRotate || playerMoved) {
-      return player.StatesStore.GetState(PlayerStatesEnum.STANDING);
+      return statesStore.GetState<PlayerStandingState>();
     }
 
     if (_checkIfGroundIsNear(player, direction, RAY_LENGTH_FOR_SLIPPER)) {
@@ -97,7 +95,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
         player.Velocity.X + player.Scale.X * direction * PLAYER_SPEED_THRESHOLD_TO_STAND,
         player.Velocity.Y
       );
-      return player.StatesStore.GetState(PlayerStatesEnum.STANDING);
+      return statesStore.GetState<PlayerStandingState>();
     }
 
     // A small speed depending on the current angle to simulate a slippering effect

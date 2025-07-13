@@ -1,45 +1,25 @@
 namespace Wfc.Entities.World.Gems;
 
+using System;
+using System.Collections.Generic;
 using Godot;
 using Wfc.State;
 
-public partial class GemStatesStore : IStatesStore<Gem, GemState> {
-  public readonly GemBaseState NotCollected;
-  public readonly GemBaseState Collecting;
-  public readonly GemBaseState Collected;
+public partial class GemStatesStore : IStatesStore<Gem> {
 
-  public GemStatesStore() {
-    NotCollected = new GemNotCollectedState();
-    Collecting = new GemCollectingState();
-    Collected = new GemCollectedState();
+  private readonly Dictionary<Type, IState<Gem>> _states;
+
+  public GemStatesStore(Gem gem) {
+    _states = new Dictionary<Type, IState<Gem>> {
+            { typeof(GemNotCollectedState), new GemNotCollectedState(this, gem) },
+            { typeof(GemCollectingState), new GemCollectingState(this) },
+            { typeof(GemCollectedState), new GemCollectedState() }
+        };
   }
 
-  public void Init(Gem gem) {
-    NotCollected.Init(gem);
-    Collecting.Init(gem);
-    Collected.Init(gem);
-  }
-
-  public IState<Gem>? GetState(GemState state) {
-    if (state == GemState.NotCollected) {
-      return NotCollected;
-    }
-    if (state == GemState.Collecting) {
-      return Collecting;
-    }
-    if (state == GemState.Collected) {
-      return Collected;
-    }
+  public TState? GetState<TState>() where TState : class, IState<Gem> {
+    if (_states.TryGetValue(typeof(TState), out var state))
+      return state as TState;
     return null;
-  }
-
-  public GemState GetStateEnum(GemBaseState state) {
-    if (state == NotCollected) {
-      return GemState.NotCollected;
-    }
-    if (state == Collecting) {
-      return GemState.Collecting;
-    }
-    return GemState.Collected;
   }
 }

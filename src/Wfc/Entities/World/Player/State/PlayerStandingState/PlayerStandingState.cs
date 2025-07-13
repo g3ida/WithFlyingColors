@@ -13,9 +13,7 @@ public partial class PlayerStandingState : PlayerBaseState {
   private const float SLIPPERING_LIMIT = 0.42f; // higher is less slippering
 
   public PlayerStandingState(IPlayerStatesStore statesStore, IInputManager inputManager)
-    : base(statesStore, inputManager) {
-    baseState = PlayerStatesEnum.STANDING;
-  }
+    : base(statesStore, inputManager) { }
 
   protected override void _Enter(Player player) {
     player.AnimatedSpriteNode.Play("idle");
@@ -31,22 +29,21 @@ public partial class PlayerStandingState : PlayerBaseState {
       return OnJump(player);
     }
     if (!player.IsOnFloor()) {
-      var fallingState = player.StatesStore.GetState(PlayerStatesEnum.FALLING) as PlayerFallingState;
+      var fallingState = statesStore.GetState<PlayerFallingState>();
       if (fallingState != null) {
         fallingState.wasOnFloor = true;
       }
       return fallingState;
     }
     else {
-      if (Math.Abs(player.Velocity.X) < player.SpeedUnit
-          && player.PlayerRotationState?.baseState == PlayerStatesEnum.IDLE) {
+      if (Math.Abs(player.Velocity.X) < player.SpeedUnit && player.IsRotationIdle()) {
         return RaycastFloor(player);
       }
     }
     return null;
   }
 
-  private static PlayerSlipperingState? RaycastFloor(Player player) {
+  private PlayerSlipperingState? RaycastFloor(Player player) {
     var spaceState = player.GetWorld2D().DirectSpaceState;
     var playerHalfSize = player.GetCollisionShapeSize() * 0.5f * player.Scale;
 
@@ -74,7 +71,7 @@ public partial class PlayerStandingState : PlayerBaseState {
     }
     if (combination == 1 || combination == 8) // flag values
     {
-      var slipperingState = player.StatesStore.GetState(PlayerStatesEnum.SLIPPERING) as PlayerSlipperingState;
+      var slipperingState = statesStore.GetState<PlayerSlipperingState>();
       if (slipperingState != null) {
         slipperingState.direction = combination == 1 ? 1 : -1;
       }
