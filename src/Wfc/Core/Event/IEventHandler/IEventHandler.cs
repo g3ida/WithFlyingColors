@@ -8,20 +8,20 @@ using Wfc.Screens.MenuManager;
 public interface IEventHandler {
 
   public Events Events { get; }
-  public void Connect(EventType eventType, Callable callable);
-  public void ConnectOneShot(EventType eventType, Callable callable);
-  public void Disconnect(EventType eventType, Callable callable);
-  public void Emit(EventType eventType);
-  public void Emit(EventType eventType, params Variant[] args);
+  public void Connect(string eventType, Callable callable);
+  public void ConnectOneShot(string eventType, Callable callable);
+  public void Disconnect(string eventType, Callable callable);
+  public void Emit(string eventType);
+  public void Emit(string eventType, params Variant[] args);
 
-  public bool Connect<T0>(EventType eventType, Node caller, Action<T0> action);
-  public bool Connect<T0, T1>(EventType eventType, Node caller, Action<T0, T1> action);
-  public bool Connect<T0, T1, T2>(EventType eventType, Node caller, Action<T0, T1, T2> action);
-  public bool Connect<T0, T1, T2, T3>(EventType eventType, Node caller, Action<T0, T1, T2, T3> action);
-  public bool Connect<T0, T1, T2, T3, T4>(EventType eventType, Node caller, Action<T0, T1, T2, T3, T4> action);
-  public bool Connect<T0, T1, T2, T3, T4, T5>(EventType eventType, Node caller, Action<T0, T1, T2, T3, T4, T5> action);
+  public bool Connect<T0>(string eventType, Node caller, Action<T0> action);
+  public bool Connect<T0, T1>(string eventType, Node caller, Action<T0, T1> action);
+  public bool Connect<T0, T1, T2>(string eventType, Node caller, Action<T0, T1, T2> action);
+  public bool Connect<T0, T1, T2, T3>(string eventType, Node caller, Action<T0, T1, T2, T3> action);
+  public bool Connect<T0, T1, T2, T3, T4>(string eventType, Node caller, Action<T0, T1, T2, T3, T4> action);
+  public bool Connect<T0, T1, T2, T3, T4, T5>(string eventType, Node caller, Action<T0, T1, T2, T3, T4, T5> action);
 
-  public bool Connect(EventType eventType, Node caller, Action action);
+  public bool Connect(string eventType, Node caller, Action action);
 
   public void EmitPlayerLanded(Node area, Vector2 position);
   public void EmitPlayerDying(Node area, Vector2 position, EntityType entityType);
