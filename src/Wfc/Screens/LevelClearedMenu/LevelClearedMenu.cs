@@ -16,7 +16,7 @@ public partial class LevelClearedMenu : GameMenu {
     base._Input(@event);
     // Handle input based on input type
     if (@event is InputEventKey) {
-      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.EXIT_LEVEL_CLEAR);
+      EventHandler.EmitMenuButtonPressed(MenuButtons.EXIT_LEVEL_CLEAR);
     }
   }
 

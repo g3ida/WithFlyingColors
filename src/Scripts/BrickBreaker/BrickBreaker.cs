@@ -112,17 +112,17 @@ public partial class BrickBreaker : Node2D {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
-    EventHandler.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
-    EventHandler.Instance.Connect(EventType.BouncingBallRemoved, new Callable(this, nameof(_OnBouncingBallRemoved)));
+    EventHandler.Instance.Events.CheckpointReached += _OnCheckpointHit;
+    EventHandler.Instance.Events.CheckpointLoaded += reset;
+    EventHandler.Instance.Events.PlayerDying += _OnPlayerDying;
+    EventHandler.Instance.Events.BouncingBallRemoved += _OnBouncingBallRemoved;
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
-    EventHandler.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
-    EventHandler.Instance.Disconnect(EventType.BouncingBallRemoved, new Callable(this, nameof(_OnBouncingBallRemoved)));
+    EventHandler.Instance.Events.CheckpointReached -= _OnCheckpointHit;
+    EventHandler.Instance.Events.CheckpointLoaded -= reset;
+    EventHandler.Instance.Events.PlayerDying -= _OnPlayerDying;
+    EventHandler.Instance.Events.BouncingBallRemoved -= _OnBouncingBallRemoved;
   }
 
   public override void _EnterTree() {

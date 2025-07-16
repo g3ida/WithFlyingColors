@@ -1,10 +1,10 @@
 [gd_scene load_steps=13 format=3 uid="uid://c81yhhex2g2mu"]
 
-[ext_resource type="PackedScene" uid="uid://2w3xtnwrrjwt" path="res://Assets/Scenes/Piano/PianoNote.tscn" id="1"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/Piano/SharpNotes.tscn" id="2"]
-[ext_resource type="PackedScene" uid="uid://bhd5qa1cqyrq0" path="res://Assets/Scenes/Piano/PianoBase.tscn" id="3"]
-[ext_resource type="Script" uid="uid://uq2os6r0ykr5" path="res://src/Scripts/Piano/Piano.cs" id="4"]
-[ext_resource type="PackedScene" uid="uid://6ijyjb4sawd4" path="res://Assets/Scenes/Piano/SolfegeBoard.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://2w3xtnwrrjwt" path="res://src/Wfc/Entities/World/Piano/PianoNote/PianoNote.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://bgwom8grpf0t6" path="res://src/Wfc/Entities/World/Piano/PianoNote/SharpNotes.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://bhd5qa1cqyrq0" path="res://src/Wfc/Entities/World/Piano/Piano/PianoBase.tscn" id="3"]
+[ext_resource type="Script" uid="uid://uq2os6r0ykr5" path="res://src/Wfc/Entities/World/Piano/Piano/Piano.cs" id="4"]
+[ext_resource type="PackedScene" uid="uid://6ijyjb4sawd4" path="res://src/Wfc/Entities/World/Piano/SolfegeBoard/SolfegeBoard.tscn" id="5"]
 [ext_resource type="Texture2D" uid="uid://b78gdlrqb2xs2" path="res://Assets/Sprites/Piano/letters/letter-f.png" id="6"]
 [ext_resource type="Texture2D" uid="uid://dfsr0q1v1qxfq" path="res://Assets/Sprites/Piano/letters/letter-d.png" id="7"]
 [ext_resource type="Texture2D" uid="uid://jftjmrua8jhh" path="res://Assets/Sprites/Piano/letters/letter-e.png" id="8"]
@@ -21,43 +21,40 @@ position = Vector2(0, 44)
 
 [node name="PianoNote" parent="NotesContainer" instance=ExtResource("1")]
 position = Vector2(-441, 0)
-index = 1
-ColorGroup = "blue"
-note_edge_index = 1
+NoteEdgeIndex = 1
 
 [node name="PianoNote2" parent="NotesContainer" instance=ExtResource("1")]
 position = Vector2(-294, 0)
-index = 2
+Index = 1
 ColorGroup = "pink"
-note_edge_index = 2
+NoteEdgeIndex = 2
 
 [node name="PianoNote3" parent="NotesContainer" instance=ExtResource("1")]
 position = Vector2(-147, 0)
-index = 3
+Index = 2
 ColorGroup = "purple"
 
 [node name="PianoNote4" parent="NotesContainer" instance=ExtResource("1")]
-index = 4
+Index = 3
 ColorGroup = "yellow"
-note_edge_index = 2
+NoteEdgeIndex = 2
 
 [node name="PianoNote5" parent="NotesContainer" instance=ExtResource("1")]
 position = Vector2(147, 0)
-index = 5
+Index = 4
 ColorGroup = "purple"
-note_edge_index = 4
+NoteEdgeIndex = 4
 
 [node name="PianoNote6" parent="NotesContainer" instance=ExtResource("1")]
 position = Vector2(294, 0)
-index = 6
+Index = 5
 ColorGroup = "pink"
-note_edge_index = 3
+NoteEdgeIndex = 3
 
 [node name="PianoNote7" parent="NotesContainer" instance=ExtResource("1")]
 position = Vector2(441, 0)
-index = 7
-ColorGroup = "blue"
-note_edge_index = 5
+Index = 6
+NoteEdgeIndex = 5
 
 [node name="PianoBase" parent="." instance=ExtResource("3")]
 position = Vector2(-4, 88.75)
@@ -112,21 +109,3 @@ texture = ExtResource("6")
 [node name="Letter-G" type="Sprite2D" parent="LettersContainer"]
 position = Vector2(147, 0)
 texture = ExtResource("9")
-
-[connection signal="on_note_pressed" from="NotesContainer/PianoNote" to="." method="_on_piano_note_pressed"]
-[connection signal="on_note_released" from="NotesContainer/PianoNote" to="." method="_on_piano_note_released"]
-[connection signal="on_note_pressed" from="NotesContainer/PianoNote2" to="." method="_on_piano_note_pressed"]
-[connection signal="on_note_released" from="NotesContainer/PianoNote2" to="." method="_on_piano_note_released"]
-[connection signal="on_note_pressed" from="NotesContainer/PianoNote3" to="." method="_on_piano_note_pressed"]
-[connection signal="on_note_released" from="NotesContainer/PianoNote3" to="." method="_on_piano_note_released"]
-[connection signal="on_note_pressed" from="NotesContainer/PianoNote4" to="." method="_on_piano_note_pressed"]
-[connection signal="on_note_released" from="NotesContainer/PianoNote4" to="." method="_on_piano_note_released"]
-[connection signal="on_note_pressed" from="NotesContainer/PianoNote5" to="." method="_on_piano_note_pressed"]
-[connection signal="on_note_released" from="NotesContainer/PianoNote5" to="." method="_on_piano_note_released"]
-[connection signal="on_note_pressed" from="NotesContainer/PianoNote6" to="." method="_on_piano_note_pressed"]
-[connection signal="on_note_released" from="NotesContainer/PianoNote6" to="." method="_on_piano_note_released"]
-[connection signal="on_note_pressed" from="NotesContainer/PianoNote7" to="." method="_on_piano_note_pressed"]
-[connection signal="on_note_released" from="NotesContainer/PianoNote7" to="." method="_on_piano_note_released"]
-[connection signal="board_notes_played" from="SolfegeBoard" to="." method="_on_SolfegeBoard_board_notes_played"]
-[connection signal="expected_note_changed" from="SolfegeBoard" to="." method="_on_SolfegeBoard_expected_note_changed"]
-[connection signal="wrong_note_played" from="SolfegeBoard" to="." method="_on_SolfegeBoard_wrong_note_played"]

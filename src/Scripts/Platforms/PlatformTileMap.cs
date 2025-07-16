@@ -54,10 +54,10 @@ public partial class PlatformTileMap : TileMap {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Connect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
+    EventHandler.Instance.Events.PlayerLanded += OnPlayerLanded;
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Disconnect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
+    EventHandler.Instance.Events.PlayerLanded -= OnPlayerLanded;
   }
 }

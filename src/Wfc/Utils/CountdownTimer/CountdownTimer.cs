@@ -4,30 +4,29 @@ using Godot;
 
 // Use built in timer instead. I was new to godot didn't know it existed :p
 public partial class CountdownTimer : GodotObject {
-  private float duration;
-  private float timer;
-
+  private float _duration;
+  private float _timer;
 
   public CountdownTimer() { }
 
   public void Set(float _duration, bool isSet) {
-    duration = _duration;
-    timer = isSet ? _duration : 0.0f;
+    this._duration = _duration;
+    _timer = isSet ? _duration : 0.0f;
   }
 
   public void Reset() {
-    timer = duration;
+    _timer = _duration;
   }
 
   public bool IsRunning() {
-    return timer > 0;
+    return _timer > 0;
   }
 
   public void Step(float delta) {
-    timer = Mathf.Max(timer - delta, 0);
+    _timer = Mathf.Max(_timer - delta, 0);
   }
 
   public void Stop() {
-    timer = 0;
+    _timer = 0;
   }
 }

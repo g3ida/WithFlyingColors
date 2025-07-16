@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Wfc.Core.Exceptions;
+using Wfc.Utils.Colors;
 
 public partial record GameSkin {
   public string Name { get; }
@@ -53,14 +54,14 @@ public partial record GameSkin {
 
   public static SkinColor ColorGroupToSkinColor(string colorGroup) {
     switch (colorGroup) {
-      case "blue":
-        return SkinColor.BottomFace;
-      case "yellow":
-        return SkinColor.LeftFace;
-      case "purple":
+      case ColorUtils.BLUE:
         return SkinColor.TopFace;
-      case "pink":
+      case ColorUtils.YELLOW:
         return SkinColor.RightFace;
+      case ColorUtils.PURPLE:
+        return SkinColor.BottomFace;
+      case ColorUtils.PINK:
+        return SkinColor.LeftFace;
       default:
         throw new GameExceptions.InvalidArgumentException("Invalid color group");
     }

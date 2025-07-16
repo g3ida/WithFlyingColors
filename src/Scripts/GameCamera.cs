@@ -139,19 +139,19 @@ public partial class GameCamera : Camera2D {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
-    EventHandler.Instance.Connect(EventType.PlayerJumped, new Callable(this, nameof(_OnPlayerJump)));
-    EventHandler.Instance.Connect(EventType.PlayerLand, new Callable(this, nameof(_OnPlayerLand)));
-    EventHandler.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
+    EventHandler.Instance.Events.CheckpointReached += _OnCheckpointHit;
+    EventHandler.Instance.Events.CheckpointLoaded += reset;
+    EventHandler.Instance.Events.PlayerJumped += _OnPlayerJump;
+    EventHandler.Instance.Events.PlayerLand += _OnPlayerLand;
+    EventHandler.Instance.Events.PlayerDying += _OnPlayerDying;
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
-    EventHandler.Instance.Disconnect(EventType.PlayerJumped, new Callable(this, nameof(_OnPlayerJump)));
-    EventHandler.Instance.Disconnect(EventType.PlayerLand, new Callable(this, nameof(_OnPlayerLand)));
-    EventHandler.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_OnPlayerDying)));
+    EventHandler.Instance.Events.CheckpointReached -= _OnCheckpointHit;
+    EventHandler.Instance.Events.CheckpointLoaded -= reset;
+    EventHandler.Instance.Events.PlayerJumped -= _OnPlayerJump;
+    EventHandler.Instance.Events.PlayerLand -= _OnPlayerLand;
+    EventHandler.Instance.Events.PlayerDying -= _OnPlayerDying;
   }
 
   public override void _EnterTree() {

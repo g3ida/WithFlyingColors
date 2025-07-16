@@ -24,13 +24,13 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
   public void Enter(Player player) {
     _deathCollisionEntityType = EntityType.None;
     player.ScaleCornersBy(player.CurrentDefaultCornerScaleFactor);
-    EventHandler.Instance.PlayerDying += _onPlayerDying;
+    EventHandler.Instance.Events.PlayerDying += _onPlayerDying;
     playerMoved = false;
     _Enter(player);
   }
 
   public void Exit(Player player) {
-    EventHandler.Instance.PlayerDying -= _onPlayerDying;
+    EventHandler.Instance.Events.PlayerDying -= _onPlayerDying;
     _Exit(player);
   }
 

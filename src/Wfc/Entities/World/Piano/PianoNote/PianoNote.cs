@@ -1,21 +1,37 @@
+namespace Wfc.Entities.World.Piano;
+
 using System;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Skin;
 using Wfc.Utils;
+using Wfc.Utils.Attributes;
+using Wfc.Utils.Colors;
 
+[ScenePath]
 public partial class PianoNote : AnimatableBody2D {
+
+  [Export]
+  public int Index = 0;
+  [Export]
+  public string ColorGroup {
+    get { return _colorGroup; }
+    set { _setColorGroup(value); }
+  }
+  [Export]
+  public int NoteEdgeIndex = 0;
+
   private enum NoteStates {
-    RELEASED,
-    PRESSING,
-    PRESSED,
-    RELEASING
+    Released,
+    Pressing,
+    Pressed,
+    Releasing
   }
 
   [Signal]
-  public delegate void on_note_pressedEventHandler(PianoNote note);
+  public delegate void OnNotePressedEventHandler(int noteIndex);
   [Signal]
-  public delegate void on_note_releasedEventHandler(PianoNote note);
+  public delegate void OnNoteReleasedEventHandler(int noteIndex);
 
   private static readonly Texture2D PairTexture = GD.Load<Texture2D>("res://Assets/Sprites/Piano/note_1.png");
   private static readonly Texture2D OddTexture = GD.Load<Texture2D>("res://Assets/Sprites/Piano/note_2.png");
@@ -32,90 +48,99 @@ public partial class PianoNote : AnimatableBody2D {
   private const float RAYCAST_LENGTH = 20.0f;
   private const float RESPONSIVENESS = 0.06f;
 
-  [Export]
-  public int index = 0;
+  private string _colorGroup = ColorUtils.BLUE;
 
-  private string color_group;
-  [Export]
-  public string ColorGroup {
-    get { return color_group; }
-    set { SetColorGroup(value); }
+  private NoteStates _currentState = NoteStates.Released;
+
+  [NodePath("NoteSpr")]
+  private Sprite2D _spriteNode = null!;
+  [NodePath("Area2D/CollisionShape2D")]
+  private CollisionShape2D _areaCollisionShapeNode = null!;
+  [NodePath("CollisionShape2D")]
+  private CollisionShape2D _collisionShapeNode = null!;
+  [NodePath("ResponsivenessTimer")]
+  private Timer _responsivenessTimerNode = null!;
+  [NodePath("NoteEdge")]
+  private Sprite2D _noteEdge = null!;
+
+  private Vector2 _releasedPosition;
+  private Vector2 _calculatedPosition;
+  private Tween? _tweener = null;
+  private bool _isPlayerAboveTheNote = false;
+
+  public override void _EnterTree() {
+    base._EnterTree();
+    this.WireNodes();
+    _setColorGroup(_colorGroup);
+    SetNoteEdgeIndex(NoteEdgeIndex);
+    _responsivenessTimerNode.Timeout += _onResponsivenessTimerTimeout;
   }
 
-  [Export]
-  public int note_edge_index = 0;
-
-  private NoteStates current_state = NoteStates.RELEASED;
-
-  private Sprite2D SpriteNode;
-  private CollisionShape2D AreaCollisionShapeNode;
-  private CollisionShape2D CollisionShapeNode;
-  private Timer ResponsivenessTimerNode;
-
-  private Vector2 released_position;
-  private Vector2 calculated_position;
-
-  private Tween tweener;
-
-  private bool isPlayerAboveTheNote = false;
+  public override void _ExitTree() {
+    base._ExitTree();
+    _responsivenessTimerNode.Timeout -= _onResponsivenessTimerTimeout;
+  }
 
   public override void _Ready() {
-    SpriteNode = GetNode<Sprite2D>("NoteSpr");
-    AreaCollisionShapeNode = GetNode<CollisionShape2D>("Area2D/CollisionShape2D");
-    CollisionShapeNode = GetNode<CollisionShape2D>("CollisionShape2D");
-    ResponsivenessTimerNode = GetNode<Timer>("ResponsivenessTimer");
-
-    released_position = Position;
-    calculated_position = Position;
+    base._Ready();
+    _releasedPosition = Position;
+    _calculatedPosition = Position;
 
     SetupResponsivenessTimer();
     SetTexture();
   }
 
   public override void _PhysicsProcess(double delta) {
-    Position = calculated_position;
-    isPlayerAboveTheNote = false;
+    base._PhysicsProcess(delta);
+    Position = _calculatedPosition;
+    _isPlayerAboveTheNote = false;
     if (IsPressingOrPressedState()) {
-      isPlayerAboveTheNote = RaycastPlayer();
+      _isPlayerAboveTheNote = RaycastPlayer();
     }
     StartReleasingNoteTimerIfRelevant();
   }
 
   private void SetTexture() {
-    SpriteNode.Texture = index % 2 == 0 ? PairTexture : OddTexture;
+    _spriteNode.Texture = Index % 2 == 0 ? OddTexture : PairTexture;
   }
 
   private void SetupResponsivenessTimer() {
-    ResponsivenessTimerNode.Autostart = false;
-    ResponsivenessTimerNode.WaitTime = RESPONSIVENESS;
+    _responsivenessTimerNode.Autostart = false;
+    _responsivenessTimerNode.WaitTime = RESPONSIVENESS;
   }
 
   private void MoveToPosition(Vector2 dest_position) {
-    float duration = Math.Abs(calculated_position.Y - dest_position.Y) / PRESS_SPEED;
-    tweener?.Kill();
-    tweener = CreateTween();
-    tweener.Connect(
+    float duration = Math.Abs(_calculatedPosition.Y - dest_position.Y) / PRESS_SPEED;
+    _tweener?.Kill();
+    _tweener = CreateTween();
+    _tweener.Connect(
       Tween.SignalName.Finished,
       new Callable(this, nameof(OnTweenCompleted)),
       flags: (uint)ConnectFlags.OneShot
     );
-    tweener.TweenProperty(this, "calculated_position", dest_position, duration)
-        .From(calculated_position)
+    _tweener.TweenProperty(this, nameof(_calculatedPosition), dest_position, duration)
+        .From(_calculatedPosition)
         .SetTrans(Tween.TransitionType.Linear)
         .SetEase(Tween.EaseType.InOut);
   }
 
   private bool IsReleasingOrReleasedState() {
-    return current_state == NoteStates.RELEASED || current_state == NoteStates.RELEASING;
+    return _currentState == NoteStates.Released || _currentState == NoteStates.Releasing;
   }
 
   private bool IsPressingOrPressedState() {
-    return current_state == NoteStates.PRESSED || current_state == NoteStates.PRESSING;
+    return _currentState == NoteStates.Pressed || _currentState == NoteStates.Pressing;
   }
 
-  public void _on_Area2D_body_entered(Node body) {
+  public void _onArea2DBodyEntered(Node body) {
     if (body == Global.Instance().Player) {
       PressNoteIfRelevant();
+    }
+  }
+
+  public void _onArea2DBodyExited(Node body) {
+    if (body == Global.Instance().Player) {
+      StartReleasingNoteTimerIfRelevant();
     }
   }
 
@@ -127,14 +152,8 @@ public partial class PianoNote : AnimatableBody2D {
   }
 
   private void PressNote() {
-    current_state = NoteStates.PRESSING;
-    MoveToPosition(released_position + PRESS_OFFSET);
-  }
-
-  public void _on_Area2D_body_exited(Node body) {
-    if (body == Global.Instance().Player) {
-      StartReleasingNoteTimerIfRelevant();
-    }
+    _currentState = NoteStates.Pressing;
+    MoveToPosition(_releasedPosition + PRESS_OFFSET);
   }
 
   private void StartReleasingNoteTimerIfRelevant() {
@@ -150,34 +169,31 @@ public partial class PianoNote : AnimatableBody2D {
   }
 
   private void ReleaseNote() {
-    current_state = NoteStates.RELEASING;
-    MoveToPosition(released_position);
+    _currentState = NoteStates.Releasing;
+    MoveToPosition(_releasedPosition);
   }
 
   private void OnTweenCompleted() {
-    if (current_state == NoteStates.PRESSING) {
-      current_state = NoteStates.PRESSED;
-      EmitSignal(nameof(on_note_pressed), this);
+    if (_currentState == NoteStates.Pressing) {
+      _currentState = NoteStates.Pressed;
+      EmitSignal(nameof(OnNotePressed), Index);
     }
-    else if (current_state == NoteStates.RELEASING) {
-      current_state = NoteStates.RELEASED;
-      EmitSignal(nameof(on_note_released), this);
+    else if (_currentState == NoteStates.Releasing) {
+      _currentState = NoteStates.Released;
+      EmitSignal(nameof(OnNoteReleased), Index);
     }
   }
 
   private Vector2 GetDetectionAreaShapeSize() {
-    return (AreaCollisionShapeNode.Shape as RectangleShape2D).Size;
+    return (_areaCollisionShapeNode.Shape as RectangleShape2D)?.Size ?? Vector2.Zero;
   }
 
   private Vector2 GetCollisionShapeSize() {
-    return (CollisionShapeNode.Shape as RectangleShape2D).Size;
+    return (_collisionShapeNode.Shape as RectangleShape2D)?.Size ?? Vector2.Zero;
   }
 
   private List<Dictionary<string, Vector2>> GetRayLinesInGlobalPosition() {
     var rays = new List<Dictionary<string, Vector2>>();
-
-
-
     Vector2 note_half_size = GetDetectionAreaShapeSize() * 0.5f * Scale;
 
     var from_offset_x = new float[]
@@ -188,7 +204,7 @@ public partial class PianoNote : AnimatableBody2D {
             note_half_size.X * 0.5f,
             note_half_size.X
     };
-    var spriteHeight = SpriteNode.Texture.GetHeight();
+    var spriteHeight = _spriteNode.Texture.GetHeight();
     foreach (float offset in from_offset_x) {
       var from = GlobalPosition + new Vector2(offset, -spriteHeight * 0.5f - RAYCAST_Y_OFFSET);
       var to = from + new Vector2(0.0f, -RAYCAST_LENGTH);
@@ -212,7 +228,7 @@ public partial class PianoNote : AnimatableBody2D {
     return false;
   }
 
-  private bool IsPlayerStandingOrFalling() {
+  private static bool _isPlayerStandingOrFalling() {
     var player = Global.Instance().Player;
     bool isJumping = player.IsJumping();
     bool isFalling = player.IsFalling();
@@ -220,9 +236,8 @@ public partial class PianoNote : AnimatableBody2D {
   }
 
   private bool CheckIfPlayerIsAboveTheNote() {
-    return isPlayerAboveTheNote && IsPlayerStandingOrFalling();
+    return _isPlayerAboveTheNote && _isPlayerStandingOrFalling();
   }
-
 
   // Uncomment this code to debug draw raycast rays
   // public override void _Draw()
@@ -238,46 +253,47 @@ public partial class PianoNote : AnimatableBody2D {
   // }
 
   private void StartTimerIfStopped() {
-    if (ResponsivenessTimerNode.IsStopped()) {
-      ResponsivenessTimerNode.Autostart = true;
-      ResponsivenessTimerNode.Start();
+    if (_responsivenessTimerNode.IsStopped()) {
+      _responsivenessTimerNode.Autostart = true;
+      _responsivenessTimerNode.Start();
     }
   }
 
   private void StopTimerIfRelevant() {
-    if (!ResponsivenessTimerNode.IsStopped()) {
-      ResponsivenessTimerNode.Autostart = false;
-      ResponsivenessTimerNode.Stop();
+    if (!_responsivenessTimerNode.IsStopped()) {
+      _responsivenessTimerNode.Autostart = false;
+      _responsivenessTimerNode.Stop();
     }
   }
 
-  public void _on_ResponsivenessTimer_timeout() {
+  public void _onResponsivenessTimerTimeout() {
     ReleaseNoteIfRelevant();
     StopTimerIfRelevant();
   }
 
-  private void SetColorGroup(string _color_group) {
-    color_group = _color_group;
+  private void _setColorGroup(string colorGroup) {
+    _colorGroup = colorGroup;
     Color color = SkinManager.Instance.CurrentSkin.GetColor(
-      GameSkin.ColorGroupToSkinColor(color_group),
+      GameSkin.ColorGroupToSkinColor(_colorGroup),
       SkinColorIntensity.Basic
     );
+    GD.Print($"_setColorGroup({Index} {colorGroup} {color})");
     GetNode<Sprite2D>("NoteEdge").Modulate = color;
     var area = GetNode<Area2D>("ColorArea");
     foreach (string grp in area.GetGroups()) {
       area.RemoveFromGroup(grp);
     }
-    area.AddToGroup(_color_group);
+    area.AddToGroup(colorGroup);
   }
 
-  public void SetNoteEdgeIndex(int note_index) {
-    int scale = (note_index / (NoteEdgeTextures.Length + 1)) % 2 == 0 ? -1 : 1;
-    note_edge_index = note_index % NoteEdgeTextures.Length;
-    GetNode<Sprite2D>("NoteEdge").Texture = NoteEdgeTextures[note_edge_index];
-    GetNode<Sprite2D>("NoteEdge").Scale = new Vector2(scale, 1);
+  public void SetNoteEdgeIndex(int noteIndex) {
+    int scale = (noteIndex / (NoteEdgeTextures.Length + 1)) % 2 == 0 ? 1 : -1;
+    NoteEdgeIndex = noteIndex % NoteEdgeTextures.Length;
+    _noteEdge.Texture = NoteEdgeTextures[NoteEdgeIndex];
+    _noteEdge.Scale = new Vector2(scale, 1);
   }
 
   public int GetNoteEdgeIndex() {
-    return note_edge_index;
+    return NoteEdgeIndex;
   }
 }

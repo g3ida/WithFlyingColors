@@ -40,7 +40,7 @@ public partial class SettingsMenu : GameMenu {
           return false; // We don't return true here because we want the default behavior to be called
         }
         else {
-          EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.SHOW_DIALOG);
+          EventHandler.EmitMenuButtonPressed(MenuButtons.SHOW_DIALOG);
           return true;
         }
       default:
@@ -55,10 +55,10 @@ public partial class SettingsMenu : GameMenu {
   private void OnBackButtonPressed() {
     if (!IsInTransitionState()) {
       if (IsValidState()) {
-        EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.BACK);
+        EventHandler.EmitMenuButtonPressed(MenuButtons.BACK);
       }
       else {
-        EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.SHOW_DIALOG);
+        EventHandler.EmitMenuButtonPressed(MenuButtons.SHOW_DIALOG);
       }
     }
   }

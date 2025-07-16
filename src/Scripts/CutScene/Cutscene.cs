@@ -39,13 +39,13 @@ public partial class Cutscene : Node2D {
   }
 
   public override void _EnterTree() {
-    EventHandler.Instance.Connect(EventType.CutSceneRequestStart, new Callable(this, nameof(OnCutsceneRequestStart)));
-    EventHandler.Instance.Connect(EventType.CutSceneRequestEnd, new Callable(this, nameof(OnCutsceneRequestEnd)));
+    EventHandler.Instance.Events.CutSceneRequestStart += OnCutsceneRequestStart;
+    EventHandler.Instance.Events.CutSceneRequestEnd += OnCutsceneRequestEnd;
   }
 
   public override void _ExitTree() {
-    EventHandler.Instance.Disconnect(EventType.CutSceneRequestStart, new Callable(this, nameof(OnCutsceneRequestStart)));
-    EventHandler.Instance.Disconnect(EventType.CutSceneRequestEnd, new Callable(this, nameof(OnCutsceneRequestEnd)));
+    EventHandler.Instance.Events.CutSceneRequestStart -= OnCutsceneRequestStart;
+    EventHandler.Instance.Events.CutSceneRequestEnd -= OnCutsceneRequestEnd;
   }
 
   public bool IsBusy() {

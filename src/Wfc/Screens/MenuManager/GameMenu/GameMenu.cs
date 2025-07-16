@@ -70,12 +70,13 @@ public partial class GameMenu : Control {
   public override void _ExitTree() {
     base._ExitTree();
     OnExit();
+    _disconnectSignals();
   }
 
   public override void _Ready() {
     base._Ready();
-    _connectSignals();
     _enterTransitionElements();
+    _connectSignals();
     OnReady();
   }
 
@@ -87,7 +88,7 @@ public partial class GameMenu : Control {
     base._Process(delta);
     var focus_owner = GetViewport().GuiGetFocusOwner();
     if (focus_owner != null && focus_owner != _currentFocus) {
-      EventHandler.Emit(EventType.FocusChanged);
+      EventHandler.EmitFocusChanged();
     }
     _currentFocus = focus_owner;
     OnProcess(delta);
@@ -105,7 +106,7 @@ public partial class GameMenu : Control {
 
     if (HandleBackEvent && (Input.IsActionJustPressed("ui_cancel") || Input.IsActionJustPressed("ui_home"))) {
       // Event.Instance.EmitMenuButtonPressed(MenuButtons.BACK);
-      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.BACK);
+      EventHandler.EmitMenuButtonPressed(MenuButtons.BACK);
     }
   }
 
@@ -131,7 +132,8 @@ public partial class GameMenu : Control {
     NavigateToScreen(GameMenus.GAME);
   }
 
-  private void _internalOnMenuButtonPressed(MenuButtons menuButton) {
+  private void _internalOnMenuButtonPressed(int menuButtonValue) {
+    var menuButton = (MenuButtons)menuButtonValue;
     if (_screenState != MenuScreenState.ENTERED) {
       return;
     }
@@ -154,7 +156,11 @@ public partial class GameMenu : Control {
   }
 
   private void _connectSignals() {
-    EventHandler.Connect(EventType.MenuButtonPressed, this, (MenuButtons mb) => _internalOnMenuButtonPressed(mb));
+    EventHandler.Events.MenuButtonPressed += _internalOnMenuButtonPressed;
+  }
+
+  private void _disconnectSignals() {
+    EventHandler.Events.MenuButtonPressed -= _internalOnMenuButtonPressed;
   }
 
   private void _parseTransitionElements() {
@@ -170,7 +176,6 @@ public partial class GameMenu : Control {
       }
     }
   }
-
 
   private void _clearTransitionElements() {
     foreach (var transition in _transitionElements) {

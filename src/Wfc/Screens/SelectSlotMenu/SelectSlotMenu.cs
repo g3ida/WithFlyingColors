@@ -39,11 +39,11 @@ public partial class SelectSlotMenu : GameMenu {
 
   private void OnBackButtonPressed() {
     if (SaveManager.GetSelectedSlotIndex() == -1) {
-      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.SHOW_DIALOG);
+      EventHandler.EmitMenuButtonPressed(MenuButtons.SHOW_DIALOG);
 
     }
     else {
-      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.BACK);
+      EventHandler.EmitMenuButtonPressed(MenuButtons.BACK);
     }
   }
 
@@ -74,13 +74,13 @@ public partial class SelectSlotMenu : GameMenu {
       SaveManager.SelectSlot(id);
       _on_confirm_slot_button_selected(id);
       SlotsContainer.SetGameCurrentSelectedSlot(id);
-      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.SELECT_SLOT);
+      EventHandler.EmitMenuButtonPressed(MenuButtons.SELECT_SLOT);
 
     }
     else if (action == "delete") {
       deleteTmpId = id;
       ResetDialogContainerNode.ShowDialog();
-      EventHandler.Emit(EventType.MenuButtonPressed, (int)MenuButtons.DELETE_SLOT);
+      EventHandler.EmitMenuButtonPressed(MenuButtons.DELETE_SLOT);
     }
   }
 

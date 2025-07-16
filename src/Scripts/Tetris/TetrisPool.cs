@@ -319,15 +319,15 @@ public partial class TetrisPool : Node2D {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Connect(EventType.PlayerDying, new Callable(this, nameof(_on_player_dying)));
-    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Events.PlayerDying += _on_player_dying;
+    EventHandler.Instance.Events.CheckpointLoaded += reset;
     //Connect(nameof(lines_removed), this, nameof(_on_TetrisPool_lines_removed));
     //Connect(nameof(game_over), this, nameof(_on_TetrisPool_game_over));
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Disconnect(EventType.PlayerDying, new Callable(this, nameof(_on_player_dying)));
-    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Events.PlayerDying -= _on_player_dying;
+    EventHandler.Instance.Events.CheckpointLoaded -= reset;
     //Disconnect(nameof(lines_removed), this, nameof(_on_TetrisPool_lines_removed));
     //Disconnect(nameof(game_over), this, nameof(_on_TetrisPool_game_over));
   }

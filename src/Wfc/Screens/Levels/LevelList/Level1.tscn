@@ -22,7 +22,7 @@
 [ext_resource type="PackedScene" uid="uid://doi78tys0psqf" path="res://Assets/Scenes/BrickBreaker/BrickBreaker.tscn" id="34"]
 [ext_resource type="PackedScene" uid="uid://byyce56nk7v2h" path="res://Assets/Scenes/Tetris/SlidingFloor.tscn" id="35"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://Assets/Scenes/CheckpointArea.tscn" id="36"]
-[ext_resource type="PackedScene" uid="uid://dxdpkyrs224cf" path="res://Assets/Scenes/Piano/PianoScene.tscn" id="37"]
+[ext_resource type="PackedScene" uid="uid://dxdpkyrs224cf" path="res://src/Wfc/Entities/World/Piano/PianoScene/PianoScene.tscn" id="37"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(29, 92)
@@ -62,7 +62,7 @@ follow_path = NodePath("../Player")
 [node name="CameraShake" parent="Camera2D" instance=ExtResource("30")]
 
 [node name="Player" parent="." instance=ExtResource("2")]
-position = Vector2(-7, -216)
+position = Vector2(7901, -97)
 collision_mask = 13
 
 [node name="PinkPlatform" parent="." instance=ExtResource("7")]

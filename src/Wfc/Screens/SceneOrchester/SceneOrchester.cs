@@ -63,13 +63,13 @@ public partial class SceneOrchester : Node2D {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Connect(EventType.PlayerDied, new Callable(this, nameof(OnGameOver)));
-    EventHandler.Instance.Connect(EventType.LevelCleared, new Callable(this, nameof(OnLevelCleared)));
+    EventHandler.Instance.Events.PlayerDied += OnGameOver;
+    EventHandler.Instance.Events.LevelCleared += OnLevelCleared;
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Disconnect(EventType.PlayerDied, new Callable(this, nameof(OnGameOver)));
-    EventHandler.Instance.Disconnect(EventType.LevelCleared, new Callable(this, nameof(OnLevelCleared)));
+    EventHandler.Instance.Events.PlayerDied -= OnGameOver;
+    EventHandler.Instance.Events.LevelCleared -= OnLevelCleared;
   }
 
   private static void OnGameOver() {

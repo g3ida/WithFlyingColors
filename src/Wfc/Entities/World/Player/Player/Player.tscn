@@ -55,33 +55,33 @@ occluder = SubResource("2")
 shape = SubResource("1")
 debug_color = Color(0, 0.6, 0.701961, 0.121569)
 
-[node name="FaceSeparatorBR" parent="." groups=["blue", "pink"] instance=ExtResource("4")]
+[node name="FaceSeparatorBR" parent="." groups=["purple", "yellow"] instance=ExtResource("4")]
 position = Vector2(46.5, 46.5)
 priority = 1
 
-[node name="FaceSeparatorBL" parent="." groups=["blue", "yellow"] instance=ExtResource("4")]
+[node name="FaceSeparatorBL" parent="." groups=["pink", "purple"] instance=ExtResource("4")]
 position = Vector2(-46.5, 46.5)
 priority = 1
 
-[node name="FaceSeparatorTL" parent="." groups=["purple", "yellow"] instance=ExtResource("4")]
+[node name="FaceSeparatorTL" parent="." groups=["blue", "pink"] instance=ExtResource("4")]
 position = Vector2(-46.5, -46.5)
 priority = 1
 
-[node name="FaceSeparatorTR" parent="." groups=["pink", "purple"] instance=ExtResource("4")]
+[node name="FaceSeparatorTR" parent="." groups=["blue", "yellow"] instance=ExtResource("4")]
 position = Vector2(46.5, -46.5)
 priority = 1
 
-[node name="BottomFace" parent="." groups=["blue"] instance=ExtResource("3")]
+[node name="BottomFace" parent="." groups=["purple"] instance=ExtResource("3")]
 position = Vector2(0, 45.9)
 
-[node name="TopFace" parent="." groups=["purple"] instance=ExtResource("3")]
+[node name="TopFace" parent="." groups=["blue"] instance=ExtResource("3")]
 position = Vector2(0, -45.9)
 
-[node name="LeftFace" parent="." groups=["yellow"] instance=ExtResource("3")]
+[node name="LeftFace" parent="." groups=["pink"] instance=ExtResource("3")]
 position = Vector2(-45.9, 0)
 rotation = 1.5708
 
-[node name="RightFace" parent="." groups=["pink"] instance=ExtResource("3")]
+[node name="RightFace" parent="." groups=["yellow"] instance=ExtResource("3")]
 position = Vector2(45.9, 0)
 rotation = -1.5708
 
