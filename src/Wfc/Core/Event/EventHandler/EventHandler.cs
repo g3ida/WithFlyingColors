@@ -22,53 +22,53 @@ public partial class EventHandler : Node, IEventHandler {
   public static EventHandler Instance { get; private set; } = null!;
   public Events Events => _event;
 
-  public void Connect(EventType eventType, Callable callable) {
+  public void Connect(string eventType, Callable callable) {
     Events.Connect(eventType.ToString(), callable);
   }
 
-  public bool Connect(EventType eventType, Node caller, Action action) {
+  public bool Connect(string eventType, Node caller, Action action) {
     // "boxing" the action inside one other action to avoid having the same hashcode for different instances
     var callable = Callable.From(() => action());
     return Connect(eventType, caller, callable);
   }
 
-  public bool Connect<T0>(EventType eventType, Node caller, Action<T0> action) {
+  public bool Connect<T0>(string eventType, Node caller, Action<T0> action) {
     // "boxing" the action inside one other action to avoid having the same hashcode for different instances
     var callable = Callable.From((T0 v0) => action(v0));
     return Connect(eventType, caller, callable);
   }
 
-  public bool Connect<T0, T1>(EventType eventType, Node caller, Action<T0, T1> action) {
+  public bool Connect<T0, T1>(string eventType, Node caller, Action<T0, T1> action) {
     // "boxing" the action inside one other action to avoid having the same hashcode for different instances
     var callable = Callable.From((T0 v0, T1 v1) => action(v0, v1));
     return Connect(eventType, caller, callable);
   }
 
-  public bool Connect<T0, T1, T2>(EventType eventType, Node caller, Action<T0, T1, T2> action) {
+  public bool Connect<T0, T1, T2>(string eventType, Node caller, Action<T0, T1, T2> action) {
     // "boxing" the action inside one other action to avoid having the same hashcode for different instances
     var callable = Callable.From((T0 v0, T1 v1, T2 v2) => action(v0, v1, v2));
     return Connect(eventType, caller, callable);
   }
 
-  public bool Connect<T0, T1, T2, T3>(EventType eventType, Node caller, Action<T0, T1, T2, T3> action) {
+  public bool Connect<T0, T1, T2, T3>(string eventType, Node caller, Action<T0, T1, T2, T3> action) {
     // "boxing" the action inside one other action to avoid having the same hashcode for different instances
     var callable = Callable.From((T0 v0, T1 v1, T2 v2, T3 v3) => action(v0, v1, v2, v3));
     return Connect(eventType, caller, callable);
   }
 
-  public bool Connect<T0, T1, T2, T3, T4>(EventType eventType, Node caller, Action<T0, T1, T2, T3, T4> action) {
+  public bool Connect<T0, T1, T2, T3, T4>(string eventType, Node caller, Action<T0, T1, T2, T3, T4> action) {
     // "boxing" the action inside one other action to avoid having the same hashcode for different instances
     var callable = Callable.From((T0 v0, T1 v1, T2 v2, T3 v3, T4 v4) => action(v0, v1, v2, v3, v4));
     return Connect(eventType, caller, callable);
   }
 
-  public bool Connect<T0, T1, T2, T3, T4, T5>(EventType eventType, Node caller, Action<T0, T1, T2, T3, T4, T5> action) {
+  public bool Connect<T0, T1, T2, T3, T4, T5>(string eventType, Node caller, Action<T0, T1, T2, T3, T4, T5> action) {
     // "boxing" the action inside one other action to avoid having the same hashcode for different instances
     var callable = Callable.From((T0 v0, T1 v1, T2 v2, T3 v3, T4 v4, T5 v5) => action(v0, v1, v2, v3, v4, v5));
     return Connect(eventType, caller, callable);
   }
 
-  private bool Connect(EventType eventType, Node caller, Callable callable) {
+  private bool Connect(string eventType, Node caller, Callable callable) {
     var eventName = eventType.ToString();
     if (!Events.IsConnected(eventName, callable)) {
       var error = Events.Connect(eventName, callable);
@@ -87,19 +87,19 @@ public partial class EventHandler : Node, IEventHandler {
     return false;
   }
 
-  public void ConnectOneShot(EventType eventType, Callable callable) {
+  public void ConnectOneShot(string eventType, Callable callable) {
     Events.Connect(eventType.ToString(), callable, flags: (uint)ConnectFlags.OneShot);
   }
 
-  public void Disconnect(EventType eventType, Callable callable) {
+  public void Disconnect(string eventType, Callable callable) {
     Events.Disconnect(eventType.ToString(), callable);
   }
 
-  public void Emit(EventType eventType) {
+  public void Emit(string eventType) {
     Events.EmitSignal(eventType.ToString());
   }
 
-  public void Emit(EventType eventType, params Variant[] args)
+  public void Emit(string eventType, params Variant[] args)
     => Events.EmitSignal(eventType.ToString(), args);
 
   public void EmitPlayerLanded(Node area, Vector2 position) => Events.EmitSignal(Events.SignalName.PlayerLanded, area, position);
