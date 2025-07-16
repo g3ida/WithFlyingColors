@@ -1,4 +1,5 @@
 namespace Wfc.Skin;
+
 public enum SkinColor {
   TopFace,
   LeftFace,

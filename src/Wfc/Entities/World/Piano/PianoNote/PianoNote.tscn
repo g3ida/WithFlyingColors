@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://2w3xtnwrrjwt"]
 
 [ext_resource type="Texture2D" uid="uid://b5b60j64q8i1g" path="res://Assets/Sprites/Piano/note_1.png" id="1"]
-[ext_resource type="Script" uid="uid://cg75ogggt5upa" path="res://src/Scripts/Piano/PianoNote.cs" id="2"]
+[ext_resource type="Script" uid="uid://cg75ogggt5upa" path="res://src/Wfc/Entities/World/Piano/PianoNote/PianoNote.cs" id="2"]
 [ext_resource type="Texture2D" uid="uid://c73kp5mvh1o62" path="res://Assets/Sprites/Piano/note_edge.png" id="3"]
 
 [sub_resource type="RectangleShape2D" id="1"]
@@ -45,8 +45,7 @@ debug_color = Color(0.309804, 0.494118, 1, 0.419608)
 
 [node name="ResponsivenessTimer" type="Timer" parent="."]
 
-[connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
-[connection signal="body_exited" from="Area2D" to="." method="_on_Area2D_body_exited"]
-[connection signal="body_entered" from="ColorArea" to="." method="_on_Area2D_body_entered"]
-[connection signal="body_exited" from="ColorArea" to="." method="_on_Area2D_body_exited"]
-[connection signal="timeout" from="ResponsivenessTimer" to="." method="_on_ResponsivenessTimer_timeout"]
+[connection signal="body_entered" from="Area2D" to="." method="_onArea2DBodyEntered"]
+[connection signal="body_exited" from="Area2D" to="." method="_onArea2DBodyExited"]
+[connection signal="body_entered" from="ColorArea" to="." method="_onArea2DBodyEntered"]
+[connection signal="body_exited" from="ColorArea" to="." method="_onArea2DBodyExited"]

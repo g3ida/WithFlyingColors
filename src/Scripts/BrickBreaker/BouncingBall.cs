@@ -9,7 +9,7 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BouncingBall : CharacterBody2D {
   [Export]
-  public string color_group = "blue";
+  public string color_group = ColorUtils.BLUE;
 
   private Area2D AreaNode;
   private BouncingBallSprite SpriteNode;

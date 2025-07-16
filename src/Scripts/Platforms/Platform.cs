@@ -100,13 +100,13 @@ public partial class Platform : AnimatableBody2D {
   private void ConnectSignals() {
     if (Engine.IsEditorHint())
       return;
-    EventHandler.Instance.Connect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
+    EventHandler.Instance.Events.PlayerLanded += OnPlayerLanded;
   }
 
   private void DisconnectSignals() {
     base._ExitTree();
     if (Engine.IsEditorHint())
       return;
-    EventHandler.Instance.Disconnect(EventType.PlayerLanded, new Callable(this, nameof(OnPlayerLanded)));
+    EventHandler.Instance.Events.PlayerLanded -= OnPlayerLanded;
   }
 }

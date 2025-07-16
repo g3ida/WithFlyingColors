@@ -75,13 +75,13 @@ public partial class Gem : Area2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
+    EventHandler.Instance.Events.CheckpointReached += _OnCheckpointHit;
+    EventHandler.Instance.Events.CheckpointLoaded += Reset;
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(_OnCheckpointHit)));
-    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
+    EventHandler.Instance.Events.CheckpointReached -= _OnCheckpointHit;
+    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
   }
 
   public override void _EnterTree() {

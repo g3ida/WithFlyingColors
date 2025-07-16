@@ -3,9 +3,11 @@ namespace Wfc.Core.Event;
 using System;
 using Godot;
 using Wfc.Entities.World;
+using Wfc.Entities.World.Piano;
 using Wfc.Screens.MenuManager;
 
 public partial class EventHandler : Node, IEventHandler {
+
   public override void _EnterTree() {
     base._EnterTree();
     Instance = GetTree().Root.GetNode<EventHandler>("EventCS");
@@ -16,140 +18,12 @@ public partial class EventHandler : Node, IEventHandler {
     SetProcess(false);
   }
 
+  private Events _event = new Events();
   public static EventHandler Instance { get; private set; } = null!;
-
-  [Signal]
-  public delegate void PlayerLandedEventHandler(Node area, Vector2 position);
-
-  [Signal]
-  public delegate void PlayerDyingEventHandler(Node? area, Vector2 position, int entityType);
-
-  [Signal]
-  public delegate void PlayerDiedEventHandler();
-
-  [Signal]
-  public delegate void PlayerJumpedEventHandler();
-
-  [Signal]
-  public delegate void PlayerRotateEventHandler(int dir);
-
-  [Signal]
-  public delegate void PlayerLandEventHandler();
-
-  [Signal]
-  public delegate void PlayerExplodeEventHandler();
-
-  [Signal]
-  public delegate void PlayerFallEventHandler();
-
-  [Signal]
-  public delegate void PlayerDashEventHandler(Vector2 direction);
-
-  [Signal]
-  public delegate void PlayerSlipperingEventHandler();
-
-  [Signal]
-  public delegate void GemCollectedEventHandler(string color, Vector2 position, SpriteFrames frames);
-
-  [Signal]
-  public delegate void CheckpointReachedEventHandler(Node checkpointObject);
-
-  [Signal]
-  public delegate void CheckpointLoadedEventHandler();
-
-  [Signal]
-  public delegate void MenuBoxRotatedEventHandler();
-
-  [Signal]
-  public delegate void PauseMenuEnterEventHandler();
-
-  [Signal]
-  public delegate void PauseMenuExitEventHandler();
-
-  [Signal]
-  public delegate void MenuButtonPressedEventHandler(int menuButton);
-
-  // Settings signals
-  [Signal]
-  public delegate void FullscreenToggledEventHandler(bool value);
-
-  [Signal]
-  public delegate void VsyncToggledEventHandler(bool value);
-
-  [Signal]
-  public delegate void ScreenSizeChangedEventHandler(Vector2 value);
-
-  [Signal]
-  public delegate void OnActionBoundEventHandler(string action, int key);
-
-  [Signal]
-  public delegate void TabChangedEventHandler();
-
-  [Signal]
-  public delegate void FocusChangedEventHandler();
-
-  [Signal]
-  public delegate void KeyboardActionBindingEventHandler();
-
-  [Signal]
-  public delegate void SfxVolumeChangedEventHandler(float volume);
-
-  [Signal]
-  public delegate void MusicVolumeChangedEventHandler(float volume);
-
-  [Signal]
-  public delegate void TetrisLinesRemovedEventHandler();
-
-  [Signal]
-  public delegate void BrickBrokenEventHandler(string color, Vector2 position);
-
-  [Signal]
-  public delegate void BouncingBallRemovedEventHandler(Node ball);
-
-  [Signal]
-  public delegate void PickedPowerUpEventHandler();
-
-  [Signal]
-  public delegate void BreakBreakerWinEventHandler();
-
-  [Signal]
-  public delegate void BrickBreakerStartEventHandler();
-
-  [Signal]
-  public delegate void PianoNotePressedEventHandler(string note);
-
-  [Signal]
-  public delegate void PianoNoteReleasedEventHandler(string note);
-
-  [Signal]
-  public delegate void PageFlippedEventHandler();
-
-  [Signal]
-  public delegate void WrongPianoNotePlayedEventHandler();
-
-  [Signal]
-  public delegate void PianoPuzzleWonEventHandler();
-
-  [Signal]
-  public delegate void CutSceneRequestStartEventHandler(string id);
-
-  [Signal]
-  public delegate void CutSceneRequestEndEventHandler(string id);
-
-  [Signal]
-  public delegate void GemTempleTriggeredEventHandler();
-
-  [Signal]
-  public delegate void GemEngineStartedEventHandler();
-
-  [Signal]
-  public delegate void LevelClearedEventHandler();
-
-  [Signal]
-  public delegate void GemPutInTempleEventHandler();
+  public Events Events => _event;
 
   public void Connect(EventType eventType, Callable callable) {
-    Connect(eventType.ToString(), callable);
+    Events.Connect(eventType.ToString(), callable);
   }
 
   public bool Connect(EventType eventType, Node caller, Action action) {
@@ -196,12 +70,14 @@ public partial class EventHandler : Node, IEventHandler {
 
   private bool Connect(EventType eventType, Node caller, Callable callable) {
     var eventName = eventType.ToString();
-    if (IsConnected(eventName, callable)) {
-    }
-    else {
-      var error = Connect(eventName, callable);
+    if (!Events.IsConnected(eventName, callable)) {
+      var error = Events.Connect(eventName, callable);
       if (error == Error.Ok) {
-        caller.TreeExiting += () => Disconnect(eventName, callable);
+        caller.TreeExiting += () => {
+          if (Events.IsConnected(eventName, callable)) {
+            Events.Disconnect(eventName, callable);
+          }
+        };
         return true;
       }
       else {
@@ -212,66 +88,66 @@ public partial class EventHandler : Node, IEventHandler {
   }
 
   public void ConnectOneShot(EventType eventType, Callable callable) {
-    Connect(eventType.ToString(), callable, flags: (uint)ConnectFlags.OneShot);
+    Events.Connect(eventType.ToString(), callable, flags: (uint)ConnectFlags.OneShot);
   }
 
   public void Disconnect(EventType eventType, Callable callable) {
-    Disconnect(eventType.ToString(), callable);
+    Events.Disconnect(eventType.ToString(), callable);
   }
 
   public void Emit(EventType eventType) {
-    EmitSignal(eventType.ToString());
+    Events.EmitSignal(eventType.ToString());
   }
 
   public void Emit(EventType eventType, params Variant[] args)
-    => EmitSignal(eventType.ToString(), args);
+    => Events.EmitSignal(eventType.ToString(), args);
 
-  public void EmitPlayerLanded(Node area, Vector2 position) => Instance.EmitSignal(nameof(PlayerLanded), area, position);
-  public void EmitPlayerDying(Node area, Vector2 position, EntityType entityType) => Instance.EmitSignal(nameof(PlayerDying), area, position, (int)entityType);
-  public void EmitPlayerDying(Vector2 position, EntityType entityType) => Instance.EmitSignal(nameof(PlayerDying), default(Variant), position, (int)entityType);
-  public void EmitPlayerDied() => Instance.EmitSignal(nameof(PlayerDied));
-  public void EmitPlayerSlippering() => Instance.EmitSignal(nameof(PlayerSlippering));
-  public void EmitPlayerJumped() => Instance.EmitSignal(nameof(PlayerJumped));
-  public void EmitPlayerRotate(int dir) => Instance.EmitSignal(nameof(PlayerRotate), dir);
-  public void EmitPlayerLand() => Instance.EmitSignal(nameof(PlayerLand));
-  public void EmitPlayerExplode() => Instance.EmitSignal(nameof(PlayerExplode));
-  public void EmitPlayerFall() => Instance.EmitSignal(nameof(PlayerFall));
-  public void EmitPlayerDash(Vector2 dir) => Instance.EmitSignal(nameof(PlayerDash), dir);
-  public void EmitGemCollected(string color, Vector2 position, SpriteFrames frames) => Instance.EmitSignal(nameof(GemCollected), color, position, frames);
-  public void EmitCheckpointReached(Node checkpoint) => Instance.EmitSignal(nameof(CheckpointReached), checkpoint);
-  public void EmitCheckpointLoaded() => Instance.EmitSignal(nameof(CheckpointLoaded));
+  public void EmitPlayerLanded(Node area, Vector2 position) => Events.EmitSignal(Events.SignalName.PlayerLanded, area, position);
+  public void EmitPlayerDying(Node area, Vector2 position, EntityType entityType) => Events.EmitSignal(Events.SignalName.PlayerDying, area, position, (int)entityType);
+  public void EmitPlayerDying(Vector2 position, EntityType entityType) => Events.EmitSignal(Events.SignalName.PlayerDying, default(Variant), position, (int)entityType);
+  public void EmitPlayerDied() => Events.EmitSignal(Events.SignalName.PlayerDied);
+  public void EmitPlayerSlippering() => Events.EmitSignal(Events.SignalName.PlayerSlippering);
+  public void EmitPlayerJumped() => Events.EmitSignal(Events.SignalName.PlayerJumped);
+  public void EmitPlayerRotate(int dir) => Events.EmitSignal(Events.SignalName.PlayerRotate, dir);
+  public void EmitPlayerLand() => Events.EmitSignal(Events.SignalName.PlayerLand);
+  public void EmitPlayerExplode() => Events.EmitSignal(Events.SignalName.PlayerExplode);
+  public void EmitPlayerFall() => Events.EmitSignal(Events.SignalName.PlayerFall);
+  public void EmitPlayerDash(Vector2 dir) => Events.EmitSignal(Events.SignalName.PlayerDash, dir);
+  public void EmitGemCollected(string color, Vector2 position, SpriteFrames frames) => Events.EmitSignal(Events.SignalName.GemCollected, color, position, frames);
+  public void EmitCheckpointReached(Node checkpoint) => Events.EmitSignal(Events.SignalName.CheckpointReached, checkpoint);
+  public void EmitCheckpointLoaded() => Events.EmitSignal(Events.SignalName.CheckpointLoaded);
 
   // fixme [deprecated] in favor of EmitMenuActionPressed
-  public void EmitMenuButtonPressed(MenuButtons menuButton) => Instance.EmitSignal(nameof(MenuButtonPressed), (int)menuButton);
-  public void EmitMenuActionPressed(MenuAction menuAction) => Instance.EmitSignal(nameof(MenuButtonPressed), (int)menuAction);
-  public void EmitMenuBoxRotated() => Instance.EmitSignal(nameof(MenuBoxRotated));
-  public void EmitPauseMenuEnter() => Instance.EmitSignal(nameof(PauseMenuEnter));
-  public void EmitPauseMenuExit() => Instance.EmitSignal(nameof(PauseMenuExit));
-  public void EmitFullscreenToggled(bool fullscreen) => Instance.EmitSignal(nameof(FullscreenToggled), fullscreen);
-  public void EmitVsyncToggled(bool vsync) => Instance.EmitSignal(nameof(VsyncToggled), vsync);
-  public void EmitScreenSizeChanged(Vector2 size) => Instance.EmitSignal(nameof(ScreenSizeChanged), size);
-  public void EmitSfxVolumeChanged(float volume) => Instance.EmitSignal(nameof(SfxVolumeChanged), volume);
-  public void EmitMusicVolumeChanged(float volume) => Instance.EmitSignal(nameof(MusicVolumeChanged), volume);
-  public void EmitOnActionBound(string action, int key) => Instance.EmitSignal(nameof(OnActionBound), action, key);
-  public void EmitTabChanged() => Instance.EmitSignal(nameof(TabChanged));
-  public void EmitFocusChanged() => Instance.EmitSignal(nameof(FocusChanged));
-  public void EmitKeyboardActionBiding() => Instance.EmitSignal(nameof(KeyboardActionBinding));
-  public void EmitTetrisLinesRemoved() => Instance.EmitSignal(nameof(TetrisLinesRemoved));
-  public void EmitBrickBroken(string color, Vector2 position) => Instance.EmitSignal(nameof(BrickBroken), color, position);
-  public void EmitBouncingBallRemoved(Node ball) => Instance.EmitSignal(nameof(BouncingBallRemoved), ball);
-  public void EmitPickedPowerup() => Instance.EmitSignal(nameof(PickedPowerUp));
-  public void EmitBreakBreakerWin() => Instance.EmitSignal(nameof(BreakBreakerWin));
-  public void EmitBrickBreakerStart() => Instance.EmitSignal(nameof(BrickBreakerStart));
-  public void EmitPianoNotePressed(string note) => Instance.EmitSignal(nameof(PianoNotePressed), note);
-  public void EmitPianoNoteReleased(string note) => Instance.EmitSignal(nameof(PianoNoteReleased), note);
-  public void EmitPageFlipped() => Instance.EmitSignal(nameof(PageFlipped));
-  public void EmitWrongPianoNotePlayed() => Instance.EmitSignal(nameof(WrongPianoNotePlayed));
-  public void EmitPianoPuzzleWon() => Instance.EmitSignal(nameof(PianoPuzzleWon));
-  public void EmitCutsceneRequestStart(string id) => Instance.EmitSignal(nameof(CutSceneRequestStart), id);
-  public void EmitCutsceneRequestEnd(string id) => Instance.EmitSignal(nameof(CutSceneRequestEnd), id);
-  public void EmitGemTempleTriggered() => Instance.EmitSignal(nameof(GemTempleTriggered));
-  public void EmitGemEngineStarted() => Instance.EmitSignal(nameof(GemEngineStarted));
-  public void EmitLevelCleared() => Instance.EmitSignal(nameof(LevelCleared));
-  public void EmitGemPutInTemple() => Instance.EmitSignal(nameof(GemPutInTemple));
+  public void EmitMenuButtonPressed(MenuButtons menuButton) => Events.EmitSignal(Events.SignalName.MenuButtonPressed, (int)menuButton);
+  public void EmitMenuActionPressed(MenuAction menuAction) => Events.EmitSignal(Events.SignalName.MenuButtonPressed, (int)menuAction);
+  public void EmitMenuBoxRotated() => Events.EmitSignal(Events.SignalName.MenuBoxRotated);
+  public void EmitPauseMenuEnter() => Events.EmitSignal(Events.SignalName.PauseMenuEnter);
+  public void EmitPauseMenuExit() => Events.EmitSignal(Events.SignalName.PauseMenuExit);
+  public void EmitFullscreenToggled(bool fullscreen) => Events.EmitSignal(Events.SignalName.FullscreenToggled, fullscreen);
+  public void EmitVsyncToggled(bool vsync) => Events.EmitSignal(Events.SignalName.VsyncToggled, vsync);
+  public void EmitScreenSizeChanged(Vector2 size) => Events.EmitSignal(Events.SignalName.ScreenSizeChanged, size);
+  public void EmitSfxVolumeChanged(float volume) => Events.EmitSignal(Events.SignalName.SfxVolumeChanged, volume);
+  public void EmitMusicVolumeChanged(float volume) => Events.EmitSignal(Events.SignalName.MusicVolumeChanged, volume);
+  public void EmitOnActionBound(string action, int key) => Events.EmitSignal(Events.SignalName.OnActionBound, action, key);
+  public void EmitTabChanged() => Events.EmitSignal(Events.SignalName.TabChanged);
+  public void EmitFocusChanged() => Events.EmitSignal(Events.SignalName.FocusChanged);
+  public void EmitKeyboardActionBiding() => Events.EmitSignal(Events.SignalName.KeyboardActionBinding);
+  public void EmitTetrisLinesRemoved() => Events.EmitSignal(Events.SignalName.TetrisLinesRemoved);
+  public void EmitBrickBroken(string color, Vector2 position) => Events.EmitSignal(Events.SignalName.BrickBroken, color, position);
+  public void EmitBouncingBallRemoved(Node ball) => Events.EmitSignal(Events.SignalName.BouncingBallRemoved, ball);
+  public void EmitPickedPowerup() => Events.EmitSignal(Events.SignalName.PickedPowerUp);
+  public void EmitBreakBreakerWin() => Events.EmitSignal(Events.SignalName.BreakBreakerWin);
+  public void EmitBrickBreakerStart() => Events.EmitSignal(Events.SignalName.BrickBreakerStart);
+  public void EmitPianoNotePressed(int noteIndex) => Events.EmitSignal(Events.SignalName.PianoNotePressed, noteIndex);
+  public void EmitPianoNoteReleased(int noteIndex) => Events.EmitSignal(Events.SignalName.PianoNoteReleased, noteIndex);
+  public void EmitPageFlipped() => Events.EmitSignal(Events.SignalName.PageFlipped);
+  public void EmitWrongPianoNotePlayed() => Events.EmitSignal(Events.SignalName.WrongPianoNotePlayed);
+  public void EmitPianoPuzzleWon() => Events.EmitSignal(Events.SignalName.PianoPuzzleWon);
+  public void EmitCutsceneRequestStart(string id) => Events.EmitSignal(Events.SignalName.CutSceneRequestStart, id);
+  public void EmitCutsceneRequestEnd(string id) => Events.EmitSignal(Events.SignalName.CutSceneRequestEnd, id);
+  public void EmitGemTempleTriggered() => Events.EmitSignal(Events.SignalName.GemTempleTriggered);
+  public void EmitGemEngineStarted() => Events.EmitSignal(Events.SignalName.GemEngineStarted);
+  public void EmitLevelCleared() => Events.EmitSignal(Events.SignalName.LevelCleared);
+  public void EmitGemPutInTemple() => Events.EmitSignal(Events.SignalName.GemPutInTemple);
 }
 

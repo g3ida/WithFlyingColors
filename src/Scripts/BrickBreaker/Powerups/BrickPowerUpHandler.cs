@@ -42,13 +42,13 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Connect(EventType.BrickBroken, new Callable(this, nameof(OnBrickBroken)));
-    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
+    EventHandler.Instance.Events.BrickBroken += OnBrickBroken;
+    EventHandler.Instance.Events.CheckpointLoaded += Reset;
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Disconnect(EventType.BrickBroken, new Callable(this, nameof(OnBrickBroken)));
-    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
+    EventHandler.Instance.Events.BrickBroken -= OnBrickBroken;
+    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
   }
 
   public void Reset() {

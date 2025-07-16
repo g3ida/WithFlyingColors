@@ -7,11 +7,11 @@ using Shouldly;
 public partial class SignalCounter : GodotObject {
 
   public int CallCount { get; private set; } = 0;
-  private Node _source;
+  private GodotObject _source;
   private string _signalName;
   private Callable _callable;
 
-  public SignalCounter(Node source, string signalName) {
+  public SignalCounter(GodotObject source, string signalName) {
     _source = source;
     _signalName = signalName;
     _callable = new Callable(this, nameof(_onSignalFired));

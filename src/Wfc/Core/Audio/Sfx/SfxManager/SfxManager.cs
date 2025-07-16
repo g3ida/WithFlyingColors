@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Entities.World.Piano;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -14,20 +15,15 @@ public partial class SfxManager : Node2D, ISfxManager {
   public delegate void PlaySfxEventHandler(string sfxName);
 
   private readonly Dictionary<string, AudioStreamPlayer> _sfxPool = [];
-  // public required MusicTrackManager MusicTrackManager;
 
   public override void _EnterTree() {
     base._EnterTree();
-
-    // MusicTrackManager = SceneHelpers.InstantiateNode<MusicTrackManager>();
     ConnectSignals();
   }
 
   public override void _Ready() {
     ProcessMode = ProcessModeEnum.Always;
     SetProcess(false);
-    // AddChild(MusicTrackManager);
-    // MusicTrackManager.Owner = this;
     FillSfxPool();
   }
 
@@ -51,74 +47,74 @@ public partial class SfxManager : Node2D, ISfxManager {
 
   private void ConnectSignals() {
     PlaySfx += OnPlaySfx;
-    EventHandler.Instance.Connect(EventType.PlayerJumped, new Callable(this, nameof(OnPlayerJumped)));
-    EventHandler.Instance.Connect(EventType.PlayerRotate, new Callable(this, nameof(OnPlayerRotate)));
-    EventHandler.Instance.Connect(EventType.PlayerLand, new Callable(this, nameof(OnPlayerLand)));
-    EventHandler.Instance.Connect(EventType.GemCollected, new Callable(this, nameof(OnGemCollected)));
-    EventHandler.Instance.Connect(EventType.FullscreenToggled, new Callable(this, nameof(OnButtonToggle)));
-    EventHandler.Instance.Connect(EventType.VsyncToggled, new Callable(this, nameof(OnButtonToggle)));
-    EventHandler.Instance.Connect(EventType.ScreenSizeChanged, new Callable(this, nameof(OnButtonToggle)));
-    EventHandler.Instance.Connect(EventType.OnActionBound, new Callable(this, nameof(OnKeyBound)));
-    EventHandler.Instance.Connect(EventType.TabChanged, new Callable(this, nameof(OnTabChanged)));
-    EventHandler.Instance.Connect(EventType.FocusChanged, new Callable(this, nameof(OnFocusChanged)));
-    EventHandler.Instance.Connect(EventType.MenuBoxRotated, new Callable(this, nameof(OnMenuBoxRotated)));
-    EventHandler.Instance.Connect(EventType.KeyboardActionBinding, new Callable(this, nameof(OnKeyboardActionBinding)));
-    EventHandler.Instance.Connect(EventType.PlayerExplode, new Callable(this, nameof(OnPlayerExplode)));
-    EventHandler.Instance.Connect(EventType.PauseMenuEnter, new Callable(this, nameof(OnPauseMenuEnter)));
-    EventHandler.Instance.Connect(EventType.PauseMenuExit, new Callable(this, nameof(OnPauseMenuExit)));
-    EventHandler.Instance.Connect(EventType.PlayerFall, new Callable(this, nameof(OnPlayerFalling)));
-    EventHandler.Instance.Connect(EventType.TetrisLinesRemoved, new Callable(this, nameof(OnTetrisLinesRemoved)));
-    EventHandler.Instance.Connect(EventType.PickedPowerUp, new Callable(this, nameof(OnPickedPowerup)));
-    EventHandler.Instance.Connect(EventType.BrickBroken, new Callable(this, nameof(OnBrickBroken)));
-    EventHandler.Instance.Connect(EventType.BreakBreakerWin, new Callable(this, nameof(OnWinMiniGame)));
-    EventHandler.Instance.Connect(EventType.BrickBreakerStart, new Callable(this, nameof(OnBrickBreakerStart)));
-    EventHandler.Instance.Connect(EventType.MenuButtonPressed, new Callable(this, nameof(OnMenuButtonPressed)));
-    EventHandler.Instance.Connect(EventType.SfxVolumeChanged, new Callable(this, nameof(OnButtonToggle)));
-    EventHandler.Instance.Connect(EventType.MusicVolumeChanged, new Callable(this, nameof(OnButtonToggle)));
-    EventHandler.Instance.Connect(EventType.PianoNotePressed, new Callable(this, nameof(OnPianoNotePressed)));
-    EventHandler.Instance.Connect(EventType.PianoNotePressed, new Callable(this, nameof(OnPianoNoteReleased)));
-    EventHandler.Instance.Connect(EventType.PageFlipped, new Callable(this, nameof(OnPageFlipped)));
-    EventHandler.Instance.Connect(EventType.WrongPianoNotePlayed, new Callable(this, nameof(OnWrongPianoNotePlayed)));
-    EventHandler.Instance.Connect(EventType.PianoPuzzleWon, new Callable(this, nameof(OnPianoPuzzleWon)));
-    EventHandler.Instance.Connect(EventType.GemTempleTriggered, new Callable(this, nameof(OnGemTempleTriggered)));
-    EventHandler.Instance.Connect(EventType.GemEngineStarted, new Callable(this, nameof(OnGemEngineStarted)));
-    EventHandler.Instance.Connect(EventType.GemPutInTemple, new Callable(this, nameof(OnGemPutInTemple)));
+    EventHandler.Instance.Events.PlayerJumped += OnPlayerJumped;
+    EventHandler.Instance.Events.PlayerRotate += OnPlayerRotate;
+    EventHandler.Instance.Events.PlayerLand += OnPlayerLand;
+    EventHandler.Instance.Events.GemCollected += OnGemCollected;
+    EventHandler.Instance.Events.FullscreenToggled += OnButtonToggle;
+    EventHandler.Instance.Events.VsyncToggled += OnButtonToggle;
+    EventHandler.Instance.Events.ScreenSizeChanged += OnButtonToggle;
+    EventHandler.Instance.Events.OnActionBound += OnKeyBound;
+    EventHandler.Instance.Events.TabChanged += OnTabChanged;
+    EventHandler.Instance.Events.FocusChanged += OnFocusChanged;
+    EventHandler.Instance.Events.MenuBoxRotated += OnMenuBoxRotated;
+    EventHandler.Instance.Events.KeyboardActionBinding += OnKeyboardActionBinding;
+    EventHandler.Instance.Events.PlayerExplode += OnPlayerExplode;
+    EventHandler.Instance.Events.PauseMenuEnter += OnPauseMenuEnter;
+    EventHandler.Instance.Events.PauseMenuExit += OnPauseMenuExit;
+    EventHandler.Instance.Events.PlayerFall += OnPlayerFalling;
+    EventHandler.Instance.Events.TetrisLinesRemoved += OnTetrisLinesRemoved;
+    EventHandler.Instance.Events.PickedPowerUp += OnPickedPowerup;
+    EventHandler.Instance.Events.BrickBroken += OnBrickBroken;
+    EventHandler.Instance.Events.BreakBreakerWin += OnWinMiniGame;
+    EventHandler.Instance.Events.BrickBreakerStart += OnBrickBreakerStart;
+    EventHandler.Instance.Events.MenuButtonPressed += OnMenuButtonPressed;
+    EventHandler.Instance.Events.SfxVolumeChanged += OnButtonToggle;
+    EventHandler.Instance.Events.MusicVolumeChanged += OnButtonToggle;
+    EventHandler.Instance.Events.PianoNotePressed += OnPianoNotePressed;
+    EventHandler.Instance.Events.PianoNotePressed += OnPianoNoteReleased;
+    EventHandler.Instance.Events.PageFlipped += OnPageFlipped;
+    EventHandler.Instance.Events.WrongPianoNotePlayed += OnWrongPianoNotePlayed;
+    EventHandler.Instance.Events.PianoPuzzleWon += OnPianoPuzzleWon;
+    EventHandler.Instance.Events.GemTempleTriggered += OnGemTempleTriggered;
+    EventHandler.Instance.Events.GemEngineStarted += OnGemEngineStarted;
+    EventHandler.Instance.Events.GemPutInTemple += OnGemPutInTemple;
   }
 
   private void DisconnectSignals() {
-    Disconnect(nameof(PlaySfx), new Callable(this, nameof(OnPlaySfx)));
-    EventHandler.Instance.Disconnect(EventType.PlayerJumped, new Callable(this, nameof(OnPlayerJumped)));
-    EventHandler.Instance.Disconnect(EventType.PlayerRotate, new Callable(this, nameof(OnPlayerRotate)));
-    EventHandler.Instance.Disconnect(EventType.PlayerLand, new Callable(this, nameof(OnPlayerLand)));
-    EventHandler.Instance.Disconnect(EventType.GemCollected, new Callable(this, nameof(OnGemCollected)));
-    EventHandler.Instance.Disconnect(EventType.FullscreenToggled, new Callable(this, nameof(OnButtonToggle)));
-    EventHandler.Instance.Disconnect(EventType.VsyncToggled, new Callable(this, nameof(OnButtonToggle)));
-    EventHandler.Instance.Disconnect(EventType.ScreenSizeChanged, new Callable(this, nameof(OnButtonToggle)));
-    EventHandler.Instance.Disconnect(EventType.OnActionBound, new Callable(this, nameof(OnKeyBound)));
-    EventHandler.Instance.Disconnect(EventType.TabChanged, new Callable(this, nameof(OnTabChanged)));
-    EventHandler.Instance.Disconnect(EventType.FocusChanged, new Callable(this, nameof(OnFocusChanged)));
-    EventHandler.Instance.Disconnect(EventType.MenuBoxRotated, new Callable(this, nameof(OnMenuBoxRotated)));
-    EventHandler.Instance.Disconnect(EventType.KeyboardActionBinding, new Callable(this, nameof(OnKeyboardActionBinding)));
-    EventHandler.Instance.Disconnect(EventType.PlayerExplode, new Callable(this, nameof(OnPlayerExplode)));
-    EventHandler.Instance.Disconnect(EventType.PauseMenuEnter, new Callable(this, nameof(OnPauseMenuEnter)));
-    EventHandler.Instance.Disconnect(EventType.PauseMenuExit, new Callable(this, nameof(OnPauseMenuExit)));
-    EventHandler.Instance.Disconnect(EventType.PlayerFall, new Callable(this, nameof(OnPlayerFalling)));
-    EventHandler.Instance.Disconnect(EventType.TetrisLinesRemoved, new Callable(this, nameof(OnTetrisLinesRemoved)));
-    EventHandler.Instance.Disconnect(EventType.PickedPowerUp, new Callable(this, nameof(OnPickedPowerup)));
-    EventHandler.Instance.Disconnect(EventType.BrickBroken, new Callable(this, nameof(OnBrickBroken)));
-    EventHandler.Instance.Disconnect(EventType.BreakBreakerWin, new Callable(this, nameof(OnWinMiniGame)));
-    EventHandler.Instance.Disconnect(EventType.BrickBreakerStart, new Callable(this, nameof(OnBrickBreakerStart)));
-    EventHandler.Instance.Disconnect(EventType.MenuButtonPressed, new Callable(this, nameof(OnMenuButtonPressed)));
-    EventHandler.Instance.Disconnect(EventType.SfxVolumeChanged, new Callable(this, nameof(OnButtonToggle)));
-    EventHandler.Instance.Disconnect(EventType.MusicVolumeChanged, new Callable(this, nameof(OnButtonToggle)));
-    EventHandler.Instance.Disconnect(EventType.PianoNotePressed, new Callable(this, nameof(OnPianoNotePressed)));
-    EventHandler.Instance.Disconnect(EventType.PianoNoteReleased, new Callable(this, nameof(OnPianoNoteReleased)));
-    EventHandler.Instance.Disconnect(EventType.PageFlipped, new Callable(this, nameof(OnPageFlipped)));
-    EventHandler.Instance.Disconnect(EventType.WrongPianoNotePlayed, new Callable(this, nameof(OnWrongPianoNotePlayed)));
-    EventHandler.Instance.Disconnect(EventType.PianoPuzzleWon, new Callable(this, nameof(OnPianoPuzzleWon)));
-    EventHandler.Instance.Disconnect(EventType.GemTempleTriggered, new Callable(this, nameof(OnGemTempleTriggered)));
-    EventHandler.Instance.Disconnect(EventType.GemEngineStarted, new Callable(this, nameof(OnGemEngineStarted)));
-    EventHandler.Instance.Disconnect(EventType.GemPutInTemple, new Callable(this, nameof(OnGemPutInTemple)));
+    PlaySfx -= OnPlaySfx;
+    EventHandler.Instance.Events.PlayerJumped -= OnPlayerJumped;
+    EventHandler.Instance.Events.PlayerRotate -= OnPlayerRotate;
+    EventHandler.Instance.Events.PlayerLand -= OnPlayerLand;
+    EventHandler.Instance.Events.GemCollected -= OnGemCollected;
+    EventHandler.Instance.Events.FullscreenToggled -= OnButtonToggle;
+    EventHandler.Instance.Events.VsyncToggled -= OnButtonToggle;
+    EventHandler.Instance.Events.ScreenSizeChanged -= OnButtonToggle;
+    EventHandler.Instance.Events.OnActionBound -= OnKeyBound;
+    EventHandler.Instance.Events.TabChanged -= OnTabChanged;
+    EventHandler.Instance.Events.FocusChanged -= OnFocusChanged;
+    EventHandler.Instance.Events.MenuBoxRotated -= OnMenuBoxRotated;
+    EventHandler.Instance.Events.KeyboardActionBinding -= OnKeyboardActionBinding;
+    EventHandler.Instance.Events.PlayerExplode -= OnPlayerExplode;
+    EventHandler.Instance.Events.PauseMenuEnter -= OnPauseMenuEnter;
+    EventHandler.Instance.Events.PauseMenuExit -= OnPauseMenuExit;
+    EventHandler.Instance.Events.PlayerFall -= OnPlayerFalling;
+    EventHandler.Instance.Events.TetrisLinesRemoved -= OnTetrisLinesRemoved;
+    EventHandler.Instance.Events.PickedPowerUp -= OnPickedPowerup;
+    EventHandler.Instance.Events.BrickBroken -= OnBrickBroken;
+    EventHandler.Instance.Events.BreakBreakerWin -= OnWinMiniGame;
+    EventHandler.Instance.Events.BrickBreakerStart -= OnBrickBreakerStart;
+    EventHandler.Instance.Events.MenuButtonPressed -= OnMenuButtonPressed;
+    EventHandler.Instance.Events.SfxVolumeChanged -= OnButtonToggle;
+    EventHandler.Instance.Events.MusicVolumeChanged -= OnButtonToggle;
+    EventHandler.Instance.Events.PianoNotePressed -= OnPianoNotePressed;
+    EventHandler.Instance.Events.PianoNotePressed -= OnPianoNoteReleased;
+    EventHandler.Instance.Events.PageFlipped -= OnPageFlipped;
+    EventHandler.Instance.Events.WrongPianoNotePlayed -= OnWrongPianoNotePlayed;
+    EventHandler.Instance.Events.PianoPuzzleWon -= OnPianoPuzzleWon;
+    EventHandler.Instance.Events.GemTempleTriggered -= OnGemTempleTriggered;
+    EventHandler.Instance.Events.GemEngineStarted -= OnGemEngineStarted;
+    EventHandler.Instance.Events.GemPutInTemple -= OnGemPutInTemple;
   }
 
   public override void _ExitTree() {
@@ -175,7 +171,9 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnMenuButtonPressed(int menuButton) => OnPlaySfx("menuSelect");
   private void OnGemCollected(string color, Vector2 position, SpriteFrames x) => OnPlaySfx("gemCollect");
   private void OnButtonToggle(bool value) => OnPlaySfx("menuValueChange");
-  private void OnKeyBound(bool value, bool value2) => OnPlaySfx("menuValueChange");
+  private void OnButtonToggle(float value) => OnPlaySfx("menuValueChange");
+  private void OnButtonToggle(Vector2 value) => OnPlaySfx("menuValueChange");
+  private void OnKeyBound(string action, int key) => OnPlaySfx("menuValueChange");
   private void OnTabChanged() => OnPlaySfx("menuFocus");
   private void OnFocusChanged() => OnPlaySfx("menuFocus");
   private void OnMenuBoxRotated() => OnPlaySfx("rotateRight");
@@ -187,8 +185,8 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnBrickBroken(string color, Vector2 _) => OnPlaySfx("brick");
   private void OnWinMiniGame() => OnPlaySfx("winMiniGame");
   private void OnBrickBreakerStart() => OnPlaySfx("bricksSlide");
-  private void OnPianoNotePressed(string note) => OnPlaySfx("piano_" + note);
-  private void OnPianoNoteReleased(string note) { /* do nothing */}
+  private void OnPianoNotePressed(int note) => OnPlaySfx("piano_" + note.ToString());
+  private void OnPianoNoteReleased(int note) { /* do nothing */}
   private void OnPageFlipped() => OnPlaySfx("pageFlip");
   private void OnWrongPianoNotePlayed() => OnPlaySfx("wrongAnswer");
   private void OnPianoPuzzleWon() => OnPlaySfx("success");

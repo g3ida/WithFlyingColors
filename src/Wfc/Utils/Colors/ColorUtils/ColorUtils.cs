@@ -5,7 +5,11 @@ using System.Collections.Generic;
 using Godot;
 
 public partial class ColorUtils : Node {
-  public static readonly string[] COLOR_GROUPS = { "blue", "pink", "yellow", "purple" };
+  public const string BLUE = "blue";
+  public const string PINK = "pink";
+  public const string YELLOW = "yellow";
+  public const string PURPLE = "purple";
+  public static readonly string[] COLOR_GROUPS = { BLUE, PINK, YELLOW, PURPLE };
 
   public static HSLColor RgbToHsl(Color color) {
     float R = color.R * 255.0f;

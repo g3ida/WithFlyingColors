@@ -242,13 +242,13 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
 
   public override void _EnterTree() {
     // AddToGroup("persist");
-    EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
-    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
+    EventHandler.Instance.Events.CheckpointReached += OnCheckpointHit;
+    EventHandler.Instance.Events.CheckpointLoaded += Reset;
   }
 
   public override void _ExitTree() {
-    EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
-    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(Reset)));
+    EventHandler.Instance.Events.CheckpointReached -= OnCheckpointHit;
+    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
   }
 
   public string GetSaveId() => this.GetPath();

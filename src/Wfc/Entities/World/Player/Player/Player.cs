@@ -216,7 +216,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     WasOnFloor = IsOnFloor();
   }
 
-  public void reset() {
+  public void Reset() {
     AnimatedSpriteNode.Play("idle");
     AnimatedSpriteNode.Stop();
     GlobalPosition = new Vector2(_saveData.PositionX, _saveData.PositionY);
@@ -229,38 +229,38 @@ public partial class Player : CharacterBody2D, IPersistent {
     HandleInputIsDisabled = false;
   }
 
-  private void OnCheckpointHit(CheckpointArea checkpoint_object) {
+  private void OnCheckpointHit(CheckpointArea checkpointObject) {
     var angle = 0f;
 
-    if (_bottomFaceNode.GetGroups().Contains(checkpoint_object.color_group)) {
+    if (_bottomFaceNode.GetGroups().Contains(checkpointObject.color_group)) {
       angle = 0f;
     }
 
-    else if (_leftFaceNode.GetGroups().Contains(checkpoint_object.color_group)) {
+    else if (_leftFaceNode.GetGroups().Contains(checkpointObject.color_group)) {
       angle = -Mathf.Pi / 2f;
     }
-    else if (_rightFaceNode.GetGroups().Contains(checkpoint_object.color_group)) {
+    else if (_rightFaceNode.GetGroups().Contains(checkpointObject.color_group)) {
       angle = Mathf.Pi / 2f;
     }
-    else if (_topFaceNode.GetGroups().Contains(checkpoint_object.color_group)) {
+    else if (_topFaceNode.GetGroups().Contains(checkpointObject.color_group)) {
       angle = Mathf.Pi;
     }
 
-    Vector2 position = checkpoint_object.IsInsideTree()
-        ? new Vector2(checkpoint_object.GlobalPosition.X, checkpoint_object.GlobalPosition.Y)
+    Vector2 position = checkpointObject.IsInsideTree()
+        ? new Vector2(checkpointObject.GlobalPosition.X, checkpointObject.GlobalPosition.Y)
         : new Vector2(0f, 0f);
 
     _saveData = new SaveData(position.X, position.Y, angle, CurrentDefaultCornerScaleFactor);
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
-    EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Events.CheckpointReached += OnCheckpointHit;
+    EventHandler.Instance.Events.CheckpointLoaded += Reset;
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
-    EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+    EventHandler.Instance.Events.CheckpointReached -= OnCheckpointHit;
+    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
   }
 
   public override void _EnterTree() {
@@ -429,6 +429,6 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
   public void Load(ISerializer serializer, string data) {
     this._saveData = serializer.Deserialize<SaveData>(data) ?? new SaveData();
-    reset();
+    Reset();
   }
 }

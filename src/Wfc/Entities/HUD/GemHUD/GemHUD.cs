@@ -53,17 +53,17 @@ public partial class GemHUD : Node2D {
 
   private void ConnectSignals() {
     if (!Engine.IsEditorHint()) {
-      EventHandler.Instance.Connect(EventType.GemCollected, new Callable(this, nameof(OnGemCollected)));
-      EventHandler.Instance.Connect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
-      EventHandler.Instance.Connect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+      EventHandler.Instance.Events.GemCollected += OnGemCollected;
+      EventHandler.Instance.Events.CheckpointReached += OnCheckpointHit;
+      EventHandler.Instance.Events.CheckpointLoaded += Reset;
     }
   }
 
   private void DisconnectSignals() {
     if (!Engine.IsEditorHint()) {
-      EventHandler.Instance.Disconnect(EventType.GemCollected, new Callable(this, nameof(OnGemCollected)));
-      EventHandler.Instance.Disconnect(EventType.CheckpointReached, new Callable(this, nameof(OnCheckpointHit)));
-      EventHandler.Instance.Disconnect(EventType.CheckpointLoaded, new Callable(this, nameof(reset)));
+      EventHandler.Instance.Events.GemCollected -= OnGemCollected;
+      EventHandler.Instance.Events.CheckpointReached -= OnCheckpointHit;
+      EventHandler.Instance.Events.CheckpointLoaded -= Reset;
     }
   }
 
@@ -110,7 +110,7 @@ public partial class GemHUD : Node2D {
     collectedAnimation?.Update((float)delta);
   }
 
-  public void reset() {
+  public void Reset() {
     if ((State)Helpers.ParseSaveDataInt(save_data, "state") == State.EMPTY) {
       textureRectNode.Texture = textureEmpty;
       backgroundNode.Visible = false;
@@ -131,6 +131,6 @@ public partial class GemHUD : Node2D {
 
   public void load(Dictionary<string, object> save_data) {
     this.save_data = save_data;
-    reset();
+    Reset();
   }
 }

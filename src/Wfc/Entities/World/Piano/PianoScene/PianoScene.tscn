@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://dxdpkyrs224cf"]
 
-[ext_resource type="PackedScene" uid="uid://c81yhhex2g2mu" path="res://Assets/Scenes/Piano/Piano.tscn" id="1"]
-[ext_resource type="Script" uid="uid://ertk10yu7hbi" path="res://src/Scripts/Piano/PianoScene.cs" id="2"]
+[ext_resource type="PackedScene" uid="uid://c81yhhex2g2mu" path="res://src/Wfc/Entities/World/Piano/Piano/Piano.tscn" id="1"]
+[ext_resource type="Script" uid="uid://ertk10yu7hbi" path="res://src/Wfc/Entities/World/Piano/PianoScene/PianoScene.cs" id="2"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://Assets/Scenes/CheckpointArea.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://Assets/Scenes/Platforms/SimplePlatform.tscn" id="4"]
 
@@ -29,6 +29,6 @@ shape = SubResource("1")
 [node name="SimplePlatform" parent="." instance=ExtResource("4")]
 position = Vector2(-911, -42)
 scale = Vector2(3.5, 1.11)
-group = "blue"
+group = "purple"
 
-[connection signal="body_entered" from="TriggerArea" to="." method="_on_TriggerArea_body_entered"]
+[connection signal="body_entered" from="TriggerArea" to="." method="_onTriggerAreaBodyEntered"]

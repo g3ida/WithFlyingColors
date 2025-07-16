@@ -9,7 +9,7 @@ public partial class SignalsCounter : GodotObject {
 
   private Dictionary<string, SignalCounter> _signalCounters = new();
 
-  public void Connect(string key, Node source, string signalName) {
+  public void Connect(string key, GodotObject source, string signalName) {
     if (_signalCounters.TryGetValue(key, out var counter)) {
       counter.Disconnect();
     }
