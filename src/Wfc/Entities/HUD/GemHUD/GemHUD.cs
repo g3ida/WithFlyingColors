@@ -1,54 +1,61 @@
+namespace Wfc.Entities.HUD;
+
 using System;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Persistence;
+using Wfc.Core.Serialization;
 using Wfc.Skin;
+using Wfc.Utils;
 using Wfc.Utils.Animation;
+using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
-public partial class GemHUD : Node2D {
-  private const string TextureCollectedPath = "res://Assets/Sprites/HUD/gem_hud_collected.png";
-  private const string TextureEmptyPath = "res://Assets/Sprites/HUD/gem_hud.png";
+[ScenePath]
+public partial class GemHUD : Node2D, IPersistent {
+  private const string TEXTURE_COLLECTED_PATH = "res://Assets/Sprites/HUD/gem_hud_collected.png";
+  private const string TEXTURE_EMPTY_PATH = "res://Assets/Sprites/HUD/gem_hud.png";
 
-  private Texture2D textureCollected;
-  private Texture2D textureEmpty;
-
-  private TextureRect textureRectNode;
-  private AnimationPlayer textureRectAnimationNode;
-  private TextureRect backgroundNode;
-  private AnimationPlayer backgroundAnimationPlayerNode;
-
+  #region Exports
   [Export]
-  public string Color { get; set; }
+  public string Color { get; set; } = "blue";
+  #endregion Exports
 
-  public enum State { EMPTY, COLLECTING, COLLECTED }
-  public State currentState = State.EMPTY;
+  private Texture2D _textureCollected = GD.Load<Texture2D>(TEXTURE_COLLECTED_PATH);
+  private Texture2D _textureEmpty = GD.Load<Texture2D>(TEXTURE_EMPTY_PATH);
 
-  public Dictionary<string, object> save_data = new Dictionary<string, object>
-    {
-        { "state", State.EMPTY }
-    };
+  #region Nodes
+  [NodePath("TextureRect")]
+  private TextureRect _textureRectNode = default!;
+  [NodePath("TextureRect/AnimationPlayer")]
+  private AnimationPlayer _textureRectAnimationNode = default!;
+  [NodePath("Background")]
+  private TextureRect _backgroundNode = null!;
+  [NodePath("Background/AnimationPlayer")]
+  private AnimationPlayer _backgroundAnimationPlayerNode = default!;
+  #endregion Nodes
 
-  private AnimatedSprite2D animation;
-  private SlideAnimation collectedAnimation;
+  public enum State { Empty, Collecting, Collected }
+  public State currentState = State.Empty;
+  private sealed record SaveData(State savedState = State.Empty);
+  private SaveData _saveData = new SaveData();
+
+  private AnimatedSprite2D? _animation = null;
+  private SlideAnimation? _collectedAnimation = null!;
 
   public override void _Ready() {
-    textureRectNode = GetNode<TextureRect>("TextureRect");
-    textureRectAnimationNode = GetNode<AnimationPlayer>("TextureRect/AnimationPlayer");
-    backgroundNode = GetNode<TextureRect>("Background");
-    backgroundAnimationPlayerNode = GetNode<AnimationPlayer>("Background/AnimationPlayer");
+    base._Ready();
+    this.WireNodes();
 
-    textureCollected = GD.Load<Texture2D>(TextureCollectedPath);
-    textureEmpty = GD.Load<Texture2D>(TextureEmptyPath);
-
-    textureRectNode.Texture = textureEmpty;
-    backgroundNode.Visible = false;
+    _textureRectNode.Texture = _textureEmpty;
+    _backgroundNode.Visible = false;
     var color = SkinManager.Instance.CurrentSkin.GetColor(
       GameSkin.ColorGroupToSkinColor(Color),
       SkinColorIntensity.Basic
     );
-    textureRectNode.Modulate = color;
+    _textureRectNode.Modulate = color;
   }
 
   private void ConnectSignals() {
@@ -69,68 +76,72 @@ public partial class GemHUD : Node2D {
 
   private void OnGemCollected(string col, Vector2 position, SpriteFrames frames) {
     if (Color == col) {
-      currentState = State.COLLECTING;
-      animation = new AnimatedSprite2D {
+      currentState = State.Collecting;
+      _animation = new AnimatedSprite2D {
         SpriteFrames = frames
       };
-      animation.Play();
-      animation.Modulate = textureRectNode.Modulate;
-      AddChild(animation);
-      animation.Owner = this;
+      _animation.Play();
+      _animation.Modulate = _textureRectNode.Modulate;
+      AddChild(_animation);
+      _animation.Owner = this;
 
-      animation.GlobalPosition = position;
-      collectedAnimation = new SlideAnimation("gem_slide", animation, new Vector2(20, 20), 1);
-      collectedAnimation.SetOnAnimationEndedCallback(this.OnSlideAnimEnded);
+      _animation.GlobalPosition = position;
+      _collectedAnimation = new SlideAnimation("gem_slide", _animation, new Vector2(20, 20), 1);
+      _collectedAnimation.SetOnAnimationEndedCallback(this.OnSlideAnimEnded);
     }
   }
 
   private void OnSlideAnimEnded() {
-    if (animation != null) {
-      RemoveChild(animation);
+    if (_animation != null) {
+      RemoveChild(_animation);
     }
-    if (currentState == State.COLLECTING) {
-      textureRectNode.Texture = textureCollected;
-      textureRectAnimationNode.Play("coin_collected_HUD");
-      backgroundNode.Visible = true;
-      backgroundAnimationPlayerNode.Play("coin_collected_HUD");
-      currentState = State.COLLECTED;
+    if (currentState == State.Collecting) {
+      _textureRectNode.Texture = _textureCollected;
+      _textureRectAnimationNode.Play("coin_collected_HUD");
+      _backgroundNode.Visible = true;
+      _backgroundAnimationPlayerNode.Play("coin_collected_HUD");
+      currentState = State.Collected;
     }
-    collectedAnimation = null;
+    _collectedAnimation = null;
   }
 
   public override void _EnterTree() {
+    base._EnterTree();
     ConnectSignals();
   }
 
   public override void _ExitTree() {
+    base._ExitTree();
     DisconnectSignals();
   }
 
   public override void _Process(double delta) {
-    collectedAnimation?.Update((float)delta);
+    base._Process(delta);
+    _collectedAnimation?.Update((float)delta);
   }
 
   public void Reset() {
-    if ((State)Helpers.ParseSaveDataInt(save_data, "state") == State.EMPTY) {
-      textureRectNode.Texture = textureEmpty;
-      backgroundNode.Visible = false;
+    currentState = _saveData.savedState;
+    if (currentState == State.Empty) {
+      _textureRectNode.Texture = _textureEmpty;
+      _backgroundNode.Visible = false;
     }
     else {
-      textureRectNode.Texture = textureCollected;
-      backgroundNode.Visible = true;
+      _textureRectNode.Texture = _textureCollected;
+      _backgroundNode.Visible = true;
     }
   }
 
   private void OnCheckpointHit(Node checkpoint) {
-    save_data["state"] = (int)(currentState != State.COLLECTING ? currentState : State.EMPTY);
+    var state = currentState == State.Empty ? State.Empty : State.Collected;
+    _saveData = new SaveData(state);
   }
 
-  public Dictionary<string, object> save() {
-    return save_data;
-  }
-
-  public void load(Dictionary<string, object> save_data) {
-    this.save_data = save_data;
+  public string GetSaveId() => this.GetPath();
+  public string Save(ISerializer serializer) => serializer.Serialize(_saveData);
+  public void Load(ISerializer serializer, string data) {
+    var deserializedData = serializer.Deserialize<SaveData>(data);
+    this._saveData = deserializedData ?? new SaveData();
     Reset();
   }
 }
