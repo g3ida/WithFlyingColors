@@ -1,36 +1,42 @@
+namespace Wfc.Entities.HUD;
+
 using System.Collections.Generic;
 using Godot;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
 
+[ScenePath]
 public partial class GemsHUDContainer : Panel {
-  private GemHUD blueGemNode;
-  private GemHUD pinkGemNode;
-  private GemHUD yellowGemNode;
-  private GemHUD purpleGemNode;
 
-  private Dictionary<string, GemHUD> gemsNodes;
+  [NodePath("BlueGem")]
+  private GemHUD _blueGemNode = default!;
+  [NodePath("PinkGem")]
+  private GemHUD _pinkGemNode = default!;
+  [NodePath("YellowGem")]
+  private GemHUD _yellowGemNode = default!;
+  [NodePath("PurpleGem")]
+  private GemHUD _purpleGemNode = default!;
+
+  private Dictionary<string, GemHUD> _gemsNodes = default!;
 
   public override void _Ready() {
-    blueGemNode = GetNode<GemHUD>("BlueGem");
-    pinkGemNode = GetNode<GemHUD>("PinkGem");
-    yellowGemNode = GetNode<GemHUD>("YellowGem");
-    purpleGemNode = GetNode<GemHUD>("PurpleGem");
-
-    gemsNodes = new Dictionary<string, GemHUD>
+    base._Ready();
+    this.WireNodes();
+    _gemsNodes = new Dictionary<string, GemHUD>
     {
-            { ColorUtils.BLUE, blueGemNode },
-            { ColorUtils.PINK, pinkGemNode },
-            { ColorUtils.YELLOW, yellowGemNode },
-            { ColorUtils.PURPLE, purpleGemNode }
-        };
+      { ColorUtils.BLUE, _blueGemNode },
+      { ColorUtils.PINK, _pinkGemNode },
+      { ColorUtils.YELLOW, _yellowGemNode },
+      { ColorUtils.PURPLE, _purpleGemNode }
+    };
 
     Global.Instance().GemHUD = this;
   }
 
   public bool IsGemCollected(string colorGroup) {
-    if (gemsNodes.ContainsKey(colorGroup)) {
-      var gemNode = gemsNodes[colorGroup];
-      if (gemNode.currentState == GemHUD.State.COLLECTED) {
+    if (_gemsNodes.TryGetValue(colorGroup, out var gemNode)) {
+      if (gemNode.currentState == GemHUD.State.Collected) {
         return true;
       }
     }
