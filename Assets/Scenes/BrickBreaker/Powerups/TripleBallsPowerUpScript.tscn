@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://c0egolq4bus01"]
-
-[ext_resource type="Script" uid="uid://c10bter862fwh" path="res://src/Scripts/BrickBreaker/Powerups/TripleBallsPowerUp.cs" id="1"]
-
-[node name="TripleBallsPowerUpScript" type="Node2D"]
-script = ExtResource("1")

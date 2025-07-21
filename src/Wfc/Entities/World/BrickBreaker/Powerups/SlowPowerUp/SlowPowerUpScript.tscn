@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8h1o183bow5u"]
+
+[ext_resource type="Script" uid="uid://cxchan8ygrie6" path="res://src/Wfc/Entities/World/BrickBreaker/Powerups/SlowPowerUp/SlowPowerUp.cs" id="1"]
+
+[node name="SlowPowerUpScript" type="Node2D"]
+script = ExtResource("1")

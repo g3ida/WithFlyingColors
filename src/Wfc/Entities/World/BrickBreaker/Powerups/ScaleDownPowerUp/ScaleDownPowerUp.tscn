@@ -1,0 +1,10 @@
+[gd_scene load_steps=4 format=3 uid="uid://d3tiljfvycjy4"]
+
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/BrickBreaker/Powerups/ScaleDownPowerUp/ScaleDownPowerUpScript.tscn" id="1"]
+[ext_resource type="Texture2D" uid="uid://djw6yr2oscu6e" path="res://Assets/Sprites/BrickBreaker/zoom_out.png" id="2"]
+[ext_resource type="PackedScene" uid="uid://b3qln8gue8c2g" path="res://src/Wfc/Entities/World/BrickBreaker/Powerups/PowerUp/PowerUp.tscn" id="3"]
+
+[node name="PowerUp" instance=ExtResource("3")]
+ColorGroup = "pink"
+Texture = ExtResource("2")
+OnHitScript = ExtResource("1")

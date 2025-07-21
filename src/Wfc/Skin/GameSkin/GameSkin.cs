@@ -63,7 +63,7 @@ public partial record GameSkin {
       case ColorUtils.PINK:
         return SkinColor.LeftFace;
       default:
-        throw new GameExceptions.InvalidArgumentException("Invalid color group");
+        throw new GameExceptions.InvalidArgumentException("Invalid color group: " + colorGroup);
     }
   }
 }

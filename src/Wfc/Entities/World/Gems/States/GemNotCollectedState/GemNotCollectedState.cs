@@ -12,7 +12,6 @@ public partial class GemNotCollectedState : GemBaseState {
   private const float SHINE_VARIANCE = 0.08f;
   private const float ROTATION_SPEED = 0.002f;
 
-  private bool _isActive = false;
   private NodeOscillator? _oscillator;
   private AreaEnteredEventHandler? _areaEnteredEventHandler;
   private IState<Gem>? _requestedState = null;
@@ -24,7 +23,6 @@ public partial class GemNotCollectedState : GemBaseState {
   }
 
   public override void Enter(Gem o) {
-    _isActive = true;
     o.AnimationPlayerNode.Play("RESET");
     o.AnimatedSpriteNode.Play("default");
     o.ShineSfxNode.Play();
@@ -36,12 +34,12 @@ public partial class GemNotCollectedState : GemBaseState {
   }
 
   public override void Exit(Gem o) {
-    _isActive = false;
     o.ShineSfxNode.Stop();
     if (_areaEnteredEventHandler != null) {
       o.AreaEntered -= _areaEnteredEventHandler;
       _areaEnteredEventHandler = null;
     }
+    o.CollisionShapeNode.Disabled = false;
   }
 
   public override IState<Gem>? PhysicsUpdate(Gem gem, float delta) {
@@ -54,14 +52,15 @@ public partial class GemNotCollectedState : GemBaseState {
   }
 
   public IState<Gem>? _handleAreaEntered(Gem gem, Area2D area) {
-    if (!_isActive)
-      return null;
+    if (_requestedState != null) {
+      return _requestedState;
+    }
     // FIXME: We should remove the player area or make it inactive instead of doing
     // the check here
     if (Global.Instance().Player.IsDying())
       return null;
-    if (area.IsInGroup(gem.group_name)) {
-      _isActive = false;
+    if (area.IsInGroup(gem.GroupName)) {
+      gem.CollisionShapeNode.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
       return _statesStore.GetState<GemCollectingState>();
     }
     return null;

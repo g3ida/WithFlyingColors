@@ -335,18 +335,21 @@ public partial class Player : CharacterBody2D, IPersistent {
 
   // This function is a hack for bullets and fast moving objects because of this Godot issue:
   // https://github.com/godotengine/godot/issues/43743
-  public void OnFastAreaCollidingWithPlayerShape(uint body_shape_index, Area2D color_area, EntityType entity_type) {
-    var collision_shape = (CollisionShape2D)ShapeOwnerGetOwner(body_shape_index);
-    var shape_groups = collision_shape.GetGroups();
-    var group_found = false;
-    foreach (string group in shape_groups) {
-      if (color_area.IsInGroup(group)) {
-        group_found = true;
+  public void OnFastAreaCollidingWithPlayerShape(uint bodyShapeIndex, Area2D colorArea, EntityType entityType) {
+    var collisionShape = (CollisionShape2D)ShapeOwnerGetOwner(bodyShapeIndex);
+    var shapeGroups = collisionShape.GetGroups();
+    if (shapeGroups.Count == 0) {
+      return;
+    }
+    var groupFound = false;
+    foreach (string group in shapeGroups) {
+      if (colorArea.IsInGroup(group)) {
+        groupFound = true;
         break;
       }
     }
-    if (!group_found) {
-      EventHandler.Instance.EmitPlayerDying(color_area, GlobalPosition, entity_type);
+    if (!groupFound) {
+      EventHandler.Instance.EmitPlayerDying(colorArea, GlobalPosition, entityType);
     }
   }
 

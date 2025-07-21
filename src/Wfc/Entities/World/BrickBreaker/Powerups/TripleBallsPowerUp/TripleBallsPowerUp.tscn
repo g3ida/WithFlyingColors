@@ -1,0 +1,10 @@
+[gd_scene load_steps=4 format=3 uid="uid://d0peixom16g6r"]
+
+[ext_resource type="Texture2D" uid="uid://cv01irv3wv11p" path="res://Assets/Sprites/BrickBreaker/3_balls.png" id="1"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/BrickBreaker/Powerups/TripleBallsPowerUp/TripleBallsPowerUpScript.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://b3qln8gue8c2g" path="res://src/Wfc/Entities/World/BrickBreaker/Powerups/PowerUp/PowerUp.tscn" id="3"]
+
+[node name="PowerUp" instance=ExtResource("3")]
+ColorGroup = "yellow"
+Texture = ExtResource("1")
+OnHitScript = ExtResource("2")

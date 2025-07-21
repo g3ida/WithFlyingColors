@@ -43,7 +43,6 @@ public partial class BoxFace : BaseFace {
       EventHandler.Instance.EmitPlayerDying(GlobalPosition, EntityType.FallZone);
       return;
     }
-
     else if (!area.IsInGroup(groups[0])) {
       EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, EntityType.Platform);
     }

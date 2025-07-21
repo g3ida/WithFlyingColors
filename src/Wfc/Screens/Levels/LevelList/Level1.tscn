@@ -19,7 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://we8kyl5cdqe6" path="res://Assets/Scenes/Cam/CameraShake.tscn" id="30"]
 [ext_resource type="PackedScene" uid="uid://geq5rxi44eiy" path="res://Assets/Scenes/Tetris/TetrisPool.tscn" id="31"]
 [ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" id="32"]
-[ext_resource type="PackedScene" uid="uid://doi78tys0psqf" path="res://Assets/Scenes/BrickBreaker/BrickBreaker.tscn" id="34"]
+[ext_resource type="PackedScene" uid="uid://doi78tys0psqf" path="res://src/Wfc/Entities/World/BrickBreaker/BrickBreaker/BrickBreaker.tscn" id="34"]
 [ext_resource type="PackedScene" uid="uid://byyce56nk7v2h" path="res://Assets/Scenes/Tetris/SlidingFloor.tscn" id="35"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://Assets/Scenes/CheckpointArea.tscn" id="36"]
 [ext_resource type="PackedScene" uid="uid://dxdpkyrs224cf" path="res://src/Wfc/Entities/World/Piano/PianoScene/PianoScene.tscn" id="37"]
@@ -62,7 +62,7 @@ follow_path = NodePath("../Player")
 [node name="CameraShake" parent="Camera2D" instance=ExtResource("30")]
 
 [node name="Player" parent="." instance=ExtResource("2")]
-position = Vector2(7901, -97)
+position = Vector2(-30, -198)
 collision_mask = 13
 
 [node name="PinkPlatform" parent="." instance=ExtResource("7")]
@@ -97,19 +97,19 @@ scale = Vector2(1000, 4.788)
 [node name="YellowGem" parent="." instance=ExtResource("10")]
 z_index = 100
 position = Vector2(10, -440)
-group_name = "yellow"
+GroupName = "yellow"
 
 [node name="BuleGem" parent="." instance=ExtResource("10")]
 position = Vector2(5412, 365)
-group_name = "blue"
+GroupName = "blue"
 
 [node name="PinkGem" parent="." instance=ExtResource("10")]
 position = Vector2(2737, -80)
-group_name = "pink"
+GroupName = "pink"
 
 [node name="PurpleGem" parent="." instance=ExtResource("10")]
 position = Vector2(1815, 100)
-group_name = "purple"
+GroupName = "purple"
 
 [node name="HUD" type="CanvasLayer" parent="."]
 offset = Vector2(0, 15)

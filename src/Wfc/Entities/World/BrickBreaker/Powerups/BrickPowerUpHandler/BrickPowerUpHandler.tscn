@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://f545keysmn6i"]
+[ext_resource type="Script" uid="uid://bvpb5f5blyavv" path="res://src/Wfc/Entities/World/BrickBreaker/Powerups/BrickPowerUpHandler/BrickPowerUpHandler.cs" id="1"]
+
+[node name="BrickPowerUpHandler" type="Node2D"]
+script = ExtResource("1")
+
+[node name="CooldownTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="FallingPowerUpsContainer" type="Node2D" parent="."]

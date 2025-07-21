@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://cxkhntelawkwe"]
-
-[ext_resource type="Script" uid="uid://boa56upd0iybu" path="res://src/Scripts/BrickBreaker/Powerups/ScaleUpPowerUp.cs" id="1"]
-
-[node name="ScaleUpPowerUp" type="Node2D"]
-script = ExtResource("1")
