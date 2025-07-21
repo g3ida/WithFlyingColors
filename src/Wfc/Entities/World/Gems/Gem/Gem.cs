@@ -16,7 +16,7 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 public partial class Gem : Area2D, IPersistent {
   [Export]
-  public string group_name;
+  public string GroupName = "blue";
 
   [NodePath("PointLight2D")]
   public PointLight2D LightNode = null!;
@@ -45,13 +45,13 @@ public partial class Gem : Area2D, IPersistent {
     AnimatedSpriteNode = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
     AnimationPlayerNode = GetNode<AnimationPlayer>("AnimatedSprite2D/AnimationPlayer");
 
-    AddToGroup(group_name);
+    AddToGroup(GroupName);
     var color = SkinManager.Instance.CurrentSkin.GetColor(
-      GameSkin.ColorGroupToSkinColor(group_name),
+      GameSkin.ColorGroupToSkinColor(GroupName),
       SkinColorIntensity.Basic
     );
     var lightColor = SkinManager.Instance.CurrentSkin.GetColor(
-      GameSkin.ColorGroupToSkinColor(group_name),
+      GameSkin.ColorGroupToSkinColor(GroupName),
       SkinColorIntensity.VeryLight
     );
     LightNode.Color = color;

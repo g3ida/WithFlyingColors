@@ -11,6 +11,8 @@ public partial class GemCollectingState : GemBaseState {
   private IState<Gem>? _requestedState = null;
   private StringName _gemCollectedAnimationStringName = "gem_collected_animation";
   private uint _cachedCollisionMask = 0;
+  private uint _cachedCollisionLayer = 0;
+
   private IStatesStore<Gem> _statesStore;
 
   public GemCollectingState(IStatesStore<Gem> statesStore) : base() {
@@ -20,7 +22,9 @@ public partial class GemCollectingState : GemBaseState {
   public override void Enter(Gem o) {
     o.CollisionShapeNode.Disabled = true;
     _cachedCollisionMask = o.CollisionMask;
+    _cachedCollisionLayer = o.CollisionLayer;
     o.CollisionMask = 0;
+    o.CollisionLayer = 0;
     o.AnimationPlayerNode.Play(_gemCollectedAnimationStringName);
     o.ShineSfxNode.Stop();
 
@@ -35,7 +39,9 @@ public partial class GemCollectingState : GemBaseState {
   public override void Exit(Gem o) {
     o.CollisionShapeNode.Disabled = false;
     o.CollisionMask = _cachedCollisionMask;
+    o.CollisionLayer = _cachedCollisionLayer;
     _cachedCollisionMask = 0;
+    _cachedCollisionLayer = 0;
     if (_animationFinishedEventHandler != null) {
       o.AnimationPlayerNode.AnimationFinished -= _animationFinishedEventHandler;
       _animationFinishedEventHandler = null;
@@ -46,7 +52,7 @@ public partial class GemCollectingState : GemBaseState {
 
   private GemCollectedState? _handleAnimationFinished(Gem gem) {
     EventHandler.Instance.EmitGemCollected(
-        gem.group_name,
+        gem.GroupName,
         gem.AnimatedSpriteNode.GetGlobalTransformWithCanvas().Origin,
         gem.AnimatedSpriteNode.SpriteFrames);
     return _statesStore.GetState<GemCollectedState>();

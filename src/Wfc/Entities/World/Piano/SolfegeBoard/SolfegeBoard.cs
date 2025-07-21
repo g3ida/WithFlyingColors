@@ -52,7 +52,7 @@ public partial class SolfegeBoard : Node2D, IPersistent {
   private NotesCursor? _notesCursor = null;
   private float _time = 0;
 
-  private record SaveData(BoardState savedState = BoardState.Stopped);
+  private sealed record SaveData(BoardState savedState = BoardState.Stopped);
   private SaveData _saveData = new SaveData();
 
   private SolfegeNotesTextureGenerator solfegeNotesTextureGenerator = new SolfegeNotesTextureGenerator();

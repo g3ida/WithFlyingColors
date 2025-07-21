@@ -1,0 +1,32 @@
+[gd_scene load_steps=4 format=3 uid="uid://cmitplat3raxy"]
+
+[ext_resource type="TileSet" path="res://Assets/Tilesets/BricksTileMap.tres" id="1"]
+[ext_resource type="Script" uid="uid://br8pwqgdefaqu" path="res://src/Wfc/Entities/World/BrickBreaker/BricksLevelTilemap/BricksLevelTilemap.cs" id="3"]
+[ext_resource type="Script" uid="uid://dh4in1qpbwb2c" path="res://src/Wfc/Entities/World/BrickBreaker/BricksTileMap/BricksTileMap.cs" id="4"]
+
+[node name="BricksTileMap" type="Node2D"]
+script = ExtResource("4")
+
+[node name="level0" type="TileMap" parent="."]
+tile_set = ExtResource("1")
+format = 2
+layer_0/tile_data = PackedInt32Array(262147, 4, 0, 262151, 4, 0, 458755, 3, 0, 458756, 3, 0, 458757, 3, 0, 458759, 3, 0, 524290, 4, 0, 524291, 3, 0, 524292, 2, 0, 524293, 1, 0, 524294, 0, 0, 524295, 2, 0, 524296, 4, 0)
+script = ExtResource("3")
+
+[node name="level1" type="TileMap" parent="."]
+tile_set = ExtResource("1")
+format = 2
+layer_0/tile_data = PackedInt32Array(7, 0, 0, 65541, 4, 0)
+script = ExtResource("3")
+id = 1
+
+[node name="level2" type="TileMap" parent="."]
+tile_set = ExtResource("1")
+format = 2
+layer_0/tile_data = PackedInt32Array(-655355, 4, 0, -262142, 4, 0, -262139, 0, 0, -262136, 4, 0)
+script = ExtResource("3")
+id = 2
+
+[connection signal="levelBricksCleared" from="level0" to="." method="_onLevelBricksCleared"]
+[connection signal="levelBricksCleared" from="level1" to="." method="_onLevelBricksCleared"]
+[connection signal="levelBricksCleared" from="level2" to="." method="_onLevelBricksCleared"]

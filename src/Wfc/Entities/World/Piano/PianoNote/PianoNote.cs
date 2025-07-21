@@ -277,7 +277,6 @@ public partial class PianoNote : AnimatableBody2D {
       GameSkin.ColorGroupToSkinColor(_colorGroup),
       SkinColorIntensity.Basic
     );
-    GD.Print($"_setColorGroup({Index} {colorGroup} {color})");
     GetNode<Sprite2D>("NoteEdge").Modulate = color;
     var area = GetNode<Area2D>("ColorArea");
     foreach (string grp in area.GetGroups()) {

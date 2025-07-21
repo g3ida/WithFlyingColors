@@ -295,19 +295,19 @@ splash_darkness = 0.93
 
 [node name="BuleGem" parent="Gems" index="0" instance=ExtResource("5")]
 position = Vector2(12389, 64)
-group_name = "blue"
+GroupName = "blue"
 
 [node name="PinkGem" parent="Gems" index="1" instance=ExtResource("5")]
 position = Vector2(12709, 64)
-group_name = "pink"
+GroupName = "pink"
 
 [node name="PurpleGem" parent="Gems" index="2" instance=ExtResource("5")]
 position = Vector2(13029, 64)
-group_name = "purple"
+GroupName = "purple"
 
 [node name="YellowGem" parent="Gems" index="3" instance=ExtResource("5")]
 position = Vector2(13349, 64)
-group_name = "yellow"
+GroupName = "yellow"
 
 [node name="CutsceneTrigger" type="Area2D" parent="." index="9"]
 position = Vector2(1401, 326)
