@@ -169,7 +169,7 @@ public partial class GameCamera : Camera2D {
     SetDeferred(Camera2D.PropertyName.PositionSmoothingEnabled, true);
   }
 
-  public void set_follow_node(Node2D followNode) {
+  public void SetFollowNode(Node2D followNode) {
     follow = followNode;
     follow_path = followNode.GetPath();
   }

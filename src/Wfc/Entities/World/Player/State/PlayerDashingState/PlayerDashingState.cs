@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Player;
 
 using Godot;
 using Wfc.Core.Input;
+using Wfc.Entities.World.Camera;
 using Wfc.State;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
