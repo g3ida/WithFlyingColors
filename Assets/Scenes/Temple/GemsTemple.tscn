@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://o3dp0as2sa1j" path="res://Assets/Sprites/Temple/gem_temple.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://lvlt35y8k2ss" path="res://Assets/Sprites/Temple/temple_gem.png" id="2"]
 [ext_resource type="Script" uid="uid://bkuxo70xqwexw" path="res://src/Scripts/Temple/GemsTemple.cs" id="3"]
-[ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://bc7aekxv6ksux" path="res://Assets/Sprites/Temple/temple_bloom.png" id="5"]
 
 [sub_resource type="RectangleShape2D" id="1"]
@@ -69,8 +69,8 @@ one_shot = true
 
 [node name="CameraLocalizer" parent="." instance=ExtResource("4")]
 position = Vector2(-1440, 0)
-position_clipping_mode = 13
-follow_node = NodePath("..")
+PositionClippingMode = 13
+FollowNode = NodePath("..")
 
 [node name="Pos" type="Marker2D" parent="CameraLocalizer"]
 position = Vector2(1790, 0)

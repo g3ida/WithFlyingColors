@@ -16,9 +16,9 @@
 [ext_resource type="PackedScene" uid="uid://cgut5po1y8ibm" path="res://Assets/Scenes/LazerBeam.tscn" id="22"]
 [ext_resource type="PackedScene" uid="uid://dgx873koyipf1" path="res://Assets/Scenes/Canon.tscn" id="24"]
 [ext_resource type="PackedScene" uid="uid://1lmqlfdxvv5q" path="res://Assets/Scenes/Bullet.tscn" id="25"]
-[ext_resource type="PackedScene" uid="uid://we8kyl5cdqe6" path="res://Assets/Scenes/Cam/CameraShake.tscn" id="30"]
+[ext_resource type="PackedScene" uid="uid://we8kyl5cdqe6" path="res://src/Wfc/Entities/World/Camera/CameraShake/CameraShake.tscn" id="30"]
 [ext_resource type="PackedScene" uid="uid://geq5rxi44eiy" path="res://src/Wfc/Entities/World/Tetris/TetrisPool/TetrisPool.tscn" id="31"]
-[ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" id="32"]
+[ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="32"]
 [ext_resource type="PackedScene" uid="uid://doi78tys0psqf" path="res://src/Wfc/Entities/World/BrickBreaker/BrickBreaker/BrickBreaker.tscn" id="34"]
 [ext_resource type="PackedScene" uid="uid://byyce56nk7v2h" path="res://src/Wfc/Entities/World/Tetris/SlidingFloor/SlidingFloor.tscn" id="35"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://Assets/Scenes/CheckpointArea.tscn" id="36"]
@@ -163,7 +163,7 @@ position = Vector2(5950, -987)
 
 [node name="CameraLocalizer" parent="." instance=ExtResource("32")]
 position = Vector2(4358, 559)
-position_clipping_mode = 2
+PositionClippingMode = 2
 
 [node name="Area2D" type="Area2D" parent="CameraLocalizer"]
 

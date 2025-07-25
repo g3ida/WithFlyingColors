@@ -11,6 +11,7 @@ using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Entities.World;
 using Wfc.Entities.World.BrickBreaker.Powerups;
+using Wfc.Entities.World.Camera;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -288,8 +289,8 @@ public partial class BrickBreaker : Node2D, IPersistent {
   }
 
   private void ChangeCameraViewAfterWin() {
-    _cameraLocalizerNode.position_clipping_mode = CameraLimit.LIMIT_ALL_BUT_TOP;
-    _cameraLocalizerNode.full_viewport_drag_margin = false;
+    _cameraLocalizerNode.PositionClippingMode = CameraLimit.LimitAllButTop;
+    _cameraLocalizerNode.FullViewportDragMargin = false;
     _cameraLocalizerNode.SetCameraLimits();
     _cameraLocalizerNode.ApplyCameraChanges();
   }

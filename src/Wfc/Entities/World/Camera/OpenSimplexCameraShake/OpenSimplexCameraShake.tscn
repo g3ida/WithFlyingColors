@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3 uid="uid://rv7cyf37d5jy"]
+[ext_resource type="Script" uid="uid://c5iqa2qbfom3o" path="res://src/Wfc/Entities/World/Camera/OpenSimplexCameraShake/OpenSimplexCameraShake.cs" id="1"]
+
+[node name="OpenSimplexCameraNoise" type="Node2D"]
+script = ExtResource("1")

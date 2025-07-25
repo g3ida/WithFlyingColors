@@ -2,7 +2,7 @@
 
 [ext_resource type="TileSet" path="res://Assets/Tilesets/Tetrisl.tres" id="1"]
 [ext_resource type="Script" uid="uid://d35jxrakwg1vt" path="res://src/Wfc/Entities/World/Tetris/TetrisPool/TetrisPool.cs" id="2"]
-[ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://Assets/Scenes/Cam/CameraLocalizer.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://bir8vihuohasj" path="res://src/Wfc/Entities/World/Tetris/ScoreBoard/ScoreBoard.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://Assets/Scenes/CheckpointArea.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://d2j7an1dv0j8h" path="res://src/Wfc/Entities/World/Tetris/NextPiece/NextPiece.tscn" id="6"]
@@ -43,9 +43,9 @@ position = Vector2(683.333, -860.667)
 [node name="CameraLocalizer" parent="." instance=ExtResource("3")]
 position = Vector2(34.667, -21)
 scale = Vector2(9, 3)
-full_viewport_drag_margin = true
-zoom = 1.5
-limit_x_axis_to_view_size = true
+FullViewportDragMargin = true
+Zoom = 1.5
+LimitXAxisToViewSize = true
 
 [node name="TopRight" type="Marker2D" parent="CameraLocalizer"]
 position = Vector2(107.407, -394)
