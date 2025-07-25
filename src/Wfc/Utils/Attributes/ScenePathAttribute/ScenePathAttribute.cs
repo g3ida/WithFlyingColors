@@ -1,4 +1,5 @@
 namespace Wfc.Utils.Attributes;
+
 using System;
 using System.Linq;
 

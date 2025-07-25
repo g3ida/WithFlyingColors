@@ -29,8 +29,8 @@ public partial class SlotActionButtons : HBoxContainer {
     _confirmButtonNode = GetNode<SlotButton>("ConfirmButton");
     _spaceNode = new Control();
 
-    GetParent().CallDeferred("add_child", _spaceNode);
-    _spaceNode.CallDeferred("set_owner", GetParent());
+    GetParent().CallDeferred(Node2D.MethodName.AddChild, _spaceNode);
+    _spaceNode.CallDeferred(Node2D.MethodName.SetOwner, GetParent());
 
     UpdateSpaceNode(0);
   }
