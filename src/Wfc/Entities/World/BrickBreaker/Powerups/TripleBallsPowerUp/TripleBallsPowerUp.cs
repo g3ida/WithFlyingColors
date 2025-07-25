@@ -28,7 +28,7 @@ public partial class TripleBallsPowerUp : PowerUpScript {
             spawnVelocity.Y = -spawnVelocity.Y;
           }
           ball.BallVelocity = spawnVelocity;
-          ball.CallDeferred("SetVelocity", spawnVelocity);
+          ball.CallDeferred(BouncingBall.MethodName.SetVelocity, spawnVelocity);
         }
       }
     }
