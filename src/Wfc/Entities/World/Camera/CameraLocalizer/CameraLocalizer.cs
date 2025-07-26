@@ -329,16 +329,16 @@ public partial class CameraLocalizer : Node2D {
 
   private void SetCameraDragMargins() {
     if (FullViewportDragMargin) {
-      Global.Instance().Camera.set_drag_margin_bottom(1);
-      Global.Instance().Camera.set_drag_margin_left(1);
-      Global.Instance().Camera.set_drag_margin_right(1);
-      Global.Instance().Camera.set_drag_margin_top(1);
+      Global.Instance().Camera.SetDragMarginBottom(1);
+      Global.Instance().Camera.SetDragMarginLeft(1);
+      Global.Instance().Camera.SetDragMarginRight(1);
+      Global.Instance().Camera.SetDragMarginTop(1);
     }
     else {
-      Global.Instance().Camera.set_drag_margin_bottom(Constants.DEFAULT_DRAG_MARGIN_TB);
-      Global.Instance().Camera.set_drag_margin_left(Constants.DEFAULT_DRAG_MARGIN_LR);
-      Global.Instance().Camera.set_drag_margin_right(Constants.DEFAULT_DRAG_MARGIN_LR);
-      Global.Instance().Camera.set_drag_margin_top(Constants.DEFAULT_DRAG_MARGIN_TB);
+      Global.Instance().Camera.SetDragMarginBottom(Constants.DEFAULT_DRAG_MARGIN_TB);
+      Global.Instance().Camera.SetDragMarginLeft(Constants.DEFAULT_DRAG_MARGIN_LR);
+      Global.Instance().Camera.SetDragMarginRight(Constants.DEFAULT_DRAG_MARGIN_LR);
+      Global.Instance().Camera.SetDragMarginTop(Constants.DEFAULT_DRAG_MARGIN_TB);
     }
   }
 

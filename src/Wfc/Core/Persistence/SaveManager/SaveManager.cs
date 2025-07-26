@@ -39,7 +39,7 @@ public partial class SaveManager : ISaveManager {
     // which would make you see the camera move quickly to the checkpoint position
     // when we load a level. We put it here instead of the reset method because
     // I like the smoothing effect when the player loses
-    Global.Instance().Camera.update_position(Global.Instance().Player.GlobalPosition);
+    Global.Instance().Camera.UpdatePosition(Global.Instance().Player.GlobalPosition);
     LatestLoadedSlot = slotIndex;
     _saveSlotsInfo();
     GD.Print("Game loaded!");

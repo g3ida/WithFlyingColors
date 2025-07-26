@@ -134,12 +134,12 @@ public partial class Cutscene : Node2D {
   }
 
   public async void ShowSomeNode(Node2D node, float duration = 7.0f, float moveSpeed = 3.2f) {
-    var cameraLastFocus = Global.Instance().Camera.follow;
+    var cameraLastFocus = Global.Instance().Camera.FollowNode;
     var cameraLastSpeed = Global.Instance().Camera.PositionSmoothingSpeed;
     EventHandler.Instance.EmitCutsceneRequestStart("CutScene");
 
     if (node != null) {
-      Global.Instance().Camera.follow = node;
+      Global.Instance().Camera.FollowNode = node;
     }
     Global.Instance().Camera.PositionSmoothingSpeed = moveSpeed;
 
@@ -147,7 +147,7 @@ public partial class Cutscene : Node2D {
     timerNode.Start();
     await ToSignal(timerNode, Timer.SignalName.Timeout);
 
-    Global.Instance().Camera.follow = cameraLastFocus;
+    Global.Instance().Camera.FollowNode = cameraLastFocus;
     timerNode.WaitTime = duration * 0.4f;
     timerNode.Start();
     await ToSignal(timerNode, Timer.SignalName.Timeout);

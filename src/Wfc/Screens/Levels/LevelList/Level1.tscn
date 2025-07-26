@@ -1,27 +1,26 @@
-[gd_scene load_steps=26 format=3 uid="uid://ctn6tng7nqhus"]
+[gd_scene load_steps=25 format=3 uid="uid://ctn6tng7nqhus"]
 
 [ext_resource type="PackedScene" uid="uid://0cgvvyxmoalw" path="res://src/Wfc/Entities/World/CutScenes/CutScene/Cutscene.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://nvn44bv2puaj" path="res://src/Wfc/Entities/World/Player/Player/Player.tscn" id="2"]
 [ext_resource type="Script" uid="uid://eiavpbssgij4" path="res://src/Wfc/Screens/Levels/GameLevel/GameLevel.cs" id="3"]
-[ext_resource type="PackedScene" uid="uid://c34ryx01v1y06" path="res://Assets/Scenes/Camera.tscn" id="6"]
-[ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://Assets/Scenes/Platforms/SimplePlatform.tscn" id="7"]
-[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://Assets/Scenes/Fallzone.tscn" id="9"]
+[ext_resource type="PackedScene" uid="uid://c34ryx01v1y06" path="res://src/Wfc/Entities/World/Camera/GameCamera/GameCamera.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://src/Wfc/Entities/World/Platforms/SimplePlatform/SimplePlatform.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://src/Wfc/Entities/World/Fallzone/Fallzone.tscn" id="9"]
 [ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://src/Wfc/Entities/World/Gems/Gem/Gem.tscn" id="10"]
 [ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="11"]
 [ext_resource type="PackedScene" uid="uid://lycx13j354o3" path="res://src/Wfc/Entities/HUD/GemsHUDContainer/GemsHUDContainer.tscn" id="16"]
-[ext_resource type="PackedScene" uid="uid://cblfcag52yydu" path="res://Assets/Scenes/Checkpoint.tscn" id="18"]
+[ext_resource type="PackedScene" uid="uid://cblfcag52yydu" path="res://src/Wfc/Entities/World/Checkpoints/Checkpoint/Checkpoint.tscn" id="18"]
 [ext_resource type="PackedScene" uid="uid://bijboehpv0gsh" path="res://src/Wfc/Screens/PauseMenu/PauseMenu/PauseMenu.tscn" id="19"]
-[ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" id="20"]
-[ext_resource type="PackedScene" uid="uid://dhoxs1h5dhijp" path="res://Assets/Scenes/Platforms/Platform.tscn" id="21"]
-[ext_resource type="PackedScene" uid="uid://cgut5po1y8ibm" path="res://Assets/Scenes/LazerBeam.tscn" id="22"]
-[ext_resource type="PackedScene" uid="uid://dgx873koyipf1" path="res://Assets/Scenes/Canon.tscn" id="24"]
-[ext_resource type="PackedScene" uid="uid://1lmqlfdxvv5q" path="res://Assets/Scenes/Bullet.tscn" id="25"]
+[ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="20"]
+[ext_resource type="PackedScene" uid="uid://dhoxs1h5dhijp" path="res://src/Wfc/Entities/World/Platforms/Platform/Platform.tscn" id="21"]
+[ext_resource type="PackedScene" uid="uid://cgut5po1y8ibm" path="res://src/Wfc/Entities/World/Enemies/LazerBeam/LazerBeam.tscn" id="22"]
+[ext_resource type="PackedScene" uid="uid://dgx873koyipf1" path="res://src/Wfc/Entities/World/Enemies/Canon/Canon.tscn" id="24"]
 [ext_resource type="PackedScene" uid="uid://we8kyl5cdqe6" path="res://src/Wfc/Entities/World/Camera/CameraShake/CameraShake.tscn" id="30"]
 [ext_resource type="PackedScene" uid="uid://geq5rxi44eiy" path="res://src/Wfc/Entities/World/Tetris/TetrisPool/TetrisPool.tscn" id="31"]
 [ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="32"]
 [ext_resource type="PackedScene" uid="uid://doi78tys0psqf" path="res://src/Wfc/Entities/World/BrickBreaker/BrickBreaker/BrickBreaker.tscn" id="34"]
 [ext_resource type="PackedScene" uid="uid://byyce56nk7v2h" path="res://src/Wfc/Entities/World/Tetris/SlidingFloor/SlidingFloor.tscn" id="35"]
-[ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://Assets/Scenes/CheckpointArea.tscn" id="36"]
+[ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="36"]
 [ext_resource type="PackedScene" uid="uid://dxdpkyrs224cf" path="res://src/Wfc/Entities/World/Piano/PianoScene/PianoScene.tscn" id="37"]
 
 [sub_resource type="RectangleShape2D" id="1"]
@@ -55,14 +54,14 @@ limit_right = 10000
 limit_bottom = 1000
 drag_top_margin = 0.05
 drag_bottom_margin = 0.05
-follow_path = NodePath("../Player")
+FollowPath = NodePath("../Player")
 
 [node name="PauseMenu" parent="Camera2D" instance=ExtResource("19")]
 
 [node name="CameraShake" parent="Camera2D" instance=ExtResource("30")]
 
 [node name="Player" parent="." instance=ExtResource("2")]
-position = Vector2(4365, 349)
+position = Vector2(384, -610)
 collision_mask = 13
 
 [node name="PinkPlatform" parent="." instance=ExtResource("7")]
@@ -83,7 +82,6 @@ Group = "purple"
 [node name="BlueGearedPlatform" parent="." instance=ExtResource("7")]
 position = Vector2(630, 300)
 scale = Vector2(3.24, 1.57)
-Group = "blue"
 
 [node name="SimplePlatform" parent="." instance=ExtResource("7")]
 position = Vector2(2722, 138.4)
@@ -153,10 +151,8 @@ ColorGroup = "yellow"
 
 [node name="Canon" parent="." instance=ExtResource("24")]
 position = Vector2(3273, -305)
-followNodeName = "player"
-bullet_scene = ExtResource("25")
-objectToFollow = NodePath("../Player")
-ColorGroup = "blue"
+FollowNodeName = "player"
+ObjectToFollow = NodePath("../Player")
 
 [node name="TetrisPool" parent="." instance=ExtResource("31")]
 position = Vector2(5950, -987)
@@ -179,10 +175,8 @@ position = Vector2(397, -2866)
 
 [node name="FiringCanon" parent="." instance=ExtResource("24")]
 position = Vector2(1285, -706)
-followNodeName = "player"
-bullet_scene = ExtResource("25")
-objectToFollow = NodePath("../Player")
-ColorGroup = "blue"
+FollowNodeName = "player"
+ObjectToFollow = NodePath("../Player")
 
 [node name="SlidingFloor2" parent="." instance=ExtResource("35")]
 position = Vector2(-268, -125)

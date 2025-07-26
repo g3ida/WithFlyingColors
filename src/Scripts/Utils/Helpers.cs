@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Entities.World.Checkpoints;
 
 public static class Helpers {
 

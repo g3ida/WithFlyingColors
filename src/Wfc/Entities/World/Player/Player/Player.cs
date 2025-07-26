@@ -9,6 +9,7 @@ using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
+using Wfc.Entities.World.Checkpoints;
 using Wfc.State;
 using Wfc.Utils;
 using Wfc.Utils.Animation;

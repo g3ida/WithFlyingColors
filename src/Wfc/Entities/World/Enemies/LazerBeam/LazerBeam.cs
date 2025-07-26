@@ -1,26 +1,35 @@
+namespace Wfc.Entities.World.Enemies;
+
 using Godot;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
 using Wfc.Skin;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
+[ScenePath]
 public partial class LazerBeam : Node2D {
-  private Line2D beamNode;
-  private Line2D beamBgNode;
-  private Marker2D muzzleNode;
-  private CpuParticles2D particlesNode;
-  private Sprite2D baseNode;
+  #region Nodes
+  [NodePath("Line2D")]
+  private Line2D beamNode = default!;
+  [NodePath("Line2DBackground")]
+  private Line2D beamBgNode = default!;
+  [NodePath("Muzzle")]
+  private Marker2D muzzleNode = default!;
+  [NodePath("Particles")]
+  private CpuParticles2D particlesNode = default!;
+  [NodePath("Base")]
+  private Sprite2D baseNode = default!;
+  #endregion Nodes
 
   [Export]
-  public string ColorGroup { get; set; }
+  public string ColorGroup { get; set; } = "blue";
 
   public override void _Ready() {
-    beamNode = GetNode<Line2D>("Line2D");
-    beamBgNode = GetNode<Line2D>("Line2DBackground");
-    muzzleNode = GetNode<Marker2D>("Muzzle");
-    particlesNode = GetNode<CpuParticles2D>("Particles");
-    baseNode = GetNode<Sprite2D>("Base");
+    base._Ready();
+    this.WireNodes();
 
     Color color = SkinManager.Instance.CurrentSkin.GetColor(
       GameSkin.ColorGroupToSkinColor(ColorGroup),
@@ -66,7 +75,7 @@ public partial class LazerBeam : Node2D {
     if (collider != null && collider is BoxFace boxFace) {
       var groups = collider.GetGroups();
       if (groups.Count == 1 && groups[0] == ColorGroup) {
-        // Play some SFX maybe?
+        // FIXME: Play some SFX maybe?
       }
       else {
         EventHandler.Instance.EmitPlayerDying(GlobalPosition, EntityType.Lazer);

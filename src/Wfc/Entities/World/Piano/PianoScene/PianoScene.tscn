@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://c81yhhex2g2mu" path="res://src/Wfc/Entities/World/Piano/Piano/Piano.tscn" id="1"]
 [ext_resource type="Script" uid="uid://ertk10yu7hbi" path="res://src/Wfc/Entities/World/Piano/PianoScene/PianoScene.cs" id="2"]
-[ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://Assets/Scenes/CheckpointArea.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://Assets/Scenes/Platforms/SimplePlatform.tscn" id="4"]
 
 [sub_resource type="RectangleShape2D" id="1"]
