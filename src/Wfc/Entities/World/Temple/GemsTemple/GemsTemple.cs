@@ -1,69 +1,75 @@
+namespace Wfc.Entities.World.Temple;
+
 using System.Collections.Generic;
 using Godot;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
+[ScenePath]
 public partial class GemsTemple : Node2D {
-  // Constants
-  private PackedScene TempleGemScene = GD.Load<PackedScene>("res://Assets/Scenes/Temple/TempleGem.tscn");
+  #region Constants
   private const float WAIT_DELAY = 0.1f;
   private const float MAX_GEM_TEMPLE_ANGULAR_VELOCITY = 10.0f * Mathf.Pi;
   private const float DURATION_TO_FULL_GEM_ROTATION_SPEED = 2.7f;
   private const float ROTATION_DURATION = 3.6f;
   private const float BLOOM_SPRITE_MAX_SCALE = 25.0f;
   private const float BLOOM_SPRITE_SCALE_DURATION = 1.2f;
-
   private readonly int[] GEMS_EASE_TYPE = { 1, 1, 0, 0 };
+  #endregion Constants
 
   private enum States {
-    NOT_TRIGGERED,
-    WALK_PHASE,
-    COLLECT_PHASE,
-    ROTATION_PHASE,
-    BLOOM_PHASE,
-    END_PHASE
+    NotTriggered,
+    WalkPhase,
+    CollectPhase,
+    RotationPhase,
+    BloomPhase,
+    EndPhase
   }
 
   private readonly List<Node2D> _templeGems = [];
   private float _gemsAngularVelocity = 0;
   private int _numActiveGems = 0;
   private float _bloomSpriteScale = 1.0f;
-  private States _currentState = States.NOT_TRIGGERED;
+  private States _currentState = States.NotTriggered;
 
-  // Nodes
-  private Node2D GemSlotsContainerNode;
-  private Godot.Collections.Array<Node> GemsSlotsNodes;
-  private Area2D StartGemsAreaNode;
-  private Timer RotationTimerNode;
-  private Sprite2D BloomSpriteNode;
+  #region Nodes
+  [NodePath("GemsContainer")]
+  private Node2D GemSlotsContainerNode = default!;
+  private Godot.Collections.Array<Node> GemsSlotsNodes = default!;
+  [NodePath("StartGemsArea")]
+  private Area2D StartGemsAreaNode = default!;
+  [NodePath("RotationTimer")]
+  private Timer RotationTimerNode = default!;
+  [NodePath("BloomSprite")]
+  private Sprite2D BloomSpriteNode = default!;
+  #endregion Nodes
 
-  private Tween tweener;
+  private Tween? tweener;
 
   public override void _Ready() {
-    GemSlotsContainerNode = GetNode<Node2D>("GemsContainer");
+    base._Ready();
+    this.WireNodes();
     GemsSlotsNodes = GemSlotsContainerNode.GetChildren();
-    StartGemsAreaNode = GetNode<Area2D>("StartGemsArea");
-    RotationTimerNode = GetNode<Timer>("RotationTimer");
-    BloomSpriteNode = GetNode<Sprite2D>("BloomSprite");
-
     BloomSpriteNode.Visible = false;
   }
 
-  private void _on_TriggerArea_body_entered(Node body) {
-    if (_currentState == States.NOT_TRIGGERED && body == Global.Instance().Player) {
-      GoToWalkPhase();
+  private void _onTriggerAreaBodyEntered(Node body) {
+    if (_currentState == States.NotTriggered && body == Global.Instance().Player) {
+      _goToWalkPhase();
     }
   }
 
-  private bool CreateTempleGems() {
+  private bool _createTempleGems() {
     int i = 0;
     foreach (string colorGrp in ColorUtils.COLOR_GROUPS) {
       if (Global.Instance().GemHUD.IsGemCollected(colorGrp)) {
-        var templeGem = CreateTempleGem(
+        var templeGem = _createTempleGem(
             colorGrp,
             WAIT_DELAY * (i + 1),
             Global.Instance().Player.GlobalPosition,
-            (GemsSlotsNodes[i] as Node2D).GlobalPosition,
+            (GemsSlotsNodes[i] as Node2D)?.GlobalPosition ?? Vector2.Zero,
             GEMS_EASE_TYPE[i]);
         _templeGems.Add(templeGem);
         _numActiveGems += 1;
@@ -73,33 +79,34 @@ public partial class GemsTemple : Node2D {
     return i > 0;
   }
 
-  private Node2D CreateTempleGem(string colorGroup, float delay, Vector2 position, Vector2 destination, int easeType) {
-    var templeGem = TempleGemScene.Instantiate<TempleGem>();
+  private TempleGem _createTempleGem(string colorGroup, float delay, Vector2 position, Vector2 destination, int easeType) {
+    var templeGem = SceneHelpers.InstantiateNode<TempleGem>();
     GemSlotsContainerNode.AddChild(templeGem);
     templeGem.Owner = GemSlotsContainerNode;
     templeGem.GlobalPosition = position;
     templeGem.SetColorGroup(colorGroup);
     var waitTime = delay;
     templeGem.MoveToPosition(destination, waitTime, easeType);
-    templeGem.Connect(nameof(TempleGem.MoveCompleted), new Callable(this, nameof(OnGemCollected)), (uint)ConnectFlags.OneShot);
+    templeGem.Connect(nameof(TempleGem.MoveCompleted), new Callable(this, nameof(_onGemCollected)), (uint)ConnectFlags.OneShot);
     return templeGem;
   }
 
   public override void _Process(double delta) {
+    base._Process(delta);
     switch (_currentState) {
-      case States.WALK_PHASE:
+      case States.WalkPhase:
         Global.Instance().Player.SetMaxSpeed();
         break;
-      case States.ROTATION_PHASE:
-        ProcessRotateGems((float)delta);
+      case States.RotationPhase:
+        _processRotateGems((float)delta);
         break;
-      case States.BLOOM_PHASE:
+      case States.BloomPhase:
         BloomSpriteNode.Scale = new Vector2(_bloomSpriteScale, _bloomSpriteScale);
         break;
     }
   }
 
-  private void ProcessRotateGems(float delta) {
+  private void _processRotateGems(float delta) {
     var amount = _gemsAngularVelocity * delta;
     GemSlotsContainerNode.Rotate(amount);
     foreach (Node node in GemSlotsContainerNode.GetChildren()) {
@@ -111,36 +118,36 @@ public partial class GemsTemple : Node2D {
     }
   }
 
-  private void OnGemCollected(Node2D templeGem) {
-    if (_currentState == States.COLLECT_PHASE) {
+  private void _onGemCollected(Node2D? templeGem) {
+    if (_currentState == States.CollectPhase) {
       _numActiveGems -= 1;
       EventHandler.Instance.EmitGemPutInTemple();
       if (_numActiveGems <= 0) {
-        GoToRotationPhase();
+        _goToRotationPhase();
       }
     }
   }
 
-  private void StartRotationTimer() {
+  private void _startRotationTimer() {
     RotationTimerNode.WaitTime = ROTATION_DURATION;
     RotationTimerNode.Start();
   }
 
   private void _on_StartGemsArea_body_entered(Node body) {
-    if (_currentState == States.WALK_PHASE && body == Global.Instance().Player) {
-      GoToCollectPhase();
+    if (_currentState == States.WalkPhase && body == Global.Instance().Player) {
+      _goToCollectPhase();
     }
   }
 
   private void _on_RotationTimer_timeout() {
-    if (_currentState == States.ROTATION_PHASE) {
-      GoToBloomPhase();
+    if (_currentState == States.RotationPhase) {
+      _goToBloomPhase();
     }
   }
 
   // State transitions
-  private void GoToNotTriggeredPhase() {
-    _currentState = States.NOT_TRIGGERED;
+  private void _goToNotTriggeredPhase() {
+    _currentState = States.NotTriggered;
     foreach (Node2D el in _templeGems) {
       el.QueueFree();
     }
@@ -151,40 +158,40 @@ public partial class GemsTemple : Node2D {
     BloomSpriteNode.Visible = false;
   }
 
-  private void GoToWalkPhase() {
-    _currentState = States.WALK_PHASE;
+  private void _goToWalkPhase() {
+    _currentState = States.WalkPhase;
     Global.Instance().Player.Velocity = new Vector2(0, Global.Instance().Player.Velocity.Y);
     EventHandler.Instance.EmitGemTempleTriggered();
     Global.Instance().Cutscene.ShowSomeNode(Global.Instance().Player, 10.0f, 3.2f);
   }
 
-  private void GoToRotationPhase() {
-    _currentState = States.ROTATION_PHASE;
-    RotateGemsTween();
-    StartRotationTimer();
+  private void _goToRotationPhase() {
+    _currentState = States.RotationPhase;
+    _rotateGemsTween();
+    _startRotationTimer();
     EventHandler.Instance.EmitGemEngineStarted();
   }
 
-  private void GoToCollectPhase() {
-    _currentState = States.COLLECT_PHASE;
+  private void _goToCollectPhase() {
+    _currentState = States.CollectPhase;
     Global.Instance().Player.Velocity = new Vector2(0, Global.Instance().Player.Velocity.Y);
-    if (!CreateTempleGems()) {
-      OnGemCollected(null);
+    if (!_createTempleGems()) {
+      _onGemCollected(null);
     }
   }
 
-  private void GoToBloomPhase() {
-    _currentState = States.BLOOM_PHASE;
+  private void _goToBloomPhase() {
+    _currentState = States.BloomPhase;
     BloomSpriteNode.Visible = true;
-    BloomSpriteResizeTween();
+    _bloomSpriteResizeTween();
   }
 
-  private void GoToEndPhase() {
+  private static void _goToEndPhase() {
     EventHandler.Instance.EmitLevelCleared();
   }
 
   // Tween animations
-  private void RotateGemsTween() {
+  private void _rotateGemsTween() {
     if (tweener != null) {
       tweener.Kill();
     }
@@ -195,7 +202,7 @@ public partial class GemsTemple : Node2D {
         .SetEase(Tween.EaseType.Out);
   }
 
-  private void BloomSpriteResizeTween() {
+  private void _bloomSpriteResizeTween() {
     if (tweener != null) {
       tweener.Kill();
     }
@@ -206,12 +213,12 @@ public partial class GemsTemple : Node2D {
         .SetEase(Tween.EaseType.Out);
     tweener.Connect(
       Tween.SignalName.Finished,
-      new Callable(this, nameof(OnBloomSpriteResizeEnd)),
+      new Callable(this, nameof(_onBloomSpriteResizeEnd)),
       (uint)ConnectFlags.OneShot
     );
   }
 
-  private void OnBloomSpriteResizeEnd() {
-    GoToEndPhase();
+  private static void _onBloomSpriteResizeEnd() {
+    _goToEndPhase();
   }
 }

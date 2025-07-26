@@ -93,7 +93,7 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
 
   private void CreatePowerup(PackedScene powerUpNode, string color, Vector2 position) {
     var powerUp = powerUpNode.Instantiate<Node2D>();
-    powerUp.Set("color_group", color);
+    powerUp.Set("ColorGroup", color);
     powerUp.Position = position - Position;
     fallingPowerUpsContainer.CallDeferred(Node.MethodName.AddChild, powerUp);
     powerUp.CallDeferred(Node.MethodName.SetOwner, fallingPowerUpsContainer);

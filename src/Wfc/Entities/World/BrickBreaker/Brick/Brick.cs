@@ -11,7 +11,7 @@ public partial class Brick : Node2D {
   [Signal]
   public delegate void brickBrokenEventHandler();
 
-  [Export] public string color_group { get; set; } = "blue";
+  [Export] public string ColorGroup { get; set; } = "blue";
 
   private Area2D _areaNode = null!;
   private Sprite2D _spriteNode = null!;
@@ -22,13 +22,13 @@ public partial class Brick : Node2D {
     _spriteNode = GetNode<Sprite2D>("BrickSpr");
     _collisionShapeNode = GetNode<CollisionShape2D>("CharacterBody2D/CollisionShape2D");
 
-    _areaNode.AddToGroup(color_group);
+    _areaNode.AddToGroup(ColorGroup);
     SetColor();
   }
 
   private void SetColor() {
     Color color = SkinManager.Instance.CurrentSkin.GetColor(
-      GameSkin.ColorGroupToSkinColor(color_group),
+      GameSkin.ColorGroupToSkinColor(ColorGroup),
       SkinColorIntensity.Basic
     );
     _spriteNode.Modulate = color;
@@ -37,7 +37,7 @@ public partial class Brick : Node2D {
   private void _on_Area2D_area_entered(Area2D area) {
     Vector2 extents = (_collisionShapeNode.Shape as RectangleShape2D)?.Size ?? Vector2.Zero;
     EmitSignal(Brick.SignalName.brickBroken);
-    EventHandler.Instance.EmitBrickBroken(color_group, Position + GetParent<Node2D>().Position + extents);
+    EventHandler.Instance.EmitBrickBroken(ColorGroup, Position + GetParent<Node2D>().Position + extents);
     QueueFree();
   }
 }

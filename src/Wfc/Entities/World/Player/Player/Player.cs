@@ -232,17 +232,17 @@ public partial class Player : CharacterBody2D, IPersistent {
   private void OnCheckpointHit(CheckpointArea checkpointObject) {
     var angle = 0f;
 
-    if (_bottomFaceNode.GetGroups().Contains(checkpointObject.color_group)) {
+    if (_bottomFaceNode.GetGroups().Contains(checkpointObject.ColorGroup)) {
       angle = 0f;
     }
 
-    else if (_leftFaceNode.GetGroups().Contains(checkpointObject.color_group)) {
+    else if (_leftFaceNode.GetGroups().Contains(checkpointObject.ColorGroup)) {
       angle = -Mathf.Pi / 2f;
     }
-    else if (_rightFaceNode.GetGroups().Contains(checkpointObject.color_group)) {
+    else if (_rightFaceNode.GetGroups().Contains(checkpointObject.ColorGroup)) {
       angle = Mathf.Pi / 2f;
     }
-    else if (_topFaceNode.GetGroups().Contains(checkpointObject.color_group)) {
+    else if (_topFaceNode.GetGroups().Contains(checkpointObject.ColorGroup)) {
       angle = Mathf.Pi;
     }
 

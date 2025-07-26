@@ -14,7 +14,7 @@ public partial class Canon : Node2D {
   [Export]
   public float cooldown { get; set; } = 1.5f;
   [Export]
-  public string color_group { get; set; }
+  public string ColorGroup { get; set; }
 
   private Node2D StandNode;
   private Node2D CanonNode;
@@ -46,16 +46,16 @@ public partial class Canon : Node2D {
     CooldownTimerNode = GetNode<Timer>("CooldownTimer");
 
     follow = GetNode<Node2D>(objectToFollow);
-    AddToGroup(color_group);
-    StandColorAreaNode.AddToGroup(color_group);
-    CanonColorAreaNode.AddToGroup(color_group);
+    AddToGroup(ColorGroup);
+    StandColorAreaNode.AddToGroup(ColorGroup);
+    CanonColorAreaNode.AddToGroup(ColorGroup);
     UpdateColor();
     CooldownTimerNode.WaitTime = cooldown;
   }
 
   private void UpdateColor() {
     Color color = SkinManager.Instance.CurrentSkin.GetColor(
-      GameSkin.ColorGroupToSkinColor(color_group),
+      GameSkin.ColorGroupToSkinColor(ColorGroup),
       SkinColorIntensity.Basic
     );
     StandNode.Modulate = color;
@@ -68,7 +68,7 @@ public partial class Canon : Node2D {
     GetParent().AddChild(bullet);
     bullet.Owner = GetParent();
     if (bullet is IBullet bulletScript) {
-      bulletScript.SetColorGroup(color_group);
+      bulletScript.SetColorGroup(ColorGroup);
     }
     return bullet;
   }

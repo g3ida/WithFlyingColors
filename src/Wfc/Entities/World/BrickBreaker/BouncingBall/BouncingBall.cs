@@ -14,7 +14,7 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 public partial class BouncingBall : CharacterBody2D {
   #region Exported
   [Export]
-  public string color_group = ColorUtils.BLUE;
+  public string ColorGroup = ColorUtils.BLUE;
   #endregion Exported
 
   #region Constants
@@ -51,15 +51,15 @@ public partial class BouncingBall : CharacterBody2D {
     this.WireNodes();
     GD.Randomize();
     reset();
-    SetColor(color_group);
+    SetColor(ColorGroup);
   }
 
   public void SetColor(string colorName) {
     _spriteNode.SetColor(colorName);
-    if (_areaNode.IsInGroup(color_group))
-      _areaNode.RemoveFromGroup(color_group);
+    if (_areaNode.IsInGroup(ColorGroup))
+      _areaNode.RemoveFromGroup(ColorGroup);
     _areaNode.AddToGroup(colorName);
-    color_group = colorName;
+    ColorGroup = colorName;
   }
 
 
@@ -283,7 +283,7 @@ public partial class BouncingBall : CharacterBody2D {
           _areaNode.RemoveFromGroup((string)group);
         }
         _areaNode.AddToGroup((string)groups[0]);
-        color_group = (string)groups[0];
+        ColorGroup = (string)groups[0];
         _spriteNode.SetColor((string)groups[0]);
       }
     }

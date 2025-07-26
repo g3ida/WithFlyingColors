@@ -21,7 +21,7 @@ public partial class TripleBallsPowerUp : PowerUpScript {
 
       foreach (BouncingBall b in bouncingBalls) {
         for (int i = 0; i < 2; i++) {
-          BouncingBall ball = BrickBreakerNode.SpawnBall(b.color_group);
+          BouncingBall ball = BrickBreakerNode.SpawnBall(b.ColorGroup);
           ball.Position = b.Position;
           Vector2 spawnVelocity = b.BallVelocity.Rotated((i - 0.5f) * 2 * MathUtils.PI3);
           if (spawnVelocity.Y > 0) {

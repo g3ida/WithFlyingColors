@@ -7,7 +7,7 @@ public partial class CheckpointArea : Area2D {
   public delegate void checkpoint_hitEventHandler();
 
   [Export]
-  public string color_group { get; set; }
+  public string ColorGroup { get; set; }
 
   private bool _isChecked = false;
   private Dictionary<string, object> _save_data = new Dictionary<string, object>
@@ -16,7 +16,7 @@ public partial class CheckpointArea : Area2D {
     };
 
   public override void _Ready() {
-    if (string.IsNullOrEmpty(color_group)) {
+    if (string.IsNullOrEmpty(ColorGroup)) {
       GD.PushError("ColorGroup cannot be null or empty");
     }
   }
