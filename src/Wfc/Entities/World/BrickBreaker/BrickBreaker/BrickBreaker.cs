@@ -77,7 +77,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
   public BouncingBall SpawnBall(string color = "blue") {
     var bouncingBall = SceneHelpers.InstantiateNode<BouncingBall>();
     bouncingBall.DeathZone = _deathZoneNode;
-    bouncingBall.color_group = color;
+    bouncingBall.ColorGroup = color;
     BallsContainer.CallDeferred(Node.MethodName.AddChild, bouncingBall);
     bouncingBall.CallDeferred(Node2D.MethodName.SetPosition, _ballSpawnPosNode.Position);
     bouncingBall.CallDeferred(Node.MethodName.SetOwner, BallsContainer);

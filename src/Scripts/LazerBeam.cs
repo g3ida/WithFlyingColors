@@ -13,7 +13,7 @@ public partial class LazerBeam : Node2D {
   private Sprite2D baseNode;
 
   [Export]
-  public string color_group { get; set; }
+  public string ColorGroup { get; set; }
 
   public override void _Ready() {
     beamNode = GetNode<Line2D>("Line2D");
@@ -23,11 +23,11 @@ public partial class LazerBeam : Node2D {
     baseNode = GetNode<Sprite2D>("Base");
 
     Color color = SkinManager.Instance.CurrentSkin.GetColor(
-      GameSkin.ColorGroupToSkinColor(color_group),
+      GameSkin.ColorGroupToSkinColor(ColorGroup),
       SkinColorIntensity.Basic
     );
     Color darkColor = SkinManager.Instance.CurrentSkin.GetColor(
-      GameSkin.ColorGroupToSkinColor(color_group),
+      GameSkin.ColorGroupToSkinColor(ColorGroup),
       SkinColorIntensity.Dark
     );
     beamNode.DefaultColor = color;
@@ -65,7 +65,7 @@ public partial class LazerBeam : Node2D {
 
     if (collider != null && collider is BoxFace boxFace) {
       var groups = collider.GetGroups();
-      if (groups.Count == 1 && groups[0] == color_group) {
+      if (groups.Count == 1 && groups[0] == ColorGroup) {
         // Play some SFX maybe?
       }
       else {

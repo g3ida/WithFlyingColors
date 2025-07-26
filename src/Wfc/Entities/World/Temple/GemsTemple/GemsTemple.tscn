@@ -87,6 +87,6 @@ z_index = 100
 position = Vector2(-5, -72)
 texture = ExtResource("5")
 
-[connection signal="body_entered" from="TriggerArea" to="." method="_on_TriggerArea_body_entered"]
+[connection signal="body_entered" from="TriggerArea" to="." method="_onTriggerAreaBodyEntered"]
 [connection signal="body_entered" from="StartGemsArea" to="." method="_on_StartGemsArea_body_entered"]
 [connection signal="timeout" from="RotationTimer" to="." method="_on_RotationTimer_timeout"]

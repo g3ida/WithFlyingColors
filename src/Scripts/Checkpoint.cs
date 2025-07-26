@@ -5,7 +5,7 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // deprecated
 public partial class Checkpoint : Area2D {
   [Export]
-  public string color_group { get; set; }
+  public string ColorGroup { get; set; }
   private bool _isChecked = false;
   private Dictionary<string, object> save_data = new Dictionary<string, object>()
     {
@@ -21,7 +21,7 @@ public partial class Checkpoint : Area2D {
   }
 
   public override void _Ready() {
-    if (color_group == null) {
+    if (ColorGroup == null) {
       GD.PushError("ColorGroup cannot be null");
     }
   }

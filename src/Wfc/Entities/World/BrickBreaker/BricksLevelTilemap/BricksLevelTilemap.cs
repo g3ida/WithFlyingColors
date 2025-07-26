@@ -32,7 +32,7 @@ public partial class BricksLevelTilemap : TileMap {
 
         if (_parent.should_instance_bricks) {
           var brick = _brickScene.Instantiate<Brick>();
-          brick.color_group = ColorUtils.COLOR_GROUPS[i];
+          brick.ColorGroup = ColorUtils.COLOR_GROUPS[i];
           _parent.CallDeferred(Node2D.MethodName.AddChild, brick);
           brick.CallDeferred(Node2D.MethodName.SetOwner, _parent);
           brick.Connect(Brick.SignalName.brickBroken, new Callable(this, nameof(OnBrickBroken)));

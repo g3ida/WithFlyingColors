@@ -336,4 +336,4 @@ position = Vector2(564, -213)
 [node name="CheckpointArea" parent="." index="12" instance=ExtResource("11")]
 position = Vector2(9408, 320)
 scale = Vector2(1, 10)
-color_group = "yellow"
+ColorGroup = "yellow"

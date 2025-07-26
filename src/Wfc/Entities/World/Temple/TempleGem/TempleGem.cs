@@ -1,39 +1,47 @@
+namespace Wfc.Entities.World.Temple;
+
 using Godot;
 using Wfc.Skin;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
 
+[ScenePath]
 public partial class TempleGem : Node2D {
-  // Enum for states
-  public enum State {
-    IDLE,
-    MOVING,
-    MOVED
-  }
-
-  // Constants
+  #region Constants
   private const float DURATION = 1.0f;
+  #endregion Constants
 
-  // Signal
+  #region Signals
   [Signal]
   public delegate void MoveCompletedEventHandler(Node2D self);
+  #endregion Signals
 
-  // FIXME: implement set get for this field
-  // Variables
+  #region Exports
   [Export]
-  public string color_group { get; private set; }
+  public string ColorGroup { get; private set; } = "blue";
+  #endregion Exports
 
-  private State currentState = State.IDLE;
-  private Tween tweener;
+  public enum State {
+    Idle,
+    Moving,
+    Moved
+  }
+  private State _currentState = State.Idle;
+  private Tween? _tweener;
 
-  // Nodes
-  private PointLight2D lightNode;
+  #region Nodes
+  [NodePath("PointLight2D")]
+  private PointLight2D lightNode = default!;
+  #endregion Nodes
 
   public override void _Ready() {
-    lightNode = GetNode<PointLight2D>("PointLight2D");
+    base._Ready();
+    this.WireNodes();
     lightNode.Visible = false;
   }
 
   public void SetColorGroup(string colorGroup) {
-    color_group = colorGroup;
+    ColorGroup = colorGroup;
     Color color = SkinManager.Instance.CurrentSkin.GetColor(
       GameSkin.ColorGroupToSkinColor(colorGroup),
       SkinColorIntensity.Basic
@@ -51,35 +59,35 @@ public partial class TempleGem : Node2D {
   }
 
   public void MoveToPosition(Vector2 position, float waitTime, int easeType = 1) {
-    if (currentState == State.IDLE) {
-      currentState = State.MOVING;
-      MoveTween(position, waitTime, easeType);
+    if (_currentState == State.Idle) {
+      _currentState = State.Moving;
+      _moveTween(position, waitTime, easeType);
     }
   }
 
-  private void MoveTween(Vector2 position, float waitTime, int easeType = 1) {
-    tweener?.Kill();
-    tweener = CreateTween();
-    tweener.Connect(
+  private void _moveTween(Vector2 position, float waitTime, int easeType = 1) {
+    _tweener?.Kill();
+    _tweener = CreateTween();
+    _tweener.Connect(
       Tween.SignalName.Finished,
-      new Callable(this, nameof(OnTweenCompleted)),
+      new Callable(this, nameof(_onTweenCompleted)),
       (uint)ConnectFlags.OneShot
     );
-    tweener.SetParallel(true);
-    tweener.TweenProperty(this, "global_position:x", position.X, DURATION)
+    _tweener.SetParallel(true);
+    _tweener.TweenProperty(this, "global_position:x", position.X, DURATION)
            .SetTrans(Tween.TransitionType.Linear)
            .SetEase((Tween.EaseType)easeType)
            .SetDelay(waitTime);
 
-    tweener.TweenProperty(this, "global_position:y", position.Y, DURATION)
+    _tweener.TweenProperty(this, "global_position:y", position.Y, DURATION)
            .SetTrans(Tween.TransitionType.Circ)
            .SetEase((Tween.EaseType)easeType)
            .SetDelay(waitTime);
   }
 
-  private void OnTweenCompleted() {
-    if (currentState == State.MOVING) {
-      currentState = State.MOVED;
+  private void _onTweenCompleted() {
+    if (_currentState == State.Moving) {
+      _currentState = State.Moved;
       EmitSignal(nameof(MoveCompleted), this);
       lightNode.Visible = true;
     }

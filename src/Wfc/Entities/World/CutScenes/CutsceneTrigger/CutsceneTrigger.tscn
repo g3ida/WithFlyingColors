@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://khwnb8k0ngi4"]
 
-[ext_resource type="Script" uid="uid://d3pw0uxb5gv2e" path="res://src/Scripts/CutScene/CutsceneTrigger.cs" id="1"]
+[ext_resource type="Script" uid="uid://d3pw0uxb5gv2e" path="res://src/Wfc/Entities/World/CutScenes/CutsceneTrigger/CutsceneTrigger.cs" id="1"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 
