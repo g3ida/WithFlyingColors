@@ -12,6 +12,6 @@ public static class TestHelpers {
 
   public static async Task SleepFor(this SceneTree tree, double secs) {
     var timer = tree.CreateTimer(secs);
-    await tree.ToSignal(timer, "timeout");
+    await tree.ToSignal(timer, Timer.SignalName.Timeout);
   }
 }

@@ -5,6 +5,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Audio;
+using Wfc.Entities.World.Cutscenes;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
