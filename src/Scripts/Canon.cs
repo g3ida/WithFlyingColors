@@ -84,7 +84,7 @@ public partial class Canon : Node2D {
     }
     ShootSound.Play();
     CooldownTimerNode.Start();
-    await ToSignal(CooldownTimerNode, "timeout");
+    await ToSignal(CooldownTimerNode, Timer.SignalName.Timeout);
     canShoot = true;
   }
 

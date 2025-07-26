@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Entities.HUD;
+using Wfc.Entities.World.Cutscenes;
 using Wfc.Entities.World.Player;
 using Wfc.Screens;
 

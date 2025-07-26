@@ -181,7 +181,7 @@ public partial class TetrisPool : Node2D {
     _shapeIsInWaitTime = true;
     if (_shape?.MoveDownSafe() == true) {
       _shapeWaitTimerNode.Start();
-      await ToSignal(_shapeWaitTimerNode, "timeout");
+      await ToSignal(_shapeWaitTimerNode, Timer.SignalName.Timeout);
     }
     else {
       _shape?.AddToGrid();
@@ -210,7 +210,7 @@ public partial class TetrisPool : Node2D {
       _grid[i, line] = null;
     }
     _removeLinesDurationTimerNode.Start();
-    await ToSignal(_removeLinesDurationTimerNode, "timeout");
+    await ToSignal(_removeLinesDurationTimerNode, Timer.SignalName.Timeout);
     MoveDownLinesAbove(line);
     _nbQueuedLinesToRemove -= 1;
   }
