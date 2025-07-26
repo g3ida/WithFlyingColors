@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://1lmqlfdxvv5q"]
 
 [ext_resource type="Texture2D" uid="uid://bus7mrnc7er6m" path="res://Assets/Sprites/Canons/missile.png" id="1"]
-[ext_resource type="Script" uid="uid://hdxanvflfbbm" path="res://src/Scripts/Bullet.cs" id="2"]
+[ext_resource type="Script" uid="uid://hdxanvflfbbm" path="res://src/Wfc/Entities/World/Enemies/Bullet/Bullet.cs" id="2"]
 
 [sub_resource type="CircleShape2D" id="1"]
 
@@ -29,4 +29,4 @@ scale = Vector2(1.05, 1.05)
 shape = SubResource("2")
 
 [connection signal="body_entered" from="CharacterBody2D/ColorArea" to="." method="_on_ColorArea_body_entered"]
-[connection signal="body_shape_entered" from="CharacterBody2D/ColorArea" to="." method="_on_ColorArea_body_shape_entered"]
+[connection signal="body_shape_entered" from="CharacterBody2D/ColorArea" to="." method="_onColorAreaBodyShapeEntered"]

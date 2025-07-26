@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dmrllj22gpdev" path="res://src/Wfc/Screens/Levels/GameLevel/GameLevel.tscn" id="1"]
 [ext_resource type="Script" uid="uid://d3pw0uxb5gv2e" path="res://src/Scripts/CutScene/CutsceneTrigger.cs" id="2"]
-[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://Assets/Scenes/Fallzone.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://src/Wfc/Entities/World/Fallzone/Fallzone.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://Assets/Scenes/Platforms/SimplePlatform.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://Assets/Scenes/Gem.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://c38xg23elqtpo" path="res://Assets/Scenes/Tutorial/TutorialText.tscn" id="6"]
@@ -10,7 +10,7 @@
 [ext_resource type="TileSet" uid="uid://dsverl2jjlm71" path="res://Assets/Tilesets/TutorialLevel.tres" id="8"]
 [ext_resource type="PackedScene" uid="uid://blkbqb8j6rnda" path="res://Assets/Scenes/Temple/GemsTemple.tscn" id="9"]
 [ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="10"]
-[ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://Assets/Scenes/CheckpointArea.tscn" id="11"]
+[ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="11"]
 [ext_resource type="Script" uid="uid://saay1hdwowdk" path="res://src/Scripts/Platforms/PlatformTileMap.cs" id="12"]
 [ext_resource type="Shader" uid="uid://dhb7ksqjukmfx" path="res://Assets/Shaders/ColorSplash.tres" id="16"]
 

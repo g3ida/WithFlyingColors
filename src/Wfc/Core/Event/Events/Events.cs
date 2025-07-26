@@ -2,6 +2,7 @@ namespace Wfc.Core.Event;
 
 using System;
 using Godot;
+using Wfc.Entities.World.Checkpoints;
 
 public partial class Events : GodotObject {
   [Signal]

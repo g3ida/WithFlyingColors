@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://cwe6lhu1oclyc" path="res://Assets/Sprites/Checkpoint/checkopint.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://dembt1hsn6nas" path="res://Assets/Sprites/Checkpoint/checkdot.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://1f5nn2l0gb0p" path="res://Assets/Sprites/Checkpoint/checkpoint_liftter.png" id="3"]
-[ext_resource type="Script" uid="uid://obw0ku7suryb" path="res://src/Scripts/Checkpoint.cs" id="4"]
+[ext_resource type="Script" uid="uid://obw0ku7suryb" path="res://src/Wfc/Entities/World/Checkpoints/Checkpoint/Checkpoint.cs" id="4"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(7, 64)
@@ -119,4 +119,4 @@ texture = ExtResource("3")
 position = Vector2(0, -152)
 shape = SubResource("2")
 
-[connection signal="body_shape_entered" from="." to="." method="_on_Checkpoint_body_shape_entered"]
+[connection signal="body_shape_entered" from="." to="." method="_onCheckpointBodyShapeEntered"]

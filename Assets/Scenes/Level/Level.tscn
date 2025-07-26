@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://eiavpbssgij4" path="res://src/Wfc/Screens/Levels/GameLevel/GameLevel.cs" id="1"]
 [ext_resource type="PackedScene" uid="uid://0cgvvyxmoalw" path="res://src/Wfc/Entities/World/CutScenes/CutScene/Cutscene.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://nvn44bv2puaj" path="res://src/Wfc/Entities/World/Player/Player/Player.tscn" id="3"]
-[ext_resource type="PackedScene" uid="uid://c34ryx01v1y06" path="res://Assets/Scenes/Camera.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://c34ryx01v1y06" path="res://src/Wfc/Entities/World/Camera/GameCamera/GameCamera.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://we8kyl5cdqe6" path="res://src/Wfc/Entities/World/Camera/CameraShake/CameraShake.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://bijboehpv0gsh" path="res://src/Wfc/Screens/PauseMenu/PauseMenu.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://lycx13j354o3" path="res://Assets/Scenes/HUD/GemsHUDContainer.tscn" id="8"]
@@ -14,7 +14,7 @@ script = ExtResource("1")
 [node name="Cutscene" parent="." instance=ExtResource("2")]
 
 [node name="Camera2D" parent="." instance=ExtResource("4")]
-follow_path = NodePath("../Player")
+FollowPath = NodePath("../Player")
 
 [node name="PauseMenu" parent="Camera2D" instance=ExtResource("6")]
 

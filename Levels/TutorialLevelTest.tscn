@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://cfjj8aoguabby"]
 
 [ext_resource type="PackedScene" uid="uid://dnyujpby8sl5e" path="res://Assets/Scenes/Level/Level.tscn" id="1_im33u"]
-[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://Assets/Scenes/Fallzone.tscn" id="2_83hh6"]
+[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://src/Wfc/Entities/World/Fallzone/Fallzone.tscn" id="2_83hh6"]
 [ext_resource type="Script" uid="uid://cpg2rg4lnjwv1" path="res://src/Wfc/Screens/Levels/LevelHandler/LevelHandler.tscn" id="2_aox0s"]
 [ext_resource type="Shader" uid="uid://dhb7ksqjukmfx" path="res://Assets/Shaders/ColorSplash.tres" id="3_qbyjc"]
 [ext_resource type="TileSet" uid="uid://dsverl2jjlm71" path="res://Assets/Tilesets/TutorialLevel.tres" id="4_04g8t"]
