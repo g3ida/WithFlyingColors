@@ -29,6 +29,6 @@ shape = SubResource("1")
 [node name="SimplePlatform" parent="." instance=ExtResource("4")]
 position = Vector2(-911, -42)
 scale = Vector2(3.5, 1.11)
-group = "purple"
+Group = "purple"
 
 [connection signal="body_entered" from="TriggerArea" to="." method="_onTriggerAreaBodyEntered"]

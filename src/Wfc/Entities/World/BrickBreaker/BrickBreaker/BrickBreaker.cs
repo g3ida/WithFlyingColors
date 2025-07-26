@@ -12,6 +12,7 @@ using Wfc.Core.Serialization;
 using Wfc.Entities.World;
 using Wfc.Entities.World.BrickBreaker.Powerups;
 using Wfc.Entities.World.Camera;
+using Wfc.Entities.World.Platforms;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -86,7 +87,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
     return bouncingBall;
   }
 
-  /// 
+  ///
   private void RemoveBricks() {
     if (BricksTileMapNode != null) {
       BricksTileMapNode.bricksCleared -= _OnBricksCleared;

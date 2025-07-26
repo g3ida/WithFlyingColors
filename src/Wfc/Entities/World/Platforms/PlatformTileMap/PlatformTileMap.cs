@@ -1,26 +1,28 @@
+namespace Wfc.Entities.World.Platforms;
+
 using Godot;
 using Wfc.Core.Event;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlatformTileMap : TileMap {
   [Export]
-  public float splash_darkness { get; set; } = 0.78f;
+  public float SplashDarkness { get; set; } = 0.78f;
 
-  private float animationTimer = 10;
-  private Vector2 contactPosition = new Vector2(0, 0);
+  private float _animationTimer = 10;
+  private Vector2 _contactPosition = new Vector2(0, 0);
 
   public override void _EnterTree() {
-    ConnectSignals();
+    _connectSignals();
   }
 
   public override void _ExitTree() {
-    DisconnectSignals();
+    _disconnectSignals();
   }
 
   public void OnPlayerLanded(Node area, Vector2 position) {
     if (area == GetNode<Area2D>("Area2D")) {
-      animationTimer = 0;
-      contactPosition = position;
+      _animationTimer = 0;
+      _contactPosition = position;
     }
   }
 
@@ -28,7 +30,7 @@ public partial class PlatformTileMap : TileMap {
     if (Engine.IsEditorHint())
       return;
 
-    animationTimer += (float)delta;
+    _animationTimer += (float)delta;
 
     if (Material is ShaderMaterial shaderMaterial) {
       // FIXME: Migration 4.0 - Viewport - there is also SubViewport.Size2DOverride;
@@ -40,24 +42,24 @@ public partial class PlatformTileMap : TileMap {
       if (cam != null) {
         Vector2 camPos = cam.GetScreenCenterPosition();
         Vector2 currentPos = new Vector2(
-            contactPosition.X + (resolution.X / 2) - camPos.X,
-            contactPosition.Y + (resolution.Y / 2) - camPos.Y);
+            _contactPosition.X + (resolution.X / 2) - camPos.X,
+            _contactPosition.Y + (resolution.Y / 2) - camPos.Y);
         Vector2 pos = new Vector2(currentPos.X / resolution.X, currentPos.Y / resolution.Y);
         Vector2 positionInShaderCoords = new Vector2(pos.X, 1 - pos.Y);
 
         shaderMaterial.SetShaderParameter("u_contact_pos", positionInShaderCoords);
-        shaderMaterial.SetShaderParameter("u_timer", animationTimer);
+        shaderMaterial.SetShaderParameter("u_timer", _animationTimer);
         shaderMaterial.SetShaderParameter("u_aspect_ratio", resolution.Y / resolution.X);
-        shaderMaterial.SetShaderParameter("darkness", splash_darkness);
+        shaderMaterial.SetShaderParameter("darkness", SplashDarkness);
       }
     }
   }
 
-  private void ConnectSignals() {
+  private void _connectSignals() {
     EventHandler.Instance.Events.PlayerLanded += OnPlayerLanded;
   }
 
-  private void DisconnectSignals() {
+  private void _disconnectSignals() {
     EventHandler.Instance.Events.PlayerLanded -= OnPlayerLanded;
   }
 }

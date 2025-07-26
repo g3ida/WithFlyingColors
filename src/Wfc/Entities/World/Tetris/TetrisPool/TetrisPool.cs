@@ -8,6 +8,7 @@ using Godot;
 using Wfc.Core.Audio;
 using Wfc.Core.Event;
 using Wfc.Entities.Tetris.Tetrominos;
+using Wfc.Entities.World.Platforms;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;

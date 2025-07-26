@@ -68,27 +68,27 @@ collision_mask = 13
 [node name="PinkPlatform" parent="." instance=ExtResource("7")]
 position = Vector2(323, 85)
 scale = Vector2(3.182, 1)
-group = "pink"
+Group = "pink"
 
 [node name="PurplePlatform" parent="." instance=ExtResource("7")]
 position = Vector2(1024, 378)
 scale = Vector2(3.218, 1.278)
-group = "purple"
+Group = "purple"
 
 [node name="PurplePlatform2" parent="." instance=ExtResource("7")]
 position = Vector2(3342, -381)
 scale = Vector2(5, 2)
-group = "purple"
+Group = "purple"
 
 [node name="BlueGearedPlatform" parent="." instance=ExtResource("7")]
 position = Vector2(630, 300)
 scale = Vector2(3.24, 1.57)
-group = "blue"
+Group = "blue"
 
 [node name="SimplePlatform" parent="." instance=ExtResource("7")]
 position = Vector2(2722, 138.4)
 scale = Vector2(2.546, 1.11)
-group = "yellow"
+Group = "yellow"
 
 [node name="FallZone" parent="." instance=ExtResource("9")]
 position = Vector2(738, 1059)

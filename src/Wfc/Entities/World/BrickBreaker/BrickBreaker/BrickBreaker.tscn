@@ -5,8 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://f545keysmn6i" path="res://src/Wfc/Entities/World/BrickBreaker/Powerups/BrickPowerUpHandler/BrickPowerUpHandler.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://Assets/Scenes/CheckpointArea.tscn" id="4"]
 [ext_resource type="Script" uid="uid://buts64t08ub7n" path="res://src/Wfc/Entities/World/BrickBreaker/BrickBreaker/BrickBreaker.cs" id="5"]
-[ext_resource type="PackedScene" uid="uid://byyce56nk7v2h" path="res://Assets/Scenes/Tetris/SlidingFloor.tscn" id="6"]
-[ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://byyce56nk7v2h" path="res://src/Wfc/Entities/World/Tetris/SlidingFloor/SlidingFloor.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://cld6ulwmybvf1" path="res://Assets/Scenes/DeathZone.tscn" id="8"]
 [ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="9"]
 
@@ -109,7 +109,7 @@ position = Vector2(216, 0)
 
 [node name="ExitCameraLocalizer" parent="." instance=ExtResource("9")]
 position = Vector2(1188, -36)
-position_clipping_mode = 2
+PositionClippingMode = 2
 
 [node name="Area2D" type="Area2D" parent="ExitCameraLocalizer"]
 position = Vector2(216, 0)

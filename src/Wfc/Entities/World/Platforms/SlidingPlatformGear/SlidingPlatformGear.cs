@@ -1,3 +1,5 @@
+namespace Wfc.Entities.World.Platforms;
+
 using System;
 using Godot;
 using Wfc.Utils;
