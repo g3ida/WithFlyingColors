@@ -236,60 +236,60 @@ position = Vector2(24356, 128)
 [node name="BluePlatform" parent="Platforms" index="0" instance=ExtResource("4")]
 position = Vector2(6581, 686)
 scale = Vector2(10, 6.75)
-group = "blue"
-splash_darkness = 0.93
+Group = "blue"
+SplashDarkness = 0.93
 
 [node name="PinkPlatform" parent="Platforms" index="1" instance=ExtResource("4")]
 position = Vector2(7541, 686)
 scale = Vector2(10, 6.75)
-group = "pink"
-splash_darkness = 0.93
+Group = "pink"
+SplashDarkness = 0.93
 
 [node name="purplePlatform" parent="Platforms" index="2" instance=ExtResource("4")]
 position = Vector2(8501, 686)
 scale = Vector2(10, 6.75)
-group = "purple"
-splash_darkness = 0.93
+Group = "purple"
+SplashDarkness = 0.93
 
 [node name="YellowPlatform" parent="Platforms" index="3" instance=ExtResource("4")]
 position = Vector2(9461, 686)
 scale = Vector2(10, 6.75)
-group = "yellow"
-splash_darkness = 0.93
+Group = "yellow"
+SplashDarkness = 0.93
 
 [node name="WhitePlatform" parent="Platforms" index="4" instance=ExtResource("4")]
 position = Vector2(13227, 686)
 scale = Vector2(80, 6.75)
-splash_darkness = 0.93
+SplashDarkness = 0.93
 
 [node name="BluePlatform2" parent="Platforms" index="5" instance=ExtResource("4")]
 position = Vector2(17232, 686)
 scale = Vector2(10, 6.75)
-group = "blue"
-splash_darkness = 0.93
+Group = "blue"
+SplashDarkness = 0.93
 
 [node name="PinkPlatform2" parent="Platforms" index="6" instance=ExtResource("4")]
 position = Vector2(18480, 686)
 scale = Vector2(10, 6.75)
-group = "pink"
-splash_darkness = 0.93
+Group = "pink"
+SplashDarkness = 0.93
 
 [node name="PurplePlatform2" parent="Platforms" index="7" instance=ExtResource("4")]
 position = Vector2(19728, 686)
 scale = Vector2(10, 6.75)
-group = "purple"
-splash_darkness = 0.93
+Group = "purple"
+SplashDarkness = 0.93
 
 [node name="YellowPlatform2" parent="Platforms" index="8" instance=ExtResource("4")]
 position = Vector2(20976, 686)
 scale = Vector2(10, 6.75)
-group = "yellow"
-splash_darkness = 0.93
+Group = "yellow"
+SplashDarkness = 0.93
 
 [node name="WhitePlatform2" parent="Platforms" index="9" instance=ExtResource("4")]
 position = Vector2(24208, 686)
 scale = Vector2(60, 6.75)
-splash_darkness = 0.93
+SplashDarkness = 0.93
 
 [node name="Gems" type="Node2D" parent="." index="8"]
 

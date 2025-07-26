@@ -1,17 +1,23 @@
+namespace Wfc.Entities.World.Platforms;
+
+using Chickensoft.AutoInject;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Skin;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
 using Wfc.Utils.Images;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
+[ScenePath]
 public partial class SimplePlatform : StaticBody2D {
   private static readonly Texture2D GearedTexture = (Texture2D)GD.Load("res://Assets/Sprites/Platforms/geared-platform.png");
   private static readonly Texture2D SimpleTexture = (Texture2D)GD.Load("res://Assets/Sprites/Platforms/platform.png");
 
   [Export]
-  public string group { get; set; }
+  public string Group { get; set; } = "blue";
 
   [Export]
   public float splash_darkness { get; set; } = 0.78f;
@@ -22,29 +28,30 @@ public partial class SimplePlatform : StaticBody2D {
   private float animationTimer = 10;
   private Vector2 contactPosition = new Vector2(0, 0);
 
-  private NinePatchRect _ninePatchRectNode;
-  private Area2D _areaNode;
-  private CollisionShape2D _collisionShape;
-  private CollisionShape2D _colorAreaShape;
+  [NodePath("NinePatchRect")]
+  private NinePatchRect _ninePatchRectNode = default!;
+  [NodePath("Area2D")]
+  private Area2D _areaNode = default!;
+  [NodePath("CollisionShape")]
+  private CollisionShape2D _collisionShape = default!;
+  [NodePath("Area2D/ColorAreaShape")]
+  private CollisionShape2D _colorAreaShape = default!;
 
   public override void _Ready() {
     base._Ready();
-    _ninePatchRectNode = GetNode<NinePatchRect>("NinePatchRect");
-    _areaNode = GetNode<Area2D>("Area2D");
-    _collisionShape = GetNode<CollisionShape2D>("CollisionShape");
-    _colorAreaShape = GetNode<CollisionShape2D>("Area2D/ColorAreaShape");
+    this.WireNodes();
 
-    SetPlatformTexture();
+    _setPlatformTexture();
     _ninePatchRectNode.ScaleTexture(Scale);
     correctAreaSize();
 
-    if (!string.IsNullOrEmpty(group)) {
+    if (!string.IsNullOrEmpty(Group)) {
       Color color = SkinManager.Instance.CurrentSkin.GetColor(
-        GameSkin.ColorGroupToSkinColor(group),
+        GameSkin.ColorGroupToSkinColor(Group),
         SkinColorIntensity.Basic
       );
       _ninePatchRectNode.Modulate = color;
-      _areaNode.AddToGroup(group);
+      _areaNode.AddToGroup(Group);
     }
     else {
       foreach (var colorGroup in ColorUtils.COLOR_GROUPS) {
@@ -54,20 +61,22 @@ public partial class SimplePlatform : StaticBody2D {
   }
 
   public void correctAreaSize() {
-    var A = (_colorAreaShape.Shape as RectangleShape2D).Size;
-    var B = (_collisionShape.Shape as RectangleShape2D).Size;
-    var scaleCoefficient = (A + (B - A) / Scale) / B;
-    (_collisionShape.Shape as RectangleShape2D).Size *= scaleCoefficient;
+    if (_collisionShape.Shape is RectangleShape2D rectangleShape) {
+      var A = (_colorAreaShape.Shape as RectangleShape2D)?.Size ?? Vector2.Zero;
+      var B = rectangleShape.Size;
+      var scaleCoefficient = (A + (B - A) / Scale) / B;
+      rectangleShape.Size *= scaleCoefficient;
+    }
   }
 
   public override void _EnterTree() {
     base._EnterTree();
-    ConnectSignals();
+    _connectSignals();
   }
 
   public override void _ExitTree() {
     base._ExitTree();
-    DisconnectSignals();
+    _disconnectSignals();
   }
 
   public void OnPlayerLanded(Node area, Vector2 position) {
@@ -103,7 +112,7 @@ public partial class SimplePlatform : StaticBody2D {
     }
   }
 
-  private void SetPlatformTexture() {
+  private void _setPlatformTexture() {
     if (geared) {
       _ninePatchRectNode.SetTexture(GearedTexture);
     }
@@ -112,13 +121,13 @@ public partial class SimplePlatform : StaticBody2D {
     }
   }
 
-  private void ConnectSignals() {
+  private void _connectSignals() {
     if (Engine.IsEditorHint())
       return;
     EventHandler.Instance.Events.PlayerLanded += OnPlayerLanded;
   }
 
-  private void DisconnectSignals() {
+  private void _disconnectSignals() {
     if (Engine.IsEditorHint())
       return;
     EventHandler.Instance.Events.PlayerLanded -= OnPlayerLanded;
