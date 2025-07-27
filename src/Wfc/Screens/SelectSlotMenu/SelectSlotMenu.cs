@@ -5,21 +5,27 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Persistence;
+using Wfc.Entities.Ui;
+using Wfc.Entities.Ui.Slots;
+using Wfc.Screens.MenuManager;
+using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class SelectSlotMenu : GameMenu {
-  public override void _Notification(int what) => this.Notify(what);
-  [Dependency]
-  public ISaveManager SaveManager => this.DependOn<ISaveManager>();
-  private Button BackButtonNode;
-  private SlotsContainer SlotsContainer;
-  private DialogContainer ResetDialogContainerNode;
-  private DialogContainer NoSelectedSlotDialogContainer;
-  private Label CurrentSlotLabelNode;
-  private int currentSlotOnFocus;
-  private int deleteTmpId = 0; // Used to save the currently deleting slot
+  [NodePath("BackButton")]
+  private Button _backButtonNode = default!;
+  [NodePath("SlotsContainer")]
+  private SlotsContainer _slotsContainer = default!;
+  [NodePath("ResetDialogContainer")]
+  private DialogContainer _resetDialogContainerNode = default!;
+  [NodePath("NoSelectedSlotDialogContainer")]
+  private DialogContainer _noSelectedSlotDialogContainer = default!;
+  [NodePath("CurrentSlotLabel")]
+  private Label CurrentSlotLabelNode = default!;
+  private int _currentSlotOnFocus;
+  private int _deleteTmpId = 0; // Used to save the currently deleting slot
 
   public void OnResolved() {
 
@@ -27,60 +33,56 @@ public partial class SelectSlotMenu : GameMenu {
 
   public override void _Ready() {
     base._Ready();
-    BackButtonNode = GetNode<Button>("BackButton");
-    SlotsContainer = GetNode<SlotsContainer>("SlotsContainer");
-    ResetDialogContainerNode = GetNode<DialogContainer>("ResetDialogContainer");
-    NoSelectedSlotDialogContainer = GetNode<DialogContainer>("NoSelectedSlotDialogContainer");
-    CurrentSlotLabelNode = GetNode<Label>("CurrentSlotLabel");
-    currentSlotOnFocus = SaveManager.GetSelectedSlotIndex();
-    SlotsContainer.SetGameCurrentSelectedSlot(SaveManager.GetSelectedSlotIndex());
+    this.WireNodes();
+    _currentSlotOnFocus = SaveManager.GetSelectedSlotIndex();
+    _slotsContainer.SetGameCurrentSelectedSlot(SaveManager.GetSelectedSlotIndex());
     SetSelectedSlotLabel();
   }
 
   private void OnBackButtonPressed() {
     if (SaveManager.GetSelectedSlotIndex() == -1) {
-      EventHandler.EmitMenuButtonPressed(MenuButtons.SHOW_DIALOG);
+      EventHandler.EmitMenuActionPressed(MenuAction.ShowDialog);
 
     }
     else {
-      EventHandler.EmitMenuButtonPressed(MenuButtons.BACK);
+      EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
     }
   }
 
-  public override bool OnMenuButtonPressed(MenuButtons menuButton) {
-    base.OnMenuButtonPressed(menuButton);
-    switch (menuButton) {
-      case MenuButtons.SHOW_DIALOG:
-        NoSelectedSlotDialogContainer.ShowDialog();
+  public override bool OnMenuButtonPressed(MenuAction menuAction) {
+    base.OnMenuButtonPressed(menuAction);
+    switch (menuAction) {
+      case MenuAction.ShowDialog:
+        _noSelectedSlotDialogContainer.ShowDialog();
         return true;
-      case MenuButtons.DELETE_SLOT:
+      case MenuAction.DeleteSlot:
         return true;
-      case MenuButtons.SELECT_SLOT:
+      case MenuAction.SelectSlot:
         return true;
-      case MenuButtons.BACK:
+      case MenuAction.GoBack:
         return false; // We don't return true here because we want the default behavior to be called
       default:
         return false;
     }
   }
 
-  private void UpdateSlotsYPos(float posY) {
-    SlotsContainer.Position = new Vector2(SlotsContainer.Position.X, posY);
+  private void _updateSlotsYPos(float posY) {
+    _slotsContainer.Position = new Vector2(_slotsContainer.Position.X, posY);
   }
 
-  private void _on_SlotsContainer_slot_pressed(int id, string action) {
-    currentSlotOnFocus = id;
+  private void _on_SlotsContainer_SlotPressed(int id, string action) {
+    _currentSlotOnFocus = id;
     if (action == "select") {
       SaveManager.SelectSlot(id);
       _on_confirm_slot_button_selected(id);
-      SlotsContainer.SetGameCurrentSelectedSlot(id);
-      EventHandler.EmitMenuButtonPressed(MenuButtons.SELECT_SLOT);
+      _slotsContainer.SetGameCurrentSelectedSlot(id);
+      EventHandler.EmitMenuActionPressed(MenuAction.SelectSlot);
 
     }
     else if (action == "delete") {
-      deleteTmpId = id;
-      ResetDialogContainerNode.ShowDialog();
-      EventHandler.EmitMenuButtonPressed(MenuButtons.DELETE_SLOT);
+      _deleteTmpId = id;
+      _resetDialogContainerNode.ShowDialog();
+      EventHandler.EmitMenuActionPressed(MenuAction.DeleteSlot);
     }
   }
 
@@ -95,9 +97,9 @@ public partial class SelectSlotMenu : GameMenu {
   }
 
   private void OnResetSlotConfirmed() {
-    SaveManager.RemoveSaveSlot(currentSlotOnFocus);
-    SlotsContainer.UpdateSlot(deleteTmpId, true);
-    SlotsContainer.SetGameCurrentSelectedSlot(SaveManager.GetSelectedSlotIndex());
+    SaveManager.RemoveSaveSlot(_currentSlotOnFocus);
+    _slotsContainer.UpdateSlot(_deleteTmpId, true);
+    _slotsContainer.SetGameCurrentSelectedSlot(SaveManager.GetSelectedSlotIndex());
     SetSelectedSlotLabel();
   }
 

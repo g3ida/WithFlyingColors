@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://clj5gw6ykw55o"]
 
-[ext_resource type="Script" uid="uid://cqjg8utcm8iup" path="res://src/Scripts/UI/Checkbox.cs" id="1"]
+[ext_resource type="Script" uid="uid://cqjg8utcm8iup" path="res://src/Wfc/Entities/Ui/Checkbox/Checkbox.cs" id="1"]
 
 [sub_resource type="StyleBoxFlat" id="1"]
 bg_color = Color(0, 0, 0, 0.176471)
@@ -16,4 +16,4 @@ theme_override_constants/check_v_offset = -6
 theme_override_styles/focus = SubResource("1")
 script = ExtResource("1")
 
-[connection signal="mouse_entered" from="." to="." method="_on_Checkbox_mouse_entered"]
+[connection signal="mouse_entered" from="." to="." method="_onCheckboxMouseEntered"]

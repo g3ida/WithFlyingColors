@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://bi0ng3yw3m2gc"]
 
-[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/SlotButton.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/Ui/Slots/SlotButton/SlotButton.tscn" id="1"]
 [ext_resource type="Texture2D" uid="uid://ctmpmqsq2ph8i" path="res://Assets/Sprites/UI/load_slot.png" id="2"]
-[ext_resource type="Script" uid="uid://cmk2ol3jfogkv" path="res://src/Scripts/UI/SlotActionButtons.cs" id="3"]
+[ext_resource type="Script" uid="uid://cmk2ol3jfogkv" path="res://src/Wfc/Entities/Ui/Slots/SlotActionButtons/SlotActionButtons.cs" id="3"]
 [ext_resource type="Texture2D" uid="uid://cnpug64xvipka" path="res://Assets/Sprites/UI/trash.png" id="4"]
 
 [node name="SlotActionButtons" type="HBoxContainer"]
@@ -13,9 +13,9 @@ script = ExtResource("3")
 visible = false
 offset_bottom = 0.0
 color = Color(1, 0, 0.521569, 1)
-iconTexture = ExtResource("4")
-focus_left_node = NodePath("")
-focus_right_node = NodePath("../ConfirmButton")
+IconTexture = ExtResource("4")
+FocusLeftNode = NodePath("")
+FocusRightNode = NodePath("../ConfirmButton")
 
 [node name="ConfirmButton" parent="." instance=ExtResource("1")]
 visible = false
@@ -23,10 +23,10 @@ offset_left = -1.0
 offset_right = -1.0
 offset_bottom = 0.0
 color = Color(0.8, 1, 0, 1)
-node_color = "yellow"
-iconTexture = ExtResource("2")
-focus_left_node = NodePath("../DeleteButton")
-focus_right_node = NodePath("")
+NodeColor = "yellow"
+IconTexture = ExtResource("2")
+FocusLeftNode = NodePath("../DeleteButton")
+FocusRightNode = NodePath("")
 
 [connection signal="pressed" from="DeleteButton" to="." method="_on_DeleteButton_pressed"]
 [connection signal="pressed" from="ConfirmButton" to="." method="_on_ConfirmButton_pressed"]

@@ -54,5 +54,5 @@ theme_override_styles/hover = SubResource("5")
 theme_override_styles/pressed = SubResource("6")
 theme_override_styles/normal = SubResource("2")
 
-[connection signal="mouse_entered" from="Button" to="." method="_on_Button_mouse_entered"]
-[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
+[connection signal="mouse_entered" from="Button" to="." method="_onButtonMouseEntered"]
+[connection signal="pressed" from="Button" to="." method="_onButtonPressed"]

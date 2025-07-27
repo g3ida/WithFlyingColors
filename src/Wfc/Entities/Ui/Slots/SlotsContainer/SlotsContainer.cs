@@ -1,26 +1,37 @@
+namespace Wfc.Entities.Ui.Slots;
+
 using System;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Persistence;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
 
+[ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class SlotsContainer : Control {
 
   public override void _Notification(int what) => this.Notify(what);
   [Signal]
-  public delegate void slot_pressedEventHandler(int id, string action);
+  public delegate void SlotPressedEventHandler(int id, string action);
 
   [Export]
   public bool centered_on_screen_v = false;
   [Export]
   public bool centered_on_screen_h = false;
 
-  private Control _boxContainerNode;
-  private SaveSlot _saveSlot1Node;
-  private SaveSlot _saveSlot2Node;
-  private SaveSlot _saveSlot3Node;
-  private SaveSlot[] _saveSlots;
+  #region Nodes
+  [NodePath("HBoxContainer")]
+  private Control _boxContainerNode = default!;
+  [NodePath("HBoxContainer/SaveSlot1")]
+  private SaveSlotPanel _saveSlot1Node = default!;
+  [NodePath("HBoxContainer/SaveSlot2")]
+  private SaveSlotPanel _saveSlot2Node = default!;
+  [NodePath("HBoxContainer/SaveSlot3")]
+  private SaveSlotPanel _saveSlot3Node = default!;
+  private SaveSlotPanel[] _saveSlots = default!;
+  #endregion Nodes
 
   public void OnResolved() { }
 
@@ -28,11 +39,9 @@ public partial class SlotsContainer : Control {
   public ISaveManager SaveManager => this.DependOn<ISaveManager>();
 
   public override void _Ready() {
-    _boxContainerNode = GetNode<Control>("HBoxContainer");
-    _saveSlot1Node = GetNode<SaveSlot>("HBoxContainer/SaveSlot1");
-    _saveSlot2Node = GetNode<SaveSlot>("HBoxContainer/SaveSlot2");
-    _saveSlot3Node = GetNode<SaveSlot>("HBoxContainer/SaveSlot3");
-    _saveSlots = new SaveSlot[] { _saveSlot1Node, _saveSlot2Node, _saveSlot3Node };
+    base._Ready();
+    this.WireNodes();
+    _saveSlots = new SaveSlotPanel[] { _saveSlot1Node, _saveSlot2Node, _saveSlot3Node };
 
     SetProcess(false);
     Size = _boxContainerNode.Size;
@@ -62,22 +71,18 @@ public partial class SlotsContainer : Control {
     }
 
     _saveSlots[SaveManager.GetSelectedSlotIndex()].SetHasFocus(true);
-
-    // _saveSlot1Node.Connect("pressed", this, nameof(OnSaveSlot1Pressed));
-    // _saveSlot2Node.Connect("pressed", this, nameof(OnSaveSlot2Pressed));
-    // _saveSlot3Node.Connect("pressed", this, nameof(OnSaveSlot3Pressed));
   }
 
-  private void _on_SaveSlot1_pressed(string action) {
-    EmitSignal(nameof(slot_pressed), 0, action);
+  private void _onSaveSlot1Pressed(string action) {
+    EmitSignal(nameof(SlotPressed), 0, action);
   }
 
-  private void _on_SaveSlot2_pressed(string action) {
-    EmitSignal(nameof(slot_pressed), 1, action);
+  private void _onSaveSlot2Pressed(string action) {
+    EmitSignal(nameof(SlotPressed), 1, action);
   }
 
-  private void _on_SaveSlot3_pressed(string action) {
-    EmitSignal(nameof(slot_pressed), 2, action);
+  private void _onSaveSlot3Pressed(string action) {
+    EmitSignal(nameof(SlotPressed), 2, action);
   }
 
   public void UpdateSlots() {

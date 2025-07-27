@@ -2,6 +2,7 @@ using System;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Settings;
+using Wfc.Entities.Ui;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class AudioSettingsUI : Control, IUITab {
@@ -16,11 +17,11 @@ public partial class AudioSettingsUI : Control, IUITab {
     MusicSliderNode.Value = GameSettings.MusicVolume;
 
     // SfxSliderNode.Connect("drag_ended", this, nameof(_on_SfxSlider_drag_ended));
-    // SfxSliderNode.Connect("value_changed", this, nameof(_on_SfxSliderButton_value_changed));
-    // SfxSliderNode.Connect("selection_changed", this, nameof(_on_SfxSlider_selection_changed));
+    // SfxSliderNode.Connect("ValueChanged", this, nameof(_on_SfxSliderButton_ValueChanged));
+    // SfxSliderNode.Connect("SelectionChanged", this, nameof(_on_SfxSlider_SelectionChanged));
 
-    // MusicSliderNode.Connect("value_changed", this, nameof(_on_MusicSlider_value_changed));
-    // MusicSliderNode.Connect("selection_changed", this, nameof(_on_MusicSlider_selection_changed));
+    // MusicSliderNode.Connect("ValueChanged", this, nameof(_on_MusicSlider_ValueChanged));
+    // MusicSliderNode.Connect("SelectionChanged", this, nameof(_on_MusicSlider_SelectionChanged));
   }
 
   private void _on_SfxSlider_drag_ended() {
@@ -28,12 +29,12 @@ public partial class AudioSettingsUI : Control, IUITab {
     EventHandler.Instance.EmitSfxVolumeChanged((float)SfxSliderNode.Value);
   }
 
-  private void _on_SfxSliderButton_value_changed(float value) {
+  private void _on_SfxSliderButton_ValueChanged(float value) {
     GameSettings.SfxVolume = value;
     EventHandler.Instance.EmitSfxVolumeChanged(value);
   }
 
-  private void _on_MusicSlider_value_changed(float value) {
+  private void _on_MusicSlider_ValueChanged(float value) {
     GameSettings.MusicVolume = value;
     EventHandler.Instance.EmitMusicVolumeChanged(value);
   }
@@ -42,11 +43,11 @@ public partial class AudioSettingsUI : Control, IUITab {
     SfxSliderNode.GrabFocus();
   }
 
-  private void _on_SfxSlider_selection_changed(bool isSelected) {
+  private void _on_SfxSlider_SelectionChanged(bool isSelected) {
     EventHandler.Instance.EmitSfxVolumeChanged(GameSettings.SfxVolume);
   }
 
-  private void _on_MusicSlider_selection_changed(bool isSelected) {
+  private void _on_MusicSlider_SelectionChanged(bool isSelected) {
     EventHandler.Instance.EmitMusicVolumeChanged(GameSettings.MusicVolume);
   }
 }

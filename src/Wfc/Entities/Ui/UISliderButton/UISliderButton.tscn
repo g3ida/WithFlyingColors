@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://by4f0vq3n2g3b"]
 
-[ext_resource type="Script" uid="uid://b7m7qowonqej4" path="res://src/Scripts/UI/UISliderButton.cs" id="1"]
+[ext_resource type="Script" uid="uid://b7m7qowonqej4" path="res://src/Wfc/Entities/Ui/UISliderButton/UISliderButton.cs" id="1"]
 
 [sub_resource type="StyleBoxFlat" id="1"]
 bg_color = Color(0, 0, 0, 0.176471)
@@ -56,5 +56,5 @@ anims/Blink = SubResource("2")
 anims/RESET = SubResource("3")
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
-[connection signal="drag_ended" from="HSlider" to="." method="_on_HSlider_drag_ended"]
+[connection signal="drag_ended" from="HSlider" to="." method="_onHSliderDragEnded"]
 [connection signal="mouse_entered" from="HSlider" to="." method="_on_mouse_entered"]

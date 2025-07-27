@@ -1,8 +1,13 @@
+namespace Wfc.Entities.Ui.Slots;
+
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Persistence;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
 
 [Meta(typeof(IAutoNode))]
 public partial class SlotActionButtons : HBoxContainer {
@@ -18,15 +23,19 @@ public partial class SlotActionButtons : HBoxContainer {
 
   public int SlotIndex { get; set; } = 0;
 
-  private SlotButton _deleteButtonNode;
-  private SlotButton _confirmButtonNode;
-  private Control _spaceNode;
+  #region Nodes
+  [NodePath("DeleteButton")]
+  private SlotButton _deleteButtonNode = default!;
+  [NodePath("ConfirmButton")]
+  private SlotButton _confirmButtonNode = default!;
+  private Control _spaceNode = default!;
+  #endregion Nodes
 
   public void OnResolved() { }
 
   public override void _Ready() {
-    _deleteButtonNode = GetNode<SlotButton>("DeleteButton");
-    _confirmButtonNode = GetNode<SlotButton>("ConfirmButton");
+    base._Ready();
+    this.WireNodes();
     _spaceNode = new Control();
 
     GetParent().CallDeferred(Node2D.MethodName.AddChild, _spaceNode);

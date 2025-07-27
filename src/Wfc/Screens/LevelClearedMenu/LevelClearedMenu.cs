@@ -16,13 +16,13 @@ public partial class LevelClearedMenu : GameMenu {
     base._Input(@event);
     // Handle input based on input type
     if (@event is InputEventKey) {
-      EventHandler.EmitMenuButtonPressed(MenuButtons.EXIT_LEVEL_CLEAR);
+      EventHandler.EmitMenuActionPressed(MenuAction.ExitClearedLevel);
     }
   }
 
-  public override bool OnMenuButtonPressed(MenuButtons menuButton) {
-    base.OnMenuButtonPressed(menuButton);
-    if (menuButton == MenuButtons.EXIT_LEVEL_CLEAR) {
+  public override bool OnMenuButtonPressed(MenuAction menuAction) {
+    base.OnMenuButtonPressed(menuAction);
+    if (menuAction == MenuAction.ExitClearedLevel) {
       NavigateToScreen(GameMenus.MAIN_MENU);
       return true;
     }

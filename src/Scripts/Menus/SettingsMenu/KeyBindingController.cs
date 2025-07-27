@@ -1,5 +1,6 @@
 using Godot;
 using Wfc.Core.Settings;
+using Wfc.Entities.Ui;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class KeyBindingController : Control, IUITab {

@@ -1,6 +1,7 @@
 namespace Wfc.Screens;
 
 using Wfc.Core.Event;
+using Wfc.Screens.MenuManager;
 using Wfc.Utils.Attributes;
 
 [ScenePath]
@@ -10,6 +11,6 @@ public partial class StatsMenu : GameMenu {
   }
 
   private void OnBackButtonPressed() {
-    EventHandler.EmitMenuButtonPressed(MenuButtons.BACK);
+    EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
   }
 }

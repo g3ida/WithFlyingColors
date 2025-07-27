@@ -4,6 +4,7 @@ using Godot;
 using Wfc.Core.Event;
 using Wfc.Screens;
 using Wfc.Screens.Levels;
+using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
@@ -66,7 +67,7 @@ public partial class SceneCard : Control {
   }
 
   private void OnButtonPressed() {
-    EventHandler.Instance.EmitMenuButtonPressed(MenuButtons.SELECT_LEVEL);
+    EventHandler.Instance.EmitMenuActionPressed(MenuAction.GoToLevelSelect);
     GetParent().GetParent<GameMenu>().NavigateToLevelScreen(_levelId);
   }
 
