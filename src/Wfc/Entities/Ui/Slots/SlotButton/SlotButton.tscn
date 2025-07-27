@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://mse8oeqaols0"]
 
-[ext_resource type="Script" uid="uid://ccop7gsj5lyeq" path="res://src/Scripts/UI/SlotButton.cs" id="1"]
+[ext_resource type="Script" uid="uid://ccop7gsj5lyeq" path="res://src/Wfc/Entities/Ui/Slots/SlotButton/SlotButton.cs" id="1"]
 [ext_resource type="Texture2D" uid="uid://cnpug64xvipka" path="res://Assets/Sprites/UI/trash.png" id="2"]
 
 [sub_resource type="Animation" id="2"]
@@ -50,5 +50,5 @@ icon_alignment = 1
 anims/Blink = SubResource("2")
 anims/RESET = SubResource("3")
 
-[connection signal="mouse_entered" from="Button" to="." method="_on_Button_mouse_entered"]
-[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
+[connection signal="mouse_entered" from="Button" to="." method="_onButtonMouseEntered"]
+[connection signal="pressed" from="Button" to="." method="_onButtonPressed"]

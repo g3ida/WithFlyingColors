@@ -9,7 +9,12 @@ public interface IInputManager {
     RotateRight,
     Pause,
     Dash,
-    Down
+    Down,
+    UIConfirm,
+    UICancel,
+    UILeft,
+    UIRight,
+    UIHome
   }
   public bool IsPressed(Action action);
   public bool IsJustReleased(Action action);

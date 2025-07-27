@@ -1,3 +1,5 @@
+namespace Wfc.Entities.Ui;
+
 using Godot;
 using EventHandler = Wfc.Core.Event.EventHandler;
 

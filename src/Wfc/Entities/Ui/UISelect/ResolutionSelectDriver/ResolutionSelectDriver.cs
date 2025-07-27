@@ -1,6 +1,9 @@
+namespace Wfc.Entities.Ui.UISelect;
+
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Settings;
+using Wfc.Entities.Ui;
 
 public partial class ResolutionSelectDriver : UISelectDriver {
   private List<Vector2I> resolutions = new List<Vector2I>();
@@ -17,14 +20,14 @@ public partial class ResolutionSelectDriver : UISelectDriver {
     var screen_size = DisplayServer.ScreenGetSize();
     foreach (var el in values) {
       if (el.X <= screen_size.X && el.Y <= screen_size.Y) {
-        items.Add($"{el.X}x{el.Y}");
-        item_values.Add(el);
+        Items.Add($"{el.X}x{el.Y}");
+        ItemValues.Add(el);
         resolutions.Add(el);
       }
     }
   }
 
-  public override void on_item_selected(string item) {
+  public override void onItemSelected(string item) {
     // Logic for handling item selection goes here.
   }
 

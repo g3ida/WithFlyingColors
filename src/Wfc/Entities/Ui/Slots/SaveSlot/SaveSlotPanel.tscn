@@ -1,10 +1,10 @@
 [gd_scene load_steps=9 format=3 uid="uid://c8elugdxs5gwv"]
 
-[ext_resource type="Script" uid="uid://dj38yuy0m8t1b" path="res://src/Scripts/UI/SaveSlot.cs" id="1"]
+[ext_resource type="Script" uid="uid://dj38yuy0m8t1b" path="res://src/Wfc/Entities/Ui/Slots/SaveSlot/SaveSlotPanel.cs" id="1"]
 [ext_resource type="Theme" uid="uid://dsajhxb3mxvf0" path="res://Assets/Styles/Themes/SaveSlot.tres" id="2"]
 [ext_resource type="FontFile" path="res://Assets/Fonts/SaveSlotFont.tres" id="3"]
 [ext_resource type="Theme" uid="uid://dl05mrk646cas" path="res://Assets/Styles/Themes/SaveSlotBg.tres" id="4"]
-[ext_resource type="PackedScene" path="res://Assets/Scenes/UI/SlotActionButtons.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/Ui/Slots/SlotActionButtons/SlotActionButtons.tscn" id="5"]
 
 [sub_resource type="Animation" id="4"]
 resource_name = "Blink"
@@ -105,5 +105,5 @@ libraries = {
 
 [connection signal="clear_button_pressed" from="HBoxContainer/ActionButtons" to="." method="_on_ActionButtons_clear_button_pressed"]
 [connection signal="select_button_pressed" from="HBoxContainer/ActionButtons" to="." method="_on_ActionButtons_select_button_pressed"]
-[connection signal="mouse_entered" from="Button" to="." method="_on_Button_mouse_entered"]
-[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
+[connection signal="mouse_entered" from="Button" to="." method="_onButtonMouseEntered"]
+[connection signal="pressed" from="Button" to="." method="_onButtonPressed"]

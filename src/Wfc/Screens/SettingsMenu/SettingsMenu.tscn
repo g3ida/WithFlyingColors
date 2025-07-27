@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://bptfom5y0pb5l" path="res://Assets/Scenes/MainMenu/GameSettingsUI.tscn" id="7"]
 [ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="8"]
 [ext_resource type="PackedScene" uid="uid://d4myhmdcwutwd" path="res://Assets/Scenes/MainMenu/ControllerSettingsUI.tscn" id="9"]
-[ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://Assets/Scenes/UI/DialogContainer.tscn" id="11"]
+[ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://src/Wfc/Entities/Ui/Slots/Dialogs/DialogContainer/DialogContainer.tscn" id="11"]
 [ext_resource type="Theme" uid="uid://cd37bkdhivqji" path="res://Assets/Styles/Themes/Dialog.tres" id="12"]
 [ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://Assets/Scenes/UI/UITransition.tscn" id="13"]
 [ext_resource type="PackedScene" uid="uid://cex6io27x3hxy" path="res://Assets/Scenes/MainMenu/AudioSettingsUI.tscn" id="14"]

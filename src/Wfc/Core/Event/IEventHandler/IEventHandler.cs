@@ -38,8 +38,6 @@ public interface IEventHandler {
   public void EmitCheckpointReached(Node checkpoint);
   public void EmitCheckpointLoaded();
 
-  // fixme [deprecated] in favor of EmitMenuActionPressed
-  public void EmitMenuButtonPressed(MenuButtons menuButton);
   public void EmitMenuActionPressed(MenuAction menuAction);
   public void EmitMenuBoxRotated();
   public void EmitPauseMenuEnter();

@@ -8,40 +8,44 @@ using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
+  #region Constants
   private const float COLD_DOWN = 1.5f;
   private const int ITEM_INV_PROBABILITY = 4;
   private const string POWERUP_ASSETS_BASE_PATH = @"res://src/Wfc/Entities/World/BrickBreaker/Powerups/";
+  #endregion Constants
+  private readonly PackedScene PowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "PowerUp/PowerUp.tscn");
+  private readonly PackedScene SlowPowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "SlowPowerUp/SlowPowerUp.tscn");
+  private readonly PackedScene FastPowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "FastPowerUp/FastPowerUp.tscn");
+  private readonly PackedScene ScaleUpPowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "ScaleUpPowerUp/ScaleUpPowerUp.tscn");
+  private readonly PackedScene ScaleDownPowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "ScaleDownPowerUp/ScaleDownPowerUp.tscn");
+  private readonly PackedScene TripleBallsPowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "TripleBallsPowerUp/TripleBallsPowerUp.tscn");
+  private readonly PackedScene ProtectionAreaPowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "ProtectionAreaPowerUp/ProtectionAreaPowerUp.tscn");
+  private List<PackedScene> _powerUps = new List<PackedScene>();
 
-  private PackedScene PowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "PowerUp/PowerUp.tscn");
-  private PackedScene SlowPowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "SlowPowerUp/SlowPowerUp.tscn");
-  private PackedScene FastPowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "FastPowerUp/FastPowerUp.tscn");
-  private PackedScene ScaleUpPowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "ScaleUpPowerUp/ScaleUpPowerUp.tscn");
-  private PackedScene ScaleDownPowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "ScaleDownPowerUp/ScaleDownPowerUp.tscn");
-  private PackedScene TripleBallsPowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "TripleBallsPowerUp/TripleBallsPowerUp.tscn");
-  private PackedScene ProtectionAreaPowerUp = GD.Load<PackedScene>(POWERUP_ASSETS_BASE_PATH + "ProtectionAreaPowerUp/ProtectionAreaPowerUp.tscn");
-  private List<PackedScene> powerUps = new List<PackedScene>();
-
-  private List<PowerUpScript> activePowerupNodes = new List<PowerUpScript>();
+  private List<PowerUpScript> _activePowerupNodes = new List<PowerUpScript>();
   private bool isActive = true;
-  private Godot.Collections.Array<PackedScene> powerUpsRandomList = new Godot.Collections.Array<PackedScene>();
+  private Godot.Collections.Array<PackedScene> _powerUpsRandomList = new Godot.Collections.Array<PackedScene>();
 
-  private Node2D fallingPowerUpsContainer;
-  private Timer cooldownTimer;
-  private BrickBreaker brickBreakerNode;
+  #region Nodes
+  [NodePath("FallingPowerUpsContainer")]
+  private Node2D _fallingPowerUpsContainer = default!;
+  [NodePath("CooldownTimer")]
+  private Timer _cooldownTimer = default!;
+  private BrickBreaker _brickBreakerNode = default!;
+  #endregion  Nodes
 
   public override void _Ready() {
-    powerUps.Add(SlowPowerUp);
-    powerUps.Add(FastPowerUp);
-    powerUps.Add(ScaleUpPowerUp);
-    powerUps.Add(ScaleDownPowerUp);
-    powerUps.Add(TripleBallsPowerUp);
-    powerUps.Add(ProtectionAreaPowerUp);
+    base._Ready();
+    this.WireNodes();
+    _powerUps.Add(SlowPowerUp);
+    _powerUps.Add(FastPowerUp);
+    _powerUps.Add(ScaleUpPowerUp);
+    _powerUps.Add(ScaleDownPowerUp);
+    _powerUps.Add(TripleBallsPowerUp);
+    _powerUps.Add(ProtectionAreaPowerUp);
 
-    fallingPowerUpsContainer = GetNode<Node2D>("FallingPowerUpsContainer");
-    cooldownTimer = GetNode<Timer>("CooldownTimer");
-    brickBreakerNode = GetParent().GetParent<BrickBreaker>();
-
-    cooldownTimer.WaitTime = COLD_DOWN;
+    _brickBreakerNode = GetParent().GetParent<BrickBreaker>();
+    _cooldownTimer.WaitTime = COLD_DOWN;
     GD.Randomize();
   }
 
@@ -58,35 +62,35 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   public void Reset() {
     RemoveActivePowerups();
     RemoveFallingPowerups();
-    cooldownTimer.Stop();
+    _cooldownTimer.Stop();
   }
 
   private void FillPowerupsRandomList() {
-    powerUpsRandomList.Clear();
-    foreach (var el in powerUps) {
-      powerUpsRandomList.Add(el);
+    _powerUpsRandomList.Clear();
+    foreach (var el in _powerUps) {
+      _powerUpsRandomList.Add(el);
     }
-    powerUpsRandomList.Shuffle();
+    _powerUpsRandomList.Shuffle();
   }
 
   private PackedScene GetRandomPowerup() {
-    if (powerUpsRandomList.Count == 0) {
+    if (_powerUpsRandomList.Count == 0) {
       FillPowerupsRandomList();
     }
-    var powerUp = powerUpsRandomList[powerUpsRandomList.Count - 1];
-    powerUpsRandomList.RemoveAt(powerUpsRandomList.Count - 1);
+    var powerUp = _powerUpsRandomList[_powerUpsRandomList.Count - 1];
+    _powerUpsRandomList.RemoveAt(_powerUpsRandomList.Count - 1);
     return powerUp;
   }
 
   public void RemoveActivePowerups() {
-    foreach (var el in activePowerupNodes) {
+    foreach (var el in _activePowerupNodes) {
       el.QueueFree();
     }
-    activePowerupNodes.Clear();
+    _activePowerupNodes.Clear();
   }
 
   public void RemoveFallingPowerups() {
-    foreach (Node2D el in fallingPowerUpsContainer.GetChildren()) {
+    foreach (Node2D el in _fallingPowerUpsContainer.GetChildren()) {
       el.QueueFree();
     }
   }
@@ -95,14 +99,14 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
     var powerUp = powerUpNode.Instantiate<Node2D>();
     powerUp.Set("ColorGroup", color);
     powerUp.Position = position - Position;
-    fallingPowerUpsContainer.CallDeferred(Node.MethodName.AddChild, powerUp);
-    powerUp.CallDeferred(Node.MethodName.SetOwner, fallingPowerUpsContainer);
+    _fallingPowerUpsContainer.CallDeferred(Node.MethodName.AddChild, powerUp);
+    powerUp.CallDeferred(Node.MethodName.SetOwner, _fallingPowerUpsContainer);
     powerUp.Connect("OnPlayerHit", new Callable(this, nameof(OnPlayerHit)));
-    cooldownTimer.Start();
+    _cooldownTimer.Start();
   }
 
   private void OnBrickBroken(string color, Vector2 position) {
-    if (cooldownTimer.TimeLeft < MathUtils.EPSILON && isActive) {
+    if (_cooldownTimer.TimeLeft < MathUtils.EPSILON && isActive) {
       if (GD.Randi() % ITEM_INV_PROBABILITY == 0) {
         var powerUp = GetRandomPowerup();
         CreatePowerup(powerUp, color, position);
@@ -111,7 +115,7 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   }
 
   private bool CheckIfCanAddPowerup(PackedScene hitNode) {
-    foreach (var powerUp in activePowerupNodes) {
+    foreach (var powerUp in _activePowerupNodes) {
 
       if (!powerUp.IsIncremental
           && powerUp.SceneFilePath == hitNode.ResourcePath) {
@@ -124,15 +128,15 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   private void RemoveIrrelevantPowerups() {
     var listToDelete = new List<int>();
     int i = 0;
-    foreach (var el in activePowerupNodes) {
+    foreach (var el in _activePowerupNodes) {
       if (!el.IsStillRelevant()) {
         listToDelete.Insert(0, i);
       }
       i++;
     }
     foreach (var index in listToDelete) {
-      activePowerupNodes[index].QueueFree();
-      activePowerupNodes.RemoveAt(index);
+      _activePowerupNodes[index].QueueFree();
+      _activePowerupNodes.RemoveAt(index);
     }
   }
 
@@ -140,8 +144,8 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
     RemoveIrrelevantPowerups();
     if (CheckIfCanAddPowerup(hitNode)) {
       var hit = hitNode.Instantiate<PowerUpScript>();
-      activePowerupNodes.Add(hit);
-      hit.SetBrickBreakerNode(brickBreakerNode);
+      _activePowerupNodes.Add(hit);
+      hit.SetBrickBreakerNode(_brickBreakerNode);
       CallDeferred(Node.MethodName.AddChild, hit);
     }
     powerUp?.Disconnect("OnPlayerHit", new Callable(this, nameof(OnPlayerHit)));

@@ -8,6 +8,7 @@ using Wfc.Core.Event;
 using Wfc.Core.Localization;
 using Wfc.Entities.Ui;
 using Wfc.Screens.Levels;
+using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
@@ -56,7 +57,7 @@ public partial class LevelSelectMenu : GameMenu {
 
   private void OnBackButtonPressed() {
     if (!IsInTransitionState()) {
-      EventHandler.EmitMenuButtonPressed(MenuButtons.BACK);
+      EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
     }
   }
 }

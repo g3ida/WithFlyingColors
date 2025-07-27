@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://d4myhmdcwutwd"]
 
 [ext_resource type="Script" uid="uid://bw5surb8hp7jc" path="res://src/Scripts/Menus/SettingsMenu/KeyBindingController.cs" id="1"]
-[ext_resource type="PackedScene" uid="uid://6aenyg5mnntr" path="res://Assets/Scenes/UI/KeybindingButton.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://6aenyg5mnntr" path="res://src/Wfc/Entities/Ui/KeyBindingButton/KeybindingButton.tscn" id="4"]
 
 [node name="Control" type="Control"]
 layout_mode = 3

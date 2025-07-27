@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://cbp4s6fg54c5u" path="res://Assets/Sprites/UI/ui_left.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://dhbxm877o1uai" path="res://Assets/Sprites/UI/ui_right.png" id="2"]
-[ext_resource type="Script" uid="uid://1fvqgjqw51mm" path="res://src/Scripts/UI/UISelect.cs" id="3"]
+[ext_resource type="Script" uid="uid://1fvqgjqw51mm" path="res://src/Wfc/Entities/Ui/UISelect/UISelect/UISelectButton.cs" id="3"]
 
 [sub_resource type="StyleBoxFlat" id="4"]
 bg_color = Color(0, 0, 0, 0.176471)
@@ -75,7 +75,7 @@ icon = ExtResource("2")
 anims/Blink = SubResource("5")
 anims/RESET = SubResource("6")
 
-[connection signal="mouse_entered" from="." to="." method="_on_Button_mouse_entered"]
+[connection signal="mouse_entered" from="." to="." method="_onButtonMouseEntered"]
 [connection signal="pressed" from="HBoxContainer/Left" to="." method="_on_Left_pressed"]
 [connection signal="resized" from="HBoxContainer/Label" to="." method="_on_Label_resized"]
 [connection signal="pressed" from="HBoxContainer/Right" to="." method="_on_Right_pressed"]

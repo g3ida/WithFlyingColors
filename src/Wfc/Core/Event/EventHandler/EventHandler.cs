@@ -116,9 +116,6 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitGemCollected(string color, Vector2 position, SpriteFrames frames) => Events.EmitSignal(Events.SignalName.GemCollected, color, position, frames);
   public void EmitCheckpointReached(Node checkpoint) => Events.EmitSignal(Events.SignalName.CheckpointReached, checkpoint);
   public void EmitCheckpointLoaded() => Events.EmitSignal(Events.SignalName.CheckpointLoaded);
-
-  // fixme [deprecated] in favor of EmitMenuActionPressed
-  public void EmitMenuButtonPressed(MenuButtons menuButton) => Events.EmitSignal(Events.SignalName.MenuButtonPressed, (int)menuButton);
   public void EmitMenuActionPressed(MenuAction menuAction) => Events.EmitSignal(Events.SignalName.MenuButtonPressed, (int)menuAction);
   public void EmitMenuBoxRotated() => Events.EmitSignal(Events.SignalName.MenuBoxRotated);
   public void EmitPauseMenuEnter() => Events.EmitSignal(Events.SignalName.PauseMenuEnter);

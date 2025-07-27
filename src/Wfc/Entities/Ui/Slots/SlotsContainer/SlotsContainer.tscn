@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://ca46a088ioysj"]
 
-[ext_resource type="PackedScene" uid="uid://c8elugdxs5gwv" path="res://Assets/Scenes/UI/SaveSlot.tscn" id="1"]
-[ext_resource type="Script" uid="uid://ckbriwtd4lyc5" path="res://src/Scripts/UI/SlotsContainer.cs" id="2"]
+[ext_resource type="PackedScene" uid="uid://c8elugdxs5gwv" path="res://src/Wfc/Entities/Ui/Slots/SlotButton/SlotButton.tscn" id="1"]
+[ext_resource type="Script" uid="uid://ckbriwtd4lyc5" path="res://src/Wfc/Entities/Ui/Slots/SlotsContainer/SlotsContainer.cs" id="2"]
 
 [node name="SlotsContainer" type="Control"]
 layout_mode = 3
@@ -37,6 +37,6 @@ theme_override_constants/separation = 20
 custom_minimum_size = Vector2(480, 270)
 layout_mode = 2
 
-[connection signal="pressed" from="HBoxContainer/SaveSlot1" to="." method="_on_SaveSlot1_pressed"]
-[connection signal="pressed" from="HBoxContainer/SaveSlot2" to="." method="_on_SaveSlot2_pressed"]
-[connection signal="pressed" from="HBoxContainer/SaveSlot3" to="." method="_on_SaveSlot3_pressed"]
+[connection signal="pressed" from="HBoxContainer/SaveSlot1" to="." method="_onSaveSlot1Pressed"]
+[connection signal="pressed" from="HBoxContainer/SaveSlot2" to="." method="_onSaveSlot2Pressed"]
+[connection signal="pressed" from="HBoxContainer/SaveSlot3" to="." method="_onSaveSlot3Pressed"]

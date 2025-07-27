@@ -1,37 +1,53 @@
+namespace Wfc.Entities.Ui;
+
 using System;
 using System.Collections.Generic;
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Input;
+using Wfc.Screens;
+using Wfc.Screens.MenuManager;
+using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
+[ScenePath]
+[Meta(typeof(IAutoNode))]
 public partial class DialogContainer : Control {
   private const float TWEEN_DURATION = 0.2f;
 
   private enum DialogStates {
-    SHOWING,
-    SHOWN,
-    HIDING,
-    HIDDEN
+    Showing,
+    Shown,
+    Hiding,
+    Hidden
   }
 
-  [Export] public NodePath DialogNodePath;
-
-  private ColorRect ColorRectNode;
-  private Control GameMenuNode;
-  private AcceptDialog DialogNode;
+  [Dependency]
+  public IInputManager InputManager => this.DependOn<IInputManager>();
+  [Export] public NodePath DialogNodePath = default!;
+  private ColorRect ColorRectNode = default!;
+  private GameMenu GameMenuNode = default!;
+  private AcceptDialog DialogNode = default!;
 
   private int shownPosY;
   private int hiddenPosY;
 
-  private DialogStates currentState = DialogStates.HIDDEN;
+  private DialogStates currentState = DialogStates.Hidden;
   //private List<Button> dialogButtons = new List<Button>();
-  private Control lastFocusOwner = null;
-  private Tween tweener;
+  private Control? lastFocusOwner = null;
+  private Tween? tweener;
+
+  public override void _Notification(int what) => this.Notify(what);
+
+  public void OnResolved() { }
 
   public override void _Ready() {
+    base._Ready();
     ProcessMode = ProcessModeEnum.Always;
     ColorRectNode = GetNode<ColorRect>("ColorRect");
-    GameMenuNode = GetParent<Control>();
+    GameMenuNode = GetParent<GameMenu>();
     DialogNode = GetNode<AcceptDialog>(DialogNodePath);
 
     shownPosY = DialogNode.Position.Y;
@@ -50,12 +66,12 @@ public partial class DialogContainer : Control {
   }
 
   public void ShowDialog() {
-    if (IsShownOrShowingState())
+    if (_IsShownOrShowingState())
       return;
 
     GetTree().Paused = true;
     PrepareTween(shownPosY);
-    currentState = DialogStates.SHOWING;
+    currentState = DialogStates.Showing;
     ShowNodes();
     lastFocusOwner = GetViewport().GuiGetFocusOwner();
     //dialogButtons[0].GrabFocus();
@@ -65,8 +81,7 @@ public partial class DialogContainer : Control {
     Show();
     DialogNode.Show();
     ColorRectNode.Show();
-    // FIXME: fix this after migrating to C#
-    GameMenuNode.Set("handle_back_event", false);
+    GameMenuNode.HandleBackEvent = false;
   }
 
   private void HideDialog() {
@@ -74,18 +89,18 @@ public partial class DialogContainer : Control {
     HideNodes();
     GetTree().Paused = false;
     lastFocusOwner?.GrabFocus();
-    currentState = DialogStates.HIDDEN;
+    currentState = DialogStates.Hidden;
   }
 
   private void HideNodes() {
     Hide();
     DialogNode.Hide();
     ColorRectNode.Hide();
-    GameMenuNode.Set("handle_back_event", true);
+    GameMenuNode.HandleBackEvent = true;
   }
 
-  public override void _Input(InputEvent ev) {
-    if (IsAcceptOrCancelPressed() && IsShownOrShowingState()) {
+  public override void _Input(InputEvent @event) {
+    if (_IsAcceptOrCancelPressed() && _IsShownOrShowingState()) {
       StartHidingDialog();
     }
   }
@@ -105,35 +120,35 @@ public partial class DialogContainer : Control {
   }
 
   private void StartHidingDialog() {
-    if (IsHiddenOrHidingState()) {
+    if (_IsHiddenOrHidingState()) {
       return;
     }
 
-    EventHandler.Instance.EmitMenuButtonPressed(MenuButtons.CONFIRM_DIALOG);
+    EventHandler.Instance.EmitMenuActionPressed(MenuAction.ConfirmDialog);
     ShowNodes(); // just to make sure they are visible
-    currentState = DialogStates.HIDING;
+    currentState = DialogStates.Hiding;
     PrepareTween(hiddenPosY);
   }
 
   private void OnTweenCompleted() {
-    if (currentState == DialogStates.HIDING) {
+    if (currentState == DialogStates.Hiding) {
       HideDialog();
     }
-    else if (currentState == DialogStates.SHOWING) {
-      currentState = DialogStates.SHOWN;
+    else if (currentState == DialogStates.Showing) {
+      currentState = DialogStates.Shown;
     }
   }
 
-  private bool IsAcceptOrCancelPressed() {
-    return Input.IsActionJustPressed("ui_cancel") || Input.IsActionJustPressed("ui_accept");
+  private bool _IsAcceptOrCancelPressed() {
+    return InputManager.IsJustPressed(IInputManager.Action.UICancel) || InputManager.IsJustPressed(IInputManager.Action.UIConfirm);
   }
 
-  private bool IsShownOrShowingState() {
-    return currentState == DialogStates.SHOWING || currentState == DialogStates.SHOWN;
+  private bool _IsShownOrShowingState() {
+    return currentState == DialogStates.Showing || currentState == DialogStates.Shown;
   }
 
-  private bool IsHiddenOrHidingState() {
-    return currentState == DialogStates.HIDDEN || currentState == DialogStates.HIDING;
+  private bool _IsHiddenOrHidingState() {
+    return currentState == DialogStates.Hidden || currentState == DialogStates.Hiding;
   }
 
   // private List<Button> GetDialogButtons()

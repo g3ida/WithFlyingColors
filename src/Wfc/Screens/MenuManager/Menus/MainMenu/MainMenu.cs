@@ -5,6 +5,7 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
+using Wfc.Entities.Ui;
 using Wfc.Entities.Ui.Menubox;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
@@ -31,32 +32,32 @@ public partial class MainMenu : GameMenu {
 
   public void ShowResetDataDialog() => _resetSlotDialogNode.ShowDialog();
 
-  public override bool OnMenuButtonPressed(MenuButtons menuButton) {
-    switch (menuButton) {
-      case MenuButtons.QUIT:
-        if (_screenState == MenuScreenState.ENTERED) {
+  public override bool OnMenuButtonPressed(MenuAction menuAction) {
+    switch (menuAction) {
+      case MenuAction.Quit:
+        if (_screenState == MenuScreenState.Entered) {
           GetTree().Quit();
         }
         return true;
-      case MenuButtons.PLAY:
+      case MenuAction.Play:
         return true;
-      case MenuButtons.STATS:
+      case MenuAction.GoToStats:
         NavigateToScreen(GameMenus.STATS_MENU);
         return true;
-      case MenuButtons.SETTINGS:
+      case MenuAction.GoToSettings:
         NavigateToScreen(GameMenus.SETTINGS_MENU);
         return true;
-      case MenuButtons.BACK:
+      case MenuAction.GoBack:
         _menuBoxNode.HideSubMenuIfNeeded();
         return true;
       default:
-        return ProcessPlaySubMenus(menuButton);
+        return ProcessPlaySubMenus(menuAction);
     }
   }
 
-  private bool ProcessPlaySubMenus(MenuButtons menuButton) {
-    switch (menuButton) {
-      case MenuButtons.NEW_GAME:
+  private bool ProcessPlaySubMenus(MenuAction menuAction) {
+    switch (menuAction) {
+      case MenuAction.NewGame:
         if (SaveManager.GetSlotMetaData()?.Progress > 0) {
           _resetSlotDialogNode.ShowDialog();
         }
@@ -65,11 +66,11 @@ public partial class MainMenu : GameMenu {
           _menuBoxNode.HideSubMenuIfNeeded();
         }
         return true;
-      case MenuButtons.CONTINUE_GAME:
+      case MenuAction.ContinueGame:
         _menuBoxNode.HideSubMenuIfNeeded();
         NavigateToScreen(GameMenus.GAME);
         return true;
-      case MenuButtons.SELECT_SLOT:
+      case MenuAction.SelectSlot:
         _menuBoxNode.HideSubMenuIfNeeded();
         NavigateToScreen(GameMenus.SELECT_SLOT);
         return true;

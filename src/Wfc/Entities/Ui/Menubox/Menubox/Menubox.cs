@@ -130,22 +130,22 @@ public partial class Menubox : Control {
 
     if (_currentState is States.MENU or States.SUB_MENU_EXIT) {
       DisplayOrHidePlaySubMenu(true);
-      EventHandler.Instance.EmitMenuButtonPressed(MenuButtons.PLAY);
+      EventHandler.Instance.EmitMenuActionPressed(MenuAction.Play);
     }
   }
 
-  public void OnQuitButtonPressed() => ProcessButtonPress(MenuButtons.QUIT);
+  public void OnQuitButtonPressed() => ProcessButtonPress(MenuAction.Quit);
 
-  public void OnSettingsButtonPressed() => ProcessButtonPress(MenuButtons.SETTINGS);
+  public void OnSettingsButtonPressed() => ProcessButtonPress(MenuAction.GoToSettings);
 
-  public void OnStatsButtonPressed() => ProcessButtonPress(MenuButtons.STATS);
+  public void OnStatsButtonPressed() => ProcessButtonPress(MenuAction.GoToStats);
 
-  private void ProcessButtonPress(MenuButtons menuButton) {
+  private void ProcessButtonPress(MenuAction menuAction) {
     if (!CanRespondToInput()) {
       return;
     }
     _currentState = States.EXIT;
-    EventHandler.Instance.EmitMenuButtonPressed(menuButton);
+    EventHandler.Instance.EmitMenuActionPressed(menuAction);
   }
 
   private void ClickOnActiveButton() {

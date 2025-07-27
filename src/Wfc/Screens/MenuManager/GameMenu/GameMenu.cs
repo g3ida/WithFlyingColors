@@ -5,6 +5,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Input;
 using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
 using Wfc.Entities.Ui;
@@ -27,15 +28,17 @@ public partial class GameMenu : Control {
     public ISaveManager SaveManager => this.DependOn<ISaveManager>();
     [Dependency]
     public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
+    [Dependency]
+    public IInputManager InputManager => this.DependOn<IInputManager>();
 
     public void OnResolved() { }
   }
 
   public enum MenuScreenState {
-    ENTERING,
-    ENTERED,
-    EXITING,
-    EXITED
+    Entering,
+    Entered,
+    Exiting,
+    Exited
   }
 
   protected MenuScreenState _screenState;
@@ -57,7 +60,7 @@ public partial class GameMenu : Control {
     base._EnterTree();
     SetupDependencies();
     _parseTransitionElements();
-    _screenState = _hasNoTransitionElements() ? MenuScreenState.ENTERED : MenuScreenState.ENTERING;
+    _screenState = _hasNoTransitionElements() ? MenuScreenState.Entered : MenuScreenState.Entering;
     OnEnter();
   }
 
@@ -100,25 +103,26 @@ public partial class GameMenu : Control {
 
   public override void _Input(InputEvent @event) {
     base._Input(@event);
-    if (_screenState is ((int)MenuScreenState.ENTERING) or MenuScreenState.EXITING) {
+    if (_screenState is ((int)MenuScreenState.Entering) or MenuScreenState.Exiting) {
       GetViewport().SetInputAsHandled();
     }
 
-    if (HandleBackEvent && (Input.IsActionJustPressed("ui_cancel") || Input.IsActionJustPressed("ui_home"))) {
-      // Event.Instance.EmitMenuButtonPressed(MenuButtons.BACK);
-      EventHandler.EmitMenuButtonPressed(MenuButtons.BACK);
+    if (HandleBackEvent &&
+        (_dependenciesWrapper.InputManager.IsJustPressed(IInputManager.Action.UICancel) ||
+         _dependenciesWrapper.InputManager.IsJustPressed(IInputManager.Action.UIHome))) {
+      EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
     }
   }
 
   public void NavigateToScreen(GameMenus menuScreen) {
-    if (_screenState is MenuScreenState.ENTERING or MenuScreenState.ENTERED) {
+    if (_screenState is MenuScreenState.Entering or MenuScreenState.Entered) {
       _destinationScreen = menuScreen;
       if (_hasNoTransitionElements()) {
-        _screenState = MenuScreenState.EXITED;
+        _screenState = MenuScreenState.Exited;
         MenuManager.GoToMenu(_destinationScreen);
       }
       else {
-        _screenState = MenuScreenState.EXITING;
+        _screenState = MenuScreenState.Exiting;
         StopProcessInput();
         _exitTransitionElements();
       }
@@ -133,17 +137,17 @@ public partial class GameMenu : Control {
   }
 
   private void _internalOnMenuButtonPressed(int menuButtonValue) {
-    var menuButton = (MenuButtons)menuButtonValue;
-    if (_screenState != MenuScreenState.ENTERED) {
+    var menuButton = (MenuAction)menuButtonValue;
+    if (_screenState != MenuScreenState.Entered) {
       return;
     }
 
-    if (!OnMenuButtonPressed(menuButton) && menuButton == MenuButtons.BACK) {
+    if (!OnMenuButtonPressed(menuButton) && menuButton == MenuAction.GoBack) {
       NavigateToScreen(MenuManager.GetPreviousMenu());
     }
   }
 
-  public virtual bool OnMenuButtonPressed(MenuButtons menuButton) {
+  public virtual bool OnMenuButtonPressed(MenuAction menuAction) {
     return false;
   }
 
@@ -197,7 +201,7 @@ public partial class GameMenu : Control {
   }
 
   public bool IsInTransitionState() {
-    return _screenState != MenuScreenState.ENTERED;
+    return _screenState != MenuScreenState.Entered;
   }
 
   private bool _hasNoTransitionElements() {
@@ -207,14 +211,14 @@ public partial class GameMenu : Control {
   private void _onTransitionElementEntered() {
     _enteredTransitionElementsCount++;
     if (_enteredTransitionElementsCount == _transitionElements.Count) {
-      _screenState = MenuScreenState.ENTERED;
+      _screenState = MenuScreenState.Entered;
     }
   }
 
   private void _onTransitionElementExited() {
     _enteredTransitionElementsCount--;
     if (_enteredTransitionElementsCount == 0) {
-      _screenState = MenuScreenState.EXITED;
+      _screenState = MenuScreenState.Exited;
       MenuManager.GoToMenu(_destinationScreen);
     }
   }

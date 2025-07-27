@@ -1,11 +1,15 @@
+namespace Wfc.Entities.Ui;
+
+using System;
 using System.Linq;
 using Godot;
 using Wfc.Utils;
+using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class KeyBindingButton : Button {
   private const string DefaultText = "(EMPTY)";
-  [Export] public string key { get; set; }
+  [Export] public string key { get; set; } = String.Empty;
   private Key? _value = null;
 
   private bool _isListening = false;
@@ -13,10 +17,12 @@ public partial class KeyBindingButton : Button {
   [Signal]
   public delegate void keyboard_action_boundEventHandler(string action, long key);
 
-  private AnimationPlayer _animationPlayer;
+  [NodePath("AnimationPlayer")]
+  private AnimationPlayer _animationPlayer = default!;
 
   public override void _Ready() {
-    _animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
+    base._Ready();
+    this.WireNodes();
     var actionList = InputMap.ActionGetEvents(key).Cast<InputEvent>();
     var inputEvent = InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList);
     if (inputEvent != null) {
@@ -37,18 +43,18 @@ public partial class KeyBindingButton : Button {
     }
   }
 
-  public override void _Input(InputEvent ev) {
+  public override void _Input(InputEvent @event) {
     bool handled = false;
     if (!_isListening) {
       return;
     }
-    if (ev is InputEventKey eventKey) {
+    if (@event is InputEventKey eventKey) {
       _value = eventKey.Keycode;
       Text = OS.GetKeycodeString(_value.Value);
       EmitSignal(nameof(keyboard_action_bound), key, (long)_value);
       handled = true;
     }
-    else if (ev is InputEventMouse eventMouse) {
+    else if (@event is InputEventMouse eventMouse) {
       if (eventMouse.ButtonMask.HasFlag(MouseButtonMask.Left)) {
         Undo();
         handled = true;

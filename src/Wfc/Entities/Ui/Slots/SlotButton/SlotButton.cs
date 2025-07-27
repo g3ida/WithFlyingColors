@@ -1,59 +1,73 @@
+namespace Wfc.Entities.Ui.Slots;
+
 using System;
 using Godot;
 using Wfc.Skin;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
 
 [Tool]
 public partial class SlotButton : ColorRect {
-  public enum State { HIDDEN, HIDING, SHOWING, SHOWN }
+  public enum State { Hidden, Hiding, Showing, Shown }
 
+  #region Signals
   [Signal]
   public delegate void pressedEventHandler();
+  #endregion Signals
 
+  #region Constants
   public const int BUTTON_MAX_WIDTH = 110;
   public const int BUTTON_MIN_WIDTH = 0;
   public const float MOVE_DURATION = 0.15f;
+  #endregion Constants
 
+  #region Exports
   [Export]
-  public string node_color = "pink";
+  public string NodeColor = "pink";
   [Export]
-  public Texture2D iconTexture;
+  public Texture2D IconTexture = default!;
   [Export]
-  public NodePath focus_left_node;
+  public NodePath? FocusLeftNode;
   [Export]
-  public NodePath focus_right_node;
+  public NodePath? FocusRightNode;
+  #endregion Exports
 
-  private Button _buttonNode;
-  private AnimationPlayer _blinkAnimationPlayerNode;
-  private State _currentState = State.HIDDEN;
+  #region Nodes
+  [NodePath("Button")]
+  private Button _buttonNode = default!;
+  [NodePath("BlinkAnimationPlayer")]
+  private AnimationPlayer _blinkAnimationPlayerNode = default!;
+  #endregion Nodes
 
-  private Tween _buttonTween;
+  private State _currentState = State.Hidden;
+  private Tween? _buttonTween;
 
   public override void _Ready() {
-    _buttonNode = GetNode<Button>("Button");
+    base._Ready();
+    this.WireNodes();
     _buttonNode.FocusMode = Control.FocusModeEnum.All;
-    _blinkAnimationPlayerNode = GetNode<AnimationPlayer>("BlinkAnimationPlayer");
 
     _buttonNode.CustomMinimumSize = new Vector2(0, _buttonNode.CustomMinimumSize.Y);
     Visible = false;
     _buttonNode.Disabled = true;
     UpdateHeight();
     Color = SkinManager.Instance.CurrentSkin.GetColor(
-      GameSkin.ColorGroupToSkinColor(node_color),
+      GameSkin.ColorGroupToSkinColor(NodeColor),
       SkinColorIntensity.Basic
     );
-    _buttonNode.Icon = iconTexture;
+    _buttonNode.Icon = IconTexture;
   }
 
   private void SetFocusNextAndPrevious() {
-    if (focus_left_node != null && !focus_left_node.IsEmpty) {
-      var leftNode = GetNode<SlotButton>(focus_left_node);
+    if (FocusLeftNode != null && !FocusLeftNode.IsEmpty) {
+      var leftNode = GetNode<SlotButton>(FocusLeftNode);
       if (leftNode != null) {
         _buttonNode.FocusNeighborLeft = leftNode._buttonNode.GetPath();
       }
     }
 
-    if (focus_left_node != null && !focus_right_node.IsEmpty) {
-      var rightNode = GetNode<SlotButton>(focus_right_node);
+    if (FocusRightNode != null && !FocusRightNode.IsEmpty) {
+      var rightNode = GetNode<SlotButton>(FocusRightNode);
       if (rightNode != null) {
         _buttonNode.FocusNeighborRight = rightNode._buttonNode.GetPath();
       }
@@ -61,10 +75,10 @@ public partial class SlotButton : ColorRect {
   }
 
   public void ShowButton() {
-    if (_currentState == State.HIDING || _currentState == State.HIDDEN) {
+    if (_currentState == State.Hiding || _currentState == State.Hidden) {
       Visible = true;
       _buttonNode.Disabled = false;
-      _currentState = State.SHOWING;
+      _currentState = State.Showing;
       SetupTween(BUTTON_MAX_WIDTH);
       _buttonNode.FocusMode = FocusModeEnum.All;
       SetFocusNextAndPrevious();
@@ -76,8 +90,8 @@ public partial class SlotButton : ColorRect {
   }
 
   public void HideButton() {
-    if (_currentState == State.SHOWING || _currentState == State.SHOWN) {
-      _currentState = State.HIDING;
+    if (_currentState == State.Showing || _currentState == State.Shown) {
+      _currentState = State.Hiding;
       SetupTween(BUTTON_MIN_WIDTH);
       _blinkAnimationPlayerNode.Play("RESET");
       _buttonNode.FocusMode = Control.FocusModeEnum.None;
@@ -125,21 +139,21 @@ public partial class SlotButton : ColorRect {
   }
 
   private void OnTweenCompleted() {
-    if (_currentState == State.HIDING) {
-      _currentState = State.HIDDEN;
+    if (_currentState == State.Hiding) {
+      _currentState = State.Hidden;
       Visible = false;
       _buttonNode.Disabled = true;
     }
-    else if (_currentState == State.SHOWING) {
-      _currentState = State.SHOWN;
+    else if (_currentState == State.Showing) {
+      _currentState = State.Shown;
     }
   }
 
-  private void _on_Button_pressed() {
+  private void _onButtonPressed() {
     EmitSignal(nameof(pressed));
   }
 
-  private void _on_Button_mouse_entered() {
+  private void _onButtonMouseEntered() {
     GrabFocus();
   }
 }
