@@ -1,84 +1,89 @@
+namespace Wfc.Core;
+
 using System;
 using Godot;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
 
 public partial class ScreenShaders : CanvasLayer {
-  private enum State { DISABLED, TRANSITION_IN, ENABLED, TRANSITION_OUT }
+  private enum State { Disabled, TransitionIn, Enabled, TransitionOut }
 
-  private State currentState = State.DISABLED;
+  private State currentState = State.Disabled;
 
-  private ColorRect darkerShader;
-  private ColorRect simpleBlur;
-  private AnimationPlayer darkerShaderAnimationPlayer;
-  private AnimationPlayer simpleBlurAnimationPlayer;
+  [NodePath("DarkerShader/ColorRect")]
+  private ColorRect _darkerShaderNode = default!;
+  [NodePath("SimpleBlur/ColorRect")]
+  private ColorRect _simpleBlurNode = default!;
+  [NodePath("DarkerShader/ColorRect/AnimationPlayer")]
+  private AnimationPlayer _darkerShaderAnimationPlayerNode = default!;
+  [NodePath("SimpleBlur/ColorRect/AnimationPlayer")]
+  private AnimationPlayer _simpleBlurAnimationPlayerNode = default!;
 
   public override void _Ready() {
-    darkerShader = GetNode<ColorRect>("DarkerShader/ColorRect");
-    simpleBlur = GetNode<ColorRect>("SimpleBlur/ColorRect");
-    darkerShaderAnimationPlayer = GetNode<AnimationPlayer>("DarkerShader/ColorRect/AnimationPlayer");
-    simpleBlurAnimationPlayer = GetNode<AnimationPlayer>("SimpleBlur/ColorRect/AnimationPlayer");
-
-    darkerShader.Visible = false;
-    simpleBlur.Visible = false;
-    darkerShaderAnimationPlayer.Play("RESET");
-    simpleBlurAnimationPlayer.Play("RESET");
+    base._Ready();
+    this.WireNodes();
+    _darkerShaderNode.Visible = false;
+    _simpleBlurNode.Visible = false;
+    _darkerShaderAnimationPlayerNode.Play("RESET");
+    _simpleBlurAnimationPlayerNode.Play("RESET");
   }
 
   public void ActivatePauseShader() {
-    if (currentState == State.DISABLED) {
-      darkerShader.Visible = true;
-      simpleBlur.Visible = true;
-      darkerShaderAnimationPlayer.Play("Blackout");
-      simpleBlurAnimationPlayer.Play("Blur");
+    if (currentState == State.Disabled) {
+      _darkerShaderNode.Visible = true;
+      _simpleBlurNode.Visible = true;
+      _darkerShaderAnimationPlayerNode.Play("Blackout");
+      _simpleBlurAnimationPlayerNode.Play("Blur");
 
-      darkerShaderAnimationPlayer.Connect(
+      _darkerShaderAnimationPlayerNode.Connect(
         AnimationPlayer.SignalName.AnimationFinished,
         new Callable(this, nameof(OnBlackoutAnimationFinished)),
         flags: (uint)ConnectFlags.OneShot
       );
-      currentState = State.TRANSITION_IN;
+      currentState = State.TransitionIn;
     }
-    else if (currentState == State.TRANSITION_OUT) {
-      darkerShaderAnimationPlayer.Disconnect(
+    else if (currentState == State.TransitionOut) {
+      _darkerShaderAnimationPlayerNode.Disconnect(
         AnimationPlayer.SignalName.AnimationFinished,
         new Callable(this, nameof(OnBlackoutAnimationReversedFinished))
       );
-      currentState = State.DISABLED;
+      currentState = State.Disabled;
       ActivatePauseShader();
     }
   }
 
   public void DisablePauseShader() {
-    if (currentState == State.ENABLED) {
-      darkerShaderAnimationPlayer.PlayBackwards("Blackout");
-      simpleBlurAnimationPlayer.PlayBackwards("Blur");
-      darkerShaderAnimationPlayer.Connect(
+    if (currentState == State.Enabled) {
+      _darkerShaderAnimationPlayerNode.PlayBackwards("Blackout");
+      _simpleBlurAnimationPlayerNode.PlayBackwards("Blur");
+      _darkerShaderAnimationPlayerNode.Connect(
         AnimationPlayer.SignalName.AnimationFinished,
         new Callable(this, nameof(OnBlackoutAnimationReversedFinished)),
         flags: (uint)ConnectFlags.OneShot
       );
-      currentState = State.TRANSITION_OUT;
+      currentState = State.TransitionOut;
     }
-    else if (currentState == State.TRANSITION_IN) {
-      darkerShaderAnimationPlayer.Disconnect(
+    else if (currentState == State.TransitionIn) {
+      _darkerShaderAnimationPlayerNode.Disconnect(
         AnimationPlayer.SignalName.AnimationFinished,
         new Callable(this, nameof(OnBlackoutAnimationFinished))
       );
-      currentState = State.ENABLED;
+      currentState = State.Enabled;
       DisablePauseShader();
     }
   }
 
   private void OnBlackoutAnimationReversedFinished(string animationName) {
-    darkerShaderAnimationPlayer.Play("RESET");
-    simpleBlurAnimationPlayer.Play("RESET");
-    darkerShader.Visible = false;
-    simpleBlur.Visible = false;
-    currentState = State.DISABLED;
+    _darkerShaderAnimationPlayerNode.Play("RESET");
+    _simpleBlurAnimationPlayerNode.Play("RESET");
+    _darkerShaderNode.Visible = false;
+    _simpleBlurNode.Visible = false;
+    currentState = State.Disabled;
   }
 
   private void OnBlackoutAnimationFinished(string animationName) {
-    darkerShader.Visible = true;
-    simpleBlur.Visible = true;
-    currentState = State.ENABLED;
+    _darkerShaderNode.Visible = true;
+    _simpleBlurNode.Visible = true;
+    currentState = State.Enabled;
   }
 }

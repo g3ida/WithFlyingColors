@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://bptfom5y0pb5l"]
 
-[ext_resource type="PackedScene" path="res://src/Wfc/Entities/Ui/UISelect/UISelect/UISelectButton.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://hsu5s7km4rsn" path="res://src/Wfc/Entities/Ui/UISelect/UISelect/UISelectButton.tscn" id="1"]
 [ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="3"]
-[ext_resource type="Script" uid="uid://cv7308w3b0xaq" path="res://src/Scripts/Menus/SettingsMenu/GameSettingsUI.cs" id="4"]
-[ext_resource type="PackedScene" path="res://src/Wfc/Entities/Ui/Checkbox/Checkbox.tscn" id="5"]
+[ext_resource type="Script" uid="uid://cv7308w3b0xaq" path="res://src/Wfc/Screens/SettingsMenu/GameSettingsUI/GameSettingsUI.cs" id="4"]
+[ext_resource type="PackedScene" uid="uid://clj5gw6ykw55o" path="res://src/Wfc/Entities/Ui/Checkbox/Checkbox.tscn" id="5"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -51,7 +51,7 @@ text = "VSYNC"
 [node name="VsyncCheckbox" parent="GridContainer" instance=ExtResource("5")]
 layout_mode = 2
 
-[connection signal="ValueChanged" from="GridContainer/ResolutionUISelect" to="." method="_onUISelectValueChanged"]
 [connection signal="SelectionChanged" from="GridContainer/ResolutionUISelect" to="." method="_onResolutionUISelectSelectionChanged"]
+[connection signal="ValueChanged" from="GridContainer/ResolutionUISelect" to="." method="_onUISelectValueChanged"]
 [connection signal="toggled" from="GridContainer/FullscreenCheckbox" to="." method="_onFullscreenCheckboxToggled"]
 [connection signal="toggled" from="GridContainer/VsyncCheckbox" to="." method="_onVsyncCheckboxToggled"]

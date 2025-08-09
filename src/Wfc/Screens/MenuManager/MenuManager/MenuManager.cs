@@ -4,6 +4,7 @@ using System;
 using Godot;
 using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager.Menus.MainMenu;
+using Wfc.Screens.SettingsMenu;
 using Wfc.Utils.Attributes;
 
 public class MenuManager : IMenuManager {
