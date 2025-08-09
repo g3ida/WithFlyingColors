@@ -2,7 +2,8 @@
 
 [ext_resource type="FontFile" uid="uid://e6iodry72ny8" path="res://Assets/Fonts/HeavyEquipment.ttf" id="1"]
 [ext_resource type="BitMap" uid="uid://ejc50sxuiwg0" path="res://Assets/Sprites/MainMenu/button-click-mask.png" id="2"]
-[ext_resource type="Script" uid="uid://cg3755n0584mc" path="res://src/Scripts/Menus/MainMenu/MenuBoxButton.cs" id="3"]
+
+[ext_resource type="Script" uid="uid://cg3755n0584mc" path="res://src/Wfc/Entities/Ui/Menubox/MenuBoxButton/MenuBoxButton.cs" id="3"]
 
 [sub_resource type="FontFile" id="1"]
 fallbacks = Array[Font]([ExtResource("1")])

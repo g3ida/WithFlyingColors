@@ -1,32 +1,47 @@
-namespace Wfc.Screens;
+namespace Wfc.Screens.SettingsMenu;
 
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Input;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
 using Wfc.Screens.MenuManager;
+using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [ScenePath]
+[Meta(typeof(IAutoNode))]
 public partial class SettingsMenu : GameMenu {
-  private TabContainer tabContainer;
+
+  #region Nodes
+  [NodePath("TabContainer")]
+  private TabContainer _tabContainer = default!;
+  [NodePath("DialogContainer")]
+  private DialogContainer _dialogContainerNode = default!;
+  #endregion Nodes
+
+  [Dependency]
+  public IInputManager InputManager => this.DependOn<IInputManager>();
   private int tabsCount;
-  private DialogContainer DialogContainerNode;
+  public override void _Notification(int what) => this.Notify(what);
+
+  public void OnResolved() { }
 
   public override void _Ready() {
     base._Ready();
-    tabContainer = GetNode<TabContainer>("TabContainer");
-    tabsCount = tabContainer.GetChildCount();
-    DialogContainerNode = GetNode<DialogContainer>("DialogContainer");
+    this.WireNodes();
+    tabsCount = _tabContainer.GetChildCount();
   }
 
   public override void _Input(InputEvent @event) {
     base._Input(@event);
-    if (Input.IsActionJustPressed("ui_left")) {
-      tabContainer.CurrentTab = Mathf.Clamp(tabContainer.CurrentTab - 1, 0, tabsCount - 1);
+    if (InputManager.IsJustPressed(IInputManager.Action.UILeft)) {
+      _tabContainer.CurrentTab = Mathf.Clamp(_tabContainer.CurrentTab - 1, 0, tabsCount - 1);
     }
-    else if (Input.IsActionJustPressed("ui_right")) {
-      tabContainer.CurrentTab = Mathf.Clamp(tabContainer.CurrentTab + 1, 0, tabsCount - 1);
+    else if (InputManager.IsJustPressed(IInputManager.Action.UIRight)) {
+      _tabContainer.CurrentTab = Mathf.Clamp(_tabContainer.CurrentTab + 1, 0, tabsCount - 1);
     }
   }
 
@@ -34,7 +49,7 @@ public partial class SettingsMenu : GameMenu {
     base.OnMenuButtonPressed(menuAction);
     switch (menuAction) {
       case MenuAction.ShowDialog:
-        DialogContainerNode.ShowDialog();
+        _dialogContainerNode.ShowDialog();
         return true;
       case MenuAction.GoBack:
         if (IsValidState()) {

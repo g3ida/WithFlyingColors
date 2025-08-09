@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://o7v5wnvga4uj" path="res://Assets/Sprites/MainMenu/arrow_left.png" id="3"]
 [ext_resource type="Texture2D" uid="uid://wi5gn4n5ktwd" path="res://Assets/Sprites/MainMenu/arrow_right.png" id="4"]
 [ext_resource type="StyleBox" path="res://Assets/Styles/MenuButtonPressedStyle.tres" id="6"]
-[ext_resource type="PackedScene" uid="uid://b7n42mqeet15h" path="res://Assets/Scenes/MainMenu/MenuBoxButton.tscn" id="8"]
+[ext_resource type="PackedScene" uid="uid://b7n42mqeet15h" path="res://src/Wfc/Entities/Ui/Menubox/MenuBoxButton/MenuBoxButton.tscn" id="8"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 

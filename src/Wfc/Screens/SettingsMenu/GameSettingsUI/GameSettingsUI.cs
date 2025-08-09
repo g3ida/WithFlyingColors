@@ -1,3 +1,5 @@
+namespace Wfc.Screens.SettingsMenu;
+
 using System;
 using Godot;
 using Wfc.Core.Event;
@@ -24,17 +26,18 @@ public partial class GameSettingsUI : Control, IUITab {
 
   public override void _EnterTree() {
     base._EnterTree();
+    this.WireNodes();
+    // FIXME: make better logic to initialize the resolution select driver.
+    _resolutionSelect.SelectDriver = new ResolutionSelectDriver();
   }
 
   public override void _Ready() {
     base._Ready();
-    this.WireNodes();
     // Fixme: make better logic to initialize the resolution select driver. C# migration.
-    _resolutionSelect.SelectDriver = new ResolutionSelectDriver();
     _vsyncCheckbox.ButtonPressed = GameSettings.Vsync;
     _fullScreenCheckbox.ButtonPressed = GameSettings.Fullscreen;
     ToggleAutoResolution();
-    on_gain_focus();
+    OnGainFocus();
     _isReady = true;
   }
 
@@ -93,7 +96,7 @@ public partial class GameSettingsUI : Control, IUITab {
     }
   }
 
-  public void on_gain_focus() {
+  public void OnGainFocus() {
     if (_resolutionSelect.Visible) {
       _resolutionSelect.GrabFocus();
     }

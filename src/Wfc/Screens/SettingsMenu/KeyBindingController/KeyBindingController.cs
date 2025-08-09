@@ -1,19 +1,25 @@
+namespace Wfc.Screens.SettingsMenu;
+
 using Godot;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
+using Wfc.Utils;
+using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class KeyBindingController : Control, IUITab {
   [Signal]
   public delegate void on_action_bound_signalEventHandler(string action, int key);
 
-  private Button jumpBtn;
+  [NodePath("GridContainer/JumpBtn")]
+  private Button jumpBtn = default!;
 
   public override void _Ready() {
-    jumpBtn = GetNode<Button>("GridContainer/JumpBtn");
+    base._Ready();
+    this.WireNodes();
   }
 
-  private void _on_keyboard_input_action_bound(string action, int key) {
+  private void _onKeyboardInputActionBound(string action, int key) {
     if (key < 0) {
       GameSettings.UnbindActionKey(action);
     }
@@ -24,7 +30,7 @@ public partial class KeyBindingController : Control, IUITab {
     }
   }
 
-  public void on_gain_focus() {
+  public void OnGainFocus() {
     jumpBtn.GrabFocus();
   }
 }

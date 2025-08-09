@@ -24,9 +24,6 @@ public partial class LevelSelectMenu : GameMenu {
 
   private readonly List<SceneCard> _sceneCards = [];
 
-  [Dependency]
-  public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
-
   public void OnResolved() { }
 
   public override void _Ready() {

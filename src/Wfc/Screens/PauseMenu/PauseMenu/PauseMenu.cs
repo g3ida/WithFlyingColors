@@ -3,6 +3,7 @@ namespace Wfc.Screens;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core;
 using Wfc.Core.Audio;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
