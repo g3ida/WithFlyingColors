@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bir8vihuohasj" path="res://src/Wfc/Entities/World/Tetris/ScoreBoard/ScoreBoard.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://d2j7an1dv0j8h" path="res://src/Wfc/Entities/World/Tetris/NextPiece/NextPiece.tscn" id="6"]
-[ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://Assets/Scenes/Platforms/SlidingPlatform.tscn" id="8"]
+[ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="8"]
 [ext_resource type="PackedScene" uid="uid://byyce56nk7v2h" path="res://src/Wfc/Entities/World/Tetris/SlidingFloor/SlidingFloor.tscn" id="9"]
 
 [sub_resource type="RectangleShape2D" id="2"]

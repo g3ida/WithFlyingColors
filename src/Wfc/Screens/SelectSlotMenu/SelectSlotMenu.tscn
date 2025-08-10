@@ -2,15 +2,15 @@
 
 [ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://src/Wfc/Entities/Ui/Slots/Dialogs/DialogContainer/DialogContainer.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://c4hq2bn66yx0g" path="res://src/Wfc/Entities/Ui/Slots/Dialogs/ResetSlotDialog.tscn" id="2"]
-[ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://src/Wfc/Screens/SettingsMenu/MainMenu/TitleLabel.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://src/Wfc/Entities/Ui/TitleLabel/TitleLabel.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://ca46a088ioysj" path="res://src/Wfc/Entities/Ui/Slots/SlotsContainer/SlotsContainer.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://ccjrqyrj01x5f" path="res://Assets/Sprites/MainMenu/ArrowBack.png" id="5"]
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="6"]
 [ext_resource type="StyleBox" path="res://Assets/Styles/MenuButtonPressedStyle.tres" id="7"]
 [ext_resource type="Script" uid="uid://c3t28rmstgq1o" path="res://src/Wfc/Screens/SelectSlotMenu/SelectSlotMenu.cs" id="8"]
-[ext_resource type="Script" uid="uid://bs3qantpxmo15" path="res://src/Scripts/Menus/MainMenu/BackButton.cs" id="9"]
+[ext_resource type="Script" uid="uid://bs3qantpxmo15" path="res://src/Wfc/Entities/Ui/BackButton/BackButton.cs" id="9"]
 [ext_resource type="Theme" uid="uid://cd37bkdhivqji" path="res://Assets/Styles/Themes/Dialog.tres" id="10"]
-[ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://Assets/Scenes/UI/UITransition.tscn" id="11"]
+[ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://src/Wfc/Entities/Ui/UITransition/UITransition.tscn" id="11"]
 [ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="12"]
 
 [sub_resource type="StyleBoxEmpty" id="1"]
