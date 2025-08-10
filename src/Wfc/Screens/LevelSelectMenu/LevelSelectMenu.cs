@@ -32,8 +32,10 @@ public partial class LevelSelectMenu : GameMenu {
   }
 
   private void PopulateWithCards() {
+    var index = 0;
     foreach (var level in LevelDispatcher.LEVELS) {
-      var sceneCard = AddSceneCard(level);
+      index++;
+      var sceneCard = AddSceneCard(index, level);
       _sceneCards.Add(sceneCard);
     }
     if (_sceneCards.Count > 0) {
@@ -41,14 +43,13 @@ public partial class LevelSelectMenu : GameMenu {
     }
   }
 
-  private SceneCard AddSceneCard(LevelDispatcher.LevelInfo level) {
+  private SceneCard AddSceneCard(int index, LevelDispatcher.LevelInfo level) {
     var sceneNode = SceneHelpers.InstantiateNode<SceneCard>();
     var levelsContainer = GetNode<Control>("LevelsContainer");
     levelsContainer.AddChild(sceneNode);
-    var id = level.Id;
     sceneNode.Owner = levelsContainer;
     sceneNode.LevelScene = level.Id;
-    sceneNode.LevelName = $"{id}.{level.Name}";
+    sceneNode.LevelName = $"{index}.{LocalizationService.GetLocalizedString(level.TranslationKey)}";
     return sceneNode;
   }
 

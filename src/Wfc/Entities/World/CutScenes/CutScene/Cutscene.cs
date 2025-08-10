@@ -1,13 +1,20 @@
 namespace Wfc.Entities.World.Cutscenes;
 
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
+[Meta(typeof(IAutoNode))]
 public partial class Cutscene : Node2D {
+  public override void _Notification(int what) => this.Notify(what);
+  [Dependency]
+  public IGameLevel GameLevel => this.DependOn<IGameLevel>();
   private const float DURATION = 0.1f;
   private const float EXPAND_SIZE = 100;
   private const float REDUCE_SIZE = 0;
@@ -134,25 +141,25 @@ public partial class Cutscene : Node2D {
   }
 
   public async void ShowSomeNode(Node2D node, float duration = 7.0f, float moveSpeed = 3.2f) {
-    var cameraLastFocus = Global.Instance().Camera.FollowNode;
-    var cameraLastSpeed = Global.Instance().Camera.PositionSmoothingSpeed;
+    var cameraNode = GameLevel.CameraNode;
+    var cameraLastFocus = cameraNode.FollowNode;
+    var cameraLastSpeed = cameraNode.PositionSmoothingSpeed;
     EventHandler.Instance.EmitCutsceneRequestStart("CutScene");
 
     if (node != null) {
-      Global.Instance().Camera.FollowNode = node;
+      cameraNode.FollowNode = node;
     }
-    Global.Instance().Camera.PositionSmoothingSpeed = moveSpeed;
+    cameraNode.PositionSmoothingSpeed = moveSpeed;
 
     timerNode.WaitTime = duration * 0.6f;
     timerNode.Start();
     await ToSignal(timerNode, Timer.SignalName.Timeout);
 
-    Global.Instance().Camera.FollowNode = cameraLastFocus;
+    cameraNode.FollowNode = cameraLastFocus;
     timerNode.WaitTime = duration * 0.4f;
     timerNode.Start();
     await ToSignal(timerNode, Timer.SignalName.Timeout);
 
-    EventHandler.Instance.EmitCutsceneRequestEnd("CutScene");
-    Global.Instance().Camera.PositionSmoothingSpeed = cameraLastSpeed;
+    cameraNode.PositionSmoothingSpeed = cameraLastSpeed;
   }
 }

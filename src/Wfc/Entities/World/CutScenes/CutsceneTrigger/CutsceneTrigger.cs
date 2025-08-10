@@ -1,13 +1,22 @@
 namespace Wfc.Entities.World.Cutscenes;
 
 using System.Collections.Generic;
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
+using Wfc.Screens.Levels;
 using Wfc.Utils.Attributes;
 
 [ScenePath]
+[Meta(typeof(IAutoNode))]
 public partial class CutsceneTrigger : Area2D {
+  public override void _Notification(int what) => this.Notify(what);
+
   private Marker2D? _followChild = null;
   private bool _triggered = false;
+
+  [Dependency]
+  public IGameLevel GameLevel => this.DependOn<IGameLevel>();
 
   public override void _Ready() {
     var children = GetChildren();
@@ -21,7 +30,7 @@ public partial class CutsceneTrigger : Area2D {
   private void _onBodyEntered(Node body) {
     if (!_triggered && body == Global.Instance().Player && _followChild != null) {
       _triggered = true;
-      Global.Instance().Cutscene.ShowSomeNode(_followChild, 3.0f, 3.2f);
+      GameLevel.CutsceneNode.ShowSomeNode(_followChild, 3.0f, 3.2f);
     }
   }
 

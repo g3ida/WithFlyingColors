@@ -146,5 +146,7 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitGemEngineStarted() => Events.EmitSignal(Events.SignalName.GemEngineStarted);
   public void EmitLevelCleared() => Events.EmitSignal(Events.SignalName.LevelCleared);
   public void EmitGemPutInTemple() => Events.EmitSignal(Events.SignalName.GemPutInTemple);
+
+  public void EmitCameraShakeRequest() => Events.EmitSignal(Events.SignalName.CameraShakeRequest);
 }
 

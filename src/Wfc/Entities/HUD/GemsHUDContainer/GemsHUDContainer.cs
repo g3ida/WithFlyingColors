@@ -30,8 +30,6 @@ public partial class GemsHUDContainer : Panel {
       { ColorUtils.YELLOW, _yellowGemNode },
       { ColorUtils.PURPLE, _purpleGemNode }
     };
-
-    Global.Instance().GemHUD = this;
   }
 
   public bool IsGemCollected(string colorGroup) {

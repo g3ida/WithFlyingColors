@@ -13,6 +13,7 @@ using Wfc.Entities.World;
 using Wfc.Entities.World.BrickBreaker.Powerups;
 using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Platforms;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -28,6 +29,8 @@ public partial class BrickBreaker : Node2D, IPersistent {
 
   [Dependency]
   public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
+  [Dependency]
+  public IGameLevel GameLevel => this.DependOn<IGameLevel>();
 
   public void OnResolved() { }
 
@@ -203,7 +206,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
       _bricksTimerNode.Start();
       BricksTileMapNode.bricksCleared += _OnBricksCleared;
       BricksTileMapNode.levelCleared += _OnLevelCleared;
-      Global.Instance().Player.CurrentDefaultCornerScaleFactor = FACE_SEPARATOR_SCALE_FACTOR;
+      GameLevel.PlayerNode.CurrentDefaultCornerScaleFactor = FACE_SEPARATOR_SCALE_FACTOR;
     }
   }
 
@@ -215,7 +218,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
   }
 
   private void _on_TriggerEnterArea_body_entered(Node body) {
-    if (body != Global.Instance().Player)
+    if (body != GameLevel.PlayerNode)
       return;
     if (_currentState == BrickBreakerState.STOPPED) {
       CallDeferred(nameof(Play));

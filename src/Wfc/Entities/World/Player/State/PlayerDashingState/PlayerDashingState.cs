@@ -43,7 +43,7 @@ public partial class PlayerDashingState : PlayerBaseState {
 
     _dashTimer.Reset();
     player.CanDash = false;
-    Global.Instance().Camera.GetNode<CameraShake>("CameraShake").Start();
+    EventHandler.Instance.EmitCameraShakeRequest();
     InstanceGhost(player);
     player.DashGhostTimerNode.Start();
   }

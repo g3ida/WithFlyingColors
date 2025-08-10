@@ -3,12 +3,21 @@ namespace Wfc.Entities.World.Camera;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [ScenePath]
+[Meta(typeof(IAutoNode))]
 public partial class CameraLocalizer : Node2D {
+  public override void _Notification(int what) => this.Notify(what);
+  [Dependency]
+  public IGameLevel GameLevel => this.DependOn<IGameLevel>();
+
+
   private static readonly CameraLimit[] X_AXIS_LIMITS =
   {
         CameraLimit.FullLimit,
@@ -215,7 +224,7 @@ public partial class CameraLocalizer : Node2D {
   }
 
   private void _onBodyEntered(Node body) {
-    if (body == Global.Instance().Player) {
+    if (body == GameLevel.PlayerNode) {
       ApplyCameraChanges();
     }
   }
@@ -224,121 +233,122 @@ public partial class CameraLocalizer : Node2D {
     _setFollowNode();
     SetCameraLimits();
     SetCameraDragMargins();
-    Global.Instance().Camera.zoom_by(Zoom);
+    GameLevel.CameraNode.zoom_by(Zoom);
   }
 
   private void _setFollowNode() {
     if (FollowNode != null) {
       Node2D node = GetNode<Node2D>(FollowNode);
       if (node != null) {
-        Global.Instance().Camera.SetFollowNode(node);
+        GameLevel.CameraNode.SetFollowNode(node);
       }
     }
   }
 
   public void SetCameraLimits() {
     _adaptLimitsToScreenSize();
-
+    var cameraNode = GameLevel.CameraNode;
     switch (PositionClippingMode) {
       case CameraLimit.NoLimits:
-        Global.Instance().Camera.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
-        Global.Instance().Camera.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
-        Global.Instance().Camera.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
-        Global.Instance().Camera.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
+        cameraNode.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
+        cameraNode.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
+        cameraNode.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
+        cameraNode.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
         break;
       case CameraLimit.FullLimit:
-        Global.Instance().Camera.LimitLeft = _left;
-        Global.Instance().Camera.LimitBottom = _bottom;
-        Global.Instance().Camera.LimitRight = _right;
-        Global.Instance().Camera.LimitTop = _top;
+        cameraNode.LimitLeft = _left;
+        cameraNode.LimitBottom = _bottom;
+        cameraNode.LimitRight = _right;
+        cameraNode.LimitTop = _top;
         break;
       case CameraLimit.LimitBottomRight:
-        Global.Instance().Camera.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
-        Global.Instance().Camera.LimitBottom = _bottom;
-        Global.Instance().Camera.LimitRight = _right;
-        Global.Instance().Camera.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
+        cameraNode.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
+        cameraNode.LimitBottom = _bottom;
+        cameraNode.LimitRight = _right;
+        cameraNode.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
         break;
       case CameraLimit.LimitBottomLeft:
-        Global.Instance().Camera.LimitLeft = _left;
-        Global.Instance().Camera.LimitBottom = _bottom;
-        Global.Instance().Camera.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
-        Global.Instance().Camera.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
+        cameraNode.LimitLeft = _left;
+        cameraNode.LimitBottom = _bottom;
+        cameraNode.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
+        cameraNode.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
         break;
       case CameraLimit.LimitTopRight:
-        Global.Instance().Camera.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
-        Global.Instance().Camera.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
-        Global.Instance().Camera.LimitRight = _right;
-        Global.Instance().Camera.LimitTop = _top;
+        cameraNode.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
+        cameraNode.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
+        cameraNode.LimitRight = _right;
+        cameraNode.LimitTop = _top;
         break;
       case CameraLimit.LimitTopLeft:
-        Global.Instance().Camera.LimitLeft = _left;
-        Global.Instance().Camera.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
-        Global.Instance().Camera.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
-        Global.Instance().Camera.LimitTop = _top;
+        cameraNode.LimitLeft = _left;
+        cameraNode.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
+        cameraNode.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
+        cameraNode.LimitTop = _top;
         break;
       case CameraLimit.LimitXAxis:
-        Global.Instance().Camera.LimitLeft = _left;
-        Global.Instance().Camera.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
-        Global.Instance().Camera.LimitRight = _right;
-        Global.Instance().Camera.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
+        cameraNode.LimitLeft = _left;
+        cameraNode.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
+        cameraNode.LimitRight = _right;
+        cameraNode.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
         break;
       case CameraLimit.LimitYAxis:
-        Global.Instance().Camera.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
-        Global.Instance().Camera.LimitBottom = _bottom;
-        Global.Instance().Camera.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
-        Global.Instance().Camera.LimitTop = _top;
+        cameraNode.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
+        cameraNode.LimitBottom = _bottom;
+        cameraNode.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
+        cameraNode.LimitTop = _top;
         break;
       case CameraLimit.LimitAllButTop:
-        Global.Instance().Camera.LimitLeft = _left;
-        Global.Instance().Camera.LimitBottom = _bottom;
-        Global.Instance().Camera.LimitRight = _right;
-        Global.Instance().Camera.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
+        cameraNode.LimitLeft = _left;
+        cameraNode.LimitBottom = _bottom;
+        cameraNode.LimitRight = _right;
+        cameraNode.LimitTop = Constants.DEFAULT_CAMERA_LIMIT_TOP;
         break;
       case CameraLimit.LimitAllButLeft:
-        Global.Instance().Camera.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
-        Global.Instance().Camera.LimitBottom = _bottom;
-        Global.Instance().Camera.LimitRight = _right;
-        Global.Instance().Camera.LimitTop = _top;
+        cameraNode.LimitLeft = Constants.DEFAULT_CAMERA_LIMIT_LEFT;
+        cameraNode.LimitBottom = _bottom;
+        cameraNode.LimitRight = _right;
+        cameraNode.LimitTop = _top;
         break;
       case CameraLimit.LimitAllButRight:
-        Global.Instance().Camera.LimitLeft = _left;
-        Global.Instance().Camera.LimitBottom = _bottom;
-        Global.Instance().Camera.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
-        Global.Instance().Camera.LimitTop = _top;
+        cameraNode.LimitLeft = _left;
+        cameraNode.LimitBottom = _bottom;
+        cameraNode.LimitRight = Constants.DEFAULT_CAMERA_LIMIT_RIGHT;
+        cameraNode.LimitTop = _top;
         break;
       case CameraLimit.LimitAllButBottom:
-        Global.Instance().Camera.LimitLeft = _left;
-        Global.Instance().Camera.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
-        Global.Instance().Camera.LimitRight = _right;
-        Global.Instance().Camera.LimitTop = _top;
+        cameraNode.LimitLeft = _left;
+        cameraNode.LimitBottom = Constants.DEFAULT_CAMERA_LIMIT_BOTTOM;
+        cameraNode.LimitRight = _right;
+        cameraNode.LimitTop = _top;
         break;
       case CameraLimit.LimitLeft:
-        Global.Instance().Camera.LimitLeft = _left;
+        cameraNode.LimitLeft = _left;
         break;
       case CameraLimit.LimitRight:
-        Global.Instance().Camera.LimitRight = _right;
+        cameraNode.LimitRight = _right;
         break;
       case CameraLimit.LimitTop:
-        Global.Instance().Camera.LimitTop = _top;
+        cameraNode.LimitTop = _top;
         break;
       case CameraLimit.LimitBottom:
-        Global.Instance().Camera.LimitBottom = _bottom;
+        cameraNode.LimitBottom = _bottom;
         break;
     }
   }
 
   private void SetCameraDragMargins() {
+    var cameraNode = GameLevel.CameraNode;
     if (FullViewportDragMargin) {
-      Global.Instance().Camera.SetDragMarginBottom(1);
-      Global.Instance().Camera.SetDragMarginLeft(1);
-      Global.Instance().Camera.SetDragMarginRight(1);
-      Global.Instance().Camera.SetDragMarginTop(1);
+      cameraNode.SetDragMarginBottom(1);
+      cameraNode.SetDragMarginLeft(1);
+      cameraNode.SetDragMarginRight(1);
+      cameraNode.SetDragMarginTop(1);
     }
     else {
-      Global.Instance().Camera.SetDragMarginBottom(Constants.DEFAULT_DRAG_MARGIN_TB);
-      Global.Instance().Camera.SetDragMarginLeft(Constants.DEFAULT_DRAG_MARGIN_LR);
-      Global.Instance().Camera.SetDragMarginRight(Constants.DEFAULT_DRAG_MARGIN_LR);
-      Global.Instance().Camera.SetDragMarginTop(Constants.DEFAULT_DRAG_MARGIN_TB);
+      cameraNode.SetDragMarginBottom(Constants.DEFAULT_DRAG_MARGIN_TB);
+      cameraNode.SetDragMarginLeft(Constants.DEFAULT_DRAG_MARGIN_LR);
+      cameraNode.SetDragMarginRight(Constants.DEFAULT_DRAG_MARGIN_LR);
+      cameraNode.SetDragMarginTop(Constants.DEFAULT_DRAG_MARGIN_TB);
     }
   }
 

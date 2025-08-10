@@ -92,4 +92,6 @@ public partial class Events : GodotObject {
   public delegate void LevelClearedEventHandler();
   [Signal]
   public delegate void GemPutInTempleEventHandler();
+  [Signal]
+  public delegate void CameraShakeRequestEventHandler();
 }

@@ -15,13 +15,13 @@ public static class LevelDispatcher {
 
 
   public static readonly List<LevelInfo> LEVELS = [
-          new() { Id = LevelId.Level1, Name = TranslationKey.LevelDarkGames },
-          new() { Id = LevelId.Tutorial, Name = TranslationKey.LevelTutorial },
-          new() { Id = LevelId.oneMoreLevel, Name = TranslationKey.LevelDarkGames }
+          new() { Id = LevelId.Level1, TranslationKey = TranslationKey.LevelDarkGames },
+          new() { Id = LevelId.Tutorial, TranslationKey = TranslationKey.LevelTutorial },
+          new() { Id = LevelId.oneMoreLevel, TranslationKey = TranslationKey.LevelDarkGames }
   ];
 
   public partial struct LevelInfo {
     public LevelId Id { get; set; }
-    public TranslationKey Name { get; set; }
+    public TranslationKey TranslationKey { get; set; }
   }
 }

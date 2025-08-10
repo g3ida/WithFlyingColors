@@ -27,6 +27,8 @@ public partial class SceneOrchester : Node2D {
   [Dependency]
   public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
 
+  IGameLevel? _currentLevel = null;
+
   public override void _EnterTree() {
     base._EnterTree();
     ConnectSignals();
@@ -57,8 +59,10 @@ public partial class SceneOrchester : Node2D {
       _loadLevel((LevelId)levelId);
     }
     else {
-      _loadLevel(metaData!.LevelId);
-      SaveManager.LoadGame(GetTree());
+      _currentLevel = _loadLevel(metaData!.LevelId);
+      if (_currentLevel != null) {
+        SaveManager.LoadGame(GetTree(), _currentLevel.PlayerNode, _currentLevel.CameraNode);
+      }
     }
   }
 
@@ -76,7 +80,7 @@ public partial class SceneOrchester : Node2D {
     EventHandler.Instance.EmitCheckpointLoaded();
   }
 
-  private void _loadLevel(LevelId levelId) {
+  private GameLevel? _loadLevel(LevelId levelId) {
     var level = LevelDispatcher.InstantiateLevel(levelId);
     if (level != null) {
       AddChild(level);
@@ -85,10 +89,10 @@ public partial class SceneOrchester : Node2D {
     else {
       GD.PrintErr($"Could not Instantiate level {levelId}");
     }
+    return level;
   }
 
   private void OnLevelCleared() {
-    // FIXME: uncomment this line after implementing PauseMenu in c#
-    Global.Instance().PauseMenu.NavigateToScreen(GameMenus.LEVEL_CLEAR_MENU);
+    _currentLevel?.PauseMenuNode.NavigateToScreen(GameMenus.LEVEL_CLEAR_MENU);
   }
 }
