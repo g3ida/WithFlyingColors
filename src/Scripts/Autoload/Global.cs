@@ -19,16 +19,7 @@ public partial class Global : Node2D {
   public static Global Instance() {
     return _instance;
   }
-
-  public GameCamera Camera;
-
   public Player Player;
-
-  public Cutscene Cutscene;
-  public GemsHUDContainer GemHUD;
-
-  public PauseMenuImpl PauseMenu;
-
   public Texture2D _playerSprite;
 
   public Texture2D GetPlayerSprite() {

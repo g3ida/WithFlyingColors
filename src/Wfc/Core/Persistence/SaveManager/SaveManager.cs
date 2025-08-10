@@ -7,6 +7,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Godot;
 using Wfc.Core.Serialization;
+using Wfc.Entities.World.Camera;
+using Wfc.Entities.World.Player;
 
 public partial class SaveManager : ISaveManager {
 
@@ -28,7 +30,7 @@ public partial class SaveManager : ISaveManager {
     GD.Print("Game saved!");
   }
 
-  public void LoadGame(SceneTree tree, int slotIndex = -1) {
+  public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = -1) {
     slotIndex = slotIndex == -1 ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
@@ -39,7 +41,7 @@ public partial class SaveManager : ISaveManager {
     // which would make you see the camera move quickly to the checkpoint position
     // when we load a level. We put it here instead of the reset method because
     // I like the smoothing effect when the player loses
-    Global.Instance().Camera.UpdatePosition(Global.Instance().Player.GlobalPosition);
+    camera.UpdatePosition(player.GlobalPosition);
     LatestLoadedSlot = slotIndex;
     _saveSlotsInfo();
     GD.Print("Game loaded!");

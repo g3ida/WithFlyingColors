@@ -64,6 +64,7 @@ public partial class Menubox : Control {
   }
 
   public override void _Ready() {
+    base._Ready();
     this.WireNodes();
     _boxRotationNode = new PlayerRotation(parent: _menuBoxNode);
 

@@ -2,9 +2,11 @@ namespace Wfc.Entities.World.Platforms;
 
 using System;
 using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
 using GodotTestDriver.Util;
 using Wfc.Core.Event;
+using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -12,7 +14,11 @@ using Wfc.Utils.Images;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
+[Meta(typeof(IAutoNode))]
 public partial class Platform : AnimatableBody2D {
+  public override void _Notification(int what) => this.Notify(what);
+  [Dependency]
+  public IGameLevel GameLevel => this.DependOn<IGameLevel>();
   private static readonly Texture2D GearedTexture = GD.Load<Texture2D>("res://Assets/Sprites/Platforms/geared-platform.png");
   private static readonly Texture2D SimpleTexture = GD.Load<Texture2D>("res://Assets/Sprites/Platforms/platform.png");
 
@@ -80,7 +86,7 @@ public partial class Platform : AnimatableBody2D {
       // Vector2 resolution = GetViewport().GetSize2dOverride();
       Vector2 resolution = new Vector2(1, 1);
 
-      Camera2D cam = Global.Instance().Camera;
+      Camera2D cam = GameLevel.CameraNode;
 
       if (cam != null) {
         Vector2 camPos = cam.GetScreenCenterPosition();

@@ -10,6 +10,7 @@ using Wfc.Core.Input;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Entities.World.Checkpoints;
+using Wfc.Screens.Levels;
 using Wfc.State;
 using Wfc.Utils;
 using Wfc.Utils.Animation;
@@ -31,6 +32,8 @@ public partial class Player : CharacterBody2D, IPersistent {
   #region Dependencies
   [Dependency]
   public IInputManager InputManager => this.DependOn<IInputManager>();
+  [Dependency]
+  public IGameLevel GameLevel => this.DependOn<IGameLevel>();
   #endregion Dependencies
 
   #region Constants

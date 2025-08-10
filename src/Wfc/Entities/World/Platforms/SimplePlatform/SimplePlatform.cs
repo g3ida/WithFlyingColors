@@ -1,8 +1,10 @@
 namespace Wfc.Entities.World.Platforms;
 
 using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -12,7 +14,11 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
 [ScenePath]
+[Meta(typeof(IAutoNode))]
 public partial class SimplePlatform : StaticBody2D {
+  public override void _Notification(int what) => this.Notify(what);
+  [Dependency]
+  public IGameLevel GameLevel => this.DependOn<IGameLevel>();
   private static readonly Texture2D GearedTexture = (Texture2D)GD.Load("res://Assets/Sprites/Platforms/geared-platform.png");
   private static readonly Texture2D SimpleTexture = (Texture2D)GD.Load("res://Assets/Sprites/Platforms/platform.png");
 
@@ -36,6 +42,8 @@ public partial class SimplePlatform : StaticBody2D {
   private CollisionShape2D _collisionShape = default!;
   [NodePath("Area2D/ColorAreaShape")]
   private CollisionShape2D _colorAreaShape = default!;
+
+  public void OnResolved() { }
 
   public override void _Ready() {
     base._Ready();
@@ -87,6 +95,7 @@ public partial class SimplePlatform : StaticBody2D {
   }
 
   public override void _Process(double delta) {
+    base._Process(delta);
     if (Engine.IsEditorHint())
       return;
 
@@ -94,7 +103,7 @@ public partial class SimplePlatform : StaticBody2D {
 
     if (_ninePatchRectNode.Material is ShaderMaterial shaderMaterial) {
       Vector2 resolution = GetViewport().GetVisibleRect().Size; // must be 1920x1080
-      Camera2D cam = Global.Instance().Camera;
+      Camera2D cam = GameLevel.CameraNode;
       if (cam != null) {
         Vector2 camPos = cam.GetScreenCenterPosition();
         Vector2 currentPos = new Vector2(

@@ -38,20 +38,28 @@ public partial class GameCamera : Camera2D, IPersistent {
   private float _cachedDragMarginLeft;
   private float _cachedDragMarginRight;
 
+  public override void _EnterTree() {
+    base._EnterTree();
+    _connectSignals();
+  }
+
+  public override void _ExitTree() {
+    base._ExitTree();
+    _disconnectSignals();
+  }
+
   public override void _Ready() {
     base._Ready();
     FollowNode = GetNode<Node2D>(FollowPath);
-    if (IsCurrent()) {
-      Global.Instance().Camera = this;
-    }
     CacheDragMargins();
+  }
+
+  public void OnCameraShakeRequest() {
+    GetNode<CameraShake>("CameraShake").Start();
   }
 
   public override void _Process(double delta) {
     base._Process(delta);
-    if (IsCurrent()) {
-      Global.Instance().Camera = this;
-    }
   }
 
   public override void _PhysicsProcess(double delta) {
@@ -138,6 +146,7 @@ public partial class GameCamera : Camera2D, IPersistent {
     EventHandler.Instance.Events.PlayerJumped += _OnPlayerJump;
     EventHandler.Instance.Events.PlayerLand += _OnPlayerLand;
     EventHandler.Instance.Events.PlayerDying += _OnPlayerDying;
+    EventHandler.Instance.Events.CameraShakeRequest += OnCameraShakeRequest;
   }
 
   private void _disconnectSignals() {
@@ -146,14 +155,7 @@ public partial class GameCamera : Camera2D, IPersistent {
     EventHandler.Instance.Events.PlayerJumped -= _OnPlayerJump;
     EventHandler.Instance.Events.PlayerLand -= _OnPlayerLand;
     EventHandler.Instance.Events.PlayerDying -= _OnPlayerDying;
-  }
-
-  public override void _EnterTree() {
-    _connectSignals();
-  }
-
-  public override void _ExitTree() {
-    _disconnectSignals();
+    EventHandler.Instance.Events.CameraShakeRequest -= OnCameraShakeRequest;
   }
 
   public async void UpdatePosition(Vector2 pos) {

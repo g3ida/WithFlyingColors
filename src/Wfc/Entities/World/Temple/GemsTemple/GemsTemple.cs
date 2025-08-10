@@ -1,14 +1,21 @@
 namespace Wfc.Entities.World.Temple;
 
 using System.Collections.Generic;
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
+[Meta(typeof(IAutoNode))]
 public partial class GemsTemple : Node2D {
+
+  public override void _Notification(int what) => this.Notify(what);
+
   #region Constants
   private const float WAIT_DELAY = 0.1f;
   private const float MAX_GEM_TEMPLE_ANGULAR_VELOCITY = 10.0f * Mathf.Pi;
@@ -46,6 +53,9 @@ public partial class GemsTemple : Node2D {
   private Sprite2D BloomSpriteNode = default!;
   #endregion Nodes
 
+  [Dependency]
+  public IGameLevel GameLevel => this.DependOn<IGameLevel>();
+
   private Tween? tweener;
 
   public override void _Ready() {
@@ -64,7 +74,7 @@ public partial class GemsTemple : Node2D {
   private bool _createTempleGems() {
     int i = 0;
     foreach (string colorGrp in ColorUtils.COLOR_GROUPS) {
-      if (Global.Instance().GemHUD.IsGemCollected(colorGrp)) {
+      if (GameLevel.GemsHUDContainerNode.IsGemCollected(colorGrp)) {
         var templeGem = _createTempleGem(
             colorGrp,
             WAIT_DELAY * (i + 1),
@@ -162,7 +172,7 @@ public partial class GemsTemple : Node2D {
     _currentState = States.WalkPhase;
     Global.Instance().Player.Velocity = new Vector2(0, Global.Instance().Player.Velocity.Y);
     EventHandler.Instance.EmitGemTempleTriggered();
-    Global.Instance().Cutscene.ShowSomeNode(Global.Instance().Player, 10.0f, 3.2f);
+    GameLevel.CutsceneNode.ShowSomeNode(Global.Instance().Player, 10.0f, 3.2f);
   }
 
   private void _goToRotationPhase() {

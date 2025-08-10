@@ -25,7 +25,6 @@ public partial class PauseMenuImpl : GameMenu {
 
     buttons = new List<PauseMenuBtn> { _resumeButton, _levelSelectButton, _backButton };
     HandleBackEvent = false;
-    Global.Instance().PauseMenu = this;
   }
 
   public void _Hide() {

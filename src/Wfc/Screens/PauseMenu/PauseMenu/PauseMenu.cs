@@ -5,6 +5,7 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core;
 using Wfc.Core.Audio;
+using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -88,5 +89,9 @@ public partial class PauseMenu : CanvasLayer {
     SfxManager.StopAll();
     Resume();
     _pauseMenu.GoToLevelSelectMenu();
+  }
+
+  public void NavigateToScreen(GameMenus menuScreen) {
+    _pauseMenu.NavigateToScreen(menuScreen);
   }
 }
