@@ -5,6 +5,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Audio;
+using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Cutscenes;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
@@ -20,6 +21,8 @@ public partial class GameLevel : Node2D {
   private Cutscene CutsceneNode = null!;
   [NodePath("Player")]
   private Player Player = null!;
+  [NodePath("Camera2D")]
+  private GameCamera Camera = null!;
   public LevelId LevelId { get; set; }
 
   public void OnResolved() {

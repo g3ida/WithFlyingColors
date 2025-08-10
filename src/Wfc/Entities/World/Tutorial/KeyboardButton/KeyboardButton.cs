@@ -1,7 +1,10 @@
+namespace Wfc.Entities.World.Tutorial;
+
 using System;
 using System.Linq;
 using Godot;
 using Wfc.Utils;
+using Wfc.Utils.Attributes;
 
 [Tool]
 public partial class KeyboardButton : Control {
@@ -18,15 +21,16 @@ public partial class KeyboardButton : Control {
   [Export]
   public string key_text { get; set; } = "";
 
-  private Label _labelNode;
-  private NinePatchRect _buttonTextureNode;
-  private Sprite2D _arrowSpriteNode;
+  [NodePath("Label")]
+  private Label _labelNode = default!;
+  [NodePath("NinePatchRect")]
+  private NinePatchRect _buttonTextureNode = default!;
+  [NodePath("Arrow")]
+  private Sprite2D _arrowSpriteNode = default!;
 
   public override void _Ready() {
     base._Ready();
-    _labelNode = GetNode<Label>("Label");
-    _buttonTextureNode = GetNode<NinePatchRect>("NinePatchRect");
-    _arrowSpriteNode = GetNode<Sprite2D>("Arrow");
+    this.WireNodes();
 
     var actionList = InputMap.ActionGetEvents(key_text);
     if (actionList != null && actionList.Count > 0) {

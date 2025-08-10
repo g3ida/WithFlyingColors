@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://bwd2mkbkstvp8"]
 
 [ext_resource type="Texture2D" uid="uid://bx60edihdd4eg" path="res://Assets/Sprites/Buttons/key_btn.png" id="1"]
-[ext_resource type="Script" uid="uid://dts2cypcv3nar" path="res://src/Scripts/Tutorial/KeyboardButton.cs" id="2"]
+[ext_resource type="Script" uid="uid://dts2cypcv3nar" path="res://src/Wfc/Entities/World/Tutorial/KeyboardButton/KeyboardButton.cs" id="2"]
 [ext_resource type="FontFile" path="res://Assets/Fonts/KeyboardButton.tres" id="3"]
 [ext_resource type="Texture2D" uid="uid://d2wrxtj85sdf6" path="res://Assets/Sprites/Buttons/btn_arrow.png" id="4"]
 

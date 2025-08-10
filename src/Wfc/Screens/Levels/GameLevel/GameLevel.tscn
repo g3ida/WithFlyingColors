@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://c34ryx01v1y06" path="res://src/Wfc/Entities/World/Camera/GameCamera/GameCamera.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://we8kyl5cdqe6" path="res://src/Wfc/Entities/World/Camera/CameraShake/CameraShake.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://bijboehpv0gsh" path="res://src/Wfc/Screens/PauseMenu/PauseMenu.tscn" id="6"]
-[ext_resource type="PackedScene" uid="uid://lycx13j354o3" path="res://Assets/Scenes/HUD/GemsHUDContainer.tscn" id="8"]
+[ext_resource type="PackedScene" uid="uid://lycx13j354o3" path="res://src/Wfc/Entities/HUD/GemsHUDContainer/GemsHUDContainer.tscn" id="8"]
 
 [node name="LevelHandler" type="Node2D"]
 script = ExtResource("1")

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://c85rnk4aipfh7"]
 
-[ext_resource type="PackedScene" uid="uid://chmv8pkqbeba1" path="res://Assets/Scenes/Gems/GemAnimatedSprite.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://chmv8pkqbeba1" path="res://src/Wfc/Entities/World/Gems/Gem/GemAnimatedSprite.tscn" id="1"]
 [ext_resource type="Script" uid="uid://db4nyrj58xtf2" path="res://src/Scripts/Temple/TempleGem.cs" id="2"]
 [ext_resource type="Texture2D" uid="uid://chvqjbfg518w8" path="res://Assets/Sprites/Lightmaps/shine_light.png" id="3"]
 
