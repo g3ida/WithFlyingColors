@@ -133,13 +133,13 @@ public partial class PianoNote : AnimatableBody2D {
   }
 
   public void _onArea2DBodyEntered(Node body) {
-    if (body == Global.Instance().Player) {
+    if (body is Player.Player) {
       PressNoteIfRelevant();
     }
   }
 
   public void _onArea2DBodyExited(Node body) {
-    if (body == Global.Instance().Player) {
+    if (body is Player.Player) {
       StartReleasingNoteTimerIfRelevant();
     }
   }
@@ -221,7 +221,7 @@ public partial class PianoNote : AnimatableBody2D {
       var to = ray["to"];
       var physicsRayQueryParameters = PhysicsRayQueryParameters2D.Create(from, to, exclude: new Godot.Collections.Array<Rid> { GetRid() });
       var result = spaceState.IntersectRay(physicsRayQueryParameters);
-      if (result.ContainsKey("collider") && result["collider"].As<Node>().Name == Global.Instance().Player.Name) {
+      if (result.ContainsKey("collider") && result["collider"].As<Player.Player>() != null) {
         return true;
       }
     }

@@ -9,7 +9,7 @@ public partial class ProtectionArea : StaticBody2D {
     // Initialization code goes here
   }
 
-  public void _on_Area2D_body_entered(Node body) {
+  private void _onArea2DBodyEntered(Node body) {
     if (body is BouncingBall) {
       QueueFree();
     }

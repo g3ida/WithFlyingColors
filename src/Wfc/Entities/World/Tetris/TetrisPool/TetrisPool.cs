@@ -9,6 +9,7 @@ using Wfc.Core.Audio;
 using Wfc.Core.Event;
 using Wfc.Entities.Tetris.Tetrominos;
 using Wfc.Entities.World.Platforms;
+using Wfc.Entities.World.Player;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -307,8 +308,8 @@ public partial class TetrisPool : Node2D {
     // Handle game over logic
   }
 
-  private void _on_TriggerEnterArea_body_entered(Node body) {
-    if (body != Global.Instance().Player)
+  private void _onTriggerEnterAreaBodyEntered(Node body) {
+    if (body! is Player)
       return;
 
     _isPaused = false;

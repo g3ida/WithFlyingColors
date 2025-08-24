@@ -34,7 +34,12 @@ public partial class BoxFace : BaseFace {
   }
 
   public void _onAreaEntered(Area2D area) {
-    if (Global.Instance().Player.IsDying()) {
+    var player = GetParent<Player>();
+    if (player == null) {
+      // Fixme: Log error here. this should not happen anyways.
+      return;
+    }
+    if (player.IsDying()) {
       return;
     }
     var groups = GetGroups();
@@ -46,7 +51,7 @@ public partial class BoxFace : BaseFace {
     else if (!area.IsInGroup(groups[0])) {
       EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, EntityType.Platform);
     }
-    else if (!Global.Instance().Player.IsStanding()) {
+    else if (!player.IsStanding()) {
       EventHandler.Instance.EmitPlayerLanded(area, GlobalPosition);
     }
   }

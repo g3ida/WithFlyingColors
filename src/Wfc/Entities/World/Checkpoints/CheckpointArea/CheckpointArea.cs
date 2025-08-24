@@ -28,8 +28,8 @@ public partial class CheckpointArea : Area2D, IPersistent {
     _isChecked = _saveData.isChecked;
   }
 
-  public void _on_CheckpointArea_body_entered(Node2D body) {
-    if (body == Global.Instance().Player && !_isChecked) {
+  public void OnCheckpointAreaBodyEntered(Node2D body) {
+    if (body is Player.Player && !_isChecked) {
       _isChecked = true;
       _saveData = new SaveData(isChecked: true);
       EmitSignal(nameof(checkpoint_hit));

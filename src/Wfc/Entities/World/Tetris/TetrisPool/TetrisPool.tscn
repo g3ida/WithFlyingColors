@@ -81,4 +81,4 @@ shape = SubResource("1")
 
 [connection signal="GameOver" from="." to="." method="_onTetrisPoolGameOver"]
 [connection signal="LinesRemoved" from="." to="." method="_onTetrisPoolLinesRemoved"]
-[connection signal="body_entered" from="TriggerEnterArea" to="." method="_on_TriggerEnterArea_body_entered"]
+[connection signal="body_entered" from="TriggerEnterArea" to="." method="_onTriggerEnterAreaBodyEntered"]

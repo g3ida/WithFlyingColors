@@ -217,7 +217,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
     }
   }
 
-  private void _on_TriggerEnterArea_body_entered(Node body) {
+  private void _onTriggerEnterAreaBodyEntered(Node body) {
     if (body != GameLevel.PlayerNode)
       return;
     if (_currentState == BrickBreakerState.STOPPED) {
