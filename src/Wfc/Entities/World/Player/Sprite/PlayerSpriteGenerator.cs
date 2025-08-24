@@ -84,7 +84,7 @@ public partial class PlayerSpriteGenerator : Node {
   };
 
 
-  public static Texture2D? GetTexture() {
+  public static Texture2D GetTexture() {
     return _mergeIntoSingleTexture();
   }
 

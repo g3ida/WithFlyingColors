@@ -82,7 +82,7 @@ public partial class BouncingBall : CharacterBody2D {
         else {
           var position = info.Collision.GetPosition();
           var dp = player.GlobalPosition - position;
-          var playerSize = (player as Player).GetCollisionShapeSize();
+          var playerSize = player.GetCollisionShapeSize();
           var normalizedPosX = dp.X / playerSize.X;
           var m = new Vector2(info.N.Y, info.N.X);
           _ballVelocity = DEVIATION * SPEED_UNIT * normalizedPosX * m - info.U;

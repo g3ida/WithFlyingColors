@@ -8,7 +8,7 @@ using Wfc.Entities.World.Player;
 using Wfc.Screens;
 
 public partial class Global : Node2D {
-  private static Global _instance = null;
+  private static Global _instance = null!;
 
   public override void _Ready() {
     base._Ready();
@@ -20,12 +20,4 @@ public partial class Global : Node2D {
     return _instance;
   }
   public Player Player;
-  public Texture2D _playerSprite;
-
-  public Texture2D GetPlayerSprite() {
-    if (_playerSprite == null) {
-      _playerSprite = PlayerSpriteGenerator.GetTexture();
-    }
-    return _playerSprite;
-  }
 }
