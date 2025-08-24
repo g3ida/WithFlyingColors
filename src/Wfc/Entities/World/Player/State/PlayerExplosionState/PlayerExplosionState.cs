@@ -40,7 +40,7 @@ public partial class PlayerExplosionState : PlayerDyingBaseState {
     var explosion = SceneHelpers.InstantiateNode<Explosion>();
     explosion.Connect(nameof(Explosion.ObjectDetonated), new Callable(this, nameof(OnObjectDetonated)), flags: (uint)ConnectFlags.OneShot);
     explosion.Connect(Node.SignalName.Ready, Callable.From(() => {
-      explosion.Setup();
+      explosion.Setup(player);
       explosion.FireExplosion();
     }), (uint)ConnectFlags.OneShot);
     player.AddChild(explosion);

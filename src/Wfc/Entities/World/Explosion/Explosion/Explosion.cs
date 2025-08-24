@@ -8,7 +8,6 @@ using Wfc.Utils.Attributes;
 
 [ScenePath]
 public partial class Explosion : Node2D {
-  private Texture2D playerTexture = Global.Instance().GetPlayerSprite();
   private const int BLOCKS_PER_SIDE = 6;
   private const int BLOCKS_IMPULSE = 400;
   private const int BLOCKS_GRAVITY_SCALE = 3;
@@ -33,7 +32,7 @@ public partial class Explosion : Node2D {
     }
   }
 
-  private ExplosionElement _instanceExplosionElement(int n) {
+  private ExplosionElement _instanceExplosionElement(Texture2D playerTexture, int n) {
     var explosionElement = SceneHelpers.InstantiateNode<ExplosionElement>();
     explosionElement.Name = Name + "_block_" + n;
     var shape = new RectangleShape2D {
@@ -59,8 +58,9 @@ public partial class Explosion : Node2D {
     }
   }
 
-  public void Setup() {
+  public void Setup(Player.Player player) {
     _explosionInfo = new ExplosionInfo();
+    var playerTexture = player.GetSprite();
     if (_isRandomizeSeed) {
       GD.Randomize();
     }
@@ -79,7 +79,7 @@ public partial class Explosion : Node2D {
 
     for (int x = 0; x < _explosionInfo.HFrames; x++) {
       for (int y = 0; y < _explosionInfo.VFrames; y++) {
-        var explosionElement = _instanceExplosionElement(idx);
+        var explosionElement = _instanceExplosionElement(playerTexture, idx);
         elems.Add(explosionElement);
         explosionElement.Position = new Vector2(
             y * (_explosionInfo.Width / _explosionInfo.HFrames) - _explosionInfo.Offset.X + _explosionInfo.CollisionExtents.X + Position.Y,

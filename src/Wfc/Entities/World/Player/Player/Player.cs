@@ -58,6 +58,7 @@ public partial class Player : CharacterBody2D, IPersistent {
   public bool CanDash = true;
   public bool HandleInputIsDisabled = false;
   private int _spriteSize;
+  private Texture2D? _playerSprite = null;
 
   #region Nodes
   [NodePath("JumpParticles")]
@@ -164,7 +165,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     base._Ready();
     PrepareChildrenNodes();
     PlayerRotationAction.SetBody(this);
-    AnimatedSpriteNode.SpriteFrames.SetFrame("idle", 0, Global.Instance().GetPlayerSprite());
+    AnimatedSpriteNode.SpriteFrames.SetFrame("idle", 0, GetSprite());
     _spriteSize = AnimatedSpriteNode.SpriteFrames.GetFrameTexture("idle", 0).GetWidth();
     InitSpriteAnimation();
     WasOnFloor = IsOnFloor();
@@ -333,10 +334,6 @@ public partial class Player : CharacterBody2D, IPersistent {
     return (((_collisionShapeNode.Shape as RectangleShape2D)?.Size ?? Vector2.Zero) * 0.5f + 2.0f * new Vector2(extra_w, extra_w)) * 2.0f;
   }
 
-  public bool ContainsNode(Node node) {
-    return GetChildren().Contains(node);
-  }
-
   // This function is a hack for bullets and fast moving objects because of this Godot issue:
   // https://github.com/godotengine/godot/issues/43743
   public void OnFastAreaCollidingWithPlayerShape(uint bodyShapeIndex, Area2D colorArea, EntityType entityType) {
@@ -437,5 +434,12 @@ public partial class Player : CharacterBody2D, IPersistent {
   public void Load(ISerializer serializer, string data) {
     this._saveData = serializer.Deserialize<SaveData>(data) ?? new SaveData();
     Reset();
+  }
+
+  public Texture2D GetSprite() {
+    if (_playerSprite == null) {
+      _playerSprite = PlayerSpriteGenerator.GetTexture();
+    }
+    return _playerSprite;
   }
 }
