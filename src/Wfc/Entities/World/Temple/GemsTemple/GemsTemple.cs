@@ -66,19 +66,19 @@ public partial class GemsTemple : Node2D {
   }
 
   private void _onTriggerAreaBodyEntered(Node body) {
-    if (_currentState == States.NotTriggered && body == Global.Instance().Player) {
-      _goToWalkPhase();
+    if (_currentState == States.NotTriggered && body is Player.Player player) {
+      _goToWalkPhase(player);
     }
   }
 
-  private bool _createTempleGems() {
+  private bool _createTempleGems(Player.Player player) {
     int i = 0;
     foreach (string colorGrp in ColorUtils.COLOR_GROUPS) {
       if (GameLevel.GemsHUDContainerNode.IsGemCollected(colorGrp)) {
         var templeGem = _createTempleGem(
             colorGrp,
             WAIT_DELAY * (i + 1),
-            Global.Instance().Player.GlobalPosition,
+            player.GlobalPosition,
             (GemsSlotsNodes[i] as Node2D)?.GlobalPosition ?? Vector2.Zero,
             GEMS_EASE_TYPE[i]);
         _templeGems.Add(templeGem);
@@ -144,8 +144,8 @@ public partial class GemsTemple : Node2D {
   }
 
   private void _on_StartGemsArea_body_entered(Node body) {
-    if (_currentState == States.WalkPhase && body == Global.Instance().Player) {
-      _goToCollectPhase();
+    if (_currentState == States.WalkPhase && body is Player.Player player) {
+      _goToCollectPhase(player);
     }
   }
 
@@ -168,11 +168,11 @@ public partial class GemsTemple : Node2D {
     BloomSpriteNode.Visible = false;
   }
 
-  private void _goToWalkPhase() {
+  private void _goToWalkPhase(Player.Player player) {
     _currentState = States.WalkPhase;
-    Global.Instance().Player.Velocity = new Vector2(0, Global.Instance().Player.Velocity.Y);
+    player.Velocity = new Vector2(0, player.Velocity.Y);
     EventHandler.Instance.EmitGemTempleTriggered();
-    GameLevel.CutsceneNode.ShowSomeNode(Global.Instance().Player, 10.0f, 3.2f);
+    GameLevel.CutsceneNode.ShowSomeNode(player, 10.0f, 3.2f);
   }
 
   private void _goToRotationPhase() {
@@ -182,10 +182,10 @@ public partial class GemsTemple : Node2D {
     EventHandler.Instance.EmitGemEngineStarted();
   }
 
-  private void _goToCollectPhase() {
+  private void _goToCollectPhase(Player.Player player) {
     _currentState = States.CollectPhase;
-    Global.Instance().Player.Velocity = new Vector2(0, Global.Instance().Player.Velocity.Y);
-    if (!_createTempleGems()) {
+    player.Velocity = new Vector2(0, player.Velocity.Y);
+    if (!_createTempleGems(player)) {
       _onGemCollected(null);
     }
   }

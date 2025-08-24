@@ -11,6 +11,6 @@ public static class Helpers {
   public static void TriggerFunctionalCheckpoint() {
     var checkpoint = new CheckpointArea();
     checkpoint.ColorGroup = ColorUtils.BLUE;
-    checkpoint._on_CheckpointArea_body_entered(Global.Instance().Player);
+    checkpoint.OnCheckpointAreaBodyEntered(Global.Instance().Player);
   }
 }

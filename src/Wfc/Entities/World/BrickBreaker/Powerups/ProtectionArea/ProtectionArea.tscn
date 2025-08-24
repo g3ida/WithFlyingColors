@@ -46,4 +46,4 @@ modulate = Color(1, 1, 1, 0.501961)
 scale = Vector2(1224, 7)
 mesh = SubResource("3")
 
-[connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
+[connection signal="body_entered" from="Area2D" to="." method="_onArea2DBodyEntered"]

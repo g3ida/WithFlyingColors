@@ -129,4 +129,4 @@ shape = SubResource("3")
 position = Vector2(-630, 71)
 
 [connection signal="timeout" from="BricksContainer/LevelUpTimer" to="." method="_on_LevelUpTimer_timeout"]
-[connection signal="body_entered" from="TriggerEnterArea" to="." method="_on_TriggerEnterArea_body_entered"]
+[connection signal="body_entered" from="TriggerEnterArea" to="." method="_onTriggerEnterAreaBodyEntered"]

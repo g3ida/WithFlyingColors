@@ -54,7 +54,7 @@ public partial class PowerUp : Node2D {
     // Check collision with dead zone
   }
 
-  private void _on_Area2D_body_entered(Node body) {
+  private void _onArea2DBodyEntered(Node body) {
     if (body == Global.Instance().Player) {
       if (!Global.Instance().Player.IsDying()) {
         AreaNode.SetDeferred(Area2D.PropertyName.Monitorable, false);
@@ -65,7 +65,7 @@ public partial class PowerUp : Node2D {
     }
   }
 
-  private void _on_Area2D_area_entered(Area2D area) {
+  private void _onArea2DAreaEntered(Area2D area) {
     if (area.IsInGroup("death_zone")) {
       QueueFree();
     }

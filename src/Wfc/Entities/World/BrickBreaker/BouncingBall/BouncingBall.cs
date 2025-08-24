@@ -44,7 +44,6 @@ public partial class BouncingBall : CharacterBody2D {
 
   private float _speed = SPEED;
   public Area2D? DeathZone = null; // FIXME: this is set in breakBreaker. better logic ?
-  private int _playerLastDirection;
 
   public override void _Ready() {
     base._Ready();
@@ -63,10 +62,10 @@ public partial class BouncingBall : CharacterBody2D {
   }
 
 
-  public float RelativeCollisionRatioToSide() {
-    var scale_y = Global.Instance().Player.Scale.Y;
+  public float RelativeCollisionRatioToSide(Player player) {
+    var scale_y = player.Scale.Y;
     var pos = Global.Instance().GlobalPosition;
-    var dims = Global.Instance().Player.GetCollisionShapeSize();
+    var dims = player.GetCollisionShapeSize();
     var ratio = (pos.Y + (dims.Y * scale_y * 0.5f) - GlobalPosition.Y) / dims.Y * scale_y;
     return Mathf.Clamp(ratio, 0.0f, 1.0f);
   }
@@ -78,7 +77,7 @@ public partial class BouncingBall : CharacterBody2D {
   private bool _HandlePlayerCollision(CollisionResolutionInfo info) {
     if (info.IsPlayer && info.Player is Player player) {
       if (!info.IsSideCol) {
-        if (IsBallUnderPlayer())
+        if (IsBallUnderPlayer(player))
           _ballVelocity = new Vector2(0, 1);
         else {
           var position = info.Collision.GetPosition();
@@ -133,15 +132,7 @@ public partial class BouncingBall : CharacterBody2D {
     }
   }
 
-  private void _SetPlayerLastDirection() {
-    if (Global.Instance().Player.Velocity.X > 0.0f)
-      _playerLastDirection = 1;
-    else if (Global.Instance().Player.Velocity.X < 0.0f)
-      _playerLastDirection = -1;
-  }
-
   public override void _PhysicsProcess(double delta) {
-    SetPlayerLastDirection();
     KinematicCollision2D collision = MoveAndCollide(_ballVelocity * (float)delta);
     if (collision != null) {
       var resInf = new CollisionResolutionInfo(collision, this);
@@ -155,19 +146,19 @@ public partial class BouncingBall : CharacterBody2D {
       VelocityPostProcess(resInf);
     }
     else {
-      HandleSameDirectionCollision();
+      HandleSameDirectionCollision(Global.Instance().Player);
     }
   }
 
-  private void HandleSameDirectionCollision() {
+  private void HandleSameDirectionCollision(Player player) {
     if (_intersectionTimer.IsStopped()) {
-      if (IsCollidingWithPlayer()) {
+      if (IsCollidingWithPlayer(player)) {
         bool handled = true;
-        if (IsSameDirectionAsPlayer()) {
-          float s = -Mathf.Sign(Global.Instance().Player.GlobalPosition.X - GlobalPosition.X);
+        if (IsSameDirectionAsPlayer(player)) {
+          float s = -Mathf.Sign(player.GlobalPosition.X - GlobalPosition.X);
           _ballVelocity.X = s * Mathf.Abs(BallVelocity.X);
         }
-        else if (IsPlayerFallingOverTheFallingBall()) {
+        else if (IsPlayerFallingOverTheFallingBall(player)) {
           if (_ballVelocity.X > MathUtils.EPSILON) {
             _ballVelocity = new Vector2(0.0f, -Mathf.Abs(_ballVelocity.Y));
           }
@@ -175,7 +166,7 @@ public partial class BouncingBall : CharacterBody2D {
             _ballVelocity = new Vector2(0.0f, Mathf.Abs(_ballVelocity.Y)).Normalized() * _speed;
           }
         }
-        else if (IsPlayerPushingAFlyingBall()) {
+        else if (IsPlayerPushingAFlyingBall(player)) {
           _ballVelocity = new Vector2(0.0f, Mathf.Abs(_ballVelocity.Y)).Normalized() * _speed;
         }
         else {
@@ -189,14 +180,14 @@ public partial class BouncingBall : CharacterBody2D {
     }
   }
 
-  private bool IsSameDirectionAsPlayer() {
-    bool sameDirection = _playerLastDirection * _ballVelocity.X >= 0;
-    float ratio = RelativeCollisionRatioToSide();
-    return sameDirection && ratio < 0.95f && ratio > 0.05f && IsPlayerFollowingTheBall();
+  private bool IsSameDirectionAsPlayer(Player player) {
+    var playerDirection = player.Velocity.X >= 0.0f ? 1.0f : -1.0f;
+    bool sameDirection = playerDirection * _ballVelocity.X >= 0;
+    float ratio = RelativeCollisionRatioToSide(player);
+    return sameDirection && ratio < 0.95f && ratio > 0.05f && IsPlayerFollowingTheBall(player);
   }
 
-  private bool IsPlayerFollowingTheBall() {
-    var player = Global.Instance().Player;
+  private bool IsPlayerFollowingTheBall(Player player) {
     if (player.Velocity.X > MathUtils.EPSILON) {
       return player.GlobalPosition.X < GlobalPosition.X;
     }
@@ -208,18 +199,17 @@ public partial class BouncingBall : CharacterBody2D {
     }
   }
 
-  private bool IsPlayerFallingOverTheFallingBall() {
-    bool bothFalling = Global.Instance().Player.Velocity.Y >= 0.0f;
-    return bothFalling && IsBallUnderPlayer();
+  private bool IsPlayerFallingOverTheFallingBall(Player player) {
+    bool bothFalling = player.Velocity.Y >= 0.0f;
+    return bothFalling && IsBallUnderPlayer(player);
   }
 
-  private bool IsPlayerPushingAFlyingBall() {
-    bool bothUp = Global.Instance().Player.Velocity.Y < -MathUtils.EPSILON && _ballVelocity.Y < -MathUtils.EPSILON;
-    return bothUp && IsBallOverThePlayer();
+  private bool IsPlayerPushingAFlyingBall(Player player) {
+    bool bothUp = player.Velocity.Y < -MathUtils.EPSILON && _ballVelocity.Y < -MathUtils.EPSILON;
+    return bothUp && IsBallOverThePlayer(player);
   }
 
-  private bool IsBallUnderPlayer() {
-    var player = Global.Instance().Player;
+  private bool IsBallUnderPlayer(Player player) {
     var pp = player.GlobalPosition;
     var s = player.GetCollisionShapeSize() * player.Scale;
     var hs = s * 0.5f;
@@ -227,8 +217,7 @@ public partial class BouncingBall : CharacterBody2D {
     return (pp.Y + hs.Y) < bp.Y && (bp.X > (pp.X - hs.X) && bp.X < (pp.X + hs.X));
   }
 
-  private bool IsBallOverThePlayer() {
-    var player = Global.Instance().Player;
+  private bool IsBallOverThePlayer(Player player) {
     var pp = player.GlobalPosition;
     var s = player.GetCollisionShapeSize() * player.Scale;
     var hs = s * 0.5f;
@@ -236,8 +225,7 @@ public partial class BouncingBall : CharacterBody2D {
     return (pp.Y - hs.Y) > bp.Y && (bp.X > (pp.X - hs.X) && bp.X < (pp.X + hs.X));
   }
 
-  private bool IsCollidingWithPlayer() {
-    var player = Global.Instance().Player;
+  private bool IsCollidingWithPlayer(Player player) {
     var playerSize = player.GetCollisionShapeSize() * player.Scale;
     bool isIdle = player.IsRotationIdle();
     if (_areaCollisionShape.Shape is CircleShape2D circleShape) {
@@ -261,8 +249,8 @@ public partial class BouncingBall : CharacterBody2D {
   }
 
   private static bool IsProbablyABrick(Area2D area, Godot.Collections.Array<StringName> groups) {
-    bool is_box_face = Global.Instance().Player.ContainsNode(area);
-    return !is_box_face && groups.Count > 0;
+    var isBoxFace = area is BaseFace; // can also be: area.GetParent<Player>() != null;
+    return !isBoxFace && groups.Count > 0;
   }
 
   private static float RndAngle(float value) {
@@ -302,16 +290,6 @@ public partial class BouncingBall : CharacterBody2D {
   private void _onArea2DBodyShapeEntered(Rid bodyRid, Node body, int bodyShapeIndex, int localShapeIndex) {
     if (body is Player player) {
       player.OnFastAreaCollidingWithPlayerShape((uint)bodyShapeIndex, _areaNode, EntityType.Ball);
-    }
-  }
-
-  // Add the missing methods here
-  private void SetPlayerLastDirection() {
-    if (Global.Instance().Player.Velocity.X > 0.0f) {
-      _playerLastDirection = 1;
-    }
-    else if (Global.Instance().Player.Velocity.X < 0.0f) {
-      _playerLastDirection = -1;
     }
   }
 }

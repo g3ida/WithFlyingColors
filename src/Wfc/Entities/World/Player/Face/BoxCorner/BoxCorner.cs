@@ -25,7 +25,12 @@ public partial class BoxCorner : BaseFace {
   }
 
   public void _onAreaEntered(Area2D area) {
-    if (Global.Instance().Player.IsDying()) {
+    var player = GetParent<Player>();
+    if (player == null) {
+      // Fixme: Log error here. this should not happen anyways.
+      return;
+    }
+    if (player.IsDying()) {
       return;
     }
     if (area.IsInGroup("fallzone")) {
@@ -40,7 +45,7 @@ public partial class BoxCorner : BaseFace {
     else if (area is Gem gem) {
       // do nothing
     }
-    else if (!Global.Instance().Player.IsStanding()) {
+    else if (!player.IsStanding()) {
       EventHandler.Instance.EmitPlayerLanded(area, GlobalPosition);
     }
   }
