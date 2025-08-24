@@ -7,16 +7,15 @@ using Wfc.State;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-public partial class PlayerExplosionState : PlayerBaseState {
+public partial class PlayerExplosionState : PlayerDyingBaseState {
   private int lightMask;
   public PlayerExplosionState(IPlayerStatesStore statesStore, IInputManager inputManager)
     : base(statesStore, inputManager) {
   }
 
   protected override void _Enter(Player player) {
+    base._Enter(player);
     lightMask = player.LightOccluder.LightMask;
-    player.HideColorAreas();
-    player.SetCollisionShapesDisabledFlagDeferred(true);
     // create the explosion
     CallDeferred(nameof(CreateExplosion), player);
     EventHandler.Instance.EmitPlayerExplode();
@@ -29,13 +28,12 @@ public partial class PlayerExplosionState : PlayerBaseState {
       AnimatedSprite2D.SignalName.AnimationFinished,
       new Callable(this, nameof(OnAnimationFinished))
     );
-    player.LightOccluder.LightMask = lightMask;
     EventHandler.Instance.EmitPlayerDied();
   }
 
   protected override void _Exit(Player player) {
-    player.ShowColorAreas();
-    player.SetCollisionShapesDisabledFlagDeferred(false);
+    base._Exit(player);
+    player.LightOccluder.LightMask = lightMask;
   }
 
   private void CreateExplosion(Player player) {

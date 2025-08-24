@@ -7,14 +7,13 @@ using Wfc.State;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-public partial class PlayerFallZoneDyingState : PlayerBaseState {
+public partial class PlayerFallZoneDyingState : PlayerDyingBaseState {
   public PlayerFallZoneDyingState(IPlayerStatesStore statesStore, IInputManager inputManager)
     : base(statesStore, inputManager) {
   }
 
   protected override void _Enter(Player player) {
-    player.HideColorAreas();
-    player.SetCollisionShapesDisabledFlagDeferred(true);
+    base._Enter(player);
     EventHandler.Instance.EmitPlayerFall();
     player.FallTimerNode.Start();
     player.FallTimerNode.Timeout += OnFallTimeout;
@@ -25,8 +24,7 @@ public partial class PlayerFallZoneDyingState : PlayerBaseState {
   }
 
   protected override void _Exit(Player player) {
+    base._Exit(player);
     player.FallTimerNode.Timeout -= OnFallTimeout;
-    player.ShowColorAreas();
-    player.SetCollisionShapesDisabledFlagDeferred(false);
   }
 }

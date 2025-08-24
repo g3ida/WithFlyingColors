@@ -27,7 +27,7 @@ public partial class SceneOrchester : Node2D {
   [Dependency]
   public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
 
-  IGameLevel? _currentLevel = null;
+  GameLevel? _currentLevel = null;
 
   public override void _EnterTree() {
     base._EnterTree();
