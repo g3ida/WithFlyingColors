@@ -2,7 +2,7 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://cktcbvgcaccu2"
+uid="uid://dvbkqcky3vspv"
 path="res://.godot/imported/HeavyEquipment.otf-fc565ec6587ca49b5f76879ed7fa9d90.fontdata"
 
 [deps]
@@ -22,7 +22,7 @@ msdf_size=48
 allow_system_fallback=true
 force_autohinter=false
 hinting=1
-subpixel_positioning=1
+subpixel_positioning=4
 keep_rounding_remainders=true
 oversampling=0.0
 Fallbacks=null
