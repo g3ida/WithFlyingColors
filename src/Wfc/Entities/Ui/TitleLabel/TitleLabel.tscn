@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://cxa4nf011mofs"]
 
-[ext_resource type="FontFile" path="res://Assets/Fonts/TitleFontt.tres" id="1"]
+[ext_resource type="FontFile" uid="uid://f5bvg4kq86ed" path="res://Assets/Fonts/TitleFontt.tres" id="1"]
 [ext_resource type="Script" uid="uid://gikckq6qfsng" path="res://src/Wfc/Entities/Ui/TitleLabel/TitleLabel.cs" id="2"]
 [ext_resource type="Texture2D" uid="uid://0m7r4fip6tsa" path="res://Assets/Sprites/MainMenu/underline.png" id="3"]
 

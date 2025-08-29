@@ -1,8 +1,21 @@
-[gd_resource type="FontFile" load_steps=2 format=2]
+[gd_resource type="FontFile" load_steps=2 format=3 uid="uid://f5bvg4kq86ed"]
 
-[ext_resource path="res://Assets/Fonts/HeavyEquipment.ttf" type="FontFile" id=1]
+[ext_resource type="FontFile" uid="uid://dvbkqcky3vspv" path="res://Assets/Fonts/HeavyEquipment.otf" id="1"]
 
 [resource]
-size = 200
-extra_spacing_space = -50
-font_data = ExtResource( 1 )
+fallbacks = Array[Font]([ExtResource("1")])
+cache/0/200/0/ascent = 0.0
+cache/0/200/0/descent = 0.0
+cache/0/200/0/underline_position = 0.0
+cache/0/200/0/underline_thickness = 0.0
+cache/0/200/0/scale = 1.0
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/50/0/ascent = 0.0
+cache/0/50/0/descent = 0.0
+cache/0/50/0/underline_position = 0.0
+cache/0/50/0/underline_thickness = 0.0
+cache/0/50/0/scale = 1.0
