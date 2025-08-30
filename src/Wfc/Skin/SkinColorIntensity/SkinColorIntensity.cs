@@ -6,5 +6,7 @@ public enum SkinColorIntensity {
   Light,
   Basic,
   Dark,
-  VeryDark
+  VeryDark,
+  SuperDark,
+  ExtremelyDark,
 }

@@ -1,37 +1,54 @@
 namespace Wfc.Entities.Ui.Menubox;
 
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Localization;
+using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
+[Meta(typeof(IAutoNode))]
 public partial class MenuBoxButton : Control {
-  private static readonly Color LABEL_COLOR = new Color("96464646");
-  private static readonly Color LABEL_COLOR_HOVER = new Color("dc464646");
-  private static readonly Color LABEL_COLOR_CLICK = new Color("f0464646");
-  private static readonly Color LABEL_COLOR_DISABLED = new Color("46464646");
 
+  #region Constants
+  private static readonly SkinColorIntensity LABEL_COLOR_INTENSITY = SkinColorIntensity.SuperDark;
+  private static readonly SkinColorIntensity LABEL_COLOR_HOVER_INTENSITY = SkinColorIntensity.ExtremelyDark;
+  private static readonly SkinColorIntensity LABEL_COLOR_CLICK_INTENSITY = SkinColorIntensity.Background;
+  private static readonly SkinColorIntensity LABEL_COLOR_DISABLED_INTENSITY = SkinColorIntensity.VeryDark;
+  #endregion Constants
+
+  #region Dependencies
+  public override void _Notification(int what) => this.Notify(what);
+
+  [Dependency]
+  public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
+  #endregion Dependencies
+
+  #region Signals
   [Signal] public delegate void pressedEventHandler();
-  private string _text = string.Empty;
-  [Export]
-  public string text {
-    get => _text;
-    set {
-      _text = value;
-      // FIXME: node was not yet ready ? C# migration
-      if (_labelNode != null) {
-        _labelNode.Text = value;
-        UpdateLabelColor();
-      }
-    }
-  }
+  #endregion Signals
 
+  #region Fields
+  private string _text = string.Empty;
+  private bool _hovering = false;
+  private GameSkin _skin = SkinManager.Instance.CurrentSkin;
   private bool _disabled;
+  #endregion Fields
+
+  #region Exports
+  [Export]
+  public SkinColor SkinColor { get; set; }
+  [Export]
+  public TranslationKey LocalizationTextKey { get; set; }
   [Export]
   public bool disabled {
     get => _disabled;
-    set => SetDisabled(value);
+    set => _setDisabled(value);
   }
+  #endregion Exports
 
   #region Nodes
   [NodePath("CenterTexture/TextureButton")]
@@ -42,53 +59,57 @@ public partial class MenuBoxButton : Control {
   private Timer _blinkTimer = default!;
   #endregion Nodes
 
-  private bool _hovering = false;
-
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
-    text = _text;
   }
 
-  private void _on_TextureButton_pressed() {
-    _labelNode.Modulate = LABEL_COLOR_CLICK;
+  public void OnResolved() {
+    _labelNode.Text = LocalizationService.GetLocalizedString(LocalizationTextKey);
+    _updateLabelColor();
+  }
+
+  private void _onTextureButtonPressed() {
+    _labelNode.Modulate = _skin.GetColor(SkinColor, LABEL_COLOR_CLICK_INTENSITY);
     _blinkTimer.Start();
     EmitSignal(nameof(pressed));
   }
 
-  private void _on_TextureButton_mouse_entered() {
+  private void _onTextureButtonMouseEntered() {
     _hovering = true;
     if (_disabled)
       return;
-    _labelNode.Modulate = LABEL_COLOR_HOVER;
+    _labelNode.Modulate = _skin.GetColor(SkinColor, LABEL_COLOR_HOVER_INTENSITY);
   }
 
-  private void _on_TextureButton_mouse_exited() {
+  private void _onTextureButtonMouseExited() {
     _hovering = false;
     if (_disabled)
       return;
-    _labelNode.Modulate = LABEL_COLOR;
+    _updateLabelColor();
   }
 
-  private void _on_BlinkTimer_timeout() {
-    _labelNode.Modulate = _hovering ? LABEL_COLOR_HOVER : LABEL_COLOR;
+  private void _onBlinkTimerTimeout() {
+    _labelNode.Modulate = _skin.GetColor(SkinColor, _hovering ? LABEL_COLOR_HOVER_INTENSITY : LABEL_COLOR_INTENSITY);
     if (_disabled)
-      _labelNode.Modulate = LABEL_COLOR_DISABLED;
+      _labelNode.Modulate = _skin.GetColor(SkinColor, LABEL_COLOR_DISABLED_INTENSITY);
   }
 
-  private void SetDisabled(bool value) {
+  private void _setDisabled(bool value) {
     _disabled = value;
     if (_disabled) {
       _textureButtonNode.Disabled = true;
-      _labelNode.Modulate = LABEL_COLOR_DISABLED;
+      _labelNode.Modulate = _skin.GetColor(SkinColor, LABEL_COLOR_DISABLED_INTENSITY);
     }
     else {
       _textureButtonNode.Disabled = false;
-      _labelNode.Modulate = _hovering ? LABEL_COLOR_HOVER : LABEL_COLOR;
+      _labelNode.Modulate = _skin.GetColor(SkinColor, _hovering ? LABEL_COLOR_HOVER_INTENSITY : LABEL_COLOR_INTENSITY);
+
     }
   }
 
-  private void UpdateLabelColor() {
-    _labelNode.Modulate = _disabled ? LABEL_COLOR_DISABLED : LABEL_COLOR;
+  private void _updateLabelColor() {
+    _labelNode.Modulate = _skin.GetColor(SkinColor, _disabled ? LABEL_COLOR_DISABLED_INTENSITY : LABEL_COLOR_INTENSITY);
+
   }
 }

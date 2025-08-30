@@ -23,10 +23,13 @@ public partial class MainMenu : GameMenu {
   [NodePath("ResetDialogContainer")]
   private DialogContainer _resetSlotDialogNode = null!;
 
+  public override void _EnterTree() {
+    base._EnterTree();
+    TranslationServer.SetLocale("fr"); // Fixme: remove this line
+  }
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
-    TranslationServer.SetLocale("fr");
     _currentSlotLabelNode.Text = $"{LocalizationService.GetLocalizedString(TranslationKey.menu_label_currentSlot)}: {SaveManager.GetSelectedSlotIndex()}";
   }
 
