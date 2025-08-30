@@ -20,7 +20,7 @@ internal static partial class PresetSkins {
       ["3597d9", "2e9148", "e3a52b", "c93c29"], // veryDark
       ["38a0e5", "319c4d", "f0ae2e", "d43f2b"], // dark
       ["3eb2ff", "37b057", "ffb831", "e2432e"], // basic
-      ["37efff", "49b566", "ffbf45", "e5513d"], // light
+      ["52baff", "49b566", "ffbf45", "e5513d"], // light
       ["61c0ff", "51bd6f", "ffc454", "eb5a47"], // veryLight
       ["8cd1ff", "6ec784", "ffd78c", "f29285"]  // background
   ]);
