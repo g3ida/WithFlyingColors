@@ -27,7 +27,7 @@ public partial class MainMenu : GameMenu {
     base._Ready();
     this.WireNodes();
     TranslationServer.SetLocale("fr");
-    _currentSlotLabelNode.Text = $"{LocalizationService.GetLocalizedString(TranslationKey.CurrentSlot)}: {SaveManager.GetSelectedSlotIndex()}";
+    _currentSlotLabelNode.Text = $"{LocalizationService.GetLocalizedString(TranslationKey.menu_label_currentSlot)}: {SaveManager.GetSelectedSlotIndex()}";
   }
 
   public void ShowResetDataDialog() => _resetSlotDialogNode.ShowDialog();

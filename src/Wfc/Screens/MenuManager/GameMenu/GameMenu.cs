@@ -1,5 +1,6 @@
 namespace Wfc.Screens;
 
+using System;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
@@ -15,7 +16,8 @@ using EventHandler = Core.Event.EventHandler;
 
 public partial class GameMenu : Control {
   // I faced resolution issues when deriving from dependency Injected classes
-  // So I used composition to get around it.
+  // children needs to have [Meta(typeof(IAutoNode))] but still failed to resolve
+  // dependencies in some cases So I used composition to get around it.
   [Meta(typeof(IAutoNode))]
   public partial class DependenciesWrapper : Node {
     public override void _Notification(int what) => this.Notify(what);
@@ -30,8 +32,10 @@ public partial class GameMenu : Control {
     public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
     [Dependency]
     public IInputManager InputManager => this.DependOn<IInputManager>();
-
-    public void OnResolved() { }
+    public void OnResolved() {
+      // This is called on resolving dependencies to make sure localized text is configured.
+      (Owner as GameMenu)?.ConfigureTransitionElements();
+    }
   }
 
   public enum MenuScreenState {
@@ -41,7 +45,7 @@ public partial class GameMenu : Control {
     Exited
   }
 
-  protected MenuScreenState _screenState;
+  protected MenuScreenState _screenState = MenuScreenState.Entering;
   private GameMenus _destinationScreen;
   private Node? _currentFocus;
   public bool HandleBackEvent = true;
@@ -55,12 +59,11 @@ public partial class GameMenu : Control {
   protected IEventHandler EventHandler => _dependenciesWrapper.EventHandler;
   protected ISaveManager SaveManager => _dependenciesWrapper.SaveManager;
   protected ILocalizationService LocalizationService => _dependenciesWrapper.LocalizationService;
+  protected IInputManager InputManager => _dependenciesWrapper.InputManager;
 
   public override void _EnterTree() {
     base._EnterTree();
     SetupDependencies();
-    _parseTransitionElements();
-    _screenState = _hasNoTransitionElements() ? MenuScreenState.Entered : MenuScreenState.Entering;
     OnEnter();
   }
 
@@ -78,9 +81,14 @@ public partial class GameMenu : Control {
 
   public override void _Ready() {
     base._Ready();
-    _enterTransitionElements();
     _connectSignals();
     OnReady();
+  }
+
+  public void ConfigureTransitionElements() {
+    _parseTransitionElements();
+    _screenState = _hasNoTransitionElements() ? MenuScreenState.Entered : MenuScreenState.Entering;
+    _enterTransitionElements();
   }
 
   public virtual void OnReady() {
@@ -108,8 +116,8 @@ public partial class GameMenu : Control {
     }
 
     if (HandleBackEvent &&
-        (_dependenciesWrapper.InputManager.IsJustPressed(IInputManager.Action.UICancel) ||
-         _dependenciesWrapper.InputManager.IsJustPressed(IInputManager.Action.UIHome))) {
+        (InputManager.IsJustPressed(IInputManager.Action.UICancel) ||
+         InputManager.IsJustPressed(IInputManager.Action.UIHome))) {
       EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
     }
   }
@@ -169,15 +177,26 @@ public partial class GameMenu : Control {
 
   private void _parseTransitionElements() {
     _transitionElements.Clear();
-    foreach (var ch in GetChildren()) {
-      foreach (var grandchild in ch.GetChildren()) {
-        if (grandchild is UITransition transition) {
-          _transitionElements.Add(transition);
-          transition.Connect(UITransition.SignalName.Entered, new Callable(this, nameof(_onTransitionElementEntered)));
-          transition.Connect(UITransition.SignalName.Exited, new Callable(this, nameof(_onTransitionElementExited)));
-          break;
-        }
-      }
+    foreach (var child in GetChildren()) {
+      // only look 3 levels deep for performance
+      _collectTransitionsRecursive(child, 3);
+    }
+  }
+
+  // Helper: recursively collects transitions from the entire subtree.
+  private void _collectTransitionsRecursive(Node node, int remainingDepth) {
+    if (remainingDepth == 0) {
+      return;
+    }
+    if (node is UITransition transition) {
+      _transitionElements.Add(transition);
+      transition.Connect(UITransition.SignalName.Entered, new Callable(this, nameof(_onTransitionElementEntered)));
+      transition.Connect(UITransition.SignalName.Exited, new Callable(this, nameof(_onTransitionElementExited)));
+      // No need to descend further; transitions shouldn't have child transitions, but remove this return if that's possible.
+      return;
+    }
+    foreach (var child in node.GetChildren()) {
+      _collectTransitionsRecursive(child, remainingDepth - 1);
     }
   }
 

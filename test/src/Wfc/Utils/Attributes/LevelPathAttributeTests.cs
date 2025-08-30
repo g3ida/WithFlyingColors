@@ -16,7 +16,6 @@ public class LevelPathAttributeTests(Node testScene) : TestClass(testScene) {
 
   private Fixture _fixture = default!;
 
-
   [SetupAll]
   public void Setup() {
     _fixture = new Fixture(TestScene.GetTree());

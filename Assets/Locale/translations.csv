@@ -1,35 +1,38 @@
 keys,en,fr,de,es,it,pt,nl
-PLAY,Play,Jouer,Spielen,Jugar,Gioca,Jogar,Spelen
-CONTINUE, Continue,Continuer,Fortsetzen,Continuar,Continua,Continuar,Doorgaan
-NEW_GAME,New Game,Nouvelle partie,Neues Spiel,Nuevo juego,Nuova partita,Novo Jogo,Nieuw Spel
-QUIT,Quit,Quitter,Beenden,Salir,Esci,Sair,Afsluiten
-SELECTED_SLOT,Selected Slot,Emplacement sélectionné,Ausgewählter Slot,Ranura seleccionada,Slot selezionato,Slot Selecionado,Geselecteerd Slot
-SETTINGS,Settings,Paramètres,Einstellungen,Ajustes,Impostazioni,Configurações,Instellingen
-GAME_SETTINGS,Game Settings,Paramètres du jeu,Spieleinstellungen,Ajustes del juego,Impostazioni di gioco,Configurações do Jogo,Spelinstellingen
-STATS,Stats,Statistiques,Statistiken,Estadísticas,Statistiche,Estatísticas,Statistieken
-GAME_STATS,Game Stats,Statistiques du jeu,Spielstatistiken,Estadísticas del juego,Statistiche di gioco,Estatísticas do Jogo,Spelstatistieken
-OPTIONS,Options,Options,Optionen,Opciones,Opzioni,Opções,Opties
-SELECT_SLOT,Select Slot,Sélectionner un emplacement,Slot auswählen,Seleccionar ranura,Seleziona slot,Selecionar Slot,Slot Selecteren
-SAVE_SLOT,Save Slot,Sauvegarder l'emplacement,Slot speichern,Guardar ranura,Salva slot,Salvar Slot,Slot Opslaan
-DELETE_SLOT,Delete Slot,Supprimer l'emplacement,Slot löschen,Eliminar ranura,Elimina slot,Excluir Slot,Slot Verwijderen
-REMOVE_SLOT,Remove Slot,Retirer l'emplacement,Slot entfernen,Quitar ranura,Rimuovi slot,Remover Slot,Slot Verwijderen
-RESUME_GAME,Resume Game,Reprendre la partie,Spiel fortsetzen,Reanudar juego,Riprendi partita,Retomar Jogo,Spel Hervatten
-DISPLAY,Display,Affichage,Anzeige,Pantalla,Display,Exibição,Weergave
-SCREEN_RESOLUTION,Screen Resolution,Résolution d'écran,Bildschirmauflösung,Resolución de pantalla,Risoluzione schermo,Resolução de Tela,Schermresolutie
-FULLSCREEN,Fullscreen,Plein écran,Vollbild,Pantalla completa,Schermo intero,Tela Cheia,Volledig Scherm
-CONTROLLER,Controller,Manette,Controller,Mando,Controller,Controle,Controller
-CONTROLLER_TYPE,Controller Type,Type de manette,Controller-Typ,Tipo de mando,Tipo di controller,Tipo de Controle,Controller Type
-KEYBOARD,Keyboard,Clavier,Tastatur,Teclado,Tastiera,Teclado,Toetsenbord
-JOYSTICK,Joystick,Joystick,Joystick,Joystick,Joystick,Joystick,Joystick
-JUMP,Jump,Sauter,Springen,Saltar,Salta,Pular,Springen
-MOVE_LEFT,Move Left,Déplacer à gauche,Nach links bewegen,Mover a la izquierda,Muovi a sinistra,Mover para Esquerda,Naar Links Bewegen
-MOVE_RIGHT,Move Right,Déplacer à droite,Nach rechts bewegen,Mover a la derecha,Muovi a destra,Mover para Direita,Naar Rechts Bewegen
-ROTATE_LEFT,Rotate Left,Tourner à gauche,Nach links drehen,Girar a la izquierda,Ruota a sinistra,Girar para Esquerda,Naar Links Draaien
-ROTATE_RIGHT,Rotate Right,Tourner à droite,Nach rechts drehen,Girar a la derecha,Ruota a destra,Girar para Direita,Naar Rechts Draaien
-DASH,Dash,Dash,Dash,Dash,Scatto,Dash,Dash
-DOWN,Down,Bas,Nach unten,Abajo,Giù,Baixo,Omlaag
-PAUSE,Pause,Pause,Pause,Pausa,Pausa,Pausar,Pauze
-AUDIO,Audio,Audio,Audio,Audio,Audio,Áudio,Audio
-SFX_VOLUME,SFX Volume,Volume des effets sonores,Soundeffekt-Lautstärke,Volumen de efectos de sonido,Volume effetti sonori,Volume de Efeitos Sonoros,Geluidseffecten Volume
-MUSIC_VOLUME,Music Volume,Volume de la musique,Musik-Lautstärke,Volumen de música,Volume musica,Volume da Música,Muziek Volume
-CURRENT_SLOT,Current slot, Emplacement de sauvegarde actuel, Aktueller Speicherplatz, Ranura de guardado actual, Slot di salvataggio attuale, Slot di salvataggio attuale, Huidige opslagslot
+menu.button.play,Play,Jouer,Spielen,Jugar,Gioca,Jogar,Spelen
+menu.button.continue, Continue,Continuer,Fortsetzen,Continuar,Continua,Continuar,Doorgaan
+menu.button.new_game,New Game,Nouvelle partie,Neues Spiel,Nuevo juego,Nuova partita,Novo Jogo,Nieuw Spel
+menu.button.quit,Quit,Quitter,Beenden,Salir,Esci,Sair,Afsluiten
+menu.button.selected_slot,Selected Slot,Emplacement sélectionné,Ausgewählter Slot,Ranura seleccionada,Slot selezionato,Slot Selecionado,Geselecteerd Slot
+menu.button.settings,Settings,Paramètres,Einstellungen,Ajustes,Impostazioni,Configurações,Instellingen
+menu.header.game_settings,Game Settings,Paramètres du jeu,Spieleinstellungen,Ajustes del juego,Impostazioni di gioco,Configurações do Jogo,Spelinstellingen
+menu.button.stats,Stats,Statistiques,Statistiken,Estadísticas,Statistiche,Estatísticas,Statistieken
+menu.header.game_stats,Game Stats,Statistiques du jeu,Spielstatistiken,Estadísticas del juego,Statistiche di gioco,Estatísticas do Jogo,Spelstatistieken
+menu.button.options,Options,Options,Optionen,Opciones,Opzioni,Opções,Opties
+menu.button.select_slot,Select Slot,Sélectionner un emplacement,Slot auswählen,Seleccionar ranura,Seleziona slot,Selecionar Slot,Slot Selecteren
+menu.button.save_slot,Save Slot,Sauvegarder l'emplacement,Slot speichern,Guardar ranura,Salva slot,Salvar Slot,Slot Opslaan
+menu.button.delete_slot,Delete Slot,Supprimer l'emplacement,Slot löschen,Eliminar ranura,Elimina slot,Excluir Slot,Slot Verwijderen
+menu.button.remove_slot,Remove Slot,Retirer l'emplacement,Slot entfernen,Quitar ranura,Rimuovi slot,Remover Slot,Slot Verwijderen
+menu.button.resume_game,Resume Game,Reprendre la partie,Spiel fortsetzen,Reanudar juego,Riprendi partita,Retomar Jogo,Spel Hervatten
+game.settings.category.display,Display,Affichage,Anzeige,Pantalla,Display,Exibição,Weergave
+game.settings.screen_resolution,Screen Resolution,Résolution d'écran,Bildschirmauflösung,Resolución de pantalla,Risoluzione schermo,Resolução de Tela,Schermresolutie
+game.settings.fullscreen,Fullscreen,Plein écran,Vollbild,Pantalla completa,Schermo intero,Tela Cheia,Volledig Scherm
+game.settings.category.controller,Controller,Manette,Controller,Mando,Controller,Controle,Controller
+game.settings.controller_type,Controller Type,Type de manette,Controller-Typ,Tipo de mando,Tipo di controller,Tipo de Controle,Controller Type
+game.settings.keyboard,Keyboard,Clavier,Tastatur,Teclado,Tastiera,Teclado,Toetsenbord
+game.settings.joystick,Joystick,Joystick,Joystick,Joystick,Joystick,Joystick,Joystick
+game.command.jump,Jump,Sauter,Springen,Saltar,Salta,Pular,Springen
+game.command.move_left,Move Left,Déplacer à gauche,Nach links bewegen,Mover a la izquierda,Muovi a sinistra,Mover para Esquerda,Naar Links Bewegen
+game.command.move_right,Move Right,Déplacer à droite,Nach rechts bewegen,Mover a la derecha,Muovi a destra,Mover para Direita,Naar Rechts Bewegen
+game.command.rotate_left,Rotate Left,Tourner à gauche,Nach links drehen,Girar a la izquierda,Ruota a sinistra,Girar para Esquerda,Naar Links Draaien
+game.command.rotate_right,Rotate Right,Tourner à droite,Nach rechts drehen,Girar a la derecha,Ruota a destra,Girar para Direita,Naar Rechts Draaien
+game.command.dash,Dash,Dash,Dash,Dash,Scatto,Dash,Dash
+game.command.down,Down,Bas,Nach unten,Abajo,Giù,Baixo,Omlaag
+game.command.pause,Pause,Pause,Pause,Pausa,Pausa,Pausar,Pauze
+game.settings.category.audio,Audio,Audio,Audio,Audio,Audio,Áudio,Audio
+game.settings.audio.sfx_volume,SFX Volume,Volume des effets sonores,Soundeffekt-Lautstärke,Volumen de efectos de sonido,Volume effetti sonori,Volume de Efeitos Sonoros,Geluidseffecten Volume
+game.settings.audio.music_volume,Music Volume,Volume de la musique,Musik-Lautstärke,Volumen de música,Volume musica,Volume da Música,Muziek Volume
+menu.label.current_slot,Current slot, Emplacement de sauvegarde actuel, Aktueller Speicherplatz, Ranura de guardado actual, Slot di salvataggio attuale, Slot di salvataggio attuale, Huidige opslagslot
+game.level.title.tutorial,Tutorial,Intro,Einführung,Guía,Guida,Início,Intro
+game.level.title.dark_games,Dark Games,Jeux de Ténèbres,Spiele der Schatten,Tenebrosos,Tenebrosi,Jogos das Trevas,Spelen der Schaduwen
+menu.header.main_menu,With Flying Colors,With Flying Colors,With Flying Colors,With Flying Colors,With Flying Colors,With Flying Colors,With Flying Colors

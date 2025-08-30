@@ -12,7 +12,6 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [ScenePath]
-[Meta(typeof(IAutoNode))]
 public partial class SettingsMenu : GameMenu {
 
   #region Nodes
@@ -22,12 +21,7 @@ public partial class SettingsMenu : GameMenu {
   private DialogContainer _dialogContainerNode = default!;
   #endregion Nodes
 
-  [Dependency]
-  public IInputManager InputManager => this.DependOn<IInputManager>();
   private int tabsCount;
-  public override void _Notification(int what) => this.Notify(what);
-
-  public void OnResolved() { }
 
   public override void _Ready() {
     base._Ready();

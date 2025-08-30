@@ -69,8 +69,6 @@ layout_mode = 0
 offset_right = 431.0
 text = "SLOT"
 content = "SLOT"
-underline_color = Color(0.0627451, 0.92549, 1, 1)
-underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
 
 [node name="UITransition" parent="SELECT" instance=ExtResource("11")]
 anchors_preset = 0
@@ -83,8 +81,6 @@ offset_right = 985.0
 offset_bottom = 450.0
 text = "SELECT"
 content = "SELECT"
-underline_color = Color(0.843137, 1, 0.219608, 1)
-underline_shadow_color = Color(0.717647, 0.898039, 0, 1)
 
 [node name="UITransition" parent="SLOT" instance=ExtResource("11")]
 anchors_preset = 0

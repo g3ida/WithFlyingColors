@@ -38,8 +38,6 @@ HiddenRelativePosition = Vector2(2000, 0)
 layout_mode = 0
 text = "LEVEL"
 content = "LEVEL"
-underline_color = Color(0.0627451, 0.92549, 1, 1)
-underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
 
 [node name="UITransition" parent="WITH" instance=ExtResource("4")]
 anchors_preset = 0
@@ -52,8 +50,6 @@ offset_right = 935.0
 offset_bottom = 274.0
 text = "SELECT"
 content = "SELECT"
-underline_color = Color(0.843137, 1, 0.219608, 1)
-underline_shadow_color = Color(0.717647, 0.898039, 0, 1)
 
 [node name="UITransition" parent="FLYING" instance=ExtResource("4")]
 anchors_preset = 0
