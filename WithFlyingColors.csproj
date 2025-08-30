@@ -33,7 +33,7 @@
     <!-- Test dependencies go here! -->
     <!-- Dependencies added here will not be included in release builds. -->
     <PackageReference Include="Chickensoft.GoDotTest" Version="2.0.2" />
-    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit" Version="4.4.0" />
     <!-- Used to drive test scenes when testing visual code -->
     <PackageReference Include="GodotTestDriver" Version="2.1.0" />
     <!-- Bring your own assertion library for tests! -->
