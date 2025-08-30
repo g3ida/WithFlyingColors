@@ -1,13 +1,26 @@
 namespace Wfc.Entities.Ui;
 
 using Godot;
+using Wfc.Utils.Attributes;
 
+[ScenePath]
 public partial class UITransition : Control {
+  #region Signals
   [Signal]
   public delegate void EnteredEventHandler();
 
   [Signal]
   public delegate void ExitedEventHandler();
+  #endregion Signals
+
+  #region Exports
+  [Export]
+  public float Duration = 0.3f;
+  [Export]
+  public float Delay = 0.25f;
+  [Export]
+  public Vector2 HiddenRelativePosition = Vector2.Zero;
+  #endregion Exports
 
   public enum TransitionStates {
     ENTER_DELAY,
@@ -23,15 +36,6 @@ public partial class UITransition : Control {
   private Vector2 _hiddenPosition;
   private TransitionStates _currentState = TransitionStates.ENTER_DELAY;
   private Tween? _tweener;
-
-  [Export]
-  public float Duration = 0.3f;
-
-  [Export]
-  public float Delay = 0.25f;
-
-  [Export]
-  public Vector2 HiddenRelativePosition = Vector2.Zero;
 
   public override void _Ready() {
     _parent = GetParent<Control>();

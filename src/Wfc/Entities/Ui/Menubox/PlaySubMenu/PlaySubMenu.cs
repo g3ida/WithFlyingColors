@@ -23,19 +23,19 @@ public partial class PlaySubMenu : Control {
   public void OnResolved() {
     List<ButtonDef> subMenuButtonsDef = [
             new() {
-            Text = LocalizationService.GetLocalizedString(TranslationKey.Continue),
+            Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_continue),
             MenuAction = MenuAction.ContinueGame,
             DisplayCondition = ButtonDef.ButtonCondition.IsDirtySlot
         },
         new()
         {
-            Text = LocalizationService.GetLocalizedString(TranslationKey.NewGame),
+            Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_newGame),
             MenuAction = MenuAction.NewGame,
             DisplayCondition = ButtonDef.ButtonCondition.IsVirginSlot
         },
         new()
         {
-            Text = LocalizationService.GetLocalizedString(TranslationKey.SelectedSlot) + $": {SaveManager.GetSelectedSlotIndex() + 1}",
+            Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_selectedSlot) + $": {SaveManager.GetSelectedSlotIndex() + 1}",
             MenuAction = MenuAction.GoToSlotSelect,
             DisplayCondition = ButtonDef.ButtonCondition.None
         },

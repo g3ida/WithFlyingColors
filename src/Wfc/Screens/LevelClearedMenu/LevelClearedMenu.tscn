@@ -27,8 +27,6 @@ offset_right = 1605.0
 offset_bottom = 239.0
 text = "Level Cleared!"
 content = "Level Cleared!"
-underline_color = Color(0.0627451, 0.92549, 1, 1)
-underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
 
 [node name="UITransition" parent="LevelClearedLabel" instance=ExtResource("4")]
 anchors_preset = 0

@@ -25,7 +25,7 @@ theme_override_fonts/font = ExtResource("1")
 theme_override_font_sizes/font_size = 200
 
 [node name="UnderlineShadow" type="TextureRect" parent="."]
-modulate = Color(0, 0, 0, 0)
+modulate = Color(0.898039, 0, 0.470588, 1)
 layout_mode = 0
 offset_left = 6.0
 offset_top = 157.0
@@ -36,7 +36,7 @@ texture = ExtResource("3")
 expand_mode = 1
 
 [node name="Underline" type="TextureRect" parent="."]
-modulate = Color(0, 0, 0, 0)
+modulate = Color(1, 0.145098, 0.592157, 1)
 layout_mode = 0
 offset_left = 6.0
 offset_top = 154.0

@@ -15,9 +15,9 @@ public static class LevelDispatcher {
 
 
   public static readonly List<LevelInfo> LEVELS = [
-          new() { Id = LevelId.Level1, TranslationKey = TranslationKey.LevelDarkGames },
-          new() { Id = LevelId.Tutorial, TranslationKey = TranslationKey.LevelTutorial },
-          new() { Id = LevelId.oneMoreLevel, TranslationKey = TranslationKey.LevelDarkGames }
+          new() { Id = LevelId.Level1, TranslationKey = TranslationKey.game_level_title_darkGames },
+          new() { Id = LevelId.Tutorial, TranslationKey = TranslationKey.game_level_title_tutorial },
+          new() { Id = LevelId.oneMoreLevel, TranslationKey = TranslationKey.game_level_title_darkGames }
   ];
 
   public partial struct LevelInfo {

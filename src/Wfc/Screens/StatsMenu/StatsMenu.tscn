@@ -1,55 +1,39 @@
 [gd_scene load_steps=9 format=3 uid="uid://hx7ougks02cn"]
 
-[ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://src/Wfc/Entities/Ui/TitleLabel/TitleLabel.tscn" id="1"]
 [ext_resource type="Script" uid="uid://dijpyfod56sum" path="res://src/Wfc/Screens/StatsMenu/StatsMenu.cs" id="2"]
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="3"]
 [ext_resource type="Script" uid="uid://bs3qantpxmo15" path="res://src/Wfc/Entities/Ui/BackButton/BackButton.cs" id="4"]
 [ext_resource type="StyleBox" path="res://Assets/Styles/MenuButtonPressedStyle.tres" id="5"]
 [ext_resource type="Texture2D" uid="uid://ccjrqyrj01x5f" path="res://Assets/Sprites/MainMenu/ArrowBack.png" id="6"]
 [ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://src/Wfc/Entities/Ui/UITransition/UITransition.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://wj8mouy5wyl2" path="res://src/Wfc/Entities/Ui/MenuTitle/MenuTitle.tscn" id="8_7njqa"]
 
 [sub_resource type="StyleBoxEmpty" id="1"]
 
 [node name="StatsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("2")
 
 [node name="Background" type="TextureRect" parent="."]
+layout_mode = 0
 offset_left = -270.0
 offset_right = 2370.0
 offset_bottom = 1080.0
 texture = ExtResource("3")
 
-[node name="GAME" parent="." instance=ExtResource("1")]
-text = "GAME"
-content = "GAME"
-underline_color = Color(0.0627451, 0.92549, 1, 1)
-underline_shadow_color = Color(0, 0.776471, 0.843137, 1)
-
-[node name="UITransition" parent="GAME" instance=ExtResource("7")]
-HiddenRelativePosition = Vector2(-900, 0)
-
-[node name="STATS" parent="." instance=ExtResource("1")]
-offset_top = 250.0
-offset_right = 935.0
-offset_bottom = 274.0
-text = "STATS"
-content = "STATS"
-underline_color = Color(0.843137, 1, 0.219608, 1)
-underline_shadow_color = Color(0.717647, 0.898039, 0, 1)
-
-[node name="UITransition" parent="STATS" instance=ExtResource("7")]
-Delay = 0.5
-HiddenRelativePosition = Vector2(-900, 0)
-
 [node name="BackButton" type="Button" parent="."]
+layout_mode = 0
 offset_left = 50.0
 offset_top = 900.0
 offset_right = 180.0
 offset_bottom = 997.0
-theme_override_styles/pressed = ExtResource("5")
 theme_override_styles/focus = SubResource("1")
+theme_override_styles/pressed = ExtResource("5")
 icon = ExtResource("6")
 flat = true
 script = ExtResource("4")
@@ -57,5 +41,9 @@ script = ExtResource("4")
 [node name="UITransition" parent="BackButton" instance=ExtResource("7")]
 Delay = 0.6
 HiddenRelativePosition = Vector2(-900, 0)
+
+[node name="MenuTitle" parent="." instance=ExtResource("8_7njqa")]
+DummyContent = "GAME STATS"
+Content = 9
 
 [connection signal="pressed" from="BackButton" to="." method="OnBackButtonPressed"]

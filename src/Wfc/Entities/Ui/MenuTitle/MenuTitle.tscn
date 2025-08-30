@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://wj8mouy5wyl2"]
+
+[ext_resource type="Script" uid="uid://bicw4rqk46ocb" path="res://src/Wfc/Entities/Ui/MenuTitle/MenuTitle.cs" id="1_y5v08"]
+[ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://src/Wfc/Entities/Ui/TitleLabel/TitleLabel.tscn" id="2_2hyi0"]
+[ext_resource type="FontFile" uid="uid://f5bvg4kq86ed" path="res://Assets/Fonts/TitleFontt.tres" id="3_p15o0"]
+[ext_resource type="Script" uid="uid://gikckq6qfsng" path="res://src/Wfc/Entities/Ui/TitleLabel/TitleLabel.cs" id="4_v6rgm"]
+
+[node name="MenuTitle" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_y5v08")
+
+[node name=" #0" parent="." instance=ExtResource("2_2hyi0")]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 50.0
+offset_right = 388.0
+offset_bottom = 250.0
+UnderlineSkinColor = 0
+
+[node name="@Label@22082" type="Label" parent="." instance=ExtResource("2_2hyi0")]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 50.0
+offset_right = 388.0
+offset_bottom = 250.0
+theme_override_colors/font_color = Color(0.176471, 0.176471, 0.176471, 1)
+theme_override_fonts/font = ExtResource("3_p15o0")
+theme_override_font_sizes/font_size = 200
+script = ExtResource("4_v6rgm")
+UnderlineSkinColor = 0
