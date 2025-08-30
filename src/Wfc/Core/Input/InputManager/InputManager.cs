@@ -15,8 +15,8 @@ public class InputManager : IInputManager {
     { IInputManager.Action.Down, "down" },
     { IInputManager.Action.UILeft, "ui_left" },
     { IInputManager.Action.UIRight, "ui_right" },
-    { IInputManager.Action.UICancel, "ui_accept" },
-    { IInputManager.Action.UIConfirm, "ui_cancel" },
+    { IInputManager.Action.UICancel, "ui_cancel" },
+    { IInputManager.Action.UIConfirm, "ui_accept" },
     { IInputManager.Action.UIHome, "ui_home" },
   };
   public bool IsJustPressed(IInputManager.Action action) => Godot.Input.IsActionJustPressed(Actions[action]);

@@ -50,6 +50,7 @@ public partial class MenuTitle : Control {
   #endregion Constants
 
   public override void _EnterTree() {
+    base._EnterTree();
     this.WireNodes();
   }
 

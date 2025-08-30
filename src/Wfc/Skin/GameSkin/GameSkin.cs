@@ -13,10 +13,12 @@ public partial record GameSkin {
   public GameSkin(string name, string[][] colors) {
     Name = name;
     Debug.Assert(colors != null, "Colors should not be null");
-    Debug.Assert(colors.Length == 6, "Colors should have 6 intensities");
+    Debug.Assert(colors.Length == 8, "Colors should have 8 intensities");
     Debug.Assert(colors.All(x => x.Length == 4), "Each intensity should have exactly 4 colors");
 
     var skinColorIntensities = new SkinColorIntensity[] {
+          SkinColorIntensity.ExtremelyDark,
+          SkinColorIntensity.SuperDark,
           SkinColorIntensity.VeryDark,
           SkinColorIntensity.Dark,
           SkinColorIntensity.Basic,

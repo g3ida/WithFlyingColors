@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cg6b6t5i0bpj3"]
 
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="1"]
-[ext_resource type="Script" uid="uid://b4ayb4vux11yl" path="res://src/Scripts/Menus/LevelClearedMenu/LevelClearedMenu.cs" id="2"]
+[ext_resource type="Script" uid="uid://b4ayb4vux11yl" path="res://src/Wfc/Screens/LevelClearedMenu/LevelClearedMenu.cs" id="2"]
 [ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://src/Wfc/Entities/Ui/UITransition/UITransition.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://src/Wfc/Entities/Ui/TitleLabel/TitleLabel.tscn" id="5"]
 
@@ -10,6 +10,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("2")
 
 [node name="Background" type="TextureRect" parent="."]
@@ -29,5 +31,8 @@ text = "Level Cleared!"
 content = "Level Cleared!"
 
 [node name="UITransition" parent="LevelClearedLabel" instance=ExtResource("4")]
-anchors_preset = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 40.0
+offset_bottom = 40.0
 HiddenRelativePosition = Vector2(0, -500)
