@@ -1,13 +1,13 @@
-namespace Wfc.Entities.Ui.UISelect;
+namespace Wfc.Entities.Ui.SettingsUI.UISelect;
 
 using System.Collections.Generic;
 using Godot;
 
 public partial class UISelectDriver : Node {
   public List<string> Items = new List<string>();
-  public List<object> ItemValues = new List<object>();
+  public List<Variant> ItemValues = new List<Variant>();
 
-  public virtual void onItemSelected(string item) {
+  public virtual void onItemSelected(Variant? item) {
     // Logic for handling item selection goes here.
   }
 

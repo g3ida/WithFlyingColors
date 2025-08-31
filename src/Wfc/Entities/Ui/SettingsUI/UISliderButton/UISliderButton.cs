@@ -1,4 +1,4 @@
-namespace Wfc.Entities.Ui;
+namespace Wfc.Entities.Ui.SettingsUI;
 
 using System;
 using Chickensoft.AutoInject;
@@ -57,11 +57,11 @@ public partial class UISliderButton : Button {
       }
       else if (_isEditing) {
         if (InputManager.IsJustPressed(IInputManager.Action.UILeft)) {
-          _on_left_pressed();
+          _onLeftPressed();
           GetViewport().SetInputAsHandled();
         }
         else if (InputManager.IsJustPressed(IInputManager.Action.UIRight)) {
-          _on_right_pressed();
+          _onRightPressed();
           GetViewport().SetInputAsHandled();
         }
       }
@@ -82,11 +82,11 @@ public partial class UISliderButton : Button {
     _isEditing = value;
   }
 
-  private void _on_left_pressed() {
+  private void _onLeftPressed() {
     AddValueToSlider(-(float)_sliderNode.Step);
   }
 
-  private void _on_right_pressed() {
+  private void _onRightPressed() {
     AddValueToSlider((float)_sliderNode.Step);
   }
 

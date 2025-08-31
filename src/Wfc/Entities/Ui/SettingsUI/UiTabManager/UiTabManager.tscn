@@ -1,0 +1,225 @@
+[gd_scene load_steps=13 format=3 uid="uid://bo2x0ri6jenb3"]
+
+[ext_resource type="Theme" uid="uid://duyihjolb12bh" path="res://src/Wfc/Entities/Ui/SettingsUI/UiTabManager/SettingsTabsTheme.tres" id="1_6eew3"]
+[ext_resource type="Script" uid="uid://dv44qgy4plsou" path="res://src/Wfc/Entities/Ui/SettingsUI/UiTabManager/UiTabManager.cs" id="2_4e54m"]
+[ext_resource type="ButtonGroup" uid="uid://dqiq3r6imuqff" path="res://src/Wfc/Entities/Ui/SettingsUI/UiTabManager/SettingsButtonGroup.tres" id="2_kglrd"]
+[ext_resource type="Script" uid="uid://cvvkqqndmn8or" path="res://src/Wfc/Entities/Ui/SettingsUI/Grid/UIGridContainer/UIGridContainer.cs" id="3_q2836"]
+[ext_resource type="PackedScene" uid="uid://4qeclalmi0s7" path="res://src/Wfc/Entities/Ui/SettingsUI/Grid/UIGridRow/UIGridRow.tscn" id="4_pni3s"]
+[ext_resource type="PackedScene" uid="uid://clj5gw6ykw55o" path="res://src/Wfc/Entities/Ui/Checkbox/Checkbox.tscn" id="5_0l3vq"]
+[ext_resource type="PackedScene" uid="uid://dxigkx14q5mf" path="res://src/Wfc/Entities/Ui/SettingsUI/Grid/UIGridTitleRow/UIGridTitleRow.tscn" id="6_pupl0"]
+[ext_resource type="PackedScene" uid="uid://hsu5s7km4rsn" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/UISelect/UISelectButton.tscn" id="7_4gkar"]
+[ext_resource type="PackedScene" uid="uid://tx6n18iputhf" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/LanguageSelectDriver/LanguageSelectDriver.tscn" id="8_2vkcc"]
+[ext_resource type="PackedScene" uid="uid://bjcxvhuuecsgw" path="res://src/Wfc/Entities/Ui/SettingsUI/Grid/UIGridContainer/UIGridContainer.tscn" id="10_1dfed"]
+[ext_resource type="Script" uid="uid://llo6p8fbjy6n" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/ResolutionSelectDriver/ResolutionSelectDriver.cs" id="11_hajtt"]
+[ext_resource type="PackedScene" uid="uid://by4f0vq3n2g3b" path="res://src/Wfc/Entities/Ui/SettingsUI/UISliderButton/UISliderButton.tscn" id="12_e8kpa"]
+
+[node name="UiTabManager" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_6eew3")
+script = ExtResource("2_4e54m")
+
+[node name="PanelManager" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelManager"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelManager/VBoxContainer"]
+layout_mode = 2
+
+[node name="GeneralSettingsButton" type="Button" parent="PanelManager/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = ExtResource("2_kglrd")
+text = "General"
+
+[node name="Space" type="PanelContainer" parent="PanelManager/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="VideoSettingsButton" type="Button" parent="PanelManager/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = ExtResource("2_kglrd")
+text = "Video"
+
+[node name="Space2" type="PanelContainer" parent="PanelManager/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="ControllerSettingsButton" type="Button" parent="PanelManager/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = ExtResource("2_kglrd")
+text = "Controller"
+
+[node name="Space3" type="PanelContainer" parent="PanelManager/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="AudioSettingsButton" type="Button" parent="PanelManager/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = ExtResource("2_kglrd")
+text = "Audio"
+
+[node name="GeneralSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/GeneralSettingsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 20
+
+[node name="GridContainer" type="GridContainer" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer"]
+layout_mode = 2
+script = ExtResource("3_q2836")
+
+[node name="UIGridRow" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+IsDark = true
+
+[node name="Checkbox" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/UIGridRow" instance=ExtResource("5_0l3vq")]
+layout_mode = 2
+
+[node name="UIGridRow2" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+theme = null
+TranslationKey = 38
+
+[node name="UISelectButton" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/UIGridRow2" instance=ExtResource("7_4gkar")]
+layout_mode = 2
+
+[node name="LanguageSelectDriver" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/UIGridRow2/UISelectButton" instance=ExtResource("8_2vkcc")]
+
+[node name="UIGridRow3" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+IsDark = true
+
+[node name="Label" type="Label" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/UIGridRow3"]
+layout_mode = 2
+text = "Hello"
+
+[node name="UIGridTitleRow" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("6_pupl0")]
+layout_mode = 2
+Title = "SOME LOVELY TITLE"
+
+[node name="UIGridRow4" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+IsDark = true
+
+[node name="Button" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/UIGridRow4" instance=ExtResource("7_4gkar")]
+layout_mode = 2
+
+[node name="UIGridRow5" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/UIGridRow5"]
+layout_mode = 2
+text = "Hello"
+
+[node name="VideoSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/VideoSettingsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 20
+
+[node name="UiGridContainer" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer" instance=ExtResource("10_1dfed")]
+layout_mode = 2
+
+[node name="Resolution" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+TranslationKey = 39
+
+[node name="ResolutionSelectButton" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resolution" instance=ExtResource("7_4gkar")]
+layout_mode = 2
+
+[node name="Node2D" type="Node2D" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resolution/ResolutionSelectButton"]
+script = ExtResource("11_hajtt")
+
+[node name="Fullscreen" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+TranslationKey = 40
+
+[node name="FullscreenCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Fullscreen" instance=ExtResource("5_0l3vq")]
+layout_mode = 2
+
+[node name="VSync" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+TranslationKey = 41
+
+[node name="VSyncCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/VSync" instance=ExtResource("5_0l3vq")]
+layout_mode = 2
+
+[node name="ControllerSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/ControllerSettingsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 20
+
+[node name="AudioSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/AudioSettingsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 20
+
+[node name="UiGridContainer" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer" instance=ExtResource("10_1dfed")]
+layout_mode = 2
+
+[node name="SfxVolume" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+TranslationKey = 33
+
+[node name="SfxSlider" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer/SfxVolume" instance=ExtResource("12_e8kpa")]
+layout_mode = 2
+
+[node name="MusicVolume" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+TranslationKey = 34
+
+[node name="MusicSlider" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer/MusicVolume" instance=ExtResource("12_e8kpa")]
+layout_mode = 2

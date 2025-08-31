@@ -4,8 +4,8 @@ menu.button.continue,Continue,Continuer,Fortsetzen,Continuar,Continua,Continuar,
 menu.button.new_game,New Game,Nouvelle partie,Neues Spiel,Nuevo juego,Nuova partita,Novo Jogo,Nieuw Spel
 menu.button.quit,Quit,Quitter,Beenden,Salir,Esci,Sair,Afsluiten
 menu.button.selected_slot,Selected Slot,Emplacement sélectionné,Ausgewählter Slot,Ranura seleccionada,Slot selezionato,Slot Selecionado,Geselecteerd Slot
-menu.button.settings,Settings,Paramètres,Einstellungen,Ajustes,Impostazioni,Configurações,Instellingen
-menu.header.game_settings,Game Settings,Paramètres du jeu,Spieleinstellungen,Ajustes del juego,Impostazioni di gioco,Configurações do Jogo,Spelinstellingen
+menu.button.settings,Settings,Options,Optionen,Ajustes,Opzioni,Opções,Opties
+menu.header.game_settings,Game Settings,Options du jeu,Spiel Optionen,Ajustes del juego,Opzioni di gioco,Opções do Jogo,Spel Opties
 menu.button.stats,Stats,Statistiques,Statistiken,Estadísticas,Statistiche,Estatísticas,Statistieken
 menu.header.game_stats,Game Stats,Statistiques du jeu,Spielstatistiken,Estadísticas del juego,Statistiche di gioco,Estatísticas do Jogo,Spelstatistieken
 menu.button.options,Options,Options,Optionen,Opciones,Opzioni,Opções,Opties
@@ -30,9 +30,14 @@ game.command.dash,Dash,Dash,Dash,Dash,Scatto,Dash,Dash
 game.command.down,Down,Bas,Nach unten,Abajo,Giù,Baixo,Omlaag
 game.command.pause,Pause,Pause,Pause,Pausa,Pausa,Pausar,Pauze
 game.settings.category.audio,Audio,Audio,Audio,Audio,Audio,Áudio,Audio
-game.settings.audio.sfx_volume,SFX Volume,Volume des effets sonores,Soundeffekt-Lautstärke,Volumen de efectos de sonido,Volume effetti sonori,Volume de Efeitos Sonoros,Geluidseffecten Volume
-game.settings.audio.music_volume,Music Volume,Volume de la musique,Musik-Lautstärke,Volumen de música,Volume musica,Volume da Música,Muziek Volume
+game.settings.audio.sfx_volume,SFX Volume,Volume SFX,SFX-Lautstärke,Volumen SFX,Volume effetti sonori,Volume SFX,SFX Volume
+game.settings.audio.music_volume,Music Volume,Volume musique,Musik-Lautstärke,Volumen música,Volume musica,Volume Música,Muziek Volume
 menu.label.current_slot,Current slot, Emplacement de sauvegarde actuel, Aktueller Speicherplatz, Ranura de guardado actual, Slot di salvataggio attuale, Slot di salvataggio attuale, Huidige opslagslot
 game.level.title.tutorial,Tutorial,Intro,Einführung,Guía,Guida,Início,Intro
 game.level.title.dark_games,Dark Games,Jeux de Ténèbres,Spiele der Schatten,Tenebrosos,Tenebrosi,Jogos das Trevas,Spelen der Schaduwen
 menu.header.main_menu,With Flying Colors,With Flying Colors,With Flying Colors,With Flying Colors,With Flying Colors,With Flying Colors,With Flying Colors
+game.settings.category.general,General,Général,Allgemein,General,Generali,Geral,Algemeen
+game.settings.general.language,Language,Langue,Sprache,Idioma,Idioma,Idioma,Taal
+game.settings.display.resolution,Resolution,Résolution,Auflösung,Resolución,Risoluzione,Resolução,Resolutie
+game.settings.display.fullscreen,Fullscreen,Plein écran,Vollbild,Pantalla completa,Schermo intero,Ecrã inteiro,Volledig scherm
+game.settings.display.vsync,VSync,VSync,VSync,VSync,VSync,VSync,VSync

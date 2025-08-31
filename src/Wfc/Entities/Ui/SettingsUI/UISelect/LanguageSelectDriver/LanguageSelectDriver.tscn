@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://tx6n18iputhf"]
+
+[ext_resource type="Script" uid="uid://djuwmogd8nqle" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/LanguageSelectDriver/LanguageSelectDriver.cs" id="1_1v4ix"]
+
+[node name="LanguageSelectDriver" type="Node2D"]
+script = ExtResource("1_1v4ix")

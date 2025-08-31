@@ -1,0 +1,6 @@
+[gd_resource type="Theme" format=3 uid="uid://b21a8glbd3bel"]
+
+[resource]
+Button/colors/font_outline_color = Color(0.18, 0.18, 0.18, 1)
+Button/colors/icon_normal_color = Color(0.18, 0.18, 0.18, 1)
+Button/colors/icon_pressed_color = Color(1, 1, 1, 1)

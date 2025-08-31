@@ -1,4 +1,4 @@
-namespace Wfc.Entities.Ui.UISelect;
+namespace Wfc.Entities.Ui.SettingsUI.UISelect;
 
 using System.Collections.Generic;
 using Godot;
@@ -6,35 +6,37 @@ using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
 
 public partial class ResolutionSelectDriver : UISelectDriver {
-  private List<Vector2I> resolutions = new List<Vector2I>();
+  private List<Vector2I> _resolutions = new List<Vector2I>();
 
   public ResolutionSelectDriver() {
     var values = new List<Vector2I>
     {
-            new Vector2I(1920, 1080),
-            new Vector2I(1280, 720),
-            new Vector2I(1024, 576),
-            new Vector2I(800, 450)
-        };
+      new Vector2I(3840, 2160),
+      new Vector2I(2560, 1440),
+      new Vector2I(1920, 1080),
+      new Vector2I(1280, 720),
+      new Vector2I(1024, 576),
+      new Vector2I(800, 450)
+    };
 
     var screen_size = DisplayServer.ScreenGetSize();
     foreach (var el in values) {
       if (el.X <= screen_size.X && el.Y <= screen_size.Y) {
         Items.Add($"{el.X}x{el.Y}");
         ItemValues.Add(el);
-        resolutions.Add(el);
+        _resolutions.Add(el);
       }
     }
   }
 
-  public override void onItemSelected(string item) {
+  public override void onItemSelected(Variant? item) {
     // Logic for handling item selection goes here.
   }
 
   public override int GetDefaultSelectedIndex() {
     var w_size = GameSettings.WindowSize;
-    for (int i = 0; i < resolutions.Count; i++) {
-      if (resolutions[i] == w_size) {
+    for (int i = 0; i < _resolutions.Count; i++) {
+      if (_resolutions[i] == w_size) {
         return i;
       }
     }

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bptfom5y0pb5l"]
 
-[ext_resource type="PackedScene" uid="uid://hsu5s7km4rsn" path="res://src/Wfc/Entities/Ui/UISelect/UISelect/UISelectButton.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://hsu5s7km4rsn" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/UISelect/UISelectButton.tscn" id="1"]
 [ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="3"]
 [ext_resource type="Script" uid="uid://cv7308w3b0xaq" path="res://src/Wfc/Screens/SettingsMenu/GameSettingsUI/GameSettingsUI.cs" id="4"]
 [ext_resource type="PackedScene" uid="uid://clj5gw6ykw55o" path="res://src/Wfc/Entities/Ui/Checkbox/Checkbox.tscn" id="5"]
@@ -27,6 +27,7 @@ columns = 2
 layout_mode = 2
 size_flags_horizontal = 3
 text = "SCREEN Resolution"
+horizontal_alignment = 2
 
 [node name="AutoResolutionLabel" type="Label" parent="GridContainer"]
 visible = false
@@ -40,6 +41,7 @@ layout_mode = 2
 [node name="FullscreenLabel" type="Label" parent="GridContainer"]
 layout_mode = 2
 text = "Fullscreen"
+horizontal_alignment = 2
 
 [node name="FullscreenCheckbox" parent="GridContainer" instance=ExtResource("5")]
 layout_mode = 2
@@ -47,6 +49,7 @@ layout_mode = 2
 [node name="VsyncLabel" type="Label" parent="GridContainer"]
 layout_mode = 2
 text = "VSYNC"
+horizontal_alignment = 2
 
 [node name="VsyncCheckbox" parent="GridContainer" instance=ExtResource("5")]
 layout_mode = 2

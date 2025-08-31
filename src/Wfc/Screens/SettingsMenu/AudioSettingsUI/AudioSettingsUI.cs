@@ -5,6 +5,7 @@ using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
+using Wfc.Entities.Ui.SettingsUI;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;

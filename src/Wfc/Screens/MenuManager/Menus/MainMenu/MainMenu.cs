@@ -25,7 +25,6 @@ public partial class MainMenu : GameMenu {
 
   public override void _EnterTree() {
     base._EnterTree();
-    TranslationServer.SetLocale("fr"); // Fixme: remove this line
   }
   public override void _Ready() {
     base._Ready();

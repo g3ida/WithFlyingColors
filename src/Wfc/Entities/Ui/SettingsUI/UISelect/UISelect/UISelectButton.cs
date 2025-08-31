@@ -1,4 +1,4 @@
-namespace Wfc.Entities.Ui.UISelect;
+namespace Wfc.Entities.Ui.SettingsUI.UISelect;
 
 using System;
 using Godot;
@@ -14,24 +14,37 @@ public partial class UISelectButton : Button {
   private HBoxContainer ChildContainerNode = default!;
   [NodePath("HBoxContainer/Left")]
   private Button LeftArrowNode = default!;
+  [NodePath("HBoxContainer/Left/AnimationPlayer")]
+  private AnimationPlayer LeftArrowAnimationNode = default!;
   [NodePath("HBoxContainer/Right")]
   private Button RightArrowNode = default!;
+  [NodePath("HBoxContainer/Right/AnimationPlayer")]
+  private AnimationPlayer RightArrowAnimationNode = default!;
   [NodePath("HBoxContainer/Label")]
   private Label LabelNode = default!;
-  [NodePath("AnimationPlayer")]
+  [NodePath("HBoxContainer/Label/AnimationPlayer")]
   private AnimationPlayer AnimationPlayerNode = default!;
   #endregion Nodes
 
   private int _index;
-  public object? SelectedValue;
+  public Variant? SelectedValue = null;
   private bool _isReady = false;
   private bool _isInEditMode = false;
 
   [Signal]
-  public delegate void ValueChangedEventHandler(Vector2I value); //FIXME: must work with any type. c# migration.
-
+  public delegate void ValueChangedEventHandler(Variant value);
   [Signal]
   public delegate void SelectionChangedEventHandler(bool is_edit);
+
+  public override void _EnterTree() {
+    base._EnterTree();
+    this.ChildEnteredTree += _trySetSelectDriver;
+  }
+
+  public override void _ExitTree() {
+    base._ExitTree();
+    this.ChildEnteredTree -= _trySetSelectDriver;
+  }
 
   public override void _Ready() {
     base._Ready();
@@ -44,15 +57,23 @@ public partial class UISelectButton : Button {
     _isReady = true;
   }
 
+  private void _trySetSelectDriver(Node child) {
+    if (child is UISelectDriver driver) {
+      SelectDriver = driver;
+    }
+  }
+
   public override void _Input(InputEvent @event) {
     if (HasFocus()) {
       if (_isInEditMode) {
         if (Input.IsActionJustPressed("ui_left")) {
-          _on_Left_pressed();
+          _onLeftPressed();
+          LeftArrowAnimationNode.Play("triggered");
           GetViewport().SetInputAsHandled();
         }
         else if (Input.IsActionJustPressed("ui_right")) {
-          _on_Right_pressed();
+          _onRightPressed();
+          RightArrowAnimationNode.Play("triggered");
           GetViewport().SetInputAsHandled();
         }
       }
@@ -82,24 +103,24 @@ public partial class UISelectButton : Button {
     _isInEditMode = value;
   }
 
-  private void _on_Left_pressed() {
+  private void _onLeftPressed() {
     GrabFocus();
-    _index = (_index + 1) % (int)SelectDriver.Items.Count;
+    _index = (_index + 1) % SelectDriver.Items.Count;
     UpdateSelectedItem();
-    EmitSignal(nameof(ValueChanged), (Vector2I)SelectDriver.ItemValues[_index]);
+    EmitSignal(nameof(ValueChanged), SelectDriver.ItemValues[_index]);
   }
 
-  private void _on_Right_pressed() {
+  private void _onRightPressed() {
     GrabFocus();
     _index = (_index - 1 + SelectDriver.Items.Count) % SelectDriver.Items.Count;
     UpdateSelectedItem();
-    EmitSignal(nameof(ValueChanged), (Vector2I)SelectDriver.ItemValues[_index]);
+    EmitSignal(nameof(ValueChanged), SelectDriver.ItemValues[_index]);
   }
 
   private void UpdateSelectedItem() {
     LabelNode.Text = SelectDriver.Items[_index];
-    SelectDriver.onItemSelected(LabelNode.Text);
     SelectedValue = SelectDriver.ItemValues[_index];
+    SelectDriver.onItemSelected(SelectedValue);
     UpdateRectSize();
   }
 
@@ -116,7 +137,7 @@ public partial class UISelectButton : Button {
     GrabFocus();
   }
 
-  private void _on_Label_resized() {
+  private void _onLabelResized() {
     if (_isReady) {
       UpdateRectSize();
     }

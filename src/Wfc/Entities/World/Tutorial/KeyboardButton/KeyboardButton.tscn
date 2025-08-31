@@ -45,4 +45,4 @@ visible = false
 position = Vector2(54, 51)
 texture = ExtResource("4")
 
-[connection signal="resized" from="Label" to="." method="_on_Label_resized"]
+[connection signal="resized" from="Label" to="." method="_onLabelResized"]

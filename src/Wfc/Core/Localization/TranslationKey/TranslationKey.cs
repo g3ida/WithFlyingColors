@@ -24,6 +24,7 @@ public enum TranslationKey {
   menu_button_deleteSlot,
   menu_button_removeSlot,
   menu_button_resumeGame,
+  game_settings_category_general,
   game_settings_category_display,
   game_settings_screenResolution,
   game_settings_fullscreen,
@@ -45,6 +46,10 @@ public enum TranslationKey {
   menu_label_currentSlot,
   game_level_title_tutorial,
   game_level_title_darkGames,
+  game_settings_general_language,
+  game_settings_display_resolution,
+  game_settings_display_fullscreen,
+  game_settings_display_vsync
 }
 
 public static partial class TranslationKeyExtensions {

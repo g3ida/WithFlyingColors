@@ -5,7 +5,7 @@ using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
-using Wfc.Entities.Ui.UISelect;
+using Wfc.Entities.Ui.SettingsUI.UISelect;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -68,9 +68,8 @@ public partial class GameSettingsUI : Control, IUITab {
     }
   }
 
-  private void _onUISelectValueChanged(Vector2I value) {
-    //var resolution = (Vector2)GD.Convert(value, Variant.Type.Vector2);
-    var resolution = value;
+  private void _onUISelectValueChanged(Variant value) {
+    var resolution = value.As<Vector2I>();
     GameSettings.WindowSize = resolution;
     if (_isReady) {
       EventHandler.Instance.EmitScreenSizeChanged(resolution);

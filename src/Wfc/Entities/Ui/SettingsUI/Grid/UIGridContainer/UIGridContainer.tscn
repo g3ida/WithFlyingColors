@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bjcxvhuuecsgw"]
+
+[ext_resource type="Script" uid="uid://cvvkqqndmn8or" path="res://src/Wfc/Entities/Ui/SettingsUI/Grid/UIGridContainer/UIGridContainer.cs" id="1_3sr2a"]
+
+[node name="UiGridContainer" type="GridContainer"]
+script = ExtResource("1_3sr2a")
