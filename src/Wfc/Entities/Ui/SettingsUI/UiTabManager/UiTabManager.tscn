@@ -129,6 +129,7 @@ Title = "SOME LOVELY TITLE"
 
 [node name="UIGridRow4" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
 layout_mode = 2
+TranslationKey = 18
 IsDark = true
 
 [node name="Button" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/UIGridRow4" instance=ExtResource("7_4gkar")]
@@ -158,8 +159,10 @@ theme_override_constants/margin_bottom = 20
 layout_mode = 2
 
 [node name="Resolution" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+clip_contents = true
 layout_mode = 2
 TranslationKey = 39
+IsDark = true
 
 [node name="ResolutionSelectButton" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resolution" instance=ExtResource("7_4gkar")]
 layout_mode = 2
@@ -177,6 +180,7 @@ layout_mode = 2
 [node name="VSync" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 41
+IsDark = true
 
 [node name="VSyncCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/VSync" instance=ExtResource("5_0l3vq")]
 layout_mode = 2

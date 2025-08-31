@@ -25,7 +25,7 @@ public partial class UISliderButton : Button {
   #region  Nodes
   [NodePath("HSlider")]
   private HSlider _sliderNode = default!;
-  [NodePath("AnimationPlayer")]
+  [NodePath("HSlider/AnimationPlayer")]
   private AnimationPlayer _animationPlayerNode = default!;
   #endregion Nodes
   private bool _isEditing = false;

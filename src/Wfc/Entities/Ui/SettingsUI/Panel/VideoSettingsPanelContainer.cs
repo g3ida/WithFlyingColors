@@ -40,7 +40,7 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
     else {
       _autoResolution.Visible = false;
       _resolutionSelect.Visible = true;
-      // LaunchScheduledRescale(); is this necessary ???
+      // fixme: LaunchScheduledRescale(); is this necessary ???
     }
   }
 

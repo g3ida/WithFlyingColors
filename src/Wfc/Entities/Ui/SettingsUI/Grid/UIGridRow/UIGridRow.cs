@@ -28,9 +28,6 @@ public partial class UIGridRow : PanelContainer {
   [Export]
   public TranslationKey TranslationKey { get; set; }
 
-  // [Export]
-  // public string Value { get; set; } = "";
-
   [Export]
   public bool IsDark { get; set; }// alternate background
 
@@ -82,6 +79,14 @@ public partial class UIGridRow : PanelContainer {
     _setStyle(hasFocus: false);
   }
 
+  private void _onMouseEntered() {
+    _setStyle(hasFocus: true);
+  }
+
+  private void _onMouseExited() {
+    _setStyle(hasFocus: false);
+  }
+
   private void _addContentSpacer() {
     // Spacer between label and value
     var spacer = new Control {
@@ -106,6 +111,9 @@ public partial class UIGridRow : PanelContainer {
 
   public void OnResolved() {
     SizeFlagsHorizontal = SizeFlags.ExpandFill;
+    SizeFlagsVertical = SizeFlags.Fill;
+    // Set minimum height to ensure all rows have consistent size
+    CustomMinimumSize = new Vector2(0, 70);
     _setStyle(hasFocus: false);
     // Make this row stretch across the parent
     _contentNode.SizeFlagsHorizontal = SizeFlags.ExpandFill;

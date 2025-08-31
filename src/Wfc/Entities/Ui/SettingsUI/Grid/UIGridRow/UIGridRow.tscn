@@ -12,3 +12,6 @@ script = ExtResource("1_hs46g")
 
 [node name="Content" type="HBoxContainer" parent="."]
 layout_mode = 2
+
+[connection signal="mouse_entered" from="." to="." method="_onMouseEntered"]
+[connection signal="mouse_exited" from="." to="." method="_onMouseExited"]
