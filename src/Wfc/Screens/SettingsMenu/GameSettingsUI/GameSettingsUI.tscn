@@ -27,6 +27,7 @@ columns = 2
 layout_mode = 2
 size_flags_horizontal = 3
 text = "SCREEN Resolution"
+horizontal_alignment = 2
 
 [node name="AutoResolutionLabel" type="Label" parent="GridContainer"]
 visible = false
@@ -40,6 +41,7 @@ layout_mode = 2
 [node name="FullscreenLabel" type="Label" parent="GridContainer"]
 layout_mode = 2
 text = "Fullscreen"
+horizontal_alignment = 2
 
 [node name="FullscreenCheckbox" parent="GridContainer" instance=ExtResource("5")]
 layout_mode = 2
@@ -47,6 +49,7 @@ layout_mode = 2
 [node name="VsyncLabel" type="Label" parent="GridContainer"]
 layout_mode = 2
 text = "VSYNC"
+horizontal_alignment = 2
 
 [node name="VsyncCheckbox" parent="GridContainer" instance=ExtResource("5")]
 layout_mode = 2

@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://4qeclalmi0s7"]
+
+[ext_resource type="Script" uid="uid://bkcuivwxa1jpv" path="res://src/Wfc/Entities/Ui/Grid/UIGridRow/UIGridRow.cs" id="1_hs46g"]
+[ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="1_t4x5o"]
+
+[node name="UIGridRow" type="PanelContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+theme = ExtResource("1_t4x5o")
+script = ExtResource("1_hs46g")
+
+[node name="Content" type="HBoxContainer" parent="."]
+layout_mode = 2
