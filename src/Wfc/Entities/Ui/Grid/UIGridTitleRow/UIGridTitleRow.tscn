@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://dxigkx14q5mf"]
+
+[ext_resource type="Script" uid="uid://g68hbyu8se5" path="res://src/Wfc/Entities/Ui/Grid/UIGridTitleRow/UIGridTitleRow.cs" id="1_34x3l"]
+
+[node name="UIGridTitleRow" type="MarginContainer"]
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_bottom = 5
+script = ExtResource("1_34x3l")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="Content" type="CenterContainer" parent="PanelContainer"]
+layout_mode = 2
