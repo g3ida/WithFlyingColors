@@ -1,12 +1,16 @@
-[gd_scene load_steps=7 format=3 uid="uid://6aenyg5mnntr"]
+[gd_scene load_steps=10 format=3 uid="uid://6aenyg5mnntr"]
 
-[ext_resource type="Script" uid="uid://b84i603u2gm6" path="res://src/Wfc/Entities/Ui/KeyBindingButton/KeyBindingButton.cs" id="1"]
+[ext_resource type="Script" uid="uid://b84i603u2gm6" path="res://src/Wfc/Entities/Ui/SettingsUI/UIkeyBinding/KeyBindingButton/KeyBindingButton.cs" id="1"]
 
-[sub_resource type="StyleBoxFlat" id="10"]
-bg_color = Color(1, 1, 1, 0)
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ojrue"]
 
-[sub_resource type="StyleBoxFlat" id="9"]
-bg_color = Color(0, 0, 0, 0.176471)
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mqp31"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_18yde"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0y0qa"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gf1rf"]
 
 [sub_resource type="Animation" id="11"]
 resource_name = "Blink"
@@ -50,8 +54,11 @@ process_mode = 3
 offset_top = 204.0
 offset_right = 117.0
 offset_bottom = 224.0
-theme_override_styles/pressed = SubResource("10")
-theme_override_styles/focus = SubResource("9")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_ojrue")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_mqp31")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_18yde")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_0y0qa")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gf1rf")
 toggle_mode = true
 text = "(EMPTY)"
 script = ExtResource("1")
@@ -59,8 +66,8 @@ key = "rotate_right"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_k0smu")
+&"": SubResource("AnimationLibrary_k0smu")
 }
 
-[connection signal="mouse_entered" from="." to="." method="_on_KeyBindingButton_mouse_entered"]
-[connection signal="pressed" from="." to="." method="_on_KeyBindingButton_pressed"]
+[connection signal="mouse_entered" from="." to="." method="_onKeyBindingButtonMmouseEentered"]
+[connection signal="pressed" from="." to="." method="_onKeyBindingButtonPressed"]

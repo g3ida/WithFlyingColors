@@ -2,20 +2,38 @@ namespace Wfc.Entities.Ui;
 
 using System;
 using System.Linq;
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Localization;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
+[ScenePath]
+[Meta(typeof(IAutoNode))]
 public partial class KeyBindingButton : Button {
-  private const string DefaultText = "(EMPTY)";
-  [Export] public string key { get; set; } = String.Empty;
+
+  #region Dependencies
+  public override void _Notification(int what) => this.Notify(what);
+
+  [Dependency]
+  public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
+  #endregion Dependencies
+
+  #region Exports
+  [Export]
+  public string key { get; set; } = String.Empty;
+  #endregion Exports
+
+  private string _defaultText = "(EMPTY)";
+
   private Key? _value = null;
 
   private bool _isListening = false;
 
   [Signal]
-  public delegate void keyboard_action_boundEventHandler(string action, long key);
+  public delegate void onkeyboardActionBoundEventHandler(string action, long key);
 
   [NodePath("AnimationPlayer")]
   private AnimationPlayer _animationPlayer = default!;
@@ -39,7 +57,7 @@ public partial class KeyBindingButton : Button {
       Text = OS.GetKeycodeString(_value.Value);
     }
     else {
-      Text = DefaultText;
+      Text = _defaultText;
     }
   }
 
@@ -51,7 +69,7 @@ public partial class KeyBindingButton : Button {
     if (@event is InputEventKey eventKey) {
       _value = eventKey.Keycode;
       Text = OS.GetKeycodeString(_value.Value);
-      EmitSignal(nameof(keyboard_action_bound), key, (long)_value);
+      EmitSignal(nameof(onkeyboardActionBound), key, (long)_value);
       handled = true;
     }
     else if (@event is InputEventMouse eventMouse) {
@@ -70,20 +88,20 @@ public partial class KeyBindingButton : Button {
   }
 
   public bool IsValid() {
-    return Text == DefaultText;
+    return Text == _defaultText;
   }
 
-  private void _on_Control_on_action_bound_signal(string action, long key) {
+  private void _onActionBoundSignal(string action, long key) {
     long val = this._value != null ? (long)this._value : -1L;
     if (action == this.key || key != (long)val) {
       return;
     }
     _value = null;
-    Text = DefaultText;
-    EmitSignal(nameof(keyboard_action_bound), action, -1);
+    Text = _defaultText;
+    EmitSignal(nameof(onkeyboardActionBound), action, -1);
   }
 
-  private void _on_KeyBindingButton_pressed() {
+  private void _onKeyBindingButtonPressed() {
     if (ButtonPressed) {
       ButtonPressed = true;
       _isListening = true;
@@ -93,9 +111,13 @@ public partial class KeyBindingButton : Button {
     }
   }
 
-  private void _on_KeyBindingButton_mouse_entered() {
+  private void _onKeyBindingButtonMmouseEentered() {
     if (!GetTree().Paused) {
       GrabFocus();
     }
+  }
+
+  public void OnResolved() {
+    _defaultText = LocalizationService.GetLocalizedString(TranslationKey.game_command_empty);
   }
 }

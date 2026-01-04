@@ -37,6 +37,7 @@ public enum TranslationKey {
   game_command_moveRight,
   game_command_rotateLeft,
   game_command_rotateRight,
+  game_command_empty,
   game_command_dash,
   game_command_down,
   game_command_pause,
@@ -49,7 +50,10 @@ public enum TranslationKey {
   game_settings_general_language,
   game_settings_display_resolution,
   game_settings_display_fullscreen,
-  game_settings_display_vsync
+  game_settings_display_vsync,
+  controller_type_keyboard,
+  controller_type_gamepad,
+  controller_label_controls,
 }
 
 public static partial class TranslationKeyExtensions {

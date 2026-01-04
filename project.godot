@@ -100,7 +100,7 @@ pointing/emulate_touch_from_mouse=true
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://Assets/Locale/translations.de.translation", "res://Assets/Locale/translations.en.translation", "res://Assets/Locale/translations.fr.translation", "res://Assets/Locale/translations.es.translation", "res://Assets/Locale/translations.it.translation", "res://Assets/Locale/translations.nl.translation", "res://Assets/Locale/translations.pt.translation")
+locale/translations=PackedStringArray("res://Assets/Locale/translations.de.translation", "res://Assets/Locale/translations.en.translation", "res://Assets/Locale/translations.es.translation", "res://Assets/Locale/translations.fr.translation", "res://Assets/Locale/translations.it.translation", "res://Assets/Locale/translations.nl.translation", "res://Assets/Locale/translations.pt.translation")
 
 [layer_names]
 

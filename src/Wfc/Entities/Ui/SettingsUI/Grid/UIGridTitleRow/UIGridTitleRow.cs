@@ -1,6 +1,8 @@
 namespace Wfc.Entities.Ui.SettingsUI.Grid;
 
 using System.Collections.Generic;
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Localization;
 using Wfc.Core.Settings;
@@ -9,9 +11,15 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [ScenePath]
+[Meta(typeof(IAutoNode))]
 public partial class UIGridTitleRow : MarginContainer {
+  public override void _Notification(int what) => this.Notify(what);
+
+  [Dependency]
+  public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
+
   [Export]
-  public string Title { get; set; } = "";
+  public TranslationKey TranslationKey { get; set; } = TranslationKey.menu_header_mainMenu;
 
   [NodePath("PanelContainer")]
   public PanelContainer _panelContainerNode = default!;
@@ -39,7 +47,7 @@ public partial class UIGridTitleRow : MarginContainer {
 
     // Create label
     var _label = new Label {
-      Text = Title,
+      Text = LocalizationService.GetLocalizedString(TranslationKey),
       HorizontalAlignment = HorizontalAlignment.Right,
       SizeFlagsHorizontal = SizeFlags.ExpandFill,
       SizeFlagsVertical = SizeFlags.ShrinkCenter
@@ -51,6 +59,9 @@ public partial class UIGridTitleRow : MarginContainer {
     base._Ready();
     this.WireNodes();
     _setPanelStyle();
+  }
+
+  public void OnResolved() {
     _addContent();
   }
 }
