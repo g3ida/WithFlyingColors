@@ -35,6 +35,7 @@ public partial class UIGridRow : PanelContainer {
   public HBoxContainer _contentNode = default!;
 
   private Control? _attachedNode = null;
+  private int _focusState = 0;
   private void _setStyle(bool hasFocus) {
     var style = new StyleBoxFlat();
     style.BgColor = hasFocus ? new Color(0f, 0f, 0f, 0.2f) : IsDark ? new Color(0f, 0f, 0f, 0.05f) : Colors.Transparent;
@@ -72,19 +73,28 @@ public partial class UIGridRow : PanelContainer {
   }
 
   private void _onAttachedNodeFocusEntered() {
+    _focusState++;
     _setStyle(hasFocus: true);
   }
 
   private void _onAttachedNodeFocusExited() {
-    _setStyle(hasFocus: false);
+    _focusState = Mathf.Max(0, _focusState - 1);
+    if (_focusState == 0) {
+      _setStyle(hasFocus: false);
+    }
   }
 
   private void _onMouseEntered() {
+    _focusState++;
     _setStyle(hasFocus: true);
+    _attachedNode?.GrabFocus();
   }
 
   private void _onMouseExited() {
-    _setStyle(hasFocus: false);
+    _focusState = Mathf.Max(0, _focusState - 1);
+    if (_focusState == 0) {
+      _setStyle(hasFocus: false);
+    }
   }
 
   private void _addContentSpacer() {
@@ -102,6 +112,12 @@ public partial class UIGridRow : PanelContainer {
     var vaueNode = children[0] == _contentNode ? children[1] : children[0];
     Debug.Assert(vaueNode is Control, "UIGridRow should have 1 attached children");
     return (vaueNode as Control)!;
+  }
+
+  // Gets the focusable control within this row.
+  /// This is the control that should receive focus when navigating to this row.
+  public Control? GetFocusableControl() {
+    return _attachedNode;
   }
 
   public override void _Ready() {

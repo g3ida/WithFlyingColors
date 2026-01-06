@@ -1,5 +1,6 @@
 namespace Wfc.Screens.SettingsMenu;
 
+using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
@@ -7,6 +8,8 @@ using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
+using Wfc.Entities.Ui.SettingsUI;
+using Wfc.Entities.Ui.SettingsUI.Grid;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -15,28 +18,62 @@ using Wfc.Utils.Attributes;
 public partial class SettingsMenu : GameMenu {
 
   #region Nodes
-  [NodePath("TabContainer")]
-  private TabContainer _tabContainer = default!;
   [NodePath("DialogContainer")]
   private DialogContainer _dialogContainerNode = default!;
+  [NodePath("UiTabContainer")]
+  private SettingsTabManager _settingsTabManager = default!;
   #endregion Nodes
 
-  private int tabsCount;
+  private SettingsFocusManager _focusManager = default!;
 
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
-    tabsCount = _tabContainer.GetChildCount();
+
+    // Create and add focus manager
+    _focusManager = new SettingsFocusManager();
+    AddChild(_focusManager);
+
+    // Connect focus manager signals
+    _focusManager.TabNavigationRequested += OnTabNavigationRequested;
+
+    // Connect tab manager signals
+    _settingsTabManager.PanelChanged += OnPanelChanged;
+
+    // Initialize focus after a frame to ensure all nodes are ready
+    CallDeferred(nameof(InitializeFocus));
+  }
+
+  private void InitializeFocus() {
+    // Trigger initial panel change to set up focus
+    _settingsTabManager.SwitchToPanel(0);
+  }
+
+  public override void _ExitTree() {
+    base._ExitTree();
+    _focusManager.TabNavigationRequested -= OnTabNavigationRequested;
+    _settingsTabManager.PanelChanged -= OnPanelChanged;
+    _focusManager.ClearFocus();
   }
 
   public override void _Input(InputEvent @event) {
     base._Input(@event);
-    if (InputManager.IsJustPressed(IInputManager.Action.UILeft)) {
-      _tabContainer.CurrentTab = Mathf.Clamp(_tabContainer.CurrentTab - 1, 0, tabsCount - 1);
+    // Note: Up/Down/Left/Right navigation is now handled by SettingsFocusManager
+    // We no longer need to handle left/right here for tab switching
+  }
+
+  private void OnTabNavigationRequested(int direction) {
+    GD.Print($"[SettingsMenu] Tab navigation requested: {direction}");
+    _settingsTabManager.NavigateTab(direction);
+  }
+
+  private void OnPanelChanged(Button currentPanelButton, Godot.Collections.Array<UIGridRow> rows) {
+    // Convert Godot array to C# list for the focus manager
+    var rowList = new List<UIGridRow>();
+    foreach (var row in rows) {
+      rowList.Add(row);
     }
-    else if (InputManager.IsJustPressed(IInputManager.Action.UIRight)) {
-      _tabContainer.CurrentTab = Mathf.Clamp(_tabContainer.CurrentTab + 1, 0, tabsCount - 1);
-    }
+    _focusManager.SetFocusableRows(currentPanelButton, rowList);
   }
 
   public override bool OnMenuButtonPressed(MenuAction menuAction) {

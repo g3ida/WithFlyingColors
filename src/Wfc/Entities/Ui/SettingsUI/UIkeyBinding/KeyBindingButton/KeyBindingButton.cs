@@ -6,13 +6,14 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Localization;
+using Wfc.Entities.Ui.SettingsUI;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
-public partial class KeyBindingButton : Button {
+public partial class KeyBindingButton : Button, IEditableControl {
 
   #region Dependencies
   public override void _Notification(int what) => this.Notify(what);
@@ -34,6 +35,8 @@ public partial class KeyBindingButton : Button {
 
   [Signal]
   public delegate void onkeyboardActionBoundEventHandler(string action, long key);
+  [Signal]
+  public delegate void SelectionChangedEventHandler(bool isEdit);
 
   [NodePath("AnimationPlayer")]
   private AnimationPlayer _animationPlayer = default!;
@@ -79,16 +82,30 @@ public partial class KeyBindingButton : Button {
       }
     }
     if (handled) {
-      ButtonPressed = false;
-      _isListening = false;
+      setEditing(false);
       GetViewport().SetInputAsHandled();
-      GetTree().Paused = false;
-      _animationPlayer.Play("RESET");
     }
   }
 
   public bool IsValid() {
     return Text == _defaultText;
+  }
+
+  public void setEditing(bool isEditing) {
+    if (_isListening == isEditing) {
+      return;
+    }
+    _isListening = isEditing;
+    ButtonPressed = isEditing;
+    if (isEditing) {
+      _animationPlayer.Play("Blink");
+      EventHandler.Instance.EmitKeyboardActionBiding();
+    }
+    else {
+      _animationPlayer.Play("RESET");
+    }
+    GetTree().Paused = isEditing;
+    _emitSelectionChangedSignal();
   }
 
   private void _onActionBoundSignal(string action, long key) {
@@ -103,11 +120,7 @@ public partial class KeyBindingButton : Button {
 
   private void _onKeyBindingButtonPressed() {
     if (ButtonPressed) {
-      ButtonPressed = true;
-      _isListening = true;
-      EventHandler.Instance.EmitKeyboardActionBiding();
-      _animationPlayer.Play("Blink");
-      GetTree().Paused = true;
+      setEditing(true);
     }
   }
 
@@ -119,5 +132,11 @@ public partial class KeyBindingButton : Button {
 
   public void OnResolved() {
     _defaultText = LocalizationService.GetLocalizedString(TranslationKey.game_command_empty);
+  }
+
+  public bool IsInEditMode() => _isListening;
+
+  private void _emitSelectionChangedSignal() {
+    EmitSignal(nameof(SelectionChanged), _isListening);
   }
 }

@@ -9,7 +9,7 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [Meta(typeof(IAutoNode))]
-public partial class UiSlider : HSlider {
+public partial class UiSlider : HSlider, IEditableControl {
   #region Dependencies
   [Dependency]
   public IInputManager InputManager => this.DependOn<IInputManager>();
@@ -43,11 +43,11 @@ public partial class UiSlider : HSlider {
   public override void _Input(InputEvent @event) {
     if (HasFocus()) {
       if (InputManager.IsJustPressed(IInputManager.Action.UIConfirm)) {
-        SetEditing(!_isEditing);
+        setEditing(!_isEditing);
         GetViewport().SetInputAsHandled();
       }
       else if (InputManager.IsJustPressed(IInputManager.Action.UICancel) && _isEditing) {
-        SetEditing(false);
+        setEditing(false);
         GetViewport().SetInputAsHandled();
       }
       else if (_isEditing) {
@@ -62,18 +62,20 @@ public partial class UiSlider : HSlider {
       }
     }
   }
-  private void SetEditing(bool value) {
-    if (!_isEditing && value) {
+
+
+  public void setEditing(bool isEditing) {
+    if (!_isEditing && isEditing) {
       _animationPlayerNode.Stop();
       _animationPlayerNode.Play("Blink");
       EmitSelectionChangedSignal();
     }
-    else if (_isEditing && !value) {
+    else if (_isEditing && !isEditing) {
       _animationPlayerNode.Stop();
       _animationPlayerNode.Play("RESET");
       EmitSelectionChangedSignal();
     }
-    _isEditing = value;
+    _isEditing = isEditing;
   }
 
   private void _onLeftPressed() {
@@ -93,4 +95,6 @@ public partial class UiSlider : HSlider {
   private void EmitSelectionChangedSignal() {
     EmitSignal(nameof(SelectionChanged), _isEditing);
   }
+
+  public bool IsInEditMode() => _isEditing;
 }

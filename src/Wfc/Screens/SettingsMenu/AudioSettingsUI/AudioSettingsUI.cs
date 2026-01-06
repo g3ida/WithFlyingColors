@@ -10,6 +10,7 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
+[Obsolete]
 public partial class AudioSettingsUI : Control, IUITab {
   [NodePath("GridContainer/SfxSlider")]
   private UISliderButton SfxSliderNode = default!;

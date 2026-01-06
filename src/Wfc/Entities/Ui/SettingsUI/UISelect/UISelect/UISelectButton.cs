@@ -1,12 +1,28 @@
 namespace Wfc.Entities.Ui.SettingsUI.UISelect;
 
 using System;
+using Chickensoft.AutoInject;
+using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Event;
+using Wfc.Core.Input;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [ScenePath]
-public partial class UISelectButton : Button {
+[Meta(typeof(IAutoNode))]
+public partial class UISelectButton : Button, IEditableControl {
+
+  #region Dependencies
+  public override void _Notification(int what) => this.Notify(what);
+
+  [Dependency]
+  public IInputManager InputManager => this.DependOn<IInputManager>();
+  [Dependency]
+  public IEventHandler EventHandler => this.DependOn<IEventHandler>();
+  #endregion Dependencies
+
+
   public UISelectDriver SelectDriver = default!;
 
   #region Nodes
@@ -34,7 +50,7 @@ public partial class UISelectButton : Button {
   [Signal]
   public delegate void ValueChangedEventHandler(Variant value);
   [Signal]
-  public delegate void SelectionChangedEventHandler(bool is_edit);
+  public delegate void SelectionChangedEventHandler(bool isEdit);
 
   public override void _EnterTree() {
     base._EnterTree();
@@ -65,26 +81,41 @@ public partial class UISelectButton : Button {
 
   public override void _Input(InputEvent @event) {
     if (HasFocus()) {
+
+      if (InputManager.IsEventActionJustPressed(IInputManager.Action.UIConfirm, @event)) {
+        SetEditMode(!_isInEditMode);
+        GetViewport().SetInputAsHandled();
+        return;
+      }
+      else if (InputManager.IsEventActionJustPressed(IInputManager.Action.UICancel, @event) && _isInEditMode) {
+        SetEditMode(false);
+        GetViewport().SetInputAsHandled();
+        return;
+      }
+
       if (_isInEditMode) {
-        if (Input.IsActionJustPressed("ui_left")) {
+        if (InputManager.IsEventActionJustPressed(IInputManager.Action.UILeft, @event)) {
           _onLeftPressed();
           LeftArrowAnimationNode.Play("triggered");
           GetViewport().SetInputAsHandled();
+          return;
         }
-        else if (Input.IsActionJustPressed("ui_right")) {
+        else if (InputManager.IsEventActionJustPressed(IInputManager.Action.UIRight, @event)) {
           _onRightPressed();
           RightArrowAnimationNode.Play("triggered");
           GetViewport().SetInputAsHandled();
+          return;
         }
-      }
-
-      if (Input.IsActionJustPressed("ui_accept")) {
-        SetEditMode(!_isInEditMode);
-        GetViewport().SetInputAsHandled();
-      }
-      else if (Input.IsActionJustPressed("ui_cancel") && _isInEditMode) {
-        SetEditMode(false);
-        GetViewport().SetInputAsHandled();
+        // In case of up/down navigation, exit edit mode
+        else if (InputManager.IsEventActionJustPressed(IInputManager.Action.UIUp, @event)
+        || InputManager.IsEventActionJustPressed(IInputManager.Action.UIDown, @event)
+        || InputManager.IsEventActionJustPressed(IInputManager.Action.UITabNext, @event)
+        || InputManager.IsEventActionJustPressed(IInputManager.Action.UITabPrevious, @event)
+        ) {
+          SetEditMode(false);
+          GetViewport().SetInputAsHandled();
+          return;
+        }
       }
     }
   }
@@ -93,14 +124,15 @@ public partial class UISelectButton : Button {
     if (_isInEditMode && !value) {
       AnimationPlayerNode.Stop();
       AnimationPlayerNode.Play("RESET");
+      _isInEditMode = value;
       EmitSelectionChangedSignal();
     }
     if (!_isInEditMode && value) {
       AnimationPlayerNode.Stop();
       AnimationPlayerNode.Play("Blink");
+      _isInEditMode = value;
       EmitSelectionChangedSignal();
     }
-    _isInEditMode = value;
   }
 
   private void _onLeftPressed() {
@@ -142,4 +174,7 @@ public partial class UISelectButton : Button {
       UpdateRectSize();
     }
   }
+
+  public bool IsInEditMode() => _isInEditMode;
+  public void setEditing(bool isEditing) => SetEditMode(isEditing);
 }

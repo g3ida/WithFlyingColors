@@ -8,6 +8,7 @@ using Wfc.Core.Input;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
+[Obsolete("Use UiSlider instead")]
 [Meta(typeof(IAutoNode))]
 public partial class UISliderButton : Button {
   #region Dependencies
