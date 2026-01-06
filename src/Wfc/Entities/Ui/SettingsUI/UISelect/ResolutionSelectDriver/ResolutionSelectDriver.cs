@@ -9,22 +9,22 @@ public partial class ResolutionSelectDriver : UISelectDriver {
   private List<Vector2I> _resolutions = new List<Vector2I>();
 
   public ResolutionSelectDriver() {
-    var values = new List<Vector2I>
-    {
-      new Vector2I(3840, 2160),
-      new Vector2I(2560, 1440),
-      new Vector2I(1920, 1080),
-      new Vector2I(1280, 720),
-      new Vector2I(1024, 576),
-      new Vector2I(800, 450)
+
+    var resolutionNames = new Dictionary<Vector2I, string> {
+      [new Vector2I(3840, 2160)] = "4K UHD",
+      [new Vector2I(2560, 1440)] = "QHD 2K",
+      [new Vector2I(1920, 1080)] = "FHD 1080p",
+      [new Vector2I(1280, 720)] = "HD 720p",
+      [new Vector2I(1024, 576)] = "SD 576p",
+      [new Vector2I(800, 450)] = "SD 450p"
     };
 
     var screen_size = DisplayServer.ScreenGetSize();
-    foreach (var el in values) {
-      if (el.X <= screen_size.X && el.Y <= screen_size.Y) {
-        Items.Add($"{el.X}x{el.Y}");
-        ItemValues.Add(el);
-        _resolutions.Add(el);
+    foreach (var (vec, name) in resolutionNames) {
+      if (vec.X <= screen_size.X && vec.Y <= screen_size.Y) {
+        Items.Add(name);
+        ItemValues.Add(vec);
+        _resolutions.Add(vec);
       }
     }
   }

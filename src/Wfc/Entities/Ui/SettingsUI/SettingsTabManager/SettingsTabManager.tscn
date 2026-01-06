@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://bo2x0ri6jenb3"]
+[gd_scene load_steps=17 format=3 uid="uid://bo2x0ri6jenb3"]
 
 [ext_resource type="Theme" uid="uid://duyihjolb12bh" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabsTheme.tres" id="1_6eew3"]
 [ext_resource type="Script" uid="uid://dv44qgy4plsou" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabManager.cs" id="2_4e54m"]
@@ -13,8 +13,9 @@
 [ext_resource type="PackedScene" uid="uid://bjcxvhuuecsgw" path="res://src/Wfc/Entities/Ui/SettingsUI/Grid/UIGridContainer/UIGridContainer.tscn" id="10_1dfed"]
 [ext_resource type="Script" uid="uid://llo6p8fbjy6n" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/ResolutionSelectDriver/ResolutionSelectDriver.cs" id="11_hajtt"]
 [ext_resource type="PackedScene" uid="uid://cuvtmm6tn6lyl" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/ControllerSelectDriver/ControllerSelectDriver.tscn" id="12_a7iyf"]
-[ext_resource type="PackedScene" uid="uid://by4f0vq3n2g3b" path="res://src/Wfc/Entities/Ui/SettingsUI/UISliderButton/UISliderButton.tscn" id="12_e8kpa"]
+[ext_resource type="Script" uid="uid://bih8gqyyxj4jj" path="res://src/Wfc/Entities/Ui/SettingsUI/Panel/AudioSettingsPanelContainer.cs" id="13_gigt0"]
 [ext_resource type="PackedScene" uid="uid://6aenyg5mnntr" path="res://src/Wfc/Entities/Ui/SettingsUI/UIkeyBinding/KeyBindingButton/KeybindingButton.tscn" id="13_mrjc8"]
+[ext_resource type="PackedScene" uid="uid://djhvxh4fx0m0u" path="res://src/Wfc/Entities/Ui/SettingsUI/UiSlider/UiSlider/UiSlider.tscn" id="16_sl8rm"]
 
 [node name="GameSettingsTabManager" type="Control"]
 layout_mode = 3
@@ -259,6 +260,7 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
+script = ExtResource("13_gigt0")
 
 [node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/AudioSettingsPanel"]
 layout_mode = 2
@@ -275,14 +277,14 @@ layout_mode = 2
 TranslationKey = 33
 IsDark = true
 
-[node name="SfxSlider" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer/SfxVolume" instance=ExtResource("12_e8kpa")]
+[node name="SfxSlider" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer/SfxVolume" instance=ExtResource("16_sl8rm")]
 layout_mode = 2
 
 [node name="MusicVolume" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 34
 
-[node name="MusicSlider" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer/MusicVolume" instance=ExtResource("12_e8kpa")]
+[node name="MusicSlider" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer/MusicVolume" instance=ExtResource("16_sl8rm")]
 layout_mode = 2
 
 [connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Jump/KeyBindingButton" method="_onActionBoundSignal"]

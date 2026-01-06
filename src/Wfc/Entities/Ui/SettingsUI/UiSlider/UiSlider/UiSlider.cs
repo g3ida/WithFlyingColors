@@ -9,22 +9,16 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [Meta(typeof(IAutoNode))]
-public partial class UiSlider : HSlider, IEditableControl {
+public partial class UiSlider : HSlider {
   #region Dependencies
   [Dependency]
   public IInputManager InputManager => this.DependOn<IInputManager>();
   #endregion Dependencies
 
-  #region Signals
-  [Signal]
-  public delegate void SelectionChangedEventHandler(bool isSelected);
-  #endregion Signals
-
   #region  Nodes
   [NodePath("AnimationPlayer")]
   private AnimationPlayer _animationPlayerNode = default!;
   #endregion Nodes
-  private bool _isEditing = false;
 
   public override void _Notification(int what) => this.Notify(what);
 
@@ -34,48 +28,43 @@ public partial class UiSlider : HSlider, IEditableControl {
     FocusMode = FocusModeEnum.All;
     CustomMinimumSize = new Vector2(200, CustomMinimumSize.Y);
     Size = new Vector2(350, Size.Y);
+
+    this.FocusEntered += _onFocusEntered;
+    this.FocusExited += _onFocusExited;
+  }
+
+  public override void _ExitTree() {
+    base._ExitTree();
+    this.FocusEntered -= _onFocusEntered;
+    this.FocusExited -= _onFocusExited;
   }
 
   public void _onResized() {
     Size = new Vector2(350, Size.Y);
   }
 
-  public override void _Input(InputEvent @event) {
-    if (HasFocus()) {
-      if (InputManager.IsJustPressed(IInputManager.Action.UIConfirm)) {
-        setEditing(!_isEditing);
-        GetViewport().SetInputAsHandled();
-      }
-      else if (InputManager.IsJustPressed(IInputManager.Action.UICancel) && _isEditing) {
-        setEditing(false);
-        GetViewport().SetInputAsHandled();
-      }
-      else if (_isEditing) {
-        if (InputManager.IsJustPressed(IInputManager.Action.UILeft)) {
-          _onLeftPressed();
-          GetViewport().SetInputAsHandled();
-        }
-        else if (InputManager.IsJustPressed(IInputManager.Action.UIRight)) {
-          _onRightPressed();
-          GetViewport().SetInputAsHandled();
-        }
-      }
+  public override void _Process(double delta) {
+    if (!HasFocus()) {
+      return;
+    }
+    if (InputManager.IsJustPressed(IInputManager.Action.UILeft)) {
+      _onLeftPressed();
+    }
+    else if (InputManager.IsJustPressed(IInputManager.Action.UIRight)) {
+      _onRightPressed();
     }
   }
 
+  private void _onFocusEntered() {
+    SetProcess(true);
+    _animationPlayerNode.Stop();
+    _animationPlayerNode.Play("Blink");
+  }
 
-  public void setEditing(bool isEditing) {
-    if (!_isEditing && isEditing) {
-      _animationPlayerNode.Stop();
-      _animationPlayerNode.Play("Blink");
-      EmitSelectionChangedSignal();
-    }
-    else if (_isEditing && !isEditing) {
-      _animationPlayerNode.Stop();
-      _animationPlayerNode.Play("RESET");
-      EmitSelectionChangedSignal();
-    }
-    _isEditing = isEditing;
+  private void _onFocusExited() {
+    SetProcess(false);
+    _animationPlayerNode.Stop();
+    _animationPlayerNode.Play("RESET");
   }
 
   private void _onLeftPressed() {
@@ -85,6 +74,7 @@ public partial class UiSlider : HSlider, IEditableControl {
   private void _onRightPressed() {
     AddValueToSlider(this.Step);
   }
+
   private void AddValueToSlider(double value) {
     Value = Mathf.Clamp(this.Value + value, this.MinValue, this.MaxValue);
   }
@@ -92,9 +82,4 @@ public partial class UiSlider : HSlider, IEditableControl {
   private void _onMouseEntered() {
     GrabFocus();
   }
-  private void EmitSelectionChangedSignal() {
-    EmitSignal(nameof(SelectionChanged), _isEditing);
-  }
-
-  public bool IsInEditMode() => _isEditing;
 }

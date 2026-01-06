@@ -4,24 +4,20 @@ using System;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
-using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
-public partial class UISelectButton : Button, IEditableControl {
+public partial class UISelectButton : Button {
 
   #region Dependencies
   public override void _Notification(int what) => this.Notify(what);
 
   [Dependency]
   public IInputManager InputManager => this.DependOn<IInputManager>();
-  [Dependency]
-  public IEventHandler EventHandler => this.DependOn<IEventHandler>();
   #endregion Dependencies
-
 
   public UISelectDriver SelectDriver = default!;
 
@@ -45,21 +41,22 @@ public partial class UISelectButton : Button, IEditableControl {
   private int _index;
   public Variant? SelectedValue = null;
   private bool _isReady = false;
-  private bool _isInEditMode = false;
 
   [Signal]
   public delegate void ValueChangedEventHandler(Variant value);
-  [Signal]
-  public delegate void SelectionChangedEventHandler(bool isEdit);
 
   public override void _EnterTree() {
     base._EnterTree();
     this.ChildEnteredTree += _trySetSelectDriver;
+    this.FocusEntered += _onFocusEntered;
+    this.FocusExited += _onFocusExited;
   }
 
   public override void _ExitTree() {
     base._ExitTree();
     this.ChildEnteredTree -= _trySetSelectDriver;
+    this.FocusEntered -= _onFocusEntered;
+    this.FocusExited -= _onFocusExited;
   }
 
   public override void _Ready() {
@@ -79,71 +76,40 @@ public partial class UISelectButton : Button, IEditableControl {
     }
   }
 
-  public override void _Input(InputEvent @event) {
-    if (HasFocus()) {
+  public override void _Process(double delta) {
+    if (!HasFocus()) {
+      return;
+    }
 
-      if (InputManager.IsEventActionJustPressed(IInputManager.Action.UIConfirm, @event)) {
-        SetEditMode(!_isInEditMode);
-        GetViewport().SetInputAsHandled();
-        return;
-      }
-      else if (InputManager.IsEventActionJustPressed(IInputManager.Action.UICancel, @event) && _isInEditMode) {
-        SetEditMode(false);
-        GetViewport().SetInputAsHandled();
-        return;
-      }
-
-      if (_isInEditMode) {
-        if (InputManager.IsEventActionJustPressed(IInputManager.Action.UILeft, @event)) {
-          _onLeftPressed();
-          LeftArrowAnimationNode.Play("triggered");
-          GetViewport().SetInputAsHandled();
-          return;
-        }
-        else if (InputManager.IsEventActionJustPressed(IInputManager.Action.UIRight, @event)) {
-          _onRightPressed();
-          RightArrowAnimationNode.Play("triggered");
-          GetViewport().SetInputAsHandled();
-          return;
-        }
-        // In case of up/down navigation, exit edit mode
-        else if (InputManager.IsEventActionJustPressed(IInputManager.Action.UIUp, @event)
-        || InputManager.IsEventActionJustPressed(IInputManager.Action.UIDown, @event)
-        || InputManager.IsEventActionJustPressed(IInputManager.Action.UITabNext, @event)
-        || InputManager.IsEventActionJustPressed(IInputManager.Action.UITabPrevious, @event)
-        ) {
-          SetEditMode(false);
-          GetViewport().SetInputAsHandled();
-          return;
-        }
-      }
+    if (InputManager.IsJustPressed(IInputManager.Action.UILeft)) {
+      _onLeftPressed();
+      LeftArrowAnimationNode.Play("triggered");
+    }
+    else if (InputManager.IsJustPressed(IInputManager.Action.UIRight)) {
+      _onRightPressed();
+      RightArrowAnimationNode.Play("triggered");
     }
   }
 
-  private void SetEditMode(bool value) {
-    if (_isInEditMode && !value) {
-      AnimationPlayerNode.Stop();
-      AnimationPlayerNode.Play("RESET");
-      _isInEditMode = value;
-      EmitSelectionChangedSignal();
-    }
-    if (!_isInEditMode && value) {
-      AnimationPlayerNode.Stop();
-      AnimationPlayerNode.Play("Blink");
-      _isInEditMode = value;
-      EmitSelectionChangedSignal();
-    }
+  private void _onFocusEntered() {
+    SetProcess(true);
+    AnimationPlayerNode.Stop();
+    AnimationPlayerNode.Play("Blink");
+  }
+
+  private void _onFocusExited() {
+    SetProcess(false);
+    AnimationPlayerNode.Stop();
+    AnimationPlayerNode.Play("RESET");
   }
 
   private void _onLeftPressed() {
-    GrabFocus();
     _index = (_index + 1) % SelectDriver.Items.Count;
     UpdateSelectedItem();
     EmitSignal(nameof(ValueChanged), SelectDriver.ItemValues[_index]);
   }
 
   private void _onRightPressed() {
-    GrabFocus();
     _index = (_index - 1 + SelectDriver.Items.Count) % SelectDriver.Items.Count;
     UpdateSelectedItem();
     EmitSignal(nameof(ValueChanged), SelectDriver.ItemValues[_index]);
@@ -161,10 +127,6 @@ public partial class UISelectButton : Button, IEditableControl {
     SetDeferred(Control.PropertyName.Size, ChildContainerNode.Size);
   }
 
-  private void EmitSelectionChangedSignal() {
-    EmitSignal(nameof(SelectionChanged), _isInEditMode);
-  }
-
   private void _onButtonMouseEntered() {
     GrabFocus();
   }
@@ -174,7 +136,4 @@ public partial class UISelectButton : Button, IEditableControl {
       UpdateRectSize();
     }
   }
-
-  public bool IsInEditMode() => _isInEditMode;
-  public void setEditing(bool isEditing) => SetEditMode(isEditing);
 }
