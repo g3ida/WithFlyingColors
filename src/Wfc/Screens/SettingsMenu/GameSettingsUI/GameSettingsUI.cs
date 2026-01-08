@@ -10,6 +10,7 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
+[Obsolete]
 [ScenePath]
 public partial class GameSettingsUI : Control, IUITab {
   [NodePath("GridContainer/VsyncCheckbox")]
@@ -27,8 +28,6 @@ public partial class GameSettingsUI : Control, IUITab {
   public override void _EnterTree() {
     base._EnterTree();
     this.WireNodes();
-    // FIXME: make better logic to initialize the resolution select driver.
-    _resolutionSelect.SelectDriver = new ResolutionSelectDriver();
   }
 
   public override void _Ready() {

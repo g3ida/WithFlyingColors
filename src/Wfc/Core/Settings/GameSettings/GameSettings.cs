@@ -51,6 +51,7 @@ public static class GameSettings {
 
   public static Vector2I WindowSize {
     get => DisplayServer.WindowGetSize();
+    // fixme: github issue: https://github.com/godotengine/godot/issues/105597
     set => DisplayServer.WindowSetSize(value);
   }
 

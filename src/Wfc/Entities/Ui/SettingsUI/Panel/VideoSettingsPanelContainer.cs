@@ -1,24 +1,49 @@
 namespace Wfc.Entities.Ui.SettingsUI.Pamel;
 
+using System.Drawing;
+using System.Threading.Tasks;
+using Chickensoft.AutoInject;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Settings;
+using Wfc.Entities.Ui.SettingsUI.UISelect;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 public partial class VideoSettingsPanelContainer : PanelContainer {
 
-  // doesn't work since the node will change in the tree
-  [NodePath("MarginContainer/GridContainer/ResolutionAuto")]
-  private Control _autoResolution = default!;
+  // I had to add the "Content" node in the path since the UGridRow adds an extra container
+  [NodePath("MarginContainer/UiGridContainer/Resolution/")]
+  private Control _resolutionSelectRow = default!;
 
-  [NodePath("MarginContainer/GridContainer/Resolution")]
-  private Control _resolutionSelect = default!;
+  [NodePath("MarginContainer/UiGridContainer/Resolution/Content/ResolutionSelectButton")]
+  private UISelectButton _resolutionSelectButton = default!;
+
+  [NodePath("MarginContainer/UiGridContainer/Fullscreen/Content/FullscreenCheckbox")]
+  private CheckBox _fullscreenCheckbox = default!;
+
+  [NodePath("MarginContainer/UiGridContainer/VSync/Content/VSyncCheckbox")]
+  private CheckBox _vsyncCheckbox = default!;
+
+  [NodePath("MarginContainer/UiGridContainer/AutoResolution")]
+  private Control _autoResolutionRow = default!;
 
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
-    _hideOrShowAutoResolution();
+    _resolutionSelectButton.ValueChanged += _onResolutionUISelectValueChanged;
+    _fullscreenCheckbox.Toggled += _onFullscreenCheckboxToggled;
+    _vsyncCheckbox.Toggled += _onVsyncCheckboxToggled;
+    _fullscreenCheckbox.SetPressed(GameSettings.Fullscreen);
+    _vsyncCheckbox.SetPressed(GameSettings.Vsync);
+    _toggleAutoResolution();
+  }
+
+  public override void _ExitTree() {
+    base._ExitTree();
+    _resolutionSelectButton.ValueChanged -= _onResolutionUISelectValueChanged;
+    _fullscreenCheckbox.Toggled -= _onFullscreenCheckboxToggled;
+    _vsyncCheckbox.Toggled -= _onVsyncCheckboxToggled;
   }
 
   private static void _onVsyncCheckboxToggled(bool buttonPressed) {
@@ -26,23 +51,55 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
     EventHandler.Instance.EmitVsyncToggled(buttonPressed);
   }
 
-  private void _onFullscreenCheckboxToggled(bool buttonPressed) {
+  private async void _onFullscreenCheckboxToggled(bool buttonPressed) {
     GameSettings.Fullscreen = buttonPressed;
     EventHandler.Instance.EmitFullscreenToggled(buttonPressed);
-    _hideOrShowAutoResolution();
+    _toggleAutoResolution();
+    await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+    DisplayServer.WindowMoveToForeground();
+    GetWindow().MoveToCenter();
+    GetWindow().GrabFocus();
   }
 
-  private void _hideOrShowAutoResolution() {
+  private async void _toggleAutoResolution() {
     if (GameSettings.Fullscreen) {
-      _autoResolution.Visible = true;
-      _resolutionSelect.Visible = false;
+      _autoResolutionRow.Visible = true;
+      _resolutionSelectRow.Visible = false;
     }
     else {
-      _autoResolution.Visible = false;
-      _resolutionSelect.Visible = true;
-      // fixme: LaunchScheduledRescale(); is this necessary ???
+      _autoResolutionRow.Visible = false;
+      _resolutionSelectRow.Visible = true;
+      await LaunchScheduledRescale();
     }
   }
 
+  private async Task LaunchScheduledRescale() {
+    await ToSignal(GetTree().CreateTimer(0.4f), Timer.SignalName.Timeout);
+    var sz = _resolutionSelectButton.SelectedValue;
+    if (sz?.As<Vector2I>() is Vector2I newSize) {
+      GameSettings.WindowSize = newSize;
+    }
+  }
 
+  private async void _onResolutionUISelectValueChanged(Variant value) {
+    var sz = _resolutionSelectButton.SelectedValue;
+    if (sz?.As<Vector2I>() is Vector2I newSize) {
+      GameSettings.WindowSize = newSize;
+      GetWindow().MoveToCenter();
+
+      if (this.IsNodeReady()) {
+        EventHandler.Instance.EmitScreenSizeChanged(newSize);
+      }
+      await _refreshWindow(newSize);
+    }
+  }
+
+  private async Task _refreshWindow(Vector2I newSize) {
+    // hack to force resize immediately, bug happening on Linux https://github.com/godotengine/godot/issues/105597
+    await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+    GetTree().Root.Size = newSize;
+    GetTree().Root.ContentScaleFactor = 1.001f;
+    await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+    GetTree().Root.ContentScaleFactor = 1.0f;
+  }
 }
