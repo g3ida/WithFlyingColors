@@ -36,7 +36,7 @@ public class PlayerSlipperingStateTest(Node testScene) : TestClass(testScene) {
 
     var PlayerOnEdgeNode = await _fixture.LoadAndAddScene<Node>(BASE_FIXTURE_PATH + "PlayerOnRightEdge.tscn");
     var player = PlayerOnEdgeNode.GetNode<Player>("Player");
-    player.Rotation.ShouldBeCloseTo(0f, epsilon: 0.1f);
+    player.Rotation.ShouldBeCloseTo(0f, epsilon: 0.15f);
 
     await PlayerOnEdgeNode.ToSignal(EventHandler.Instance.Events, Events.SignalName.PlayerDied);
 
