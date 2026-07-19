@@ -21,6 +21,10 @@ public static class NodeHelpers {
           field.SetValue(node, targetNode);
         }
         else {
+          // Debug info
+          // foreach (var n in node.GetChildrenRecursive()) {
+          //   GD.PrintErr(n.GetPath());
+          // }
           GD.PrintErr($"Unable to assign node at path '{path}' to field '{field.Name}'.");
         }
       }

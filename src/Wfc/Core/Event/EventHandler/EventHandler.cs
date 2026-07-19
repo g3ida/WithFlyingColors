@@ -129,6 +129,13 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitTabChanged() => Events.EmitSignal(Events.SignalName.TabChanged);
   public void EmitFocusChanged() => Events.EmitSignal(Events.SignalName.FocusChanged);
   public void EmitKeyboardActionBiding() => Events.EmitSignal(Events.SignalName.KeyboardActionBinding);
+  public void EmitGamepadActionBinding() => Events.EmitSignal(Events.SignalName.GamepadActionBinding);
+  public void EmitOnGamepadActionBound(string action, int buttonOrAxis, bool isAxis, float axisDirection) =>
+    Events.EmitSignal(Events.SignalName.OnGamepadActionBound, action, buttonOrAxis, isAxis, axisDirection);
+  public void EmitGamepadConnected(int deviceId, string deviceName) =>
+    Events.EmitSignal(Events.SignalName.GamepadConnected, deviceId, deviceName);
+  public void EmitGamepadDisconnected(int deviceId) =>
+    Events.EmitSignal(Events.SignalName.GamepadDisconnected, deviceId);
   public void EmitTetrisLinesRemoved() => Events.EmitSignal(Events.SignalName.TetrisLinesRemoved);
   public void EmitBrickBroken(string color, Vector2 position) => Events.EmitSignal(Events.SignalName.BrickBroken, color, position);
   public void EmitBouncingBallRemoved(Node ball) => Events.EmitSignal(Events.SignalName.BouncingBallRemoved, ball);

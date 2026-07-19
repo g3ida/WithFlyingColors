@@ -108,10 +108,14 @@ public partial class Menubox : Control {
     if (InputManager.IsJustPressed(IInputManager.Action.UICancel)) {
       HideSubMenuIfNeeded();
     }
-    else if (InputManager.IsJustPressed(IInputManager.Action.RotateLeft) || InputManager.IsJustPressed(IInputManager.Action.UILeft)) {
+    else if (InputManager.IsJustPressed(IInputManager.Action.RotateLeft)
+      || InputManager.IsJustPressed(IInputManager.Action.UILeft)
+      || InputManager.IsJustPressed(IInputManager.Action.UITabPrevious)) {
       OnLeftButtonPressed();
     }
-    else if (InputManager.IsJustPressed(IInputManager.Action.RotateRight) || InputManager.IsJustPressed(IInputManager.Action.UIRight)) {
+    else if (InputManager.IsJustPressed(IInputManager.Action.RotateRight)
+      || InputManager.IsJustPressed(IInputManager.Action.UIRight)
+      || InputManager.IsJustPressed(IInputManager.Action.UITabNext)) {
       OnRightButtonPressed();
     }
     else if (InputManager.IsJustPressed(IInputManager.Action.UIConfirm)) {

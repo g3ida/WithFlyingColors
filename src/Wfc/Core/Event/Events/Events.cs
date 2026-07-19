@@ -55,6 +55,14 @@ public partial class Events : GodotObject {
   [Signal]
   public delegate void KeyboardActionBindingEventHandler();
   [Signal]
+  public delegate void GamepadActionBindingEventHandler();
+  [Signal]
+  public delegate void OnGamepadActionBoundEventHandler(string action, int buttonOrAxis, bool isAxis, float axisDirection);
+  [Signal]
+  public delegate void GamepadConnectedEventHandler(int deviceId, string deviceName);
+  [Signal]
+  public delegate void GamepadDisconnectedEventHandler(int deviceId);
+  [Signal]
   public delegate void SfxVolumeChangedEventHandler(float volume);
   [Signal]
   public delegate void MusicVolumeChangedEventHandler(float volume);

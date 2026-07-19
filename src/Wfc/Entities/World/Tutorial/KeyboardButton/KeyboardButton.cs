@@ -46,12 +46,12 @@ public partial class KeyboardButton : Control {
         else {
           _labelNode.Text = OS.GetKeycodeString(key.Keycode);
         }
-        _on_Label_resized();
+        _onLabelResized();
       }
     }
   }
 
-  private void _on_Label_resized() {
+  private void _onLabelResized() {
     var width = Mathf.Max(_labelNode.Size.X + MarginsX, ButtonWidth);
     var height = _labelNode.Size.Y;
 

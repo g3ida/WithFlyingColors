@@ -51,6 +51,10 @@ public interface IEventHandler {
   public void EmitTabChanged();
   public void EmitFocusChanged();
   public void EmitKeyboardActionBiding();
+  public void EmitGamepadActionBinding();
+  public void EmitOnGamepadActionBound(string action, int buttonOrAxis, bool isAxis, float axisDirection);
+  public void EmitGamepadConnected(int deviceId, string deviceName);
+  public void EmitGamepadDisconnected(int deviceId);
   public void EmitTetrisLinesRemoved();
   public void EmitBrickBroken(string color, Vector2 position);
   public void EmitBouncingBallRemoved(Node ball);
