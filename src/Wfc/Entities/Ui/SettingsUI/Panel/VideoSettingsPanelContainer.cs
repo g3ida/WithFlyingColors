@@ -25,9 +25,6 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
   [NodePath("MarginContainer/UiGridContainer/VSync/Content/VSyncCheckbox")]
   private CheckBox _vsyncCheckbox = default!;
 
-  [NodePath("MarginContainer/UiGridContainer/AutoResolution")]
-  private Control _autoResolutionRow = default!;
-
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
@@ -62,35 +59,33 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
   }
 
   private async void _toggleAutoResolution() {
-    if (GameSettings.Fullscreen) {
-      _autoResolutionRow.Visible = true;
-      _resolutionSelectRow.Visible = false;
-    }
-    else {
-      _autoResolutionRow.Visible = false;
-      _resolutionSelectRow.Visible = true;
+    if (!GameSettings.Fullscreen) {
       await LaunchScheduledRescale();
     }
   }
 
   private async Task LaunchScheduledRescale() {
     await ToSignal(GetTree().CreateTimer(0.4f), Timer.SignalName.Timeout);
-    var sz = _resolutionSelectButton.SelectedValue;
-    if (sz?.As<Vector2I>() is Vector2I newSize) {
-      GameSettings.WindowSize = newSize;
-    }
+    _handleScreenRescale();
   }
 
   private async void _onResolutionUISelectValueChanged(Variant value) {
-    var sz = _resolutionSelectButton.SelectedValue;
-    if (sz?.As<Vector2I>() is Vector2I newSize) {
-      GameSettings.WindowSize = newSize;
-      GetWindow().MoveToCenter();
+    _handleScreenRescale();
+  }
 
-      if (this.IsNodeReady()) {
-        EventHandler.Instance.EmitScreenSizeChanged(newSize);
+  private async void _handleScreenRescale() {
+    if (!GameSettings.Fullscreen) {
+      var sz = _resolutionSelectButton.SelectedValue;
+      if (sz?.As<Vector2I>() is Vector2I newSize && newSize.X >= 0 && newSize.Y >= 0) {
+        GD.Print($"[_onResolutionUISelectValueChanged] toogle resolution to {newSize}");
+        GameSettings.WindowSize = newSize;
+        GetWindow().MoveToCenter();
+
+        if (this.IsNodeReady()) {
+          EventHandler.Instance.EmitScreenSizeChanged(newSize);
+        }
+        await _refreshWindow(newSize);
       }
-      await _refreshWindow(newSize);
     }
   }
 

@@ -29,38 +29,138 @@ public partial class KeyBindingButton : Button, IEditableControl {
 
   private string _defaultText = "(EMPTY)";
 
+  public enum BindingType { Keyboard, Gamepad }
+  private BindingType _type = BindingType.Keyboard;
+  public BindingType Type {
+    get => _type;
+    set {
+      if (_type != value) {
+        _type = value;
+        _loadCurrentBinding();
+      }
+    }
+  }
+  // Stores either a Key, JoyButton or JoyAxis binding information.
   private Key? _value = null;
+  private JoyButton? _buttonValue = null;
+  private JoyAxis? _axisValue = null;
+  private float _axisDirection = 0f;
 
   private bool _isListening = false;
 
   [Signal]
   public delegate void onkeyboardActionBoundEventHandler(string action, long key);
   [Signal]
+  public delegate void OnGamepadActionBoundEventHandler(string action, int buttonOrAxis, bool isAxis, float axisDirection);
+  [Signal]
   public delegate void SelectionChangedEventHandler(bool isEdit);
 
+  #region Nodes
+  [NodePath("HBoxContainer/IconTexture")]
+  private TextureRect _iconTexture = default!;
+  [NodePath("HBoxContainer/Label")]
+  private Label _label = default!;
   [NodePath("AnimationPlayer")]
   private AnimationPlayer _animationPlayer = default!;
+  #endregion Nodes
 
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
+    _loadCurrentBinding();
+    _animationPlayer.Play("RESET");
+  }
+
+  private void _loadCurrentKeyboardBinding() {
     var actionList = InputMap.ActionGetEvents(key).Cast<InputEvent>();
     var inputEvent = InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList);
     if (inputEvent != null) {
       if (inputEvent is InputEventKey inputKeyEvent) {
-        _value = inputKeyEvent.Keycode;
-        Text = OS.GetKeycodeString(_value.Value);
+        _setKeyboardEventKey(inputKeyEvent);
+        return;
       }
     }
-    _animationPlayer.Play("RESET");
+
+    // No binding found
+    _showEmptyState();
+  }
+
+
+  private void _loadCurrentGamepadBinding() {
+    var actionList = InputMap.ActionGetEvents(key).Cast<InputEvent>();
+
+    // Check for button binding first
+    var buttonEvent = InputUtils.GetFirstJoypadButtonEventFromActionList(actionList);
+    if (buttonEvent != null) {
+      _buttonValue = buttonEvent.ButtonIndex;
+      _axisValue = null;
+      _updateIconDisplay();
+      return;
+    }
+
+    // Check for axis binding
+    var axisEvent = InputUtils.GetFirstJoypadAxisEventFromActionList(actionList);
+    if (axisEvent != null) {
+      _axisValue = axisEvent.Axis;
+      _axisDirection = axisEvent.AxisValue;
+      _buttonValue = null;
+      _updateIconDisplay();
+      return;
+    }
+
+    // No binding found
+    _showEmptyState();
+  }
+
+  private void _loadCurrentBinding() {
+    switch (Type) {
+      case BindingType.Keyboard:
+        _loadCurrentKeyboardBinding();
+        break;
+      case BindingType.Gamepad:
+        _loadCurrentGamepadBinding();
+        break;
+    }
+
+  }
+
+  private void _showEmptyState() {
+    _iconTexture.Visible = false;
+    _label.Visible = true;
+    _label.Text = _defaultText;
+  }
+
+  private void _updateIconDisplay() {
+    Texture2D? icon = null;
+    string fallbackText = _defaultText;
+
+    if (_buttonValue != null) {
+      icon = GamepadIconHelper.GetButtonIcon(_buttonValue.Value);
+      fallbackText = InputUtils.GetJoyButtonName(_buttonValue.Value);
+    }
+    else if (_axisValue != null) {
+      icon = GamepadIconHelper.GetAxisIcon(_axisValue.Value, _axisDirection);
+      fallbackText = InputUtils.GetJoyAxisName(_axisValue.Value, _axisDirection);
+    }
+
+    if (icon != null) {
+      _iconTexture.Texture = icon;
+      _iconTexture.Visible = true;
+      _label.Visible = false;
+    }
+    else {
+      _iconTexture.Visible = false;
+      _label.Visible = true;
+      _label.Text = fallbackText;
+    }
   }
 
   private void Undo() {
-    if (_value != null) {
-      Text = OS.GetKeycodeString(_value.Value);
+    if (_buttonValue != null || _axisValue != null) {
+      _updateIconDisplay();
     }
     else {
-      Text = _defaultText;
+      _showEmptyState();
     }
   }
 
@@ -69,10 +169,60 @@ public partial class KeyBindingButton : Button, IEditableControl {
     if (!_isListening) {
       return;
     }
+
+    switch (Type) {
+      case BindingType.Keyboard:
+        _handleKeyboardInput(@event, ref handled);
+        break;
+      case BindingType.Gamepad:
+        _handleGamepadInput(@event, ref handled);
+        break;
+    }
+
+    if (handled) {
+      setEditing(false);
+      GetViewport().SetInputAsHandled();
+    }
+  }
+
+  private void _handleGamepadInput(InputEvent @event, ref bool handled) {
+    if (@event is InputEventJoypadButton joypadButton && joypadButton.Pressed) {
+      _buttonValue = joypadButton.ButtonIndex;
+      _axisValue = null;
+      _updateIconDisplay();
+      EmitSignal(nameof(OnGamepadActionBound), key, (int)_buttonValue, false, 0f);
+      handled = true;
+    }
+    else if (@event is InputEventJoypadMotion joypadMotion) {
+      // Only register axis movement if it's significant (deadzone)
+      if (Mathf.Abs(joypadMotion.AxisValue) > 0.5f) {
+        _axisValue = joypadMotion.Axis;
+        _axisDirection = joypadMotion.AxisValue > 0 ? 1f : -1f;
+        _buttonValue = null;
+        _updateIconDisplay();
+        EmitSignal(nameof(OnGamepadActionBound), key, (int)_axisValue, true, _axisDirection);
+        handled = true;
+      }
+    }
+    else if (@event is InputEventMouse eventMouse) {
+      if (eventMouse.ButtonMask.HasFlag(MouseButtonMask.Left)) {
+        Undo();
+        handled = true;
+      }
+    }
+    else if (@event is InputEventKey eventKey && eventKey.Pressed) {
+      // Allow canceling with keyboard Escape key
+      if (eventKey.Keycode == Key.Escape) {
+        Undo();
+        handled = true;
+      }
+    }
+  }
+
+  private void _handleKeyboardInput(InputEvent @event, ref bool handled) {
     if (@event is InputEventKey eventKey) {
-      _value = eventKey.Keycode;
-      Text = OS.GetKeycodeString(_value.Value);
-      EmitSignal(nameof(onkeyboardActionBound), key, (long)_value);
+      var keycode = _setKeyboardEventKey(eventKey);
+      EmitSignal(nameof(onkeyboardActionBound), key, (long)keycode);
       handled = true;
     }
     else if (@event is InputEventMouse eventMouse) {
@@ -81,14 +231,19 @@ public partial class KeyBindingButton : Button, IEditableControl {
         handled = true;
       }
     }
-    if (handled) {
-      setEditing(false);
-      GetViewport().SetInputAsHandled();
-    }
+  }
+
+  private Key _setKeyboardEventKey(InputEventKey inputKeyEvent) {
+    _value = inputKeyEvent.Keycode;
+    _iconTexture.Visible = false;
+    _label.Visible = true;
+    _label.Text = OS.GetKeycodeString(_value.Value);
+    return _value ?? Key.Unknown;
   }
 
   public bool IsValid() {
-    return Text == _defaultText;
+    return (Type == BindingType.Keyboard && _value != null) ||
+      (Type == BindingType.Gamepad && (_buttonValue != null || _axisValue != null));
   }
 
   public void setEditing(bool isEditing) {
@@ -108,14 +263,36 @@ public partial class KeyBindingButton : Button, IEditableControl {
     _emitSelectionChangedSignal();
   }
 
-  private void _onActionBoundSignal(string action, long key) {
+  private void _onKeyboardActionBoundSignal(string action, long key) {
     long val = this._value != null ? (long)this._value : -1L;
     if (action == this.key || key != (long)val) {
       return;
     }
     _value = null;
-    Text = _defaultText;
+    _showEmptyState();
     EmitSignal(nameof(onkeyboardActionBound), action, -1);
+  }
+
+  public void _onGamepadActionBoundSignal(string action, int buttonOrAxis, bool isAxis, float axisDirection) {
+    // If another action was bound with the same button/axis, clear our binding
+    if (action == this.key) {
+      return;
+    }
+
+    bool shouldClear = false;
+    if (!isAxis && _buttonValue != null && (int)_buttonValue == buttonOrAxis) {
+      shouldClear = true;
+    }
+    else if (isAxis && _axisValue != null && (int)_axisValue == buttonOrAxis && _axisDirection == axisDirection) {
+      shouldClear = true;
+    }
+
+    if (shouldClear) {
+      _buttonValue = null;
+      _axisValue = null;
+      _showEmptyState();
+      EmitSignal(nameof(OnGamepadActionBound), key, -1, false, 0f);
+    }
   }
 
   private void _onKeyBindingButtonPressed() {
@@ -132,6 +309,8 @@ public partial class KeyBindingButton : Button, IEditableControl {
 
   public void OnResolved() {
     _defaultText = LocalizationService.GetLocalizedString(TranslationKey.game_command_empty);
+    // Update display now that we have the localized empty string
+    _loadCurrentBinding();
   }
 
   public bool IsInEditMode() => _isListening;

@@ -41,6 +41,7 @@ public partial class UISelectButton : Button {
   private int _index;
   public Variant? SelectedValue = null;
   private bool _isReady = false;
+  private bool _selectDriverSignalsSet = false;
 
   [Signal]
   public delegate void ValueChangedEventHandler(Variant value);
@@ -50,6 +51,7 @@ public partial class UISelectButton : Button {
     this.ChildEnteredTree += _trySetSelectDriver;
     this.FocusEntered += _onFocusEntered;
     this.FocusExited += _onFocusExited;
+    this.WireNodes();
   }
 
   public override void _ExitTree() {
@@ -57,11 +59,13 @@ public partial class UISelectButton : Button {
     this.ChildEnteredTree -= _trySetSelectDriver;
     this.FocusEntered -= _onFocusEntered;
     this.FocusExited -= _onFocusExited;
+    if (_selectDriverSignalsSet) {
+      SelectDriver.ItemListChanged -= _onSelectDriverItemListChanged;
+    }
   }
 
   public override void _Ready() {
     base._Ready();
-    this.WireNodes();
 
     _index = SelectDriver.GetDefaultSelectedIndex();
     UpdateSelectedItem();
@@ -73,7 +77,14 @@ public partial class UISelectButton : Button {
   private void _trySetSelectDriver(Node child) {
     if (child is UISelectDriver driver) {
       SelectDriver = driver;
+      SelectDriver.ItemListChanged += _onSelectDriverItemListChanged;
+      _selectDriverSignalsSet = true;
     }
+  }
+
+  private void _onSelectDriverItemListChanged() {
+    _index = this.SelectDriver.GetDefaultSelectedIndex();
+    UpdateSelectedItem();
   }
 
   public override void _Process(double delta) {
@@ -116,15 +127,36 @@ public partial class UISelectButton : Button {
   }
 
   private void UpdateSelectedItem() {
-    LabelNode.Text = SelectDriver.Items[_index];
-    SelectedValue = SelectDriver.ItemValues[_index];
-    SelectDriver.onItemSelected(SelectedValue);
-    UpdateRectSize();
+    if (_index >= 0 && _index < SelectDriver.Items.Count && _index < SelectDriver.ItemValues.Count) {
+      LabelNode.Text = SelectDriver.Items[_index];
+      SelectedValue = SelectDriver.ItemValues[_index];
+      SelectDriver.onItemSelected(SelectedValue);
+      UpdateRectSize();
+    }
+    else {
+      GD.PrintErr("SelectDriver - invalid index ", _index);
+    }
+
   }
 
   private void UpdateRectSize() {
     SetDeferred(Button.PropertyName.CustomMinimumSize, ChildContainerNode.Size);
     SetDeferred(Control.PropertyName.Size, ChildContainerNode.Size);
+  }
+
+  /// <summary>
+  /// Refreshes the items from the select driver. Call this after the driver's items list has changed.
+  /// </summary>
+  public void RefreshItems() {
+    if (!_isReady || SelectDriver == null) {
+      return;
+    }
+
+    // Clamp index to new bounds
+    if (SelectDriver.Items.Count > 0) {
+      _index = Math.Clamp(_index, 0, SelectDriver.Items.Count - 1);
+      UpdateSelectedItem();
+    }
   }
 
   private void _onButtonMouseEntered() {

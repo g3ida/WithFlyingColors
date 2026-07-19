@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Microsoft.VisualBasic;
+using Wfc.Core.Input.Controllers;
 using Wfc.Core.Localization;
 using Wfc.Utils;
 
@@ -12,6 +13,30 @@ public static class GameSettings {
   private const string ConfigFilePath = "settings.ini";
   private const float MaxVolume = 0f;
   private const float MinVolume = -50f;
+
+  /// <summary>
+  /// Tracks the last used controller type (keyboard or gamepad).
+  /// This is updated automatically when input is detected and saved to settings.
+  /// </summary>
+  private static ControllerType _lastUsedController = ControllerType.Keyboard;
+  public static ControllerType LastUsedController {
+    get => _lastUsedController;
+    set => _lastUsedController = value;
+  }
+
+  /// <summary>
+  /// Default gamepad bindings for common game actions.
+  /// </summary>
+  public static readonly Dictionary<string, (JoyButton button, JoyAxis? axis, float axisValue)> DefaultGamepadBindings = new() {
+    { "jump", (JoyButton.A, null, 0f) },
+    { "move_left", (JoyButton.DpadLeft, JoyAxis.LeftX, -1f) },
+    { "move_right", (JoyButton.DpadRight, JoyAxis.LeftX, 1f) },
+    { "rotate_left", (JoyButton.LeftShoulder, null, 0f) },
+    { "rotate_right", (JoyButton.RightShoulder, null, 0f) },
+    { "dash", (JoyButton.X, null, 0f) },
+    { "down", (JoyButton.DpadDown, JoyAxis.LeftY, 1f) },
+    { "pause", (JoyButton.Start, null, 0f) },
+  };
 
   private static Language? _cachedLanguage;
   public static Language Language {
@@ -125,6 +150,68 @@ public static class GameSettings {
     }
   }
 
+  /// <summary>
+  /// Binds a gamepad button to an action.
+  /// </summary>
+  public static void BindActionToGamepadButton(string action, JoyButton button) {
+    // Erase the current gamepad button action:
+    var actionList = InputMap.ActionGetEvents(action).Cast<InputEvent>();
+    var inputEvent = InputUtils.GetFirstJoypadButtonEventFromActionList(actionList);
+    if (inputEvent != null) {
+      InputMap.ActionEraseEvent(action, inputEvent);
+    }
+    // Also erase any axis binding for this action
+    var axisEvent = InputUtils.GetFirstJoypadAxisEventFromActionList(actionList);
+    if (axisEvent != null) {
+      InputMap.ActionEraseEvent(action, axisEvent);
+    }
+
+    // Add the new gamepad button action:
+    var newButton = new InputEventJoypadButton {
+      ButtonIndex = button
+    };
+    InputMap.ActionAddEvent(action, newButton);
+  }
+
+  /// <summary>
+  /// Binds a gamepad axis (with direction) to an action.
+  /// </summary>
+  public static void BindActionToGamepadAxis(string action, JoyAxis axis, float axisValue) {
+    // Erase the current gamepad button action:
+    var actionList = InputMap.ActionGetEvents(action).Cast<InputEvent>();
+    var inputEvent = InputUtils.GetFirstJoypadButtonEventFromActionList(actionList);
+    if (inputEvent != null) {
+      InputMap.ActionEraseEvent(action, inputEvent);
+    }
+    // Also erase any existing axis binding
+    var axisEvent = InputUtils.GetFirstJoypadAxisEventFromActionList(actionList);
+    if (axisEvent != null) {
+      InputMap.ActionEraseEvent(action, axisEvent);
+    }
+
+    // Add the new gamepad axis action:
+    var newAxis = new InputEventJoypadMotion {
+      Axis = axis,
+      AxisValue = axisValue
+    };
+    InputMap.ActionAddEvent(action, newAxis);
+  }
+
+  /// <summary>
+  /// Unbinds any gamepad binding from an action.
+  /// </summary>
+  public static void UnbindActionGamepad(string action) {
+    var actionList = InputMap.ActionGetEvents(action).Cast<InputEvent>();
+    var buttonEvent = InputUtils.GetFirstJoypadButtonEventFromActionList(actionList);
+    if (buttonEvent != null) {
+      InputMap.ActionEraseEvent(action, buttonEvent);
+    }
+    var axisEvent = InputUtils.GetFirstJoypadAxisEventFromActionList(actionList);
+    if (axisEvent != null) {
+      InputMap.ActionEraseEvent(action, axisEvent);
+    }
+  }
+
   private static List<string> _getGameActions() {
     var actions = InputMap.GetActions().Cast<StringName>();
     var gameActions = new List<string>();
@@ -147,6 +234,22 @@ public static class GameSettings {
     return true;
   }
 
+  /// <summary>
+  /// Checks if all game actions have valid gamepad bindings (button or axis).
+  /// </summary>
+  public static bool AreGamepadBindingsValid() {
+    var gameActions = _getGameActions();
+    foreach (var action in gameActions) {
+      var actionList = InputMap.ActionGetEvents(action).Cast<InputEvent>();
+      var hasButton = InputUtils.GetFirstJoypadButtonEventFromActionList(actionList) != null;
+      var hasAxis = InputUtils.GetFirstJoypadAxisEventFromActionList(actionList) != null;
+      if (!hasButton && !hasAxis) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public static void Save() {
     // Save game actions:
     var configFile = new ConfigFile();
@@ -155,12 +258,30 @@ public static class GameSettings {
     foreach (var action in gameActions) {
       var key = action;
       var actionList = InputMap.ActionGetEvents(key).Cast<InputEvent>();
+
+      // Save keyboard bindings
       var keyValue = InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList);
       if (keyValue != null) {
         configFile.SetValue("keyboard", key, Variant.From<int>((int)keyValue.Keycode));
       }
       else {
         configFile.SetValue("keyboard", key, "");
+      }
+
+      // Save gamepad button bindings
+      var gamepadButton = InputUtils.GetFirstJoypadButtonEventFromActionList(actionList);
+      if (gamepadButton != null) {
+        configFile.SetValue("gamepad", key, $"button:{(int)gamepadButton.ButtonIndex}");
+      }
+      else {
+        // Check for axis binding
+        var gamepadAxis = InputUtils.GetFirstJoypadAxisEventFromActionList(actionList);
+        if (gamepadAxis != null) {
+          configFile.SetValue("gamepad", key, $"axis:{(int)gamepadAxis.Axis}:{gamepadAxis.AxisValue}");
+        }
+        else {
+          configFile.SetValue("gamepad", key, "");
+        }
       }
     }
 
@@ -175,8 +296,25 @@ public static class GameSettings {
 
     // General settings:
     configFile.SetValue("general", "language", Language.GetLanguageCode());
+    configFile.SetValue("general", "last_controller", (int)LastUsedController);
 
     configFile.Save(ConfigFilePath);
+  }
+
+  /// <summary>
+  /// Applies default gamepad bindings for actions that don't have gamepad bindings yet.
+  /// </summary>
+  public static void ApplyDefaultGamepadBindings() {
+    foreach (var (action, binding) in DefaultGamepadBindings) {
+      var actionList = InputMap.ActionGetEvents(action).Cast<InputEvent>();
+      var existingButton = InputUtils.GetFirstJoypadButtonEventFromActionList(actionList);
+      var existingAxis = InputUtils.GetFirstJoypadAxisEventFromActionList(actionList);
+
+      // Only apply default if no gamepad binding exists
+      if (existingButton == null && existingAxis == null) {
+        BindActionToGamepadButton(action, binding.button);
+      }
+    }
   }
 
   public static void Load() {
@@ -188,6 +326,26 @@ public static class GameSettings {
           var keyValue = configFile.GetValue("keyboard", key);
           if ((keyValue.VariantType != Variant.Type.String) || keyValue.As<string>() != "") {
             BindActionToKeyboardKey(key, keyValue.As<int>());
+          }
+        }
+      }
+      // Gamepad settings:
+      if (configFile.HasSection("gamepad")) {
+        foreach (string action in configFile.GetSectionKeys("gamepad")) {
+          var bindingValue = configFile.GetValue("gamepad", action).As<string>();
+          if (!string.IsNullOrEmpty(bindingValue)) {
+            if (bindingValue.StartsWith("button:")) {
+              var buttonIndex = int.Parse(bindingValue.Substring(7));
+              BindActionToGamepadButton(action, (JoyButton)buttonIndex);
+            }
+            else if (bindingValue.StartsWith("axis:")) {
+              var parts = bindingValue.Substring(5).Split(':');
+              if (parts.Length == 2) {
+                var axisIndex = int.Parse(parts[0]);
+                var axisValue = float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture);
+                BindActionToGamepadAxis(action, (JoyAxis)axisIndex, axisValue);
+              }
+            }
           }
         }
       }
@@ -228,13 +386,21 @@ public static class GameSettings {
           if (key == "language") {
             Language = keyValue.As<string>().LangaugeCodeToLanguage();
           }
+          else if (key == "last_controller") {
+            LastUsedController = (ControllerType)keyValue.As<int>();
+          }
         }
       }
+
+      // Apply default gamepad bindings if not already set
+      ApplyDefaultGamepadBindings();
     }
     else // Default settings if settings file does not exist:
     {
       Fullscreen = true;
       Vsync = true;
+      // Apply default gamepad bindings for new installations
+      ApplyDefaultGamepadBindings();
     }
   }
 }

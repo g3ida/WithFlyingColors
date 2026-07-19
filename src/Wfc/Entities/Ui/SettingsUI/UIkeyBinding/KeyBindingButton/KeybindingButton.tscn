@@ -51,18 +51,39 @@ _data = {
 
 [node name="KeyBindingButton" type="Button"]
 process_mode = 3
+custom_minimum_size = Vector2(200, 42)
 offset_top = 204.0
-offset_right = 117.0
-offset_bottom = 224.0
+offset_right = 200.0
+offset_bottom = 244.0
 theme_override_styles/normal = SubResource("StyleBoxEmpty_ojrue")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_mqp31")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_18yde")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_0y0qa")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gf1rf")
 toggle_mode = true
-text = "(EMPTY)"
 script = ExtResource("1")
 key = "rotate_right"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="IconTexture" type="TextureRect" parent="HBoxContainer"]
+visible = false
+layout_mode = 2
+expand_mode = 2
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "(EMPTY)"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

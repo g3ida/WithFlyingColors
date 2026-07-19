@@ -6,6 +6,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Localization;
+using Wfc.Core.Logger;
 using Wfc.Entities.Ui.SettingsUI.Grid;
 using Wfc.Skin;
 using Wfc.Utils;
@@ -42,10 +43,14 @@ public partial class SettingsTabManager : Control {
 
   [Dependency]
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
+
+  [Dependency]
+  public ILogger Logger => this.DependOn<ILogger>();
+
   #endregion Dependencies
 
   #region Signals
-  /// <summary>Emitted when the active panel changes, providing the focusable rows for that panel</summary>
+  // Emitted when the active panel changes, providing the focusable rows for that panel
   [Signal]
   public delegate void PanelChangedEventHandler(Button currentPanelButton, Godot.Collections.Array<UIGridRow> rows);
   #endregion Signals
@@ -53,10 +58,10 @@ public partial class SettingsTabManager : Control {
   private GameSkin _skin = SkinManager.Instance.CurrentSkin;
   private int _currentPanelIndex = 0;
 
-  /// <summary>Gets the current panel index (0=General, 1=Video, 2=Controller, 3=Audio)</summary>
+  // Gets the current panel index (0=General, 1=Video, 2=Controller, 3=Audio)
   public int CurrentPanelIndex => _currentPanelIndex;
 
-  /// <summary>Gets the total number of panels/tabs</summary>
+  // Gets the total number of panels/tabs
   public int PanelCount => _panels.Count;
 
   public override void _Ready() {
@@ -140,17 +145,13 @@ public partial class SettingsTabManager : Control {
     EmitSignal(SignalName.PanelChanged, currentPanelButton, rows);
   }
 
-  /// <summary>
-  /// Navigates to the next or previous tab.
-  /// </summary>
-  /// <param name="direction">-1 for previous tab, 1 for next tab</param>
+  // Navigates to the next or previous tab. Direction: 1=next, -1=previous
   public void NavigateTab(int direction) {
     int newIndex = _currentPanelIndex + direction;
 
     // Clamp to valid range (no wrapping for tabs)
     newIndex = Mathf.Clamp(newIndex, 0, _panels.Count - 1);
-    GD.Print($"[SettingsTabManager] Navigating tab to index: {newIndex} from {_currentPanelIndex}");
-
+    Logger.LogInfo($"[SettingsTabManager] Navigating tab to index: {newIndex} from {_currentPanelIndex}");
     if (newIndex != _currentPanelIndex) {
       SwitchToPanel(newIndex);
     }
@@ -163,9 +164,7 @@ public partial class SettingsTabManager : Control {
     PanelToShow.Show();
   }
 
-  /// <summary>
-  /// Recursively finds all UIGridRow nodes within a panel.
-  /// </summary>
+  // Recursively finds all UIGridRow nodes within a panel.
   private static Godot.Collections.Array<UIGridRow> GetFocusableRowsForPanel(PanelContainer panel) {
     var rows = new Godot.Collections.Array<UIGridRow>();
     FindUIGridRowsRecursive(panel, rows);

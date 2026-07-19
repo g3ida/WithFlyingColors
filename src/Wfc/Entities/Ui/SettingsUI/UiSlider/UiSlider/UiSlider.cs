@@ -28,13 +28,17 @@ public partial class UiSlider : HSlider {
     FocusMode = FocusModeEnum.All;
     CustomMinimumSize = new Vector2(200, CustomMinimumSize.Y);
     Size = new Vector2(350, Size.Y);
+  }
 
+  public override void _EnterTree() {
     this.FocusEntered += _onFocusEntered;
     this.FocusExited += _onFocusExited;
+    base._EnterTree();
   }
 
   public override void _ExitTree() {
     base._ExitTree();
+
     this.FocusEntered -= _onFocusEntered;
     this.FocusExited -= _onFocusExited;
   }

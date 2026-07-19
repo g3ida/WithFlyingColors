@@ -51,10 +51,11 @@ public enum TranslationKey {
   game_settings_display_resolution = 39,
   game_settings_display_fullscreen = 40,
   game_settings_display_vsync = 41,
-  controller_type_keyboard = 42,
-  controller_type_gamepad = 43,
-  controller_label_controls = 44,
-  game_command_empty = 45,
+  game_settings_display_resolutionAuto = 42,
+  controller_type_keyboard = 43,
+  controller_type_gamepad = 44,
+  controller_label_controls = 45,
+  game_command_empty = 46,
 }
 
 public static partial class TranslationKeyExtensions {

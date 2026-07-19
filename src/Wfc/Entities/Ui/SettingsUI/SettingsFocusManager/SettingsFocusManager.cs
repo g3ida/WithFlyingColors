@@ -17,7 +17,7 @@ using KeyBindingButton = Wfc.Entities.Ui.KeyBindingButton;
 // - Up/Down arrow keys to navigate between rows
 // - Left/Right arrow keys to navigate between tabs (only when panel tab is focused)
 // - Mouse hover to update focus
-// - Edit mode only for KeyBindingButton
+// - Edit mode for KeyBindingButton and GamepadBindingButton
 [Meta(typeof(IAutoNode))]
 public partial class SettingsFocusManager : Node {
     #region Dependencies
@@ -46,15 +46,15 @@ public partial class SettingsFocusManager : Node {
 
     public int CurrentRowIndex => _currentRowIndex;
     public int RowCount => _currentRows.Count;
-    private bool IsKeyBindingActive => _activeKeyBinding?.IsInEditMode() ?? false;
+    private bool IsBindingActive => (_activeKeyBinding?.IsInEditMode() ?? false);
 
     // Sets the list of focusable rows for the current panel. Called when switching tabs/panels.
     public void SetFocusableRows(Button currentPanelButton, List<UIGridRow> rows) {
         _disconnectFromRows();
         _currentRows = rows.ConvertAll(row => (Control)row);
+        _currentRows = _currentRows.FindAll(row => row.Visible);
         _currentRows.Insert(0, currentPanelButton);
         _connectToRows();
-
         int focusIndex = _shouldFocusOnPanelTab || _currentRows.Count <= 1 ? 0 : 1;
         _focusRow(focusIndex);
     }
@@ -66,7 +66,7 @@ public partial class SettingsFocusManager : Node {
 
     public override void _Input(InputEvent @event) {
         // When key binding is active, let it handle all input
-        if (IsKeyBindingActive) {
+        if (IsBindingActive) {
             return;
         }
 
@@ -190,7 +190,6 @@ public partial class SettingsFocusManager : Node {
             }
         }
     }
-
     private void _disconnectFromRows() {
         _disconnectFromPanelTabHover();
 

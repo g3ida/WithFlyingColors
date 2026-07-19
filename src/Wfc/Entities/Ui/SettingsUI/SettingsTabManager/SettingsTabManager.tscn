@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bo2x0ri6jenb3"]
+[gd_scene load_steps=18 format=3 uid="uid://bo2x0ri6jenb3"]
 
 [ext_resource type="Theme" uid="uid://duyihjolb12bh" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabsTheme.tres" id="1_6eew3"]
 [ext_resource type="Script" uid="uid://dv44qgy4plsou" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabManager.cs" id="2_4e54m"]
@@ -17,8 +17,6 @@
 [ext_resource type="Script" uid="uid://bih8gqyyxj4jj" path="res://src/Wfc/Entities/Ui/SettingsUI/Panel/AudioSettingsPanelContainer.cs" id="13_gigt0"]
 [ext_resource type="PackedScene" uid="uid://6aenyg5mnntr" path="res://src/Wfc/Entities/Ui/SettingsUI/UIkeyBinding/KeyBindingButton/KeybindingButton.tscn" id="13_mrjc8"]
 [ext_resource type="PackedScene" uid="uid://djhvxh4fx0m0u" path="res://src/Wfc/Entities/Ui/SettingsUI/UiSlider/UiSlider/UiSlider.tscn" id="16_sl8rm"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_cgbug"]
 
 [node name="GameSettingsTabManager" type="Control"]
 layout_mode = 3
@@ -132,24 +130,6 @@ theme_override_constants/margin_bottom = 20
 
 [node name="UiGridContainer" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer" instance=ExtResource("10_1dfed")]
 layout_mode = 2
-
-[node name="AutoResolution" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
-clip_contents = true
-layout_mode = 2
-TranslationKey = 39
-IsDark = true
-
-[node name="AutoBtn" type="Button" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/AutoResolution"]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-
-[node name="Auto" type="Label" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/AutoResolution/AutoBtn"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-theme_override_styles/focus = SubResource("StyleBoxEmpty_cgbug")
-text = "auto"
-vertical_alignment = 1
 
 [node name="Fullscreen" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
 layout_mode = 2
@@ -310,19 +290,28 @@ TranslationKey = 34
 [node name="MusicSlider" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer/MusicVolume" instance=ExtResource("16_sl8rm")]
 layout_mode = 2
 
-[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Jump/KeyBindingButton" method="_onActionBoundSignal"]
-[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/MoveLeft/KeyBindingButton" method="_onActionBoundSignal"]
-[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/MoveRight/KeyBindingButton" method="_onActionBoundSignal"]
-[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/RotateLeft/KeyBindingButton" method="_onActionBoundSignal"]
-[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/RotateRight/KeyBindingButton" method="_onActionBoundSignal"]
-[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Dash/KeyBindingButton" method="_onActionBoundSignal"]
-[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Down/KeyBindingButton" method="_onActionBoundSignal"]
-[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Pause/KeyBindingButton" method="_onActionBoundSignal"]
+[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Jump/KeyBindingButton" method="_onKeyboardActionBoundSignal"]
+[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/MoveLeft/KeyBindingButton" method="_onKeyboardActionBoundSignal"]
+[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/MoveRight/KeyBindingButton" method="_onKeyboardActionBoundSignal"]
+[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/RotateLeft/KeyBindingButton" method="_onKeyboardActionBoundSignal"]
+[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/RotateRight/KeyBindingButton" method="_onKeyboardActionBoundSignal"]
+[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Dash/KeyBindingButton" method="_onKeyboardActionBoundSignal"]
+[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Down/KeyBindingButton" method="_onKeyboardActionBoundSignal"]
+[connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Pause/KeyBindingButton" method="_onKeyboardActionBoundSignal"]
+[connection signal="ControllerTypeChanged" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/ControllerType/UISelectButton/ControllerSelectDriver" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="OnControllerTypeChanged"]
+[connection signal="OnGamepadActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Jump/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onGamepadInputActionBound"]
 [connection signal="onkeyboardActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Jump/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onKeyboardInputActionBound"]
+[connection signal="OnGamepadActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/MoveLeft/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onGamepadInputActionBound"]
 [connection signal="onkeyboardActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/MoveLeft/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onKeyboardInputActionBound"]
+[connection signal="OnGamepadActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/MoveRight/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onGamepadInputActionBound"]
 [connection signal="onkeyboardActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/MoveRight/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onKeyboardInputActionBound"]
+[connection signal="OnGamepadActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/RotateLeft/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onGamepadInputActionBound"]
 [connection signal="onkeyboardActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/RotateLeft/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onKeyboardInputActionBound"]
+[connection signal="OnGamepadActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/RotateRight/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onGamepadInputActionBound"]
 [connection signal="onkeyboardActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/RotateRight/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onKeyboardInputActionBound"]
+[connection signal="OnGamepadActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Dash/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onGamepadInputActionBound"]
 [connection signal="onkeyboardActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Dash/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onKeyboardInputActionBound"]
+[connection signal="OnGamepadActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Down/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onGamepadInputActionBound"]
 [connection signal="onkeyboardActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Down/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onKeyboardInputActionBound"]
+[connection signal="OnGamepadActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Pause/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onGamepadInputActionBound"]
 [connection signal="onkeyboardActionBound" from="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Pause/KeyBindingButton" to="PanelManager/VBoxContainer/ControllerSettingsPanel" method="_onKeyboardInputActionBound"]

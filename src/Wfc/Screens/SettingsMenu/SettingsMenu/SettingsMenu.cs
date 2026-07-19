@@ -97,6 +97,15 @@ public partial class SettingsMenu : GameMenu {
   }
 
   private static bool IsValidState() {
+    // Check keyboard bindings if keyboard is selected
+    if (GameSettings.LastUsedController == Core.Input.Controllers.ControllerType.Keyboard) {
+      return GameSettings.AreActionKeysValid();
+    }
+    // Check gamepad bindings if gamepad is selected and connected
+    if (GameSettings.LastUsedController == Core.Input.Controllers.ControllerType.Gamepad && InputUtils.IsGamepadConnected()) {
+      return GameSettings.AreGamepadBindingsValid();
+    }
+    // Default to checking keyboard bindings
     return GameSettings.AreActionKeysValid();
   }
 

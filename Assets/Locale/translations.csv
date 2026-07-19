@@ -41,6 +41,7 @@ game.settings.general.language,Language,Langue,Sprache,Idioma,Idioma,Idioma,Taal
 game.settings.display.resolution,Resolution,Résolution,Auflösung,Resolución,Risoluzione,Resolução,Resolutie
 game.settings.display.fullscreen,Fullscreen,Plein écran,Vollbild,Pantalla completa,Schermo intero,Ecrã inteiro,Volledig scherm
 game.settings.display.vsync,VSync,VSync,VSync,VSync,VSync,VSync,VSync
+game.settings.display.resolution_auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto
 controller.type.keyboard,Keyboard,Clavier,Tastatur,Teclado,Tastiera,Teclado,Toetsenbord
 controller.type.gamepad,Gamepad,Manette,Gamepad,Mando,Gamepad,Comando,Gamepad
 controller.label.controls,Controls,Commandes,Steuerung,Controles,Comandi,Controlos,Besturing
