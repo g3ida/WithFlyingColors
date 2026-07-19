@@ -1,4 +1,4 @@
-namespace Wfc.Entities.Ui.SettingsUI.Pamel;
+namespace Wfc.Entities.Ui.SettingsUI.Panel;
 
 using System.Drawing;
 using System.Threading.Tasks;
@@ -77,7 +77,7 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
     if (!GameSettings.Fullscreen) {
       var sz = _resolutionSelectButton.SelectedValue;
       if (sz?.As<Vector2I>() is Vector2I newSize && newSize.X >= 0 && newSize.Y >= 0) {
-        GD.Print($"[_onResolutionUISelectValueChanged] toogle resolution to {newSize}");
+        GD.Print($"[_onResolutionUISelectValueChanged] toggle resolution to {newSize}");
         GameSettings.WindowSize = newSize;
         GetWindow().MoveToCenter();
 

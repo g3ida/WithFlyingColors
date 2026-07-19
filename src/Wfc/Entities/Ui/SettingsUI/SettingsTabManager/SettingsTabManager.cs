@@ -97,11 +97,11 @@ public partial class SettingsTabManager : Control {
 
   private void _setButtonStyles() {
     List<SkinColor> skinColors = [SkinColor.TopFace, SkinColor.LeftFace, SkinColor.RightFace, SkinColor.BottomFace];
-    _setPressedButtonStlyes(skinColors);
+    _setPressedButtonStyles(skinColors);
     _setFocusAndHoverButtonStyles(skinColors);
   }
 
-  private void _setPressedButtonStlyes(List<SkinColor> skinColors) {
+  private void _setPressedButtonStyles(List<SkinColor> skinColors) {
     for (int i = 0; i < _buttons.Count; i++) {
       var style = new StyleBoxFlat();
       style.BorderWidthTop = 7;

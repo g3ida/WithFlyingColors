@@ -3,7 +3,7 @@ namespace Wfc.Entities.Ui.SettingsUI.UiSlider;
 using System.Collections.Generic;
 using Godot;
 
-public partial class SfxSliderDirver : UiSliderDirver {
+public partial class SfxSliderDriver : UiSliderDriver {
 
   public override void onValueChanged(float value) { }
 

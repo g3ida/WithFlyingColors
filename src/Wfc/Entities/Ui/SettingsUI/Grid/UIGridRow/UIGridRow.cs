@@ -109,9 +109,9 @@ public partial class UIGridRow : PanelContainer {
   private Control _getAttachedNode() {
     var children = GetChildren();
     Debug.Assert(children?.Count == 2, "UIGridRow should have 1 attached children");
-    var vaueNode = children[0] == _contentNode ? children[1] : children[0];
-    Debug.Assert(vaueNode is Control, "UIGridRow should have 1 attached children");
-    return (vaueNode as Control)!;
+    var valueNode = children[0] == _contentNode ? children[1] : children[0];
+    Debug.Assert(valueNode is Control, "UIGridRow should have 1 attached children");
+    return (valueNode as Control)!;
   }
 
   // Gets the focusable control within this row.

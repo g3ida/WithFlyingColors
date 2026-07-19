@@ -22,7 +22,7 @@ public partial class LanguageSelectDriver : UISelectDriver {
 
   public override void onItemSelected(Variant? item) {
     if (item != null) {
-      GameSettings.Language = ((string)item).LangaugeCodeToLanguage();
+      GameSettings.Language = ((string)item).LanguageCodeToLanguage();
     }
   }
 

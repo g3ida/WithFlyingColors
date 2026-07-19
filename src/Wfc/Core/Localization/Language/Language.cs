@@ -24,7 +24,7 @@ public static class LanguageExtensions {
     _ => "en"
   };
 
-  public static Language LangaugeCodeToLanguage(this string code) => code switch {
+  public static Language LanguageCodeToLanguage(this string code) => code switch {
     "en" => Language.English,
     "fr" => Language.French,
     "de" => Language.German,

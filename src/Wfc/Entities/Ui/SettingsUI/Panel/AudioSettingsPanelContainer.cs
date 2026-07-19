@@ -35,7 +35,6 @@ public partial class AudioSettingsPanelContainer : PanelContainer {
   }
 
   private void _onSfxSliderDragEnded(bool valueChanged) {
-    GD.PrintErr($"SFX Slider Drag Ended. New Value: {_sfxSliderNode.Value}");
     var newValue = (float)_sfxSliderNode.Value;
     GameSettings.SfxVolume = newValue;
     EventHandler.Instance.EmitSfxVolumeChanged(newValue);

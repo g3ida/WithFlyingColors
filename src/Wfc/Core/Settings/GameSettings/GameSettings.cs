@@ -121,7 +121,7 @@ public static class GameSettings {
   private static Language _parseSystemLanguage() {
     var locale = TranslationServer.GetLocale();
     var languageCodeStr = locale?.Split('-')[0] ?? Language.English.GetLanguageCode();
-    return languageCodeStr.LangaugeCodeToLanguage();
+    return languageCodeStr.LanguageCodeToLanguage();
   }
 
   public static void BindActionToKeyboardKey(string action, int scanCode) {
@@ -384,7 +384,7 @@ public static class GameSettings {
         foreach (string key in configFile.GetSectionKeys("general")) {
           var keyValue = configFile.GetValue("general", key);
           if (key == "language") {
-            Language = keyValue.As<string>().LangaugeCodeToLanguage();
+            Language = keyValue.As<string>().LanguageCodeToLanguage();
           }
           else if (key == "last_controller") {
             LastUsedController = (ControllerType)keyValue.As<int>();

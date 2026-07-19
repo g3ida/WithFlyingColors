@@ -3,11 +3,11 @@ namespace Wfc.Entities.Ui.SettingsUI.UiSlider;
 using System.Collections.Generic;
 using Godot;
 
-public partial class MusicSliderDirver : UiSliderDirver {
+public partial class UiSliderDriver : Node {
 
-  public override void onValueChanged(float value) { }
+  public virtual void onValueChanged(float value) { }
 
-  public override float GetDefaultValue() {
+  public virtual float GetDefaultValue() {
     return 0f;
   }
 

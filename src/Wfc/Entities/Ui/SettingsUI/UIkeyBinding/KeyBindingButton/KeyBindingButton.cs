@@ -301,7 +301,7 @@ public partial class KeyBindingButton : Button, IEditableControl {
     }
   }
 
-  private void _onKeyBindingButtonMmouseEentered() {
+  private void _onKeyBindingButtonMouseEntered() {
     if (!GetTree().Paused) {
       GrabFocus();
     }
