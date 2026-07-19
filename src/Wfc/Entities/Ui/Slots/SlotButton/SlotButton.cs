@@ -39,6 +39,8 @@ public partial class SlotButton : ColorRect {
   private AnimationPlayer _blinkAnimationPlayerNode = default!;
   #endregion Nodes
 
+  private static readonly StringName ANIM_BLINK = "Blink";
+
   private State _currentState = State.Hidden;
   private Tween? _buttonTween;
 
@@ -118,12 +120,12 @@ public partial class SlotButton : ColorRect {
 
   private void BlinkButtonIfNeeded() {
     if (_buttonNode.HasFocus()) {
-      if (_blinkAnimationPlayerNode.CurrentAnimation != "Blink") {
-        _blinkAnimationPlayerNode.Play("Blink");
+      if (_blinkAnimationPlayerNode.CurrentAnimation != ANIM_BLINK) {
+        _blinkAnimationPlayerNode.Play(ANIM_BLINK);
       }
     }
     else {
-      if (_blinkAnimationPlayerNode.CurrentAnimation == "Blink") {
+      if (_blinkAnimationPlayerNode.CurrentAnimation == ANIM_BLINK) {
         _blinkAnimationPlayerNode.Play("RESET");
       }
     }
