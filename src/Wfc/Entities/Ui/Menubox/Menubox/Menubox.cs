@@ -61,19 +61,23 @@ public partial class Menubox : Control {
   private Sprite2D _spriteNode = null!;
   #endregion Nodes
 
+  // Comes back facing the button the player went out through, so returning from the
+  // settings doesn't spin the box back round to Play.
   // FIXME: make high level. The menu should update the box.
-  public void SetPreviousMenu() {
+  public void FaceLastVisitedMenu() {
     _currentState = States.MENU;
-    if (MenuManager.GetPreviousMenu() == GameMenus.STATS_MENU) {
-      _menuBoxNode.Rotate(-Mathf.Pi);
-      ActiveIndex = 2;
-    }
-    else if (MenuManager.GetPreviousMenu() == GameMenus.SETTINGS_MENU) {
-      _menuBoxNode.Rotate(-Mathf.Pi / 2);
-      ActiveIndex = 1;
-    }
-    else {
-      ActiveIndex = 0;
+    switch (MenuManager.GetLastVisitedMenu()) {
+      case GameMenus.STATS_MENU:
+        _menuBoxNode.Rotate(-Mathf.Pi);
+        ActiveIndex = 2;
+        break;
+      case GameMenus.SETTINGS_MENU:
+        _menuBoxNode.Rotate(-Mathf.Pi / 2);
+        ActiveIndex = 1;
+        break;
+      default:
+        ActiveIndex = 0;
+        break;
     }
   }
 
@@ -87,7 +91,7 @@ public partial class Menubox : Control {
   }
 
   public void OnResolved() {
-    SetPreviousMenu();
+    FaceLastVisitedMenu();
   }
 
   private void _setActiveButton(int index) {

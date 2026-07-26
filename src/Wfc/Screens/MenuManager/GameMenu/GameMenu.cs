@@ -174,7 +174,16 @@ public partial class GameMenu : Control {
     }
 
     if (!OnMenuButtonPressed(menuButton) && menuButton == MenuAction.GoBack) {
-      NavigateToScreen(MenuManager.GetPreviousMenu());
+      NavigateBack();
+    }
+  }
+
+  // Back unwinds the navigation history. The target is resolved now rather than when
+  // the exit transition lands, so a screen always leaves for the one that was under it
+  // at the moment the player asked.
+  public void NavigateBack() {
+    if (MenuManager.PeekBack() is GameMenus target) {
+      NavigateToScreen(target);
     }
   }
 

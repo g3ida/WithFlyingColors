@@ -31,9 +31,14 @@ public class MenuManagerTests(Node testScene) : TestClass(testScene) {
     _provider.QueueFree();
   }
 
+  // Nothing has been shown yet, so there is nowhere to go back to. The real game seeds
+  // the history by navigating to the main menu as it boots.
   [Test]
-  public void StartsOnTheMainMenu() {
+  public void StartsWithAnEmptyHistory() {
+    _menuManager.PeekBack().ShouldBeNull();
+    _menuManager.GoToMenu(GameMenus.MAIN_MENU).ShouldBeTrue();
     _menuManager.GetCurrentMenu().ShouldBe(GameMenus.MAIN_MENU);
+    _menuManager.PeekBack().ShouldBeNull();
   }
 
   [Test]
@@ -45,14 +50,18 @@ public class MenuManagerTests(Node testScene) : TestClass(testScene) {
 
   [Test]
   public async Task GoingToAScreenMakesItCurrentAndRemembersTheLast() {
+    await _goTo(GameMenus.MAIN_MENU);
+
     await _goTo(GameMenus.STATS_MENU);
 
     _menuManager.GetCurrentMenu().ShouldBe(GameMenus.STATS_MENU);
-    _menuManager.GetPreviousMenu().ShouldBe(GameMenus.MAIN_MENU);
+    _menuManager.PeekBack().ShouldBe(GameMenus.MAIN_MENU);
+    _menuManager.GetLastVisitedMenu().ShouldBe(GameMenus.MAIN_MENU);
   }
 
   [Test]
   public async Task OnlyOneScreenIsAliveAtATime() {
+    await _goTo(GameMenus.MAIN_MENU);
     await _goTo(GameMenus.STATS_MENU);
     await _goTo(GameMenus.SETTINGS_MENU);
 
@@ -61,27 +70,63 @@ public class MenuManagerTests(Node testScene) : TestClass(testScene) {
     _provider.FindDescendants<Wfc.Screens.GameMenu>().ShouldHaveSingleItem();
   }
 
-  // Previous is a single slot rather than a stack, so it only ever remembers one hop.
-  // Worth pinning down: it is the behavior every back button depends on.
+  // Back walks the whole history, one screen at a time, rather than bouncing between
+  // the last two. A single "previous" slot could only ever remember one hop.
   [Test]
-  public async Task PreviousOnlyGoesBackOneHop() {
-    await _goTo(GameMenus.STATS_MENU);
+  public async Task BackUnwindsTheHistoryOneScreenAtATime() {
+    await _goTo(GameMenus.MAIN_MENU);
+    await _goTo(GameMenus.SELECT_SLOT);
     await _goTo(GameMenus.SETTINGS_MENU);
+
+    _menuManager.PeekBack().ShouldBe(GameMenus.SELECT_SLOT);
     await _goTo(GameMenus.SELECT_SLOT);
 
-    _menuManager.GetPreviousMenu().ShouldBe(GameMenus.SETTINGS_MENU);
+    _menuManager.PeekBack().ShouldBe(GameMenus.MAIN_MENU);
+    await _goTo(GameMenus.MAIN_MENU);
+
+    _menuManager.GetCurrentMenu().ShouldBe(GameMenus.MAIN_MENU);
+    _menuManager.PeekBack().ShouldBeNull();
+  }
+
+  // Returning to a screen already in the history unwinds to it rather than stacking a
+  // second copy. Leaving the pause menu for the main menu drops the game screen in
+  // between, and moving back and forth can't grow the history without bound.
+  [Test]
+  public async Task ReturningToAVisitedScreenUnwindsToIt() {
+    await _goTo(GameMenus.MAIN_MENU);
+    await _goTo(GameMenus.GAME);
+    await _goTo(GameMenus.LEVEL_SELECT_MENU);
+
+    await _goTo(GameMenus.MAIN_MENU);
+
+    _menuManager.GetCurrentMenu().ShouldBe(GameMenus.MAIN_MENU);
+    _menuManager.PeekBack().ShouldBeNull("the game and level select should have been dropped");
+  }
+
+  [Test]
+  public async Task MovingBetweenTwoScreensDoesNotGrowTheHistory() {
+    await _goTo(GameMenus.MAIN_MENU);
+
+    for (var i = 0; i < 4; i++) {
+      await _goTo(GameMenus.STATS_MENU);
+      await _goTo(GameMenus.MAIN_MENU);
+    }
+
+    _menuManager.GetCurrentMenu().ShouldBe(GameMenus.MAIN_MENU);
+    _menuManager.PeekBack().ShouldBeNull();
   }
 
   [Test]
   public async Task AskingForTheScreenAlreadyShownChangesNothing() {
+    await _goTo(GameMenus.MAIN_MENU);
     await _goTo(GameMenus.STATS_MENU);
 
-    await _goTo(GameMenus.STATS_MENU);
+    _menuManager.GoToMenu(GameMenus.STATS_MENU).ShouldBeFalse();
 
     _menuManager.GetCurrentMenu().ShouldBe(GameMenus.STATS_MENU);
-    // Previous is untouched: a no-op navigation must not make back point at the
-    // screen the player is already on.
-    _menuManager.GetPreviousMenu().ShouldBe(GameMenus.MAIN_MENU);
+    // A refused navigation must not make back point at the screen already showing.
+    _menuManager.PeekBack().ShouldBe(GameMenus.MAIN_MENU);
+    _menuManager.GetLastVisitedMenu().ShouldBe(GameMenus.MAIN_MENU);
   }
 
   [Test]
@@ -89,22 +134,33 @@ public class MenuManagerTests(Node testScene) : TestClass(testScene) {
     _menuManager.GetCurrentLevelId().ShouldBeNull();
   }
 
+  // Asking where a screen lives is a question, not a navigation. It used to clear the
+  // queued level as a side effect, so reading a path changed what the game would load.
   [Test]
-  public void SettingALevelIsRememberedForTheGameScreen() {
+  public void AskingForAScenePathLeavesTheQueuedLevelAlone() {
     _menuManager.SetCurrentLevel(LevelId.Level1);
 
-    _menuManager.GetCurrentLevelId().ShouldBe(LevelId.Level1);
-    // The game screen keeps it; asking for the path of any menu screen clears it, so
-    // returning to a menu can't leave a stale level queued up.
-    _menuManager.GetMenuScenePath(GameMenus.GAME);
+    _menuManager.GetMenuScenePath(GameMenus.MAIN_MENU);
+
     _menuManager.GetCurrentLevelId().ShouldBe(LevelId.Level1);
   }
 
   [Test]
-  public void GoingToAMenuForgetsTheQueuedLevel() {
+  public async Task GoingToTheGameScreenKeepsTheQueuedLevel() {
+    await _goTo(GameMenus.MAIN_MENU);
     _menuManager.SetCurrentLevel(LevelId.Level1);
 
-    _menuManager.GetMenuScenePath(GameMenus.MAIN_MENU);
+    await _goTo(GameMenus.GAME);
+
+    _menuManager.GetCurrentLevelId().ShouldBe(LevelId.Level1);
+  }
+
+  [Test]
+  public async Task GoingToAMenuForgetsTheQueuedLevel() {
+    await _goTo(GameMenus.MAIN_MENU);
+    _menuManager.SetCurrentLevel(LevelId.Level1);
+
+    await _goTo(GameMenus.STATS_MENU);
 
     _menuManager.GetCurrentLevelId().ShouldBeNull();
   }

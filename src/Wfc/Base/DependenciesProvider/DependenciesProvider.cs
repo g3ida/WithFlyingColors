@@ -68,12 +68,11 @@ public partial class DependenciesProvider :
     // every cold start whatever the player had actually selected.
     _saveManager.Init();
 
-    var mainMenuScenePath = _menuManager.Value.GetMenuScenePath(GameMenus.MAIN_MENU);
-    if (mainMenuScenePath != null) {
-      _menuManager.Value.SwitchScene(mainMenuScenePath);
-    }
-    else {
-      throw new GameExceptions.InvalidArgumentException("Main menu scene not found");
+    // The first navigation, which is also what seeds the history the back button
+    // unwinds. It only succeeds from an empty history, so nothing else may navigate
+    // before this runs.
+    if (!_menuManager.Value.GoToMenu(GameMenus.MAIN_MENU)) {
+      throw new GameExceptions.InvalidArgumentException("Main menu scene could not be shown");
     }
   }
 }

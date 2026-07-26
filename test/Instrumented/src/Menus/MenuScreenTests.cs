@@ -24,13 +24,10 @@ using Wfc.Utils;
 // built without anything failing. These assert what the screen ends up looking like
 // rather than the absence of a log line.
 public class MenuScreenTests(Node testScene) : TestClass(testScene) {
-  // The main menu is not first on purpose: the manager starts out believing it is
-  // already showing, and ignores a request for the screen it is on, so asking for it
-  // first would build nothing.
   private static readonly GameMenus[] MENU_SCREENS = [
-    GameMenus.STATS_MENU,
-    GameMenus.SETTINGS_MENU,
     GameMenus.MAIN_MENU,
+    GameMenus.SETTINGS_MENU,
+    GameMenus.STATS_MENU,
     GameMenus.SELECT_SLOT,
     GameMenus.LEVEL_SELECT_MENU,
     GameMenus.LEVEL_CLEAR_MENU,
@@ -149,11 +146,14 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
     return subMenu.FindDescendants<SubMenuItem>().ToList();
   }
 
-  // Opens a screen and waits for it to settle. `from` navigates somewhere else first,
-  // for when the screen under test is the one already showing.
-  private async Task<GameMenu> _open(GameMenus menu, GameMenus? from = null) {
-    if (from is GameMenus start) {
-      _provider.MenuManager.GoToMenu(start);
+  // Opens a screen and waits for it to settle, seeding the history first so back has
+  // somewhere to go, the way the real provider does as the game boots.
+  //
+  // The seeding happens here rather than in Setup so a test can put its own save data
+  // in place before the first screen resolves anything.
+  private async Task<GameMenu> _open(GameMenus menu, GameMenus from = GameMenus.MAIN_MENU) {
+    if (menu != from) {
+      _provider.MenuManager.GoToMenu(from);
       await _idle();
       var first = _currentScreen();
       if (first != null) {
