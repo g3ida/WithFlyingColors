@@ -2,6 +2,7 @@ namespace Wfc.Core.Event;
 
 using System;
 using Godot;
+using Wfc.Core.Input.Controllers;
 using Wfc.Entities.World;
 using Wfc.Screens.MenuManager;
 
@@ -53,6 +54,7 @@ public interface IEventHandler {
   public void EmitKeyboardActionBiding();
   public void EmitGamepadActionBinding();
   public void EmitOnGamepadActionBound(string action, int buttonOrAxis, bool isAxis, float axisDirection);
+  public void EmitLastUsedControllerChanged(ControllerType controllerType);
   public void EmitGamepadConnected(int deviceId, string deviceName);
   public void EmitGamepadDisconnected(int deviceId);
   public void EmitTetrisLinesRemoved();

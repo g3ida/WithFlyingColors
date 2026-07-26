@@ -2,6 +2,7 @@ namespace Wfc.Utils;
 
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Input;
 
 public static class InputUtils {
   public static InputEventKey? GetFirstKeyKeyboardEventFromActionList(IEnumerable<InputEvent> actionList) {
@@ -37,13 +38,27 @@ public static class InputUtils {
     return connectedJoypads.Count > 0;
   }
 
-  // Gets the name of the first connected gamepad, or null if none connected.
-  public static string? GetConnectedGamepadName() {
+  // The pad whose art and name the UI should be showing: the one the player last
+  // pressed something on, or, before they have touched any, the first one
+  // plugged in. Returns -1 when no pad is connected.
+  //
+  // Which one matters as soon as two are plugged in: a PlayStation pad and an
+  // Xbox pad draw their buttons with different art, and the player should see
+  // the one in their hands rather than whichever the engine lists first.
+  public static int GetActiveGamepadDevice() {
     var connectedJoypads = Input.GetConnectedJoypads();
-    if (connectedJoypads.Count > 0) {
-      return Input.GetJoyName(connectedJoypads[0]);
+    if (connectedJoypads.Count == 0) {
+      return -1;
     }
-    return null;
+
+    var active = InputDeviceDetector.ActiveGamepadDevice;
+    return connectedJoypads.Contains(active) ? active : connectedJoypads[0];
+  }
+
+  // Gets the name of the gamepad in use, or null if none connected.
+  public static string? GetConnectedGamepadName() {
+    var device = GetActiveGamepadDevice();
+    return device < 0 ? null : Input.GetJoyName(device);
   }
 
   // Converts a JoyButton to a human-readable string.

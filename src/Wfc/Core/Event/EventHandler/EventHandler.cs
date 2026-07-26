@@ -2,6 +2,7 @@ namespace Wfc.Core.Event;
 
 using System;
 using Godot;
+using Wfc.Core.Input.Controllers;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Piano;
 using Wfc.Screens.MenuManager;
@@ -132,6 +133,8 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitGamepadActionBinding() => Events.EmitSignal(Events.SignalName.GamepadActionBinding);
   public void EmitOnGamepadActionBound(string action, int buttonOrAxis, bool isAxis, float axisDirection) =>
     Events.EmitSignal(Events.SignalName.OnGamepadActionBound, action, buttonOrAxis, isAxis, axisDirection);
+  public void EmitLastUsedControllerChanged(ControllerType controllerType) =>
+    Events.EmitSignal(Events.SignalName.LastUsedControllerChanged, (int)controllerType);
   public void EmitGamepadConnected(int deviceId, string deviceName) =>
     Events.EmitSignal(Events.SignalName.GamepadConnected, deviceId, deviceName);
   public void EmitGamepadDisconnected(int deviceId) =>

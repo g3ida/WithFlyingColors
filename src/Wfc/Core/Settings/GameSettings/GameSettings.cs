@@ -8,6 +8,7 @@ using Microsoft.VisualBasic;
 using Wfc.Core.Input.Controllers;
 using Wfc.Core.Localization;
 using Wfc.Utils;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public static class GameSettings {
   private const string ConfigFilePath = "settings.ini";
@@ -16,12 +17,23 @@ public static class GameSettings {
 
   /// <summary>
   /// Tracks the last used controller type (keyboard or gamepad).
-  /// This is updated automatically when input is detected and saved to settings.
+  /// This is updated automatically when input is detected (see InputDeviceDetector)
+  /// and saved to settings.
+  /// Assigning a different value raises Events.LastUsedControllerChanged, which is
+  /// how the input hints and the controller settings follow the player from one
+  /// device to the other.
   /// </summary>
   private static ControllerType _lastUsedController = ControllerType.Keyboard;
   public static ControllerType LastUsedController {
     get => _lastUsedController;
-    set => _lastUsedController = value;
+    set {
+      if (_lastUsedController == value) {
+        return;
+      }
+      _lastUsedController = value;
+      // Null while the settings are loaded, before the autoloads are in the tree.
+      EventHandler.Instance?.EmitLastUsedControllerChanged(value);
+    }
   }
 
   /// <summary>
