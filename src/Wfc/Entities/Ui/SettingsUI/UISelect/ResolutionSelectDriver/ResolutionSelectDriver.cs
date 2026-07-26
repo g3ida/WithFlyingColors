@@ -52,13 +52,25 @@ public partial class ResolutionSelectDriver : UISelectDriver {
     ItemValues.Clear();
     _resolutions.Clear();
     if (!isFullScreen) {
-      var screen_size = DisplayServer.ScreenGetSize();
+      var screenSize = DisplayServer.ScreenGetSize();
       foreach (var (vec, name) in _resolutionNames) {
-        if (vec.X <= screen_size.X && vec.Y <= screen_size.Y) {
+        if (vec.X <= screenSize.X && vec.Y <= screenSize.Y) {
           Items.Add(name);
           ItemValues.Add(vec);
           _resolutions.Add(vec);
         }
+      }
+      // On a screen none of the named sizes can cover — a compositor that reports
+      // the desktop scaled up, a monitor bigger than 4K — windowed mode is left
+      // with nothing that fills it. The screen gets its own entry at the head of
+      // the list in that case, and only then: on any ordinary display the named
+      // sizes already reach as far, and a second way to say the same thing is
+      // just one more item to scroll past.
+      var fitToScreen = _getLargestWindowSizeThatFits(screenSize);
+      if (_resolutions.Count == 0 || _isLargerThan(fitToScreen, _resolutions[0])) {
+        Items.Insert(0, $"{fitToScreen.X}x{fitToScreen.Y}");
+        ItemValues.Insert(0, fitToScreen);
+        _resolutions.Insert(0, fitToScreen);
       }
     }
     else {
@@ -67,6 +79,30 @@ public partial class ResolutionSelectDriver : UISelectDriver {
       ItemValues.Add(new Vector2I(640, 480));
     }
     EmitSignal(nameof(ItemListChanged));
+  }
+
+  private static bool _isLargerThan(Vector2I size, Vector2I other) => size.X * size.Y > other.X * other.Y;
+
+  // The biggest window this screen can hold, kept at the ratio the game is drawn
+  // at. The room to work with is the screen less what the desktop keeps for
+  // itself (panels, docks) and less the frame the window manager draws, or the
+  // title bar's worth of window would hang off the bottom edge. Growing the base
+  // viewport into it rather than taking the room as it comes matters on a screen
+  // that is not 16:9: the stretch mode is keep_height, so a wider window widens
+  // the view, and the menus are laid out for 1920 wide with only so much bleed
+  // to give.
+  private static Vector2I _getLargestWindowSizeThatFits(Vector2I screenSize) {
+    var usable = DisplayServer.ScreenGetUsableRect(DisplayServer.WindowGetCurrentScreen());
+    var room = usable.Size == Vector2I.Zero ? screenSize : usable.Size;
+    room -= DisplayServer.WindowGetSizeWithDecorations() - DisplayServer.WindowGetSize();
+
+    var baseSize = new Vector2I(
+      (int)ProjectSettings.GetSetting("display/window/size/viewport_width"),
+      (int)ProjectSettings.GetSetting("display/window/size/viewport_height")
+    );
+    var scale = Mathf.Min((float)room.X / baseSize.X, (float)room.Y / baseSize.Y);
+    var fitted = new Vector2I(Mathf.FloorToInt(baseSize.X * scale), Mathf.FloorToInt(baseSize.Y * scale));
+    return fitted.Clamp(Vector2I.One, screenSize);
   }
 
   public override void onItemSelected(Variant? item) {
