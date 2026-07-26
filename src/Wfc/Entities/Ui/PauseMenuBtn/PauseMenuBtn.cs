@@ -17,7 +17,6 @@ public partial class PauseMenuBtn : Button {
     Visible = false;
     _animationPlayer.Play("Hidden");
     MouseEntered += GrabFocus;
-
   }
 
   public void HideBtn() {
@@ -47,8 +46,11 @@ public partial class PauseMenuBtn : Button {
     }
   }
 
+  // The transitional state is the one this handler settles: HideBtn/ShowBtn already
+  // unsubscribe when they interrupt an animation, so anything else reaching here is
+  // a stray AnimationFinished from the resting "Hidden"/"Shown" clips.
   private void OnHideAnimationDone(StringName animation) {
-    if (currentState != State.HIDING) {
+    if (currentState == State.HIDING) {
       _animationPlayer.AnimationFinished -= OnHideAnimationDone;
       Visible = false;
       _animationPlayer.Play("Hidden");
@@ -57,15 +59,11 @@ public partial class PauseMenuBtn : Button {
   }
 
   private void OnShowAnimationDone(StringName animation) {
-    if (currentState != State.SHOWING) {
+    if (currentState == State.SHOWING) {
       _animationPlayer.AnimationFinished -= OnShowAnimationDone;
       Visible = true;
       _animationPlayer.Play("Shown");
       currentState = State.SHOWN;
     }
-  }
-
-  private void _on_PauseMenuButtons_mouse_entered() {
-    GrabFocus();
   }
 }

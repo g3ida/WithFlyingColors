@@ -7,6 +7,7 @@ using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
 using Wfc.Entities.Ui;
 using Wfc.Entities.Ui.Menubox;
+using Wfc.Entities.Ui.Slots;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -29,7 +30,7 @@ public partial class MainMenu : GameMenu {
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
-    _currentSlotLabelNode.Text = $"{LocalizationService.GetLocalizedString(TranslationKey.menu_label_currentSlot)}: {SaveManager.GetSelectedSlotIndex()}";
+    _currentSlotLabelNode.Text = $"{LocalizationService.GetLocalizedString(TranslationKey.menu_label_currentSlot)}: {SaveManager.GetSelectedSlotText()}";
   }
 
   public void ShowResetDataDialog() => _resetSlotDialogNode.ShowDialog();
@@ -82,7 +83,14 @@ public partial class MainMenu : GameMenu {
   }
 
   private void OnResetSlotConfirmed() {
-    SaveManager.RemoveSaveSlot(SaveManager.GetSelectedSlotIndex());
+    if (SaveManager.HasSelectedSlot()) {
+      var slotIndex = SaveManager.GetSelectedSlotIndex();
+      SaveManager.RemoveSaveSlot(slotIndex);
+      // Wiping the selected slot clears the selection, but the player is starting a
+      // new game in that very slot: keep it selected so the first save doesn't
+      // silently land in slot 0.
+      SaveManager.SelectSlot(slotIndex);
+    }
     _menuBoxNode.HideSubMenuIfNeeded();
     NavigateToScreen(GameMenus.GAME);
   }

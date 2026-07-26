@@ -7,7 +7,5 @@ public enum GameMenus {
   MAIN_MENU,
   LEVEL_SELECT_MENU,
   LEVEL_CLEAR_MENU,
-  GAME,
-  QUIT,
-  LOAD
+  GAME
 }

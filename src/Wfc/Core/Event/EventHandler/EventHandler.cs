@@ -127,7 +127,6 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitSfxVolumeChanged(float volume) => Events.EmitSignal(Events.SignalName.SfxVolumeChanged, volume);
   public void EmitMusicVolumeChanged(float volume) => Events.EmitSignal(Events.SignalName.MusicVolumeChanged, volume);
   public void EmitOnActionBound(string action, int key) => Events.EmitSignal(Events.SignalName.OnActionBound, action, key);
-  public void EmitTabChanged() => Events.EmitSignal(Events.SignalName.TabChanged);
   public void EmitFocusChanged() => Events.EmitSignal(Events.SignalName.FocusChanged);
   public void EmitKeyboardActionBiding() => Events.EmitSignal(Events.SignalName.KeyboardActionBinding);
   public void EmitGamepadActionBinding() => Events.EmitSignal(Events.SignalName.GamepadActionBinding);

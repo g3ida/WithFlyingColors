@@ -70,7 +70,11 @@ public partial class SlotsContainer : Control {
       Position = new Vector2(Position.X, (GetViewportRect().Size.Y - Size.Y) * 0.5f);
     }
 
-    _saveSlots[SaveManager.GetSelectedSlotIndex()].SetHasFocus(true);
+    // Deleting the selected slot leaves the player with none, so there may be
+    // nothing to focus here: the loop above already picked the first usable slot.
+    if (SaveManager.HasSelectedSlot()) {
+      _saveSlots[SaveManager.GetSelectedSlotIndex()].SetHasFocus(true);
+    }
   }
 
   private void _onSaveSlot1Pressed(string action) {

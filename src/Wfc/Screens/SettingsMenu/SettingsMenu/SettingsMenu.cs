@@ -56,16 +56,8 @@ public partial class SettingsMenu : GameMenu {
     _focusManager.ClearFocus();
   }
 
-  public override void _Input(InputEvent @event) {
-    base._Input(@event);
-    // Note: Up/Down/Left/Right navigation is now handled by SettingsFocusManager
-    // We no longer need to handle left/right here for tab switching
-  }
-
-  private void OnTabNavigationRequested(int direction) {
-    GD.Print($"[SettingsMenu] Tab navigation requested: {direction}");
-    _settingsTabManager.NavigateTab(direction);
-  }
+  // Up/Down/Left/Right navigation is handled by SettingsFocusManager.
+  private void OnTabNavigationRequested(int direction) => _settingsTabManager.NavigateTab(direction);
 
   private void OnPanelChanged(Button currentPanelButton, Godot.Collections.Array<UIGridRow> rows) {
     // Convert Godot array to C# list for the focus manager

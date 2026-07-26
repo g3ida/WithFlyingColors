@@ -20,7 +20,7 @@ public partial class SaveManager : ISaveManager {
   private readonly ISerializer _serializer = new SimpleJsonSerializer();
 
   public void SaveGame(SceneTree tree, int slotIndex) {
-    slotIndex = slotIndex == -1 ? Math.Max(0, LatestLoadedSlot) : slotIndex;
+    slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
@@ -30,8 +30,8 @@ public partial class SaveManager : ISaveManager {
     GD.Print("Game saved!");
   }
 
-  public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = -1) {
-    slotIndex = slotIndex == -1 ? Math.Max(0, LatestLoadedSlot) : slotIndex;
+  public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = ISaveManager.NO_SLOT) {
+    slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
@@ -47,8 +47,8 @@ public partial class SaveManager : ISaveManager {
     GD.Print("Game loaded!");
   }
 
-  public bool IsSLotFilled(int slotIndex = -1) {
-    slotIndex = slotIndex == -1 ? Math.Max(0, LatestLoadedSlot) : slotIndex;
+  public bool IsSLotFilled(int slotIndex = ISaveManager.NO_SLOT) {
+    slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return false;
@@ -56,8 +56,8 @@ public partial class SaveManager : ISaveManager {
     return _saveSlots[slotIndex].IsFilled;
   }
 
-  public SlotMetaData? GetSlotMetaData(int slotIndex = -1) {
-    slotIndex = slotIndex == -1 ? Math.Max(0, LatestLoadedSlot) : slotIndex;
+  public SlotMetaData? GetSlotMetaData(int slotIndex = ISaveManager.NO_SLOT) {
+    slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return null;
@@ -65,8 +65,8 @@ public partial class SaveManager : ISaveManager {
     return _saveSlots[slotIndex].MetaData;
   }
 
-  public ImageTexture? GetSlotImage(int slotIndex = -1) {
-    slotIndex = slotIndex == -1 ? Math.Max(0, LatestLoadedSlot) : slotIndex;
+  public ImageTexture? GetSlotImage(int slotIndex = ISaveManager.NO_SLOT) {
+    slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return null;
@@ -82,13 +82,15 @@ public partial class SaveManager : ISaveManager {
 
   public int GetSelectedSlotIndex() => LatestLoadedSlot;
 
+  public bool HasSelectedSlot() => LatestLoadedSlot != ISaveManager.NO_SLOT;
+
   public void Init() {
     _loadSlotsInfo();
     _loadSlotsMetaData();
   }
 
-  public void SelectSlot(int slotIndex = -1) {
-    slotIndex = slotIndex == -1 ? Math.Max(0, LatestLoadedSlot) : slotIndex;
+  public void SelectSlot(int slotIndex = ISaveManager.NO_SLOT) {
+    slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
@@ -105,7 +107,7 @@ public partial class SaveManager : ISaveManager {
     _saveSlots[slotIndex].Delete();
     _loadSlotsMetaData();
     if (LatestLoadedSlot == slotIndex) {
-      LatestLoadedSlot = -1;
+      LatestLoadedSlot = ISaveManager.NO_SLOT;
     }
   }
 
