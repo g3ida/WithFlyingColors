@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=16 format=3 uid="uid://ccmgef5cebsxv"]
+[gd_resource type="Theme" format=3 uid="uid://ccmgef5cebsxv"]
 
 [ext_resource type="FontFile" uid="uid://f5bvg4kq86ed" path="res://Assets/Fonts/TitleFontt.tres" id="1"]
 [ext_resource type="Texture2D" uid="uid://ckjfrltgb6mvr" path="res://Assets/Sprites/UI/checkbox_checked.png" id="2"]
@@ -36,6 +36,15 @@ border_color = Color(0, 0, 0, 0)
 
 [sub_resource type="FontFile" id="1"]
 fallbacks = Array[Font]([ExtResource("1")])
+cache/0/variation_coordinates = {}
+cache/0/face_index = 0
+cache/0/embolden = 0.0
+cache/0/transform = Transform2D(1, 0, 0, 1, 0, 0)
+cache/0/spacing_top = 0
+cache/0/spacing_bottom = 0
+cache/0/spacing_space = 0
+cache/0/spacing_glyph = 0
+cache/0/baseline_offset = 0.0
 cache/0/16/0/ascent = 0.0
 cache/0/16/0/descent = 0.0
 cache/0/16/0/underline_position = 0.0

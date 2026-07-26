@@ -1,0 +1,44 @@
+[gd_scene load_steps=3 format=3 uid="uid://bhntcrdscn01"]
+
+[ext_resource type="Script" uid="uid://bhntcrdscr01" path="res://src/Wfc/Entities/Ui/InputHint/InputHintCard/InputHintCard.cs" id="1"]
+[ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="1_7qqha"]
+
+[sub_resource type="StyleBoxFlat" id="card_bg"]
+content_margin_left = 24.0
+content_margin_top = 8.0
+content_margin_right = 24.0
+content_margin_bottom = 8.0
+bg_color = Color(0, 0, 0, 0.117647)
+
+[node name="InputHintCard" type="PanelContainer"]
+offset_right = 180.0
+offset_bottom = 64.0
+mouse_filter = 2
+theme = ExtResource("1_7qqha")
+theme_override_styles/panel = SubResource("card_bg")
+script = ExtResource("1")
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 14
+
+[node name="CaptionBox" type="MarginContainer" parent="HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="Caption" type="Label" parent="HBox/CaptionBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.176471, 0.176471, 0.176471, 1)
+theme_override_font_sizes/font_size = 26
+text = "SELECT"
+vertical_alignment = 1
+
+[node name="Inputs" type="HBoxContainer" parent="HBox"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 8

@@ -1,4 +1,5 @@
-[gd_scene load_steps=5 format=3 uid="uid://cg6b6t5i0bpj3"]
+[gd_scene load_steps=6 format=3 uid="uid://cg6b6t5i0bpj3"]
+[ext_resource type="PackedScene" uid="uid://bhntbarscn01" path="res://src/Wfc/Entities/Ui/InputHint/InputHintBar/InputHintBar.tscn" id="hintbar_ext"]
 
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="1"]
 [ext_resource type="Script" uid="uid://b4ayb4vux11yl" path="res://src/Wfc/Screens/LevelClearedMenu/LevelClearedMenu.cs" id="2"]
@@ -36,3 +37,5 @@ offset_top = 0.0
 offset_right = 40.0
 offset_bottom = 40.0
 HiddenRelativePosition = Vector2(0, -500)
+
+[node name="InputHintBar" parent="." instance=ExtResource("hintbar_ext")]

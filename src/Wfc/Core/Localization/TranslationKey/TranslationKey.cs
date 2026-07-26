@@ -56,6 +56,10 @@ public enum TranslationKey {
   controller_type_gamepad = 44,
   controller_label_controls = 45,
   game_command_empty = 46,
+  menu_hint_select = 47,
+  menu_hint_back = 48,
+  menu_hint_switchTab = 49,
+  menu_hint_navigate = 50,
 }
 
 public static partial class TranslationKeyExtensions {

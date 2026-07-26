@@ -4,7 +4,10 @@ using System;
 using Godot;
 using Wfc.Entities.World.Checkpoints;
 
-public partial class Events : GodotObject {
+// RefCounted rather than a plain GodotObject: the EventHandler autoload holds
+// this for the whole run and a bare GodotObject would have to be freed by hand,
+// which reports as a leaked instance at exit.
+public partial class Events : RefCounted {
   [Signal]
   public delegate void PlayerLandedEventHandler(Node area, Vector2 position);
   [Signal]
