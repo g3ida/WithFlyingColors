@@ -145,6 +145,24 @@ public partial class UISelectButton : Button {
   }
 
   /// <summary>
+  /// Re-reads the driver's default index and shows that item. Call this when the
+  /// value the select stands for was changed by something other than this button
+  /// (the controller select follows the device the player last touched).
+  /// </summary>
+  public void SyncSelectionToDefault() {
+    if (!_isReady || SelectDriver == null) {
+      return;
+    }
+
+    var index = SelectDriver.GetDefaultSelectedIndex();
+    if (index == _index) {
+      return;
+    }
+    _index = index;
+    UpdateSelectedItem();
+  }
+
+  /// <summary>
   /// Refreshes the items from the select driver. Call this after the driver's items list has changed.
   /// </summary>
   public void RefreshItems() {

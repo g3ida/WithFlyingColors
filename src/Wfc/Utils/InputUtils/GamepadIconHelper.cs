@@ -14,23 +14,31 @@ public static class GamepadIconHelper {
         PlayStation
     }
 
-    // Detects the controller type based on the connected gamepad name.
+    // Detects which art to draw from the name of the pad the player is using.
+    // Follows them from one pad to another: press a button on a PlayStation pad
+    // while an Xbox one is also plugged in and the icons become PlayStation ones.
     public static ControllerIconType DetectControllerType() {
-        var connectedJoypads = Input.GetConnectedJoypads();
-        if (connectedJoypads.Count == 0) {
-            return ControllerIconType.Xbox360; // Default to Xbox icons
-        }
+        var device = InputUtils.GetActiveGamepadDevice();
+        return device < 0
+            ? ControllerIconType.Xbox360 // Default to Xbox icons
+            : IconTypeForJoyName(Input.GetJoyName(device));
+    }
 
-        var joyName = Input.GetJoyName(connectedJoypads[0]).ToLower();
+    // The art a pad reporting this name should be drawn with. Anything that
+    // isn't recognisably a PlayStation pad is drawn Xbox style, which covers
+    // the Xbox pads themselves and the many third party pads that copy them.
+    public static ControllerIconType IconTypeForJoyName(string joyName) {
+        // Invariant: these are device names, matched against ASCII keywords.
+        var name = joyName.ToLowerInvariant();
 
         // Check for PlayStation controllers
-        if (joyName.Contains("playstation") ||
-            joyName.Contains("ps3") ||
-            joyName.Contains("ps4") ||
-            joyName.Contains("ps5") ||
-            joyName.Contains("dualsense") ||
-            joyName.Contains("dualshock") ||
-            joyName.Contains("sony")) {
+        if (name.Contains("playstation") ||
+            name.Contains("ps3") ||
+            name.Contains("ps4") ||
+            name.Contains("ps5") ||
+            name.Contains("dualsense") ||
+            name.Contains("dualshock") ||
+            name.Contains("sony")) {
             return ControllerIconType.PlayStation;
         }
 

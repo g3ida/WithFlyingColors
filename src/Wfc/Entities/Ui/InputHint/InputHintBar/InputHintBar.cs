@@ -28,44 +28,39 @@ public partial class InputHintBar : Control {
 
   private readonly List<InputHintCard> _cards = new();
   private ControllerType _lastType = ControllerType.Keyboard;
+
+  // Which house style the pad glyphs were last drawn in. Swapping a PlayStation
+  // pad for an Xbox one leaves _lastType on Gamepad while changing every icon,
+  // so the type alone isn't enough to tell whether a rebuild is needed.
+  private GamepadIconHelper.ControllerIconType _lastIconType;
   private bool _subscribed;
   private UITransition? _transition;
-
-  // Cached so the per-frame check stays allocation free: asking Godot for the
-  // connected joypads builds an array, and only a connect/disconnect can change
-  // the answer.
-  private static bool _gamepadConnected;
 
   // Slides the bar in / out from the bottom of the screen.
   public void Enter() => _transition?.Enter();
 
   public void Exit() => _transition?.Exit();
 
+  // Subscribed from _EnterTree rather than _Ready so it stays subscribed through
+  // a reparent: _ExitTree fires every time the bar is moved, and _Ready only ever
+  // runs once.
+  public override void _EnterTree() {
+    base._EnterTree();
+    _subscribe();
+  }
+
   public override void _Ready() {
     base._Ready();
     _transition = GetNodeOrNull<UITransition>("UITransition");
     _collectCards(this);
-    _gamepadConnected = InputUtils.IsGamepadConnected();
     _lastType = _effectiveControllerType();
+    _lastIconType = GamepadIconHelper.DetectControllerType();
     _refreshAll();
-    _subscribe();
   }
 
   public override void _ExitTree() {
     base._ExitTree();
     _unsubscribe();
-  }
-
-  public override void _Process(double delta) {
-    base._Process(delta);
-    // Cheap poll: GameSettings.LastUsedController has no change notification, so
-    // this reads it (and the cached pad connection) and only rebuilds when the
-    // effective controller type actually changes.
-    var type = _effectiveControllerType();
-    if (type != _lastType) {
-      _lastType = type;
-      _refreshAll();
-    }
   }
 
   private void _collectCards(Node node) {
@@ -104,7 +99,7 @@ public partial class InputHintBar : Control {
   // connected (mirrors KeyBindingController's guard).
   private static ControllerType _effectiveControllerType() {
     var type = GameSettings.LastUsedController;
-    if (type == ControllerType.Gamepad && !_gamepadConnected) {
+    if (type == ControllerType.Gamepad && !InputUtils.IsGamepadConnected()) {
       return ControllerType.Keyboard;
     }
     return type;
@@ -114,6 +109,7 @@ public partial class InputHintBar : Control {
     if (_subscribed) {
       return;
     }
+    EventHandler.Instance.Events.LastUsedControllerChanged += _onLastUsedControllerChanged;
     EventHandler.Instance.Events.OnActionBound += _onActionRebound;
     EventHandler.Instance.Events.OnGamepadActionBound += _onGamepadActionRebound;
     Input.JoyConnectionChanged += _onJoyConnectionChanged;
@@ -124,14 +120,30 @@ public partial class InputHintBar : Control {
     if (!_subscribed) {
       return;
     }
+    EventHandler.Instance.Events.LastUsedControllerChanged -= _onLastUsedControllerChanged;
     EventHandler.Instance.Events.OnActionBound -= _onActionRebound;
     EventHandler.Instance.Events.OnGamepadActionBound -= _onGamepadActionRebound;
     Input.JoyConnectionChanged -= _onJoyConnectionChanged;
     _subscribed = false;
   }
 
-  private void _onJoyConnectionChanged(long device, bool connected) =>
-      _gamepadConnected = InputUtils.IsGamepadConnected();
+  // The player picked up another device: swap every glyph over to it.
+  private void _onLastUsedControllerChanged(int controllerType) => _refreshIfDeviceChanged();
+
+  // Unplugging the pad sends the hints back to the keyboard, plugging one in
+  // leaves them alone until the player actually presses something on it.
+  private void _onJoyConnectionChanged(long device, bool connected) => _refreshIfDeviceChanged();
+
+  private void _refreshIfDeviceChanged() {
+    var type = _effectiveControllerType();
+    var iconType = GamepadIconHelper.DetectControllerType();
+    if (type == _lastType && iconType == _lastIconType) {
+      return;
+    }
+    _lastType = type;
+    _lastIconType = iconType;
+    _refreshAll();
+  }
 
   private void _onActionRebound(string action, int key) => _refreshAll();
 

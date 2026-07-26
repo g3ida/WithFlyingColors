@@ -5,6 +5,7 @@ using System.Linq;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Input;
 using Wfc.Core.Localization;
 using Wfc.Entities.Ui.SettingsUI;
 using Wfc.Utils;
@@ -47,6 +48,7 @@ public partial class KeyBindingButton : Button, IEditableControl {
   private float _axisDirection = 0f;
 
   private bool _isListening = false;
+  private bool _isSubscribed;
 
   [Signal]
   public delegate void onkeyboardActionBoundEventHandler(string action, long key);
@@ -69,6 +71,45 @@ public partial class KeyBindingButton : Button, IEditableControl {
     this.WireNodes();
     _loadCurrentBinding();
     _animationPlayer.Play("RESET");
+  }
+
+  // Subscribed from _EnterTree, not _Ready: UIGridRow reparents this button into
+  // its row while the settings screen builds itself, and _Ready never runs twice.
+  public override void _EnterTree() {
+    base._EnterTree();
+    if (!_isSubscribed) {
+      EventHandler.Instance.Events.LastUsedControllerChanged += _onLastUsedControllerChanged;
+      Input.JoyConnectionChanged += _onJoyConnectionChanged;
+      _isSubscribed = true;
+    }
+  }
+
+  public override void _ExitTree() {
+    base._ExitTree();
+    if (_isSubscribed) {
+      EventHandler.Instance.Events.LastUsedControllerChanged -= _onLastUsedControllerChanged;
+      Input.JoyConnectionChanged -= _onJoyConnectionChanged;
+      _isSubscribed = false;
+    }
+    // Leaving while still listening (the screen was torn down mid capture) would
+    // otherwise strand device detection in the off state for the rest of the run.
+    if (_isListening) {
+      _setDetectionEnabled(true);
+    }
+  }
+
+  // A pad of another make draws its buttons with different art, so the icon has
+  // to be resolved again even though the binding behind it hasn't moved. The
+  // keyboard/gamepad switch arrives separately, through Type.
+  private void _onLastUsedControllerChanged(int controllerType) => _reloadArt();
+
+  // Unplugging the pad in use hands the icons over to whichever is left.
+  private void _onJoyConnectionChanged(long device, bool connected) => _reloadArt();
+
+  private void _reloadArt() {
+    if (IsNodeReady()) {
+      _loadCurrentBinding();
+    }
   }
 
   private void _loadCurrentKeyboardBinding() {
@@ -252,6 +293,7 @@ public partial class KeyBindingButton : Button, IEditableControl {
     }
     _isListening = isEditing;
     ButtonPressed = isEditing;
+    _setDetectionEnabled(!isEditing);
     if (isEditing) {
       _animationPlayer.Play("Blink");
       EventHandler.Instance.EmitKeyboardActionBiding();
@@ -314,6 +356,16 @@ public partial class KeyBindingButton : Button, IEditableControl {
   }
 
   public bool IsInEditMode() => _isListening;
+
+  // While this button is capturing, what gets pressed is a binding rather than
+  // the player reaching for another device: the automatic keyboard/gamepad
+  // switch has to stay out of it, or binding a gamepad button would swap the
+  // panel over to the keyboard halfway through the capture.
+  private static void _setDetectionEnabled(bool enabled) {
+    if (InputDeviceDetector.Instance != null) {
+      InputDeviceDetector.Instance.Enabled = enabled;
+    }
+  }
 
   private void _emitSelectionChangedSignal() {
     EmitSignal(nameof(SelectionChanged), _isListening);

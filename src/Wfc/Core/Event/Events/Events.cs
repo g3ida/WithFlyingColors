@@ -61,6 +61,10 @@ public partial class Events : RefCounted {
   public delegate void GamepadActionBindingEventHandler();
   [Signal]
   public delegate void OnGamepadActionBoundEventHandler(string action, int buttonOrAxis, bool isAxis, float axisDirection);
+  // The player just used a device of a different kind than the one before
+  // (keyboard/mouse vs. gamepad). Carries a ControllerType.
+  [Signal]
+  public delegate void LastUsedControllerChangedEventHandler(int controllerType);
   [Signal]
   public delegate void GamepadConnectedEventHandler(int deviceId, string deviceName);
   [Signal]

@@ -23,7 +23,7 @@ public partial class ControllerSelectDriver : UISelectDriver {
 
   private List<ControllerType> _availableControllers = new();
 
-  private bool _isJoyConnectionSubscribed;
+  private bool _isSubscribed;
 
   // The currently selected controller type.
   public ControllerType SelectedControllerType { get; private set; } = ControllerType.Keyboard;
@@ -62,20 +62,49 @@ public partial class ControllerSelectDriver : UISelectDriver {
     return index == -1 ? 0 : index;
   }
 
-  public override void _Ready() {
-    base._Ready();
-    if (!_isJoyConnectionSubscribed) {
+  // Subscribed from _EnterTree rather than _Ready so it survives being moved:
+  // UIGridRow reparents the select button (and this driver with it) into the row
+  // as the settings screen builds itself, which fires _ExitTree on a node whose
+  // _Ready will never run a second time. Paired the other way round, everything
+  // here would come unsubscribed the moment the screen finished loading.
+  public override void _EnterTree() {
+    base._EnterTree();
+    if (!_isSubscribed) {
       Input.JoyConnectionChanged += OnJoyConnectionChanged;
-      _isJoyConnectionSubscribed = true;
+      EventHandler.Instance.Events.LastUsedControllerChanged += OnLastUsedControllerChanged;
+      _isSubscribed = true;
     }
   }
 
   public override void _ExitTree() {
     base._ExitTree();
-    if (_isJoyConnectionSubscribed) {
+    if (_isSubscribed) {
       Input.JoyConnectionChanged -= OnJoyConnectionChanged;
-      _isJoyConnectionSubscribed = false;
+      EventHandler.Instance.Events.LastUsedControllerChanged -= OnLastUsedControllerChanged;
+      _isSubscribed = false;
     }
+  }
+
+  // Keyboard and gamepad are live at the same time, so this select isn't really
+  // a choice the player makes once: it shows whichever device they last touched.
+  // Moving it re-runs onItemSelected, which is what carries the change on to the
+  // key binding rows below it.
+  private void OnLastUsedControllerChanged(int controllerType) {
+    var type = (ControllerType)controllerType;
+    if (type == SelectedControllerType) {
+      // Same kind of device, so this is one pad swapped for another: the item
+      // names the pad, so it has to be built again to name the new one.
+      if (type == ControllerType.Gamepad) {
+        RefreshControllerList();
+      }
+      return;
+    }
+
+    // Nothing to show for a gamepad that isn't in the list (none connected).
+    if (!_availableControllers.Contains(type)) {
+      return;
+    }
+    (GetParent() as UISelectButton)?.SyncSelectionToDefault();
   }
 
   private void OnJoyConnectionChanged(long deviceId, bool connected) {
