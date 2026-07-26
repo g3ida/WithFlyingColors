@@ -3,6 +3,7 @@ namespace Wfc.Core.Event;
 using System;
 using Godot;
 using Wfc.Core.Input.Controllers;
+using Wfc.Core.Localization;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Piano;
 using Wfc.Screens.MenuManager;
@@ -124,6 +125,7 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitFullscreenToggled(bool fullscreen) => Events.EmitSignal(Events.SignalName.FullscreenToggled, fullscreen);
   public void EmitVsyncToggled(bool vsync) => Events.EmitSignal(Events.SignalName.VsyncToggled, vsync);
   public void EmitScreenSizeChanged(Vector2 size) => Events.EmitSignal(Events.SignalName.ScreenSizeChanged, size);
+  public void EmitLanguageChanged(Language language) => Events.EmitSignal(Events.SignalName.LanguageChanged, (int)language);
   public void EmitSfxVolumeChanged(float volume) => Events.EmitSignal(Events.SignalName.SfxVolumeChanged, volume);
   public void EmitMusicVolumeChanged(float volume) => Events.EmitSignal(Events.SignalName.MusicVolumeChanged, volume);
   public void EmitOnActionBound(string action, int key) => Events.EmitSignal(Events.SignalName.OnActionBound, action, key);

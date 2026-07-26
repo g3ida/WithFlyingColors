@@ -12,7 +12,14 @@ using Wfc.Entities.Ui;
 [Meta(typeof(IAutoNode))]
 public partial class ResolutionSelectDriver : UISelectDriver {
 
-  public override void _Notification(int what) => this.Notify(what);
+  // In fullscreen the only item is a translated "Auto", built once, so the list
+  // has to be made again for it to follow a language change.
+  public override void _Notification(int what) {
+    this.Notify(what);
+    if (what == NotificationTranslationChanged && IsNodeReady()) {
+      _onFullscreenToggled(GameSettings.Fullscreen);
+    }
+  }
 
   [Dependency]
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();

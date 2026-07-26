@@ -49,9 +49,21 @@ public partial class InputHintCard : PanelContainer {
     _inputs = GetNode<HBoxContainer>("HBox/Inputs");
     _wired = true;
 
-    _caption.Text = TranslationServer.Translate(CaptionKey.ToTranslationKeyStringSafe());
+    _applyCaption();
     _centerCaption();
   }
+
+  // The caption is translated once into the label's own text, which leaves the
+  // engine's auto-translation nothing to redo when the player picks another
+  // language, so it is written again here.
+  public override void _Notification(int what) {
+    if (what == NotificationTranslationChanged && _wired) {
+      _applyCaption();
+    }
+  }
+
+  private void _applyCaption() =>
+      _caption.Text = TranslationServer.Translate(CaptionKey.ToTranslationKeyStringSafe());
 
   // Rebuilds the glyphs to match the given controller type.
   public void Refresh(ControllerType type) {

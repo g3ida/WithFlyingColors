@@ -16,7 +16,14 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [Meta(typeof(IAutoNode))]
 public partial class ControllerSelectDriver : UISelectDriver {
 
-  public override void _Notification(int what) => this.Notify(what);
+  // The item names are translated device names, built once, so the list has to be
+  // made again for it to follow a language change.
+  public override void _Notification(int what) {
+    this.Notify(what);
+    if (what == NotificationTranslationChanged && IsNodeReady()) {
+      RefreshControllerList();
+    }
+  }
 
   [Dependency]
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();

@@ -7,6 +7,7 @@ using Wfc.Core.Localization;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
 using Wfc.Utils.Attributes;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class LanguageSelectDriver : UISelectDriver {
@@ -21,9 +22,19 @@ public partial class LanguageSelectDriver : UISelectDriver {
   }
 
   public override void onItemSelected(Variant? item) {
-    if (item != null) {
-      GameSettings.Language = ((string)item).LanguageCodeToLanguage();
+    if (item == null) {
+      return;
     }
+
+    var language = ((string)item).LanguageCodeToLanguage();
+    // Also called while the select builds itself, to show the language already in
+    // use. Only a real change is the player picking one, so only that is worth
+    // announcing - the sfx that goes with it is wired to this event.
+    if (language == GameSettings.Language) {
+      return;
+    }
+    GameSettings.Language = language;
+    EventHandler.Instance.EmitLanguageChanged(language);
   }
 
   public override int GetDefaultSelectedIndex() {

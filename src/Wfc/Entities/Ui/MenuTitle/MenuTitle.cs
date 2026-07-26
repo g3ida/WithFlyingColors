@@ -6,6 +6,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Localization;
+using Wfc.Screens;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -14,8 +15,6 @@ using Wfc.Utils.Attributes;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class MenuTitle : Control {
-  public override void _Notification(int what) => this.Notify(what);
-
   #region Exports
   // Preview text for the editor
   [Export]
@@ -56,14 +55,42 @@ public partial class MenuTitle : Control {
 
   public void OnResolved() {
     if (!Engine.IsEditorHint()) {
-      _configure(LocalizationService.GetLocalizedString(Content));
+      _configure(LocalizationService.GetLocalizedString(Content), withTransitions: true);
     }
     else {
-      _configure(DummyContent);
+      _configure(DummyContent, withTransitions: false);
     }
   }
 
-  private void _configure(String content) {
+  // A title is one label per word, and languages don't agree on how many words
+  // that is, so following a language change means building the titles again
+  // rather than rewriting them. Deferred because a node may not touch its own
+  // children while the engine is walking the tree to deliver this notification.
+  public override void _Notification(int what) {
+    this.Notify(what);
+    if (what == NotificationTranslationChanged && !Engine.IsEditorHint() && _labelNodes.Count > 0) {
+      Callable.From(_rebuild).CallDeferred();
+    }
+  }
+
+  private void _rebuild() {
+    foreach (var label in _labelNodes) {
+      RemoveChild(label);
+      label.QueueFree();
+    }
+    _labelNodes.Clear();
+
+    // The rebuilt titles get no transition of their own: the screen slid in long
+    // before the player reached the language setting, and there is no way to hand
+    // a late arrival an entrance that has already played.
+    _configure(LocalizationService.GetLocalizedString(Content), withTransitions: false);
+
+    // The screen drives the transitions it found when it was built on the way out,
+    // and the ones that went with the old titles are no longer among them.
+    (Owner as GameMenu)?.RefreshTransitionElements();
+  }
+
+  private void _configure(String content, bool withTransitions) {
     var labels = content.Split(" ");
     var i = 0;
     foreach (var label in labels) {
@@ -74,7 +101,7 @@ public partial class MenuTitle : Control {
       titleLabel.Position = new Vector2(TITLES_PADDING_LEFT, TITLES_PADDING_TOP + i * TITLE_LINE_SPACING);
       titleLabel.Name = $"{label} #{i}";
       // https://github.com/godotengine/godot/issues/85459
-      if (!Engine.IsEditorHint()) {
+      if (withTransitions) {
         // Add UITransition to title
         var transition = SceneHelpers.InstantiateNode<UITransition>();
         transition.Delay = (i + 1) * TRANSITION_DELAY;

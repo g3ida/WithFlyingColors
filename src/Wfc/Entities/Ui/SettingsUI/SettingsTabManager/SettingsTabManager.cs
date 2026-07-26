@@ -39,7 +39,14 @@ public partial class SettingsTabManager : Control {
   #endregion Nodes
 
   #region Dependencies
-  public override void _Notification(int what) => this.Notify(what);
+  // The tab captions hold strings that were already translated when the screen was
+  // built, so they have to be written again to follow a language change.
+  public override void _Notification(int what) {
+    this.Notify(what);
+    if (what == NotificationTranslationChanged && _areButtonsLocalized) {
+      _applyLocalizedText();
+    }
+  }
 
   [Dependency]
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
@@ -57,6 +64,9 @@ public partial class SettingsTabManager : Control {
 
   private GameSkin _skin = SkinManager.Instance.CurrentSkin;
   private int _currentPanelIndex = 0;
+  // The buttons are wired in _Ready and captioned once dependencies resolve, so
+  // nothing may write to them before both have happened.
+  private bool _areButtonsLocalized;
 
   // Gets the current panel index (0=General, 1=Video, 2=Controller, 3=Audio)
   public int CurrentPanelIndex => _currentPanelIndex;
@@ -89,6 +99,11 @@ public partial class SettingsTabManager : Control {
   }
 
   public void OnResolved() {
+    _applyLocalizedText();
+    _areButtonsLocalized = true;
+  }
+
+  private void _applyLocalizedText() {
     _generalSettingsButton.Text = LocalizationService.GetLocalizedString(TranslationKey.game_settings_category_general);
     _videoSettingsButton.Text = LocalizationService.GetLocalizedString(TranslationKey.game_settings_category_display);
     _controllerSettingsButton.Text = LocalizationService.GetLocalizedString(TranslationKey.game_settings_category_controller);

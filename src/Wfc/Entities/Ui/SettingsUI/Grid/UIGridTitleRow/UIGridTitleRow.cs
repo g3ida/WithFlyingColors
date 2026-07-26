@@ -13,7 +13,14 @@ using Wfc.Utils.Attributes;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class UIGridTitleRow : MarginContainer {
-  public override void _Notification(int what) => this.Notify(what);
+  // The title holds a string that was already translated when the row was built,
+  // so it has to be written again for the row to follow a language change.
+  public override void _Notification(int what) {
+    this.Notify(what);
+    if (what == NotificationTranslationChanged) {
+      _refreshLabel();
+    }
+  }
 
   [Dependency]
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
@@ -25,6 +32,8 @@ public partial class UIGridTitleRow : MarginContainer {
   public PanelContainer _panelContainerNode = default!;
   [NodePath("PanelContainer/Content")]
   public CenterContainer _contentNode = default!;
+
+  private Label? _labelNode = null;
 
   public void _setPanelStyle() {
     _panelContainerNode.SizeFlagsHorizontal = SizeFlags.ExpandFill;
@@ -46,13 +55,21 @@ public partial class UIGridTitleRow : MarginContainer {
     _contentNode.SizeFlagsVertical = SizeFlags.ShrinkCenter;
 
     // Create label
-    var _label = new Label {
+    _labelNode = new Label {
       Text = LocalizationService.GetLocalizedString(TranslationKey),
       HorizontalAlignment = HorizontalAlignment.Right,
       SizeFlagsHorizontal = SizeFlags.ExpandFill,
       SizeFlagsVertical = SizeFlags.ShrinkCenter
     };
-    _contentNode.AddChild(_label);
+    _contentNode.AddChild(_labelNode);
+  }
+
+  // Null until the row has been built, which only happens once its dependencies
+  // have resolved, so this doubles as the guard for reading LocalizationService.
+  private void _refreshLabel() {
+    if (_labelNode != null) {
+      _labelNode.Text = LocalizationService.GetLocalizedString(TranslationKey);
+    }
   }
 
   public override void _Ready() {

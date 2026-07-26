@@ -16,7 +16,15 @@ using Wfc.Utils.Attributes;
 public partial class UIGridRow : PanelContainer {
 
   #region Dependencies
-  public override void _Notification(int what) => this.Notify(what);
+  // The label holds a string that was already translated when the row was built,
+  // so the engine's own auto-translation has nothing left to redo once the player
+  // picks another language. Writing it again is what keeps the row in step.
+  public override void _Notification(int what) {
+    this.Notify(what);
+    if (what == NotificationTranslationChanged) {
+      _refreshLabel();
+    }
+  }
 
   [Dependency]
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
@@ -35,6 +43,7 @@ public partial class UIGridRow : PanelContainer {
   public HBoxContainer _contentNode = default!;
 
   private Control? _attachedNode = null;
+  private Label? _labelNode = null;
   private int _focusState = 0;
   private void _setStyle(bool hasFocus) {
     var style = new StyleBoxFlat();
@@ -51,13 +60,21 @@ public partial class UIGridRow : PanelContainer {
 
   private void _addContentLabel() {
     // Create label
-    var _label = new Label {
+    _labelNode = new Label {
       Text = LocalizationService.GetLocalizedString(TranslationKey),
       HorizontalAlignment = HorizontalAlignment.Right,
       SizeFlagsHorizontal = SizeFlags.ExpandFill,
       SizeFlagsVertical = SizeFlags.ShrinkCenter
     };
-    _contentNode.AddChild(_label);
+    _contentNode.AddChild(_labelNode);
+  }
+
+  // Null until the row has been built, which only happens once its dependencies
+  // have resolved, so this doubles as the guard for reading LocalizationService.
+  private void _refreshLabel() {
+    if (_labelNode != null) {
+      _labelNode.Text = LocalizationService.GetLocalizedString(TranslationKey);
+    }
   }
 
   private void _addContentValue() {
