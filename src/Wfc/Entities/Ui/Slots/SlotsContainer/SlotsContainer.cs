@@ -33,8 +33,6 @@ public partial class SlotsContainer : Control {
   private SaveSlotPanel[] _saveSlots = default!;
   #endregion Nodes
 
-  public void OnResolved() { }
-
   [Dependency]
   public ISaveManager SaveManager => this.DependOn<ISaveManager>();
 
@@ -45,7 +43,14 @@ public partial class SlotsContainer : Control {
 
     SetProcess(false);
     Size = _boxContainerNode.Size;
+  }
 
+  // Filling the panels in belongs here rather than in _Ready. _Ready runs before
+  // AutoInject has resolved anything, so reading SaveManager there threw
+  // ProviderNotFoundException on the first slot and abandoned the rest of the method:
+  // no save images, no metadata, no focus and no centering. Godot logs the exception
+  // and carries on, which is why the screen looked merely empty rather than broken.
+  public void OnResolved() {
     for (int i = 0; i < _saveSlots.Length; i++) {
       var texture = SaveManager.GetSlotImage(i);
       if (texture != null) {

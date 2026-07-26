@@ -73,7 +73,10 @@ public partial class MainMenu : GameMenu {
         _menuBoxNode.HideSubMenuIfNeeded();
         NavigateToScreen(GameMenus.GAME);
         return true;
-      case MenuAction.SelectSlot:
+      // The action the play sub-menu's slot button actually emits. This listened for
+      // SelectSlot, which is what the select-slot screen reports when a slot has been
+      // chosen on it, so the button here answered to nothing.
+      case MenuAction.GoToSlotSelect:
         _menuBoxNode.HideSubMenuIfNeeded();
         NavigateToScreen(GameMenus.SELECT_SLOT);
         return true;
