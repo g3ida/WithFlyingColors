@@ -3,6 +3,8 @@ namespace Wfc.Utils;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Input;
+using Wfc.Core.Input.Controllers;
+using Wfc.Core.Settings;
 
 public static class InputUtils {
   public static InputEventKey? GetFirstKeyKeyboardEventFromActionList(IEnumerable<InputEvent> actionList) {
@@ -33,6 +35,16 @@ public static class InputUtils {
   }
 
   // Returns true if any gamepad is currently connected.
+  // The device the hint bar, the glyphs and the binding rows should all speak for:
+  // whatever the player last used, unless that was a gamepad and there is no longer
+  // one plugged in. Three places carried their own copy of this rule.
+  public static ControllerType GetEffectiveControllerType() {
+    var lastUsed = GameSettings.LastUsedController;
+    return lastUsed == ControllerType.Gamepad && !IsGamepadConnected()
+      ? ControllerType.Keyboard
+      : lastUsed;
+  }
+
   public static bool IsGamepadConnected() {
     var connectedJoypads = Input.GetConnectedJoypads();
     return connectedJoypads.Count > 0;

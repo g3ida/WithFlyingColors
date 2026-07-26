@@ -39,8 +39,6 @@ public partial class SlotButton : ColorRect {
   private AnimationPlayer _blinkAnimationPlayerNode = default!;
   #endregion Nodes
 
-  private static readonly StringName ANIM_BLINK = "Blink";
-
   private State _currentState = State.Hidden;
   private Tween? _buttonTween;
 
@@ -58,6 +56,8 @@ public partial class SlotButton : ColorRect {
       SkinColorIntensity.Basic
     );
     _buttonNode.Icon = IconTexture;
+    _buttonNode.GrabFocusOnHover();
+    _buttonNode.BlinkWhileFocused(_blinkAnimationPlayerNode);
   }
 
   private void SetFocusNextAndPrevious() {
@@ -100,10 +100,8 @@ public partial class SlotButton : ColorRect {
     }
   }
 
-  public new void GrabFocus() {
-    _buttonNode.GrabFocus();
-    _blinkAnimationPlayerNode.Play("Blink");
-  }
+  // Blinking follows focus on its own now, so taking focus is all this has to do.
+  public new void GrabFocus() => _buttonNode.GrabFocus();
 
   private void UpdateHeight() {
     // make the button height expand the whole container
@@ -111,24 +109,12 @@ public partial class SlotButton : ColorRect {
     _buttonNode.Size = new Vector2(_buttonNode.Size.X, Size.Y);
   }
 
+  // Still per frame: the width this mirrors is tweened on the inner button, and the
+  // height comes from a parent whose own size is driven by its siblings.
   public override void _Process(double delta) {
     CustomMinimumSize = new Vector2(_buttonNode.CustomMinimumSize.X, CustomMinimumSize.Y);
     Size = new Vector2(_buttonNode.CustomMinimumSize.X, Size.Y);
     UpdateHeight();
-    BlinkButtonIfNeeded();
-  }
-
-  private void BlinkButtonIfNeeded() {
-    if (_buttonNode.HasFocus()) {
-      if (_blinkAnimationPlayerNode.CurrentAnimation != ANIM_BLINK) {
-        _blinkAnimationPlayerNode.Play(ANIM_BLINK);
-      }
-    }
-    else {
-      if (_blinkAnimationPlayerNode.CurrentAnimation == ANIM_BLINK) {
-        _blinkAnimationPlayerNode.Play("RESET");
-      }
-    }
   }
 
   private void SetupTween(float sizeX) {
@@ -153,9 +139,5 @@ public partial class SlotButton : ColorRect {
 
   private void _onButtonPressed() {
     EmitSignal(nameof(pressed));
-  }
-
-  private void _onButtonMouseEntered() {
-    GrabFocus();
   }
 }

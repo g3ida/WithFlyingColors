@@ -52,8 +52,8 @@ public partial class InputHintBar : Control {
   public override void _Ready() {
     base._Ready();
     _transition = GetNodeOrNull<UITransition>("UITransition");
-    _collectCards(this);
-    _lastType = _effectiveControllerType();
+    _cards.AddRange(this.FindDescendants<InputHintCard>());
+    _lastType = InputUtils.GetEffectiveControllerType();
     _lastIconType = GamepadIconHelper.DetectControllerType();
     _refreshAll();
   }
@@ -61,15 +61,6 @@ public partial class InputHintBar : Control {
   public override void _ExitTree() {
     base._ExitTree();
     _unsubscribe();
-  }
-
-  private void _collectCards(Node node) {
-    foreach (var child in node.GetChildren()) {
-      if (child is InputHintCard card) {
-        _cards.Add(card);
-      }
-      _collectCards(child);
-    }
   }
 
   private void _refreshAll() {
@@ -93,16 +84,6 @@ public partial class InputHintBar : Control {
     foreach (var card in _cards) {
       card.CustomMinimumSize = new Vector2(widest, card.CustomMinimumSize.Y);
     }
-  }
-
-  // Falls back to keyboard when gamepad is the stored preference but none is
-  // connected (mirrors KeyBindingController's guard).
-  private static ControllerType _effectiveControllerType() {
-    var type = GameSettings.LastUsedController;
-    if (type == ControllerType.Gamepad && !InputUtils.IsGamepadConnected()) {
-      return ControllerType.Keyboard;
-    }
-    return type;
   }
 
   private void _subscribe() {
@@ -135,7 +116,7 @@ public partial class InputHintBar : Control {
   private void _onJoyConnectionChanged(long device, bool connected) => _refreshIfDeviceChanged();
 
   private void _refreshIfDeviceChanged() {
-    var type = _effectiveControllerType();
+    var type = InputUtils.GetEffectiveControllerType();
     var iconType = GamepadIconHelper.DetectControllerType();
     if (type == _lastType && iconType == _lastIconType) {
       return;

@@ -13,6 +13,7 @@ using Wfc.Core.Ui;
 using Wfc.Entities.Ui;
 using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
+using Wfc.Utils;
 using EventHandler = Core.Event.EventHandler;
 
 public partial class GameMenu : Control {
@@ -201,26 +202,10 @@ public partial class GameMenu : Control {
     // Disconnect first so a second call can't leave the previous set connected and
     // double-count every signal.
     _clearTransitionElements();
-    foreach (var child in GetChildren()) {
-      // only look 3 levels deep for performance
-      _collectTransitionsRecursive(child, 3);
-    }
-  }
-
-  // Helper: recursively collects transitions from the entire subtree.
-  private void _collectTransitionsRecursive(Node node, int remainingDepth) {
-    if (remainingDepth == 0) {
-      return;
-    }
-    if (node is UITransition transition) {
+    foreach (var transition in this.FindDescendants<UITransition>()) {
       _transitionElements.Add(transition);
       transition.Connect(UITransition.SignalName.Entered, new Callable(this, nameof(_onTransitionElementEntered)));
       transition.Connect(UITransition.SignalName.Exited, new Callable(this, nameof(_onTransitionElementExited)));
-      // No need to descend further; transitions shouldn't have child transitions, but remove this return if that's possible.
-      return;
-    }
-    foreach (var child in node.GetChildren()) {
-      _collectTransitionsRecursive(child, remainingDepth - 1);
     }
   }
 

@@ -28,6 +28,8 @@ public partial class UiSlider : HSlider {
     FocusMode = FocusModeEnum.All;
     CustomMinimumSize = new Vector2(200, CustomMinimumSize.Y);
     Size = new Vector2(350, Size.Y);
+    this.GrabFocusOnHover();
+    this.BlinkWhileFocused(_animationPlayerNode);
   }
 
   public override void _EnterTree() {
@@ -59,17 +61,11 @@ public partial class UiSlider : HSlider {
     }
   }
 
-  private void _onFocusEntered() {
-    SetProcess(true);
-    _animationPlayerNode.Stop();
-    _animationPlayerNode.Play("Blink");
-  }
+  // Left/right is polled, so processing only needs to run while this slider is the
+  // one being pointed at. The blink that goes with it is wired in _Ready.
+  private void _onFocusEntered() => SetProcess(true);
 
-  private void _onFocusExited() {
-    SetProcess(false);
-    _animationPlayerNode.Stop();
-    _animationPlayerNode.Play("RESET");
-  }
+  private void _onFocusExited() => SetProcess(false);
 
   private void _onLeftPressed() {
     AddValueToSlider(-this.Step);
@@ -81,9 +77,5 @@ public partial class UiSlider : HSlider {
 
   private void AddValueToSlider(double value) {
     Value = Mathf.Clamp(this.Value + value, this.MinValue, this.MaxValue);
-  }
-
-  private void _onMouseEntered() {
-    GrabFocus();
   }
 }

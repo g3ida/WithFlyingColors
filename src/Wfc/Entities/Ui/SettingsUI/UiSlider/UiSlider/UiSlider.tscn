@@ -53,6 +53,4 @@ libraries = {
 &"": SubResource("AnimationLibrary_8aa72")
 }
 
-[connection signal="drag_ended" from="." to="." method="_onHSliderDragEnded"]
-[connection signal="mouse_entered" from="." to="." method="_onMouseEntered"]
 [connection signal="resized" from="." to="." method="_onResized"]

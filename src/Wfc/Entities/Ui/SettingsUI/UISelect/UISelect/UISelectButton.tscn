@@ -173,7 +173,6 @@ libraries = {
 &"": SubResource("AnimationLibrary_xu7bn")
 }
 
-[connection signal="mouse_entered" from="." to="." method="_onButtonMouseEntered"]
 [connection signal="pressed" from="HBoxContainer/Left" to="." method="_onLeftPressed"]
 [connection signal="pressed" from="HBoxContainer/Right" to="." method="_onRightPressed"]
 [connection signal="resized" from="HBoxContainer/Label" to="." method="_onLabelResized"]

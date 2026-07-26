@@ -50,5 +50,4 @@ icon_alignment = 1
 anims/Blink = SubResource("2")
 anims/RESET = SubResource("3")
 
-[connection signal="mouse_entered" from="Button" to="." method="_onButtonMouseEntered"]
 [connection signal="pressed" from="Button" to="." method="_onButtonPressed"]

@@ -74,6 +74,10 @@ public partial class KeyBindingButton : Button, IEditableControl {
     this.WireNodes();
     _loadCurrentBinding();
     _animationPlayer.Play("RESET");
+    // This button processes Always so it can read a binding while the tree is paused,
+    // which also means it hears the mouse under an overlay. Declining then is what
+    // stops a stray hover moving focus out of a capture in progress.
+    this.GrabFocusOnHover(canFocus: () => !ModalStack.IsAnyOpen);
   }
 
   // Subscribed from _EnterTree, not _Ready: UIGridRow reparents this button into
@@ -351,12 +355,6 @@ public partial class KeyBindingButton : Button, IEditableControl {
   private void _onKeyBindingButtonPressed() {
     if (ButtonPressed) {
       setEditing(true);
-    }
-  }
-
-  private void _onKeyBindingButtonMouseEntered() {
-    if (!GetTree().Paused) {
-      GrabFocus();
     }
   }
 

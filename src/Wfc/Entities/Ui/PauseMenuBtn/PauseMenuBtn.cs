@@ -16,7 +16,7 @@ public partial class PauseMenuBtn : Button {
     this.WireNodes();
     Visible = false;
     _animationPlayer.Play("Hidden");
-    MouseEntered += GrabFocus;
+    this.GrabFocusOnHover();
   }
 
   public void HideBtn() {

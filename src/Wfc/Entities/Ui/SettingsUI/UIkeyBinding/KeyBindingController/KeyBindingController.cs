@@ -37,19 +37,8 @@ public partial class KeyBindingController : PanelContainer {
 		base._Ready();
 		this.WireNodes();
 
-		// Find and store keyboard binding buttons
-		_bindingButtons = _findBindingButtons(this);
-
-		// Add gamepad binding buttons to each keyboard binding row
-		//AddGamepadBindingButtons();
-
-		// Set initial controller type based on last used
-		_currentControllerType = GameSettings.LastUsedController;
-		if (_currentControllerType == ControllerType.Gamepad && !InputUtils.IsGamepadConnected()) {
-			_currentControllerType = ControllerType.Keyboard;
-		}
-
-		// Update visibility based on current controller type
+		_bindingButtons = [.. this.FindDescendants<KeyBindingButton>()];
+		_currentControllerType = InputUtils.GetEffectiveControllerType();
 		_updateBindingButtons();
 	}
 
@@ -60,8 +49,6 @@ public partial class KeyBindingController : PanelContainer {
 	}
 
 	private void _updateBindingButtons() {
-		bool showKeyboard = _currentControllerType == ControllerType.Keyboard;
-
 		var bindingType = _currentControllerType switch {
 			ControllerType.Keyboard => KeyBindingButton.BindingType.Keyboard,
 			ControllerType.Gamepad => KeyBindingButton.BindingType.Gamepad,
@@ -72,17 +59,6 @@ public partial class KeyBindingController : PanelContainer {
 		foreach (var button in _bindingButtons) {
 			button.Type = bindingType;
 		}
-	}
-
-	private List<KeyBindingButton> _findBindingButtons(Node root) {
-		var buttons = new List<KeyBindingButton>();
-		foreach (var child in root.GetChildren()) {
-			if (child is KeyBindingButton keyButton) {
-				buttons.Add(keyButton);
-			}
-			buttons.AddRange(_findBindingButtons(child));
-		}
-		return buttons;
 	}
 
 	private void _onKeyboardInputActionBound(string action, int key) {

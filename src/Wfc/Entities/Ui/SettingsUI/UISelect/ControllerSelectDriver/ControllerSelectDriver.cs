@@ -50,15 +50,9 @@ public partial class ControllerSelectDriver : UISelectDriver {
   }
 
   public override int GetDefaultSelectedIndex() {
-    // Return index based on last used controller
-    var lastUsed = GameSettings.LastUsedController;
-
-    // If last used was gamepad but no gamepad is connected, default to keyboard
-    if (lastUsed == ControllerType.Gamepad && !InputUtils.IsGamepadConnected()) {
-      return 0;
-    }
-
-    var index = _availableControllers.FindIndex(x => x == lastUsed);
+    // Keyboard is always first in the list, so an unplugged gamepad falling back to
+    // keyboard and an unknown device both land on the same entry.
+    var index = _availableControllers.FindIndex(x => x == InputUtils.GetEffectiveControllerType());
     return index == -1 ? 0 : index;
   }
 
@@ -145,11 +139,7 @@ public partial class ControllerSelectDriver : UISelectDriver {
 
   public void OnResolved() {
     RefreshControllerList();
-    // Set initial selected controller type based on last used
-    SelectedControllerType = GameSettings.LastUsedController;
-    if (SelectedControllerType == ControllerType.Gamepad && !InputUtils.IsGamepadConnected()) {
-      SelectedControllerType = ControllerType.Keyboard;
-    }
+    SelectedControllerType = InputUtils.GetEffectiveControllerType();
   }
 
   // Returns true if a gamepad is currently connected.
