@@ -36,7 +36,26 @@ public partial class TitleLabel : Label {
   }
 
   public float getEstimatedWidth() {
-    return _underlineNode.Size.X * _underlineNode.Scale.X;
+    return _underlineNode.Size.X * _underlineNode.Scale.X * Scale.X;
+  }
+
+  // Width of this word at the size the design asks for. Answerable before the label
+  // has entered the tree - the font comes from a theme override rather than from an
+  // ancestor - which is when the title above works out how far it has to scale the
+  // whole line down to fit the room it was given.
+  public float MeasureContentWidth() {
+    var font = GetThemeFont("font");
+    return font is null ? 0f : font.GetStringSize(content, fontSize: GetThemeFontSize("font_size")).X;
+  }
+
+  // Writes a new word into the title. The underline is drawn as a stretched texture
+  // rather than a border, so it has to be measured again whenever the word changes
+  // length - which is every time a screen is shown in another language.
+  public void SetContent(string value) {
+    content = value;
+    Text = value;
+    _shadowNode.Text = value;
+    _fitUnderlines();
   }
 
   public override void _EnterTree() {
@@ -44,17 +63,18 @@ public partial class TitleLabel : Label {
     Text = content;
     _shadowNode.Text = content;
     SetProcess(false);
+    _fitUnderlines();
+  }
 
+  private void _fitUnderlines() {
     var skin = SkinManager.Instance.CurrentSkin;
-    var underlineColor = skin.GetColor(UnderlineSkinColor, UNDERLINE_COLOR_INTENSITY);
-    var underlineShadowColor = skin.GetColor(UnderlineSkinColor, UNDERLINE_SHADOW_COLOR_INTENSITY);
 
     var scale = GetMinimumSize().X / _underlineNode.Size.X;
     _underlineNode.Scale = new Vector2(scale, _underlineNode.Scale.Y);
-    _underlineNode.Modulate = underlineColor;
+    _underlineNode.Modulate = skin.GetColor(UnderlineSkinColor, UNDERLINE_COLOR_INTENSITY);
 
     var shadowScale = GetMinimumSize().X / _underlineShadowNode.Size.X;
     _underlineShadowNode.Scale = new Vector2(shadowScale, _underlineShadowNode.Scale.Y);
-    _underlineShadowNode.Modulate = underlineShadowColor;
+    _underlineShadowNode.Modulate = skin.GetColor(UnderlineSkinColor, UNDERLINE_SHADOW_COLOR_INTENSITY);
   }
 }

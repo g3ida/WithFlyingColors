@@ -21,6 +21,13 @@ public partial class MenuTitle : Control {
   public string DummyContent { get; set; } = "";
   [Export(hint: PropertyHint.Enum, hintString: "Key for the translatable string to display")]
   public TranslationKey Content { get; set; }
+
+  // The room this title has beside whatever else the screen puts next to it. A title
+  // whose longest word won't fit is scaled down as a whole - text, shadow and
+  // underline together - rather than being left to run under the list beside it.
+  // Zero, the default, means the title has the screen to itself.
+  [Export]
+  public float MaxLineWidth { get; set; }
   #endregion Exports
 
   #region Dependencies
@@ -92,13 +99,23 @@ public partial class MenuTitle : Control {
 
   private void _configure(String content, bool withTransitions) {
     var labels = content.Split(" ");
-    var i = 0;
+    var built = new List<TitleLabel>();
     foreach (var label in labels) {
-      // Add title
       var titleLabel = SceneHelpers.InstantiateNode<TitleLabel>();
       titleLabel.content = label;
+      built.Add(titleLabel);
+    }
+
+    // Every line takes the same scale, so a title still reads as one block, and the
+    // gap between lines comes down with it.
+    var scale = _fitScale(built);
+
+    var i = 0;
+    foreach (var titleLabel in built) {
+      var label = titleLabel.content;
+      titleLabel.Scale = new Vector2(scale, scale);
       titleLabel.UnderlineSkinColor = UNDERLINE_COLOR_BAG[i % UNDERLINE_COLOR_BAG.Length];
-      titleLabel.Position = new Vector2(TITLES_PADDING_LEFT, TITLES_PADDING_TOP + i * TITLE_LINE_SPACING);
+      titleLabel.Position = new Vector2(TITLES_PADDING_LEFT, TITLES_PADDING_TOP + (i * TITLE_LINE_SPACING * scale));
       titleLabel.Name = $"{label} #{i}";
       // https://github.com/godotengine/godot/issues/85459
       if (withTransitions) {
@@ -120,5 +137,20 @@ public partial class MenuTitle : Control {
 
       i++;
     }
+  }
+
+  // How far the whole title has to come down for its longest word to fit the room it
+  // was given. Never enlarges: a title that already fits is drawn at the size the
+  // design asks for, which is every title on a screen that set no limit.
+  private float _fitScale(List<TitleLabel> labels) {
+    if (MaxLineWidth <= 0f) {
+      return 1f;
+    }
+
+    var widest = 0f;
+    foreach (var label in labels) {
+      widest = Mathf.Max(widest, label.MeasureContentWidth());
+    }
+    return widest <= MaxLineWidth ? 1f : MaxLineWidth / widest;
   }
 }

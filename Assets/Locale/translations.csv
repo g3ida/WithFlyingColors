@@ -2,12 +2,12 @@ keys,en,fr,de,es,it,pt,nl
 menu.button.play,Play,Jouer,Spielen,Jugar,Gioca,Jogar,Spelen
 menu.button.continue,Continue,Continuer,Fortsetzen,Continuar,Continua,Continuar,Doorgaan
 menu.button.new_game,New Game,Nouvelle partie,Neues Spiel,Nuevo juego,Nuova partita,Novo Jogo,Nieuw Spel
-menu.button.quit,Quit,Quitter,Beenden,Salir,Esci,Sair,Afsluiten
-menu.button.selected_slot,Selected Slot,Emplacement sélectionné,Ausgewählter Slot,Ranura seleccionada,Slot selezionato,Slot Selecionado,Geselecteerd Slot
+menu.button.quit,Quit,Quitter,Beenden,Salir,Esci,Sair,Sluiten
+menu.button.selected_slot,Selected Slot,Emplacement,Ausgewählter Slot,Ranura seleccionada,Slot selezionato,Slot Selecionado,Geselecteerd Slot
 menu.button.settings,Settings,Options,Optionen,Ajustes,Opzioni,Opções,Opties
 menu.header.game_settings,Game Settings,Options du jeu,Spiel Optionen,Ajustes del juego,Opzioni di gioco,Opções do Jogo,Spel Opties
-menu.button.stats,Stats,Statistiques,Statistiken,Estadísticas,Statistiche,Estatísticas,Statistieken
-menu.header.game_stats,Game Stats,Statistiques du jeu,Spielstatistiken,Estadísticas del juego,Statistiche di gioco,Estatísticas do Jogo,Spelstatistieken
+menu.button.stats,Stats,Stats,Stats,Stats,Stats,Stats,Stats
+menu.header.game_stats,Game Stats,Statistiques du jeu,Spiel Statistiken,Estadísticas del juego,Statistiche di gioco,Estatísticas do Jogo,Spel Statistieken
 menu.button.options,Options,Options,Optionen,Opciones,Opzioni,Opções,Opties
 menu.button.select_slot,Select Slot,Sélectionner un emplacement,Slot auswählen,Seleccionar ranura,Seleziona slot,Selecionar Slot,Slot Selecteren
 menu.button.save_slot,Save Slot,Sauvegarder l'emplacement,Slot speichern,Guardar ranura,Salva slot,Salvar Slot,Slot Opslaan
@@ -32,7 +32,7 @@ game.command.pause,Pause,Pause,Pause,Pausa,Pausa,Pausar,Pauze
 game.settings.category.audio,Audio,Audio,Audio,Audio,Audio,Áudio,Audio
 game.settings.audio.sfx_volume,SFX Volume,Volume SFX,SFX-Lautstärke,Volumen SFX,Volume effetti sonori,Volume SFX,SFX Volume
 game.settings.audio.music_volume,Music Volume,Volume musique,Musik-Lautstärke,Volumen música,Volume musica,Volume Música,Muziek Volume
-menu.label.current_slot,Current slot, Emplacement de sauvegarde actuel, Aktueller Speicherplatz, Ranura de guardado actual, Slot di salvataggio attuale, Slot di salvataggio attuale, Huidige opslagslot
+menu.label.current_slot,Current slot,Emplacement actuel,Aktueller Speicherplatz,Ranura actual,Slot attuale,Slot atual,Huidig slot
 game.level.title.tutorial,Tutorial,Intro,Einführung,Guía,Guida,Início,Intro
 game.level.title.dark_games,Dark Games,Jeux de Ténèbres,Spiele der Schatten,Tenebrosos,Tenebrosi,Jogos das Trevas,Spelen der Schaduwen
 menu.header.main_menu,With Flying Colors,With Flying Colors,With Flying Colors,With Flying Colors,With Flying Colors,With Flying Colors,With Flying Colors
@@ -46,7 +46,22 @@ controller.type.keyboard,Keyboard,Clavier,Tastatur,Teclado,Tastiera,Teclado,Toet
 controller.type.gamepad,Gamepad,Manette,Gamepad,Mando,Gamepad,Comando,Gamepad
 controller.label.controls,Controls,Commandes,Steuerung,Controles,Comandi,Controlos,Besturing
 game.command.empty,(EMPTY),(VIDE),(LEER),(VACÍO),(VUOTO),(VAZIO),(LEEG)
-menu.hint.select,Select,Sélectionner,Auswählen,Seleccionar,Seleziona,Selecionar,Selecteren
+menu.hint.select,Select,Valider,Wählen,Elegir,Scegli,Escolher,Kiezen
 menu.hint.back,Back,Retour,Zurück,Atrás,Indietro,Voltar,Terug
 menu.hint.switch_tab,Switch Tab,Changer d'onglet,Tab wechseln,Cambiar pestaña,Cambia scheda,Mudar aba,Wissel tabblad
-menu.hint.navigate,Navigate,Naviguer,Navigieren,Navegar,Naviga,Navegar,Navigeren
+menu.hint.navigate,Navigate,Naviguer,Bewegen,Navegar,Naviga,Navegar,Bewegen
+menu.header.select_slot,Select Slot,Choisir un emplacement,Slot auswählen,Elegir ranura,Scegli slot,Escolher slot,Slot kiezen
+menu.header.select_level,Select Level,Choisir un niveau,Level auswählen,Elegir nivel,Scegli livello,Escolher nível,Level kiezen
+menu.header.level_cleared,Level Cleared,Niveau terminé,Level geschafft,Nivel superado,Livello superato,Nível concluído,Level voltooid
+menu.button.level_selection,Level Selection,Choix du niveau,Levelauswahl,Selección de nivel,Selezione livello,Seleção de nível,Levelkeuze
+menu.button.main_menu,Main Menu,Menu principal,Hauptmenü,Menú principal,Menu principale,Menu principal,Hoofdmenu
+menu.label.no_slot,None,Aucun,Keiner,Ninguna,Nessuno,Nenhum,Geen
+menu.button.confirm,Confirm,Confirmer,Bestätigen,Confirmar,Conferma,Confirmar,Bevestigen
+menu.button.cancel,Cancel,Annuler,Abbrechen,Cancelar,Annulla,Cancelar,Annuleren
+menu.dialog.delete_slot,Are you sure you want to delete the current slot?,Voulez-vous vraiment supprimer l'emplacement actuel ?,Möchtest du den aktuellen Speicherplatz wirklich löschen?,¿Seguro que quieres borrar la ranura actual?,Vuoi davvero eliminare lo slot attuale?,Tem a certeza de que quer apagar o slot atual?,Weet je zeker dat je het huidige slot wilt verwijderen?
+menu.dialog.select_slot_required,Please select a save slot to continue.,Veuillez choisir un emplacement de sauvegarde pour continuer.,Bitte wähle einen Speicherplatz aus um fortzufahren.,Selecciona una ranura de guardado para continuar.,Seleziona uno slot di salvataggio per continuare.,Escolhe um slot de guardado para continuar.,Kies een opslagslot om door te gaan.
+menu.dialog.bind_all_keys,Please make sure all input keys are bound correctly.,Vérifiez que toutes les touches sont bien assignées.,Bitte stelle sicher dass alle Tasten korrekt belegt sind.,Comprueba que todas las teclas estén asignadas correctamente.,Controlla che tutti i tasti siano assegnati correttamente.,Verifica se todas as teclas estão atribuídas corretamente.,Controleer of alle toetsen correct zijn toegewezen.
+menu.button.ok,OK,OK,OK,Aceptar,OK,OK,OK
+menu.label.empty_slot,<EMPTY>,<VIDE>,<LEER>,<VACÍO>,<VUOTO>,<VAZIO>,<LEEG>
+menu.label.slot_progress,Progress: {0}%,Progression : {0} %,Fortschritt: {0} %,Progreso: {0} %,Avanzamento: {0}%,Progresso: {0}%,Voortgang: {0}%
+menu.label.slot_index,Slot {0},Emplacement {0},Slot {0},Ranura {0},Slot {0},Slot {0},Slot {0}

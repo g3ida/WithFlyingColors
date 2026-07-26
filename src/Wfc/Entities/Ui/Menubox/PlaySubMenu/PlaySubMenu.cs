@@ -36,7 +36,7 @@ public partial class PlaySubMenu : Control {
         },
         new()
         {
-            Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_selectedSlot) + $": {SaveManager.GetSelectedSlotText()}",
+            Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_selectedSlot) + $": {SaveManager.GetSelectedSlotText(LocalizationService)}",
             MenuAction = MenuAction.GoToSlotSelect,
             DisplayCondition = ButtonDef.ButtonCondition.None
         },

@@ -100,5 +100,16 @@ public partial class SelectSlotMenu : GameMenu {
     SetSelectedSlotLabel();
   }
 
-  private void SetSelectedSlotLabel() => CurrentSlotLabelNode.Text = SaveManager.GetSelectedSlotText();
+  // The label holds a string that was already translated when the screen was built,
+  // so the engine's own auto-translation has nothing left to redo once the player
+  // picks another language.
+  public override void _Notification(int what) {
+    base._Notification(what);
+    if (what == NotificationTranslationChanged && IsNodeReady()) {
+      SetSelectedSlotLabel();
+    }
+  }
+
+  private void SetSelectedSlotLabel() =>
+    CurrentSlotLabelNode.Text = SaveManager.GetCurrentSlotLine(LocalizationService);
 }

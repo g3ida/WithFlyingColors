@@ -4,6 +4,7 @@ using System;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -12,9 +13,20 @@ using Wfc.Utils.Attributes;
 [Meta(typeof(IAutoNode))]
 public partial class SaveSlotPanel : PanelContainer {
 
-  public override void _Notification(int what) => this.Notify(what);
+  // The panel holds strings that were already translated when the slot list was
+  // built, so the engine's own auto-translation has nothing left to redo once the
+  // player picks another language.
+  public override void _Notification(int what) {
+    this.Notify(what);
+    if (what == NotificationTranslationChanged) {
+      _refreshLocalizedText();
+    }
+  }
+
   [Dependency]
   public ISaveManager SaveManager => this.DependOn<ISaveManager>();
+  [Dependency]
+  public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
 
   [Signal]
   public delegate void PressedEventHandler(string action);
@@ -50,7 +62,23 @@ public partial class SaveSlotPanel : PanelContainer {
   private AnimationPlayer _animationPlayerNode = default!;
   #endregion Nodes
 
-  public void OnResolved() { }
+  // Set once dependencies are up, which is also the guard for reading them: _Ready
+  // runs first and writes the slot index before LocalizationService is available.
+  private bool _isResolved;
+
+  public void OnResolved() {
+    _isResolved = true;
+    _refreshLocalizedText();
+  }
+
+  private void _refreshLocalizedText() {
+    if (!_isResolved) {
+      return;
+    }
+    _slotIndexNode.Text = string.Format(
+        LocalizationService.GetLocalizedString(TranslationKey.menu_label_slotIndex), _id + 1);
+    UpdateMetaData();
+  }
 
   public override void _Ready() {
     base._Ready();
@@ -94,7 +122,10 @@ public partial class SaveSlotPanel : PanelContainer {
   public void SetSlotIndexLabel(int value) {
     _id = value;
     _actionButtonsNode.SlotIndex = _id;
-    _slotIndexNode.Text = $"SLOT {_id + 1}";
+    if (_isResolved) {
+      _slotIndexNode.Text = string.Format(
+          LocalizationService.GetLocalizedString(TranslationKey.menu_label_slotIndex), _id + 1);
+    }
   }
 
   public int Timestamp {
@@ -220,11 +251,12 @@ public partial class SaveSlotPanel : PanelContainer {
     var metaData = SaveManager.GetSlotMetaData(_id);
     if (metaData != null) {
       SetTimestamp((int)metaData.SaveTimestamp);
-      SetDescription($"LEVEL: 10 - Progress: {metaData.Progress}%");
+      SetDescription(string.Format(
+          LocalizationService.GetLocalizedString(TranslationKey.menu_label_slotProgress), metaData.Progress));
     }
     else {
       SetTimestamp(-1);
-      SetDescription("<EMPTY>");
+      SetDescription(LocalizationService.GetLocalizedString(TranslationKey.menu_label_emptySlot));
     }
   }
 

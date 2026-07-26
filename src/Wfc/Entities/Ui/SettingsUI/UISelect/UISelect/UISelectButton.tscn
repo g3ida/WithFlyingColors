@@ -1,9 +1,10 @@
-[gd_scene load_steps=15 format=3 uid="uid://hsu5s7km4rsn"]
+[gd_scene load_steps=16 format=3 uid="uid://hsu5s7km4rsn"]
 
 [ext_resource type="Texture2D" uid="uid://cbp4s6fg54c5u" path="res://Assets/Sprites/UI/ui_left.png" id="1"]
 [ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="1_2lmxw"]
 [ext_resource type="Texture2D" uid="uid://dhbxm877o1uai" path="res://Assets/Sprites/UI/ui_right.png" id="2"]
 [ext_resource type="Script" uid="uid://1fvqgjqw51mm" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/UISelect/UISelectButton.cs" id="3"]
+[ext_resource type="Script" path="res://src/Wfc/Entities/Ui/MarqueeLabel/MarqueeLabel.cs" id="4_marquee"]
 [ext_resource type="Theme" uid="uid://b21a8glbd3bel" path="res://src/Wfc/Entities/Ui/UISelect/UISelectButtonTheme.tres" id="3_bma5y"]
 
 [sub_resource type="Animation" id="Animation_it4v4"]
@@ -162,11 +163,11 @@ libraries = {
 custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
 
-[node name="Label" type="Label" parent="HBoxContainer"]
+[node name="Label" type="Control" parent="HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "1920x1080"
-horizontal_alignment = 1
+size_flags_vertical = 1
+script = ExtResource("4_marquee")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="HBoxContainer/Label"]
 libraries = {

@@ -62,10 +62,12 @@ offset_bottom = -80.0
 [node name="DialogContainer" parent="." instance=ExtResource("11")]
 layout_mode = 1
 DialogNodePath = NodePath("AcceptDialog")
+DialogTextKey = 61
+ConfirmTextKey = 62
 
 [node name="AcceptDialog" type="AcceptDialog" parent="DialogContainer"]
 theme = ExtResource("12")
-dialog_text = "Please Make sure all input keys are bound correctly."
+dialog_text = "Please make sure all input keys are bound correctly."
 dialog_autowrap = true
 
 [node name="MenuTitle" parent="." instance=ExtResource("15_2hp5u")]
