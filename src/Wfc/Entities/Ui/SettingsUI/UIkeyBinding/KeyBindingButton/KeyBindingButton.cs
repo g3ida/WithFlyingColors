@@ -18,7 +18,14 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 public partial class KeyBindingButton : Button, IEditableControl {
 
   #region Dependencies
-  public override void _Notification(int what) => this.Notify(what);
+  // The "empty" caption is a translated string kept in a field, so it has to be
+  // read again for an unbound action to follow a language change.
+  public override void _Notification(int what) {
+    this.Notify(what);
+    if (what == NotificationTranslationChanged && IsNodeReady()) {
+      _applyLocalizedText();
+    }
+  }
 
   [Dependency]
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
@@ -362,7 +369,9 @@ public partial class KeyBindingButton : Button, IEditableControl {
     }
   }
 
-  public void OnResolved() {
+  public void OnResolved() => _applyLocalizedText();
+
+  private void _applyLocalizedText() {
     _defaultText = LocalizationService.GetLocalizedString(TranslationKey.game_command_empty);
     // Update display now that we have the localized empty string
     _loadCurrentBinding();

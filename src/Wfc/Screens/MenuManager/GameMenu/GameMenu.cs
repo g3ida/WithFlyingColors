@@ -102,6 +102,11 @@ public partial class GameMenu : Control {
     _enterTransitionElements();
   }
 
+  // Takes stock of the transitions again after a widget rebuilt itself, so the
+  // exit isn't left waiting on elements that no longer exist. The screen state and
+  // the counts are left alone: this is not a second entrance, only a fresh list.
+  public void RefreshTransitionElements() => _parseTransitionElements();
+
   public virtual void OnReady() {
     // Override this method in derived classes.
   }
@@ -220,6 +225,11 @@ public partial class GameMenu : Control {
 
   private void _clearTransitionElements() {
     foreach (var transition in _transitionElements) {
+      // A widget that rebuilt itself takes its transitions with it, so some of
+      // these may already be on their way out.
+      if (!IsInstanceValid(transition)) {
+        continue;
+      }
       transition.Disconnect(UITransition.SignalName.Entered, new Callable(this, nameof(_onTransitionElementEntered)));
       transition.Disconnect(UITransition.SignalName.Exited, new Callable(this, nameof(_onTransitionElementExited)));
     }

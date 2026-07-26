@@ -54,6 +54,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.FullscreenToggled += OnButtonToggle;
     EventHandler.Instance.Events.VsyncToggled += OnButtonToggle;
     EventHandler.Instance.Events.ScreenSizeChanged += OnButtonToggle;
+    EventHandler.Instance.Events.LanguageChanged += OnLanguageChanged;
     EventHandler.Instance.Events.OnActionBound += OnKeyBound;
     EventHandler.Instance.Events.FocusChanged += OnFocusChanged;
     EventHandler.Instance.Events.MenuBoxRotated += OnMenuBoxRotated;
@@ -89,6 +90,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.FullscreenToggled -= OnButtonToggle;
     EventHandler.Instance.Events.VsyncToggled -= OnButtonToggle;
     EventHandler.Instance.Events.ScreenSizeChanged -= OnButtonToggle;
+    EventHandler.Instance.Events.LanguageChanged -= OnLanguageChanged;
     EventHandler.Instance.Events.OnActionBound -= OnKeyBound;
     EventHandler.Instance.Events.FocusChanged -= OnFocusChanged;
     EventHandler.Instance.Events.MenuBoxRotated -= OnMenuBoxRotated;
@@ -171,6 +173,7 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnButtonToggle(bool value) => OnPlaySfx("menuValueChange");
   private void OnButtonToggle(float value) => OnPlaySfx("menuValueChange");
   private void OnButtonToggle(Vector2 value) => OnPlaySfx("menuValueChange");
+  private void OnLanguageChanged(int language) => OnPlaySfx("menuValueChange");
   private void OnKeyBound(string action, int key) => OnPlaySfx("menuValueChange");
   private void OnFocusChanged() => OnPlaySfx("menuFocus");
   private void OnMenuBoxRotated() => OnPlaySfx("rotateRight");
