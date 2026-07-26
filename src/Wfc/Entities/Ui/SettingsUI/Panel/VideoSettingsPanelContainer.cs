@@ -33,7 +33,9 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
     _vsyncCheckbox.Toggled += _onVsyncCheckboxToggled;
     _fullscreenCheckbox.SetPressed(GameSettings.Fullscreen);
     _vsyncCheckbox.SetPressed(GameSettings.Vsync);
-    _toggleAutoResolution();
+    // Nothing is applied here on purpose: the window already has the size it was
+    // last given, and re-applying it made the window jump back to the middle of
+    // the screen every time the player opened the settings.
   }
 
   public override void _ExitTree() {
@@ -66,10 +68,14 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
 
   private async Task LaunchScheduledRescale() {
     await ToSignal(GetTree().CreateTimer(0.4f), Timer.SignalName.Timeout);
+    // The player can close the settings before the timer runs out.
+    if (!IsInsideTree()) {
+      return;
+    }
     _handleScreenRescale();
   }
 
-  private async void _onResolutionUISelectValueChanged(Variant value) {
+  private void _onResolutionUISelectValueChanged(Variant value) {
     _handleScreenRescale();
   }
 
@@ -77,8 +83,8 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
     if (!GameSettings.Fullscreen) {
       var sz = _resolutionSelectButton.SelectedValue;
       if (sz?.As<Vector2I>() is Vector2I newSize && newSize.X >= 0 && newSize.Y >= 0) {
+        // Re-centring is part of the size change, GameSettings does it.
         GameSettings.WindowSize = newSize;
-        GetWindow().MoveToCenter();
 
         if (this.IsNodeReady()) {
           EventHandler.Instance.EmitScreenSizeChanged(newSize);

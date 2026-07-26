@@ -89,7 +89,30 @@ public static class GameSettings {
   public static Vector2I WindowSize {
     get => DisplayServer.WindowGetSize();
     // fixme: github issue: https://github.com/godotengine/godot/issues/105597
-    set => DisplayServer.WindowSetSize(value);
+    set {
+      // A settings file written on a larger monitor would otherwise ask for a
+      // window that does not fit on this one.
+      var screenSize = DisplayServer.ScreenGetSize(DisplayServer.WindowGetCurrentScreen());
+      DisplayServer.WindowSetSize(value.Clamp(Vector2I.One, screenSize));
+      _centerWindowOnScreen();
+    }
+  }
+
+  // Resizing leaves the window pinned to the bottom right of the screen on Linux,
+  // so every size change has to put it back in the middle. That includes the one
+  // done while the settings are read, which is why the game came up in the corner
+  // on a cold start. Does what Window.MoveToCenter does, without needing the
+  // Window and the scene tree that the settings do not have.
+  private static void _centerWindowOnScreen() {
+    if (DisplayServer.WindowGetMode() != DisplayServer.WindowMode.Windowed) {
+      return;
+    }
+    var screen = DisplayServer.ScreenGetUsableRect(DisplayServer.WindowGetCurrentScreen());
+    if (screen.Size == Vector2I.Zero) {
+      return;
+    }
+    var windowSize = DisplayServer.WindowGetSizeWithDecorations();
+    DisplayServer.WindowSetPosition(screen.Position + ((screen.Size - windowSize) / 2));
   }
 
   public static float SfxVolume {
