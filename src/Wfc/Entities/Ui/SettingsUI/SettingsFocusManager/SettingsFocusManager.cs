@@ -7,6 +7,7 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Input;
+using Wfc.Core.Ui;
 using Wfc.Entities.Ui.SettingsUI.Grid;
 using Wfc.Screens.MenuManager;
 
@@ -27,6 +28,8 @@ public partial class SettingsFocusManager : Node {
     public IInputManager InputManager => this.DependOn<IInputManager>();
     [Dependency]
     public IEventHandler EventHandler => this.DependOn<IEventHandler>();
+    [Dependency]
+    public IModalStack ModalStack => this.DependOn<IModalStack>();
     #endregion Dependencies
 
     #region Signals
@@ -65,8 +68,10 @@ public partial class SettingsFocusManager : Node {
     }
 
     public override void _Input(InputEvent @event) {
-        // When key binding is active, let it handle all input
-        if (IsBindingActive) {
+        // This node processes Always so it survives the pause a key capture causes,
+        // which also means it keeps receiving input under a dialog. Standing down for
+        // whatever holds the screen is what stops it moving focus behind one.
+        if (ModalStack.IsAnyOpen || IsBindingActive) {
             return;
         }
 
@@ -122,13 +127,9 @@ public partial class SettingsFocusManager : Node {
             }
         }
         // Note: Left/Right for UISelectButton and UiSlider is handled by those controls themselves
-
-        // Cancel/Back
-        if (InputManager.IsEventActionJustPressed(IInputManager.Action.UICancel, @event)) {
-            EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
-            GetViewport().SetInputAsHandled();
-            return;
-        }
+        // Note: UICancel is the screen's to answer. This node used to consume it, and
+        // being ahead of everything else in the tree that meant a dialog could never
+        // see the key that was supposed to close it.
     }
 
     private void _navigateUp() {

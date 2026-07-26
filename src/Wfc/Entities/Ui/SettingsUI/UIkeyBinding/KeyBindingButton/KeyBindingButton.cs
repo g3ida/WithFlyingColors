@@ -7,6 +7,7 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Input;
 using Wfc.Core.Localization;
+using Wfc.Core.Ui;
 using Wfc.Entities.Ui.SettingsUI;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -21,6 +22,8 @@ public partial class KeyBindingButton : Button, IEditableControl {
 
   [Dependency]
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
+  [Dependency]
+  public IModalStack ModalStack => this.DependOn<IModalStack>();
   #endregion Dependencies
 
   #region Exports
@@ -92,9 +95,13 @@ public partial class KeyBindingButton : Button, IEditableControl {
       _isSubscribed = false;
     }
     // Leaving while still listening (the screen was torn down mid capture) would
-    // otherwise strand device detection in the off state for the rest of the run.
+    // otherwise strand device detection in the off state, and the tree paused, for
+    // the rest of the run. Guarded on _isListening because UIGridRow reparents this
+    // button during setup, long before its dependencies resolve.
     if (_isListening) {
+      _isListening = false;
       _setDetectionEnabled(true);
+      ModalStack.Pop(this);
     }
   }
 
@@ -294,14 +301,18 @@ public partial class KeyBindingButton : Button, IEditableControl {
     _isListening = isEditing;
     ButtonPressed = isEditing;
     _setDetectionEnabled(!isEditing);
+    // Registering as a modal is what pauses the tree, so the settings screen behind
+    // stops navigating while the next press is being read as a binding. This button
+    // processes Always (set in its scene), so it still hears that press itself.
     if (isEditing) {
+      ModalStack.Push(this);
       _animationPlayer.Play("Blink");
       EventHandler.Instance.EmitKeyboardActionBiding();
     }
     else {
+      ModalStack.Pop(this);
       _animationPlayer.Play("RESET");
     }
-    GetTree().Paused = isEditing;
     _emitSelectionChangedSignal();
   }
 

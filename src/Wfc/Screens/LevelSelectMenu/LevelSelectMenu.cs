@@ -53,9 +53,7 @@ public partial class LevelSelectMenu : GameMenu {
     return sceneNode;
   }
 
-  private void OnBackButtonPressed() {
-    if (!IsInTransitionState()) {
-      EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
-    }
-  }
+  // No transition guard here: back buttons only report the intent, and GameMenu drops
+  // it unless the screen has finished entering.
+  private void OnBackButtonPressed() => EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
 }
