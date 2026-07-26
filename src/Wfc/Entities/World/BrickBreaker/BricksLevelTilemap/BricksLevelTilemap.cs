@@ -15,6 +15,7 @@ public partial class BricksLevelTilemap : TileMap {
   public int id { get; set; } = 0;
 
   private int _bricksCount = 0;
+  private bool _isCleared;
 
   private BricksTileMap _parent = default!;
 
@@ -43,9 +44,14 @@ public partial class BricksLevelTilemap : TileMap {
     }
   }
 
+  // Testing for exactly zero made a single miscount unrecoverable: one extra decrement
+  // stepped over the terminal value and the room could never be cleared. The latch on
+  // Brick should make that impossible now, but the counter is what the player is locked
+  // behind, so it does not get to depend on being counted perfectly.
   private void OnBrickBroken() {
     _bricksCount--;
-    if (_bricksCount == 0) {
+    if (!_isCleared && _bricksCount <= 0) {
+      _isCleared = true;
       EmitSignal(BricksLevelTilemap.SignalName.levelBricksCleared, id);
     }
   }

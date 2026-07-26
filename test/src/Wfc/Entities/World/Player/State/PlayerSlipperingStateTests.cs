@@ -18,6 +18,11 @@ public class PlayerSlipperingStateTest(Node testScene) : TestClass(testScene) {
 
   private static readonly string BASE_FIXTURE_PATH = "test/src/Wfc/Entities/World/Player/State/Fixture/";
 
+  // These fixtures run real physics: the cube has to overbalance, rotate and fall out of
+  // the world. Generous, because a loaded CI runner stretches the wall clock more than
+  // the physics steps - but bounded, which is the whole point.
+  private const double DEATH_TIMEOUT = 10.0;
+
   [Setup]
   public void Setup() {
     _fixture = new Fixture(TestScene.GetTree());
@@ -38,8 +43,10 @@ public class PlayerSlipperingStateTest(Node testScene) : TestClass(testScene) {
     var player = PlayerOnEdgeNode.GetNode<Player>("Player");
     player.Rotation.ShouldBeCloseTo(0f, epsilon: 0.15f);
 
-    await PlayerOnEdgeNode.ToSignal(EventHandler.Instance.Events, Events.SignalName.PlayerDied);
+    var died = await PlayerOnEdgeNode.GetTree()
+      .ExpectSignal(EventHandler.Instance.Events, Events.SignalName.PlayerDied, DEATH_TIMEOUT);
 
+    died.ShouldBeTrue("the player never slipped off the edge and died");
     player.Rotation.ShouldBeCloseTo(MathUtils.PI2);
     _signalsCounter.getCallCount("slippering").ShouldBe(1);
   }
@@ -52,8 +59,10 @@ public class PlayerSlipperingStateTest(Node testScene) : TestClass(testScene) {
     var player = PlayerOnEdgeNode.GetNode<Player>("Player");
     player.Rotation.ShouldBeCloseTo(0f, epsilon: 0.1f);
 
-    await PlayerOnEdgeNode.ToSignal(EventHandler.Instance.Events, Events.SignalName.PlayerDied);
+    var died = await PlayerOnEdgeNode.GetTree()
+      .ExpectSignal(EventHandler.Instance.Events, Events.SignalName.PlayerDied, DEATH_TIMEOUT);
 
+    died.ShouldBeTrue("the player never slipped off the edge and died");
     player.Rotation.ShouldBeCloseTo(-MathUtils.PI2);
     _signalsCounter.getCallCount("slippering").ShouldBe(1);
   }

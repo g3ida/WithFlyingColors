@@ -29,10 +29,13 @@ public class PlayerRotationActionTest(Node testScene) : TestClass(testScene) {
     _playerRotationParent.Rotation.ShouldBe(0);
     var duration = 0.1f;
     _playerRotation.Fire(Mathf.Pi, duration);
-    await _playerRotation
+    // The CreateTimer this used to await through was decorative: ToSignal ignores the
+    // object it is called on, so the await had no deadline at all.
+    var completed = await _playerRotation
       .GetTree()
-      .CreateTimer(duration + Mathf.Epsilon)
-      .ToSignal(_playerRotation, nameof(PlayerRotation.RotationCompleted));
+      .ExpectSignal(_playerRotation, PlayerRotation.SignalName.RotationCompleted);
+
+    completed.ShouldBeTrue("the rotation never reported completion");
     _playerRotationParent.Rotation.ShouldBeCloseTo(Mathf.Pi);
   }
 }

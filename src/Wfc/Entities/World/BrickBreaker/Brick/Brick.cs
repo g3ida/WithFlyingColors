@@ -16,6 +16,7 @@ public partial class Brick : Node2D {
   private Area2D _areaNode = null!;
   private Sprite2D _spriteNode = null!;
   private CollisionShape2D _collisionShapeNode = null!;
+  private bool _isBroken;
 
   public override void _Ready() {
     _areaNode = GetNode<Area2D>("Area2D");
@@ -34,7 +35,20 @@ public partial class Brick : Node2D {
     _spriteNode.Modulate = color;
   }
 
+  // A brick can be told it was hit several times in the same frame: QueueFree is deferred
+  // so this area keeps monitoring for the rest of the tick, and its mask admits the three
+  // balls as well as all eight of the player's face and corner areas. Every one of those
+  // used to decrement the room's brick counter, which steps straight over its exact-zero
+  // test and leaves the player sealed in an empty arena that can never report itself
+  // cleared. Breaking is a one-way door, so latch it and stop listening immediately.
   private void _on_Area2D_area_entered(Area2D area) {
+    if (_isBroken) {
+      return;
+    }
+    _isBroken = true;
+    _areaNode.SetDeferred(Area2D.PropertyName.Monitoring, false);
+    _areaNode.SetDeferred(Area2D.PropertyName.Monitorable, false);
+
     Vector2 extents = (_collisionShapeNode.Shape as RectangleShape2D)?.Size ?? Vector2.Zero;
     EmitSignal(Brick.SignalName.brickBroken);
     EventHandler.Instance.EmitBrickBroken(ColorGroup, Position + GetParent<Node2D>().Position + extents);

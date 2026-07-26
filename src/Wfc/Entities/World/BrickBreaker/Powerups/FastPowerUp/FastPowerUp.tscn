@@ -1,5 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://jrp5ae1saffs"]
+[gd_scene load_steps=4 format=3 uid="uid://jrp5ae1saffs"]
 
 [ext_resource type="PackedScene" uid="uid://b3qln8gue8c2g" path="res://src/Wfc/Entities/World/BrickBreaker/Powerups/PowerUp/PowerUp.tscn" id="3"]
+[ext_resource type="Texture2D" uid="uid://cadtnf55khkxm" path="res://Assets/Sprites/BrickBreaker/speed.png" id="1"]
+[ext_resource type="PackedScene" uid="uid://cns8ab5w0f41t" path="res://src/Wfc/Entities/World/BrickBreaker/Powerups/FastPowerUp/FastPowerUpScript.tscn" id="2"]
 
 [node name="PowerUp" instance=ExtResource("3")]
+ColorGroup = "blue"
+Texture = ExtResource("1")
+OnHitScript = ExtResource("2")
