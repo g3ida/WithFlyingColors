@@ -94,6 +94,13 @@ public partial class UISelectButton : Button {
       return;
     }
 
+    // A select with nothing to move between (the resolution row in fullscreen, the
+    // controller row with no pad plugged in) has no answer to give, and stepping
+    // it would land on the item already shown and report that as a change.
+    if (SelectDriver.Items.Count < 2) {
+      return;
+    }
+
     if (InputManager.IsJustPressed(IInputManager.Action.UILeft)) {
       _onLeftPressed();
       LeftArrowAnimationNode.Play("triggered");
@@ -112,13 +119,21 @@ public partial class UISelectButton : Button {
 
   private void _onLeftPressed() {
     _index = (_index + 1) % SelectDriver.Items.Count;
-    UpdateSelectedItem();
-    EmitSignal(nameof(ValueChanged), SelectDriver.ItemValues[_index]);
+    _applyUserSelection();
   }
 
   private void _onRightPressed() {
     _index = (_index - 1 + SelectDriver.Items.Count) % SelectDriver.Items.Count;
+    _applyUserSelection();
+  }
+
+  // Shows the item the player just moved to. The driver is told that this one
+  // came from them, which is not something onItemSelected can say on its own:
+  // the same call carries the selections made in code (the first draw, a
+  // refreshed item list, the controller select following the active device).
+  private void _applyUserSelection() {
     UpdateSelectedItem();
+    SelectDriver.OnUserSelectionChanged();
     EmitSignal(nameof(ValueChanged), SelectDriver.ItemValues[_index]);
   }
 
