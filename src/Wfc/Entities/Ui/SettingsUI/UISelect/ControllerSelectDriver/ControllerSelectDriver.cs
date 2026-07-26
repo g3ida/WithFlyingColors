@@ -32,6 +32,21 @@ public partial class ControllerSelectDriver : UISelectDriver {
 
   private bool _isSubscribed;
 
+  // Set once the player has moved this row themselves, and left set for as long
+  // as the settings screen is open (this driver is freed with it).
+  //
+  // The row reads as a device setting but isn't one: both devices keep working
+  // whichever it shows, it only picks which set of key bindings the rows below
+  // it display. So a player who moves it is asking to read the other device's
+  // bindings, and the automatic follow has to stop overruling them.
+  //
+  // Without this the row cannot be moved back to the gamepad at all. The pad
+  // press asking for it reaches InputDeviceDetector first, which sees the device
+  // kind change back and snaps the selection to the gamepad; the left/right that
+  // follows later in the same frame then steps straight off it again, so every
+  // press lands back on the keyboard.
+  private bool _isManuallySelected;
+
   // The currently selected controller type.
   public ControllerType SelectedControllerType { get; private set; } = ControllerType.Keyboard;
 
@@ -54,6 +69,14 @@ public partial class ControllerSelectDriver : UISelectDriver {
       GameSettings.LastUsedController = SelectedControllerType;
       EmitSignal(SignalName.ControllerTypeChanged, controllerTypeInt);
     }
+  }
+
+  // onItemSelected can't announce this: it also carries the row being drawn for
+  // the first time and following the active device, neither of which is a menu
+  // action the player took, and the sfx is wired to this event.
+  public override void OnUserSelectionChanged() {
+    _isManuallySelected = true;
+    EventHandler.Instance.EmitControllerSelectionChanged(SelectedControllerType);
   }
 
   public override int GetDefaultSelectedIndex() {
@@ -86,10 +109,10 @@ public partial class ControllerSelectDriver : UISelectDriver {
     }
   }
 
-  // Keyboard and gamepad are live at the same time, so this select isn't really
-  // a choice the player makes once: it shows whichever device they last touched.
-  // Moving it re-runs onItemSelected, which is what carries the change on to the
-  // key binding rows below it.
+  // Keyboard and gamepad are live at the same time, so until the player says
+  // otherwise this select shows whichever device they last touched. Moving it
+  // re-runs onItemSelected, which is what carries the change on to the key
+  // binding rows below it.
   private void OnLastUsedControllerChanged(int controllerType) {
     var type = (ControllerType)controllerType;
     if (type == SelectedControllerType) {
@@ -98,6 +121,12 @@ public partial class ControllerSelectDriver : UISelectDriver {
       if (type == ControllerType.Gamepad) {
         RefreshControllerList();
       }
+      return;
+    }
+
+    // The player has pointed the row at a device themselves, so it stays there
+    // even while they go on playing with the other one.
+    if (_isManuallySelected) {
       return;
     }
 

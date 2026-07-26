@@ -136,6 +136,8 @@ public partial class EventHandler : Node, IEventHandler {
     Events.EmitSignal(Events.SignalName.OnGamepadActionBound, action, buttonOrAxis, isAxis, axisDirection);
   public void EmitLastUsedControllerChanged(ControllerType controllerType) =>
     Events.EmitSignal(Events.SignalName.LastUsedControllerChanged, (int)controllerType);
+  public void EmitControllerSelectionChanged(ControllerType controllerType) =>
+    Events.EmitSignal(Events.SignalName.ControllerSelectionChanged, (int)controllerType);
   public void EmitGamepadConnected(int deviceId, string deviceName) =>
     Events.EmitSignal(Events.SignalName.GamepadConnected, deviceId, deviceName);
   public void EmitGamepadDisconnected(int deviceId) =>

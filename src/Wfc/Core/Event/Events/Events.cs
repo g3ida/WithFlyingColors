@@ -68,6 +68,12 @@ public partial class Events : RefCounted {
   // (keyboard/mouse vs. gamepad). Carries a ControllerType.
   [Signal]
   public delegate void LastUsedControllerChangedEventHandler(int controllerType);
+  // The player moved the controller row in the settings themselves, to read the
+  // other device's key bindings. Carries a ControllerType. Raised for that move
+  // alone, not for the row following the device in their hands, so it can be
+  // treated as a menu action the player took.
+  [Signal]
+  public delegate void ControllerSelectionChangedEventHandler(int controllerType);
   [Signal]
   public delegate void GamepadConnectedEventHandler(int deviceId, string deviceName);
   [Signal]

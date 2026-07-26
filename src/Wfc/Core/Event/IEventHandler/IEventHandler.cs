@@ -56,6 +56,7 @@ public interface IEventHandler {
   public void EmitGamepadActionBinding();
   public void EmitOnGamepadActionBound(string action, int buttonOrAxis, bool isAxis, float axisDirection);
   public void EmitLastUsedControllerChanged(ControllerType controllerType);
+  public void EmitControllerSelectionChanged(ControllerType controllerType);
   public void EmitGamepadConnected(int deviceId, string deviceName);
   public void EmitGamepadDisconnected(int deviceId);
   public void EmitTetrisLinesRemoved();
