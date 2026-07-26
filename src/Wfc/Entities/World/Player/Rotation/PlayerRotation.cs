@@ -35,6 +35,12 @@ public partial class PlayerRotation : Node2D {
   private void _setUpTimer() {
     _rotationTimerNode.Value.OneShot = true;
     _rotationTimerNode.Value.Autostart = false;
+    // The rotation is integrated in _PhysicsProcess, so the timer that bounds it
+    // has to run off the same clock. On Idle (the default) its TimeLeft only
+    // moves once per rendered frame, so when rendering is slower than physics
+    // the "snap to target" step below never sees TimeLeft drop under a physics
+    // delta, and the body keeps turning at full speed past the target.
+    _rotationTimerNode.Value.ProcessCallback = Timer.TimerProcessCallback.Physics;
     AddChild(_rotationTimerNode.Value);
     _rotationTimerNode.Value.Timeout += () => {
       _thetaPoint = 0.0f;
