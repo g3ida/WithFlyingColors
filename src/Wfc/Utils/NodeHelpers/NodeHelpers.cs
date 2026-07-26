@@ -2,6 +2,7 @@
 namespace Wfc.Utils;
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Godot;
 using Wfc.Utils.Attributes;
@@ -40,6 +41,15 @@ public static class NodeHelpers {
       }
     }
   }
+
+  // Every node of the given type below this one, depth first.
+  //
+  // Menus each grew their own walk to find their transitions, hint cards, settings
+  // rows and binding buttons. One of them stopped at three levels deep for a
+  // "performance" that never mattered on a screen built once, which put anything
+  // nested one step further out of reach without saying so.
+  public static IEnumerable<T> FindDescendants<T>(this Node node) where T : class =>
+    node.GetChildrenRecursive().OfType<T>();
 
   public static T InstantiateChildNode<T>(this Node parent) where T : Node {
     var node = SceneHelpers.InstantiateNode<T>();

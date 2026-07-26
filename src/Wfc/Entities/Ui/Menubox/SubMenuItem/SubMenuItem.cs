@@ -15,7 +15,7 @@ public partial class SubMenuItem : Control {
   public override void _Ready() {
     this.WireNodes();
     _buttonNode.Pressed += () => ButtonInfo.OnClick();
-    _buttonNode.MouseEntered += ButtonGrabFocus;
+    _buttonNode.GrabFocusOnHover();
     SetProcess(false);
   }
 

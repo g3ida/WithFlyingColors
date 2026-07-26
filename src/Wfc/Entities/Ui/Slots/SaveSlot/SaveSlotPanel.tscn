@@ -105,5 +105,4 @@ libraries = {
 
 [connection signal="clear_button_pressed" from="HBoxContainer/ActionButtons" to="." method="_on_ActionButtons_clear_button_pressed"]
 [connection signal="select_button_pressed" from="HBoxContainer/ActionButtons" to="." method="_on_ActionButtons_select_button_pressed"]
-[connection signal="mouse_entered" from="Button" to="." method="_onButtonMouseEntered"]
 [connection signal="pressed" from="Button" to="." method="_onButtonPressed"]

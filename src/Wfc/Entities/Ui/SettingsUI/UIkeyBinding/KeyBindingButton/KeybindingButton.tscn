@@ -90,5 +90,4 @@ libraries = {
 &"": SubResource("AnimationLibrary_k0smu")
 }
 
-[connection signal="mouse_entered" from="." to="." method="_onKeyBindingButtonMouseEntered"]
 [connection signal="pressed" from="." to="." method="_onKeyBindingButtonPressed"]

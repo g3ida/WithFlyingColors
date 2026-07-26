@@ -36,15 +36,11 @@ public partial class SceneCard : Control {
     this.WireNodes();
     base._Ready();
 
-    _buttonNode.Connect(
-      Button.SignalName.Pressed,
-      new Callable(this, nameof(OnButtonPressed)),
-      (uint)ConnectFlags.OneShot
-    );
-    _buttonNode.Connect(
-      Button.SignalName.MouseEntered,
-      new Callable(this, nameof(OnButtonMouseEntered)),
-      (uint)ConnectFlags.OneShot);
+    // Neither of these is OneShot any more. Hover-to-focus was, so a card could only
+    // be focused with the mouse the first time it was pointed at; a second press is
+    // harmless because NavigateToScreen ignores anything after the first.
+    _buttonNode.Pressed += OnButtonPressed;
+    _buttonNode.GrabFocusOnHover();
   }
 
   private void SetLevelName(string name) {
@@ -69,10 +65,6 @@ public partial class SceneCard : Control {
   private void OnButtonPressed() {
     EventHandler.Instance.EmitMenuActionPressed(MenuAction.GoToLevelSelect);
     GetParent().GetParent<GameMenu>().NavigateToLevelScreen(_levelId);
-  }
-
-  private void OnButtonMouseEntered() {
-    _buttonNode.GrabFocus();
   }
 
   public new void GrabFocus() {

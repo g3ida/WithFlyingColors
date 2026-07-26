@@ -71,6 +71,8 @@ public partial class UISelectButton : Button {
     UpdateSelectedItem();
     UpdateRectSize();
     SetProcess(false);
+    this.GrabFocusOnHover();
+    this.BlinkWhileFocused(AnimationPlayerNode);
     _isReady = true;
   }
 
@@ -102,17 +104,11 @@ public partial class UISelectButton : Button {
     }
   }
 
-  private void _onFocusEntered() {
-    SetProcess(true);
-    AnimationPlayerNode.Stop();
-    AnimationPlayerNode.Play("Blink");
-  }
+  // Left/right is polled, so processing only needs to run while this select is the one
+  // being pointed at. The blink that goes with it is wired in _Ready.
+  private void _onFocusEntered() => SetProcess(true);
 
-  private void _onFocusExited() {
-    SetProcess(false);
-    AnimationPlayerNode.Stop();
-    AnimationPlayerNode.Play("RESET");
-  }
+  private void _onFocusExited() => SetProcess(false);
 
   private void _onLeftPressed() {
     _index = (_index + 1) % SelectDriver.Items.Count;
@@ -175,10 +171,6 @@ public partial class UISelectButton : Button {
       _index = Math.Clamp(_index, 0, SelectDriver.Items.Count - 1);
       UpdateSelectedItem();
     }
-  }
-
-  private void _onButtonMouseEntered() {
-    GrabFocus();
   }
 
   private void _onLabelResized() {

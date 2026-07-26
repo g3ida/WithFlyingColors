@@ -164,23 +164,14 @@ public partial class SettingsTabManager : Control {
     PanelToShow.Show();
   }
 
-  // Recursively finds all UIGridRow nodes within a panel.
+  // Every row in a panel that has something focusable to offer.
   private static Godot.Collections.Array<UIGridRow> GetFocusableRowsForPanel(PanelContainer panel) {
     var rows = new Godot.Collections.Array<UIGridRow>();
-    FindUIGridRowsRecursive(panel, rows);
-    return rows;
-  }
-
-  private static void FindUIGridRowsRecursive(Node node, Godot.Collections.Array<UIGridRow> rows) {
-    foreach (var child in node.GetChildren()) {
-      if (child is UIGridRow row) {
-        // Only add rows that have a focusable control
-        if (row.GetFocusableControl() != null) {
-          rows.Add(row);
-        }
+    foreach (var row in panel.FindDescendants<UIGridRow>()) {
+      if (row.GetFocusableControl() != null) {
+        rows.Add(row);
       }
-      // Continue searching in children
-      FindUIGridRowsRecursive(child, rows);
     }
+    return rows;
   }
 }
