@@ -15,7 +15,6 @@ public interface ISaveManager {
   public void SaveGame(SceneTree tree, int slotIndex = NO_SLOT);
   public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = NO_SLOT);
   public bool IsSLotFilled(int slotIndex = NO_SLOT);
-  public ImageTexture? GetSlotImage(int slotIndex = NO_SLOT);
   public int GetSelectedSlotIndex();
   public bool HasSelectedSlot();
   public void SelectSlot(int slotIndex = NO_SLOT);

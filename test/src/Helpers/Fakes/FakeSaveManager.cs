@@ -61,7 +61,6 @@ public sealed class FakeSaveManager : ISaveManager {
     return _isValid(index) && _slots[index] != null;
   }
 
-  public ImageTexture? GetSlotImage(int slotIndex = ISaveManager.NO_SLOT) => null;
 
   public void RemoveSaveSlot(int slotIndex) {
     RemoveSaveSlotCallCount++;

@@ -65,15 +65,6 @@ public partial class SaveManager : ISaveManager {
     return _saveSlots[slotIndex].MetaData;
   }
 
-  public ImageTexture? GetSlotImage(int slotIndex = ISaveManager.NO_SLOT) {
-    slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
-    if (slotIndex is < 0 or >= NUM_SLOTS) {
-      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
-      return null;
-    }
-    return _saveSlots[slotIndex].MetaData?.Image;
-  }
-
   private void _loadSlotsMetaData() {
     foreach (var slot in _saveSlots) {
       slot.LoadMetaData(_serializer);

@@ -309,8 +309,9 @@ public partial class TetrisPool : Node2D {
   }
 
   private void _onTriggerEnterAreaBodyEntered(Node body) {
-    if (body! is Player)
+    if (body is not Player) {
       return;
+    }
 
     _isPaused = false;
     _slidingFloorSliderNode.SetLooping(false);

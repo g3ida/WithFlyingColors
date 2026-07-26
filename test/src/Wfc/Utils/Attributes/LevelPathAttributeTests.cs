@@ -50,6 +50,16 @@ public class LevelPathAttributeTests(Node testScene) : TestClass(testScene) {
     attr.ResolvePath("Level1").ShouldBe("res://scenes/levels/Level1.tscn");
   }
 
+  // GitHub Actions checks the repository out into a directory of the same name, so the
+  // project name appears twice in the caller path. Splitting on the first occurrence
+  // used to leave "WithFlyingColors/" in front of the res:// path, and every level in
+  // the game failed to load on CI while working on every developer's machine.
+  [Test]
+  public void CallerFilePath_WithRepeatedProjectName_UsesTheLastOne() {
+    var attr = new LevelPathAttribute("", "/home/runner/work/WithFlyingColors/WithFlyingColors/src/Wfc/Screens/Levels/LevelList/LevelId.cs");
+    attr.ResolvePath("Level1").ShouldBe("res://src/Wfc/Screens/Levels/LevelList/Level1.tscn");
+  }
+
   [Test]
   public void CallerFilePath_WithoutProjectName_ReturnsScenes() {
     var attr = new LevelPathAttribute("", @"C:\OtherProject\scenes\levels\LevelId.cs");

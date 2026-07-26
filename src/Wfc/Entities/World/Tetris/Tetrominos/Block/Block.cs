@@ -97,13 +97,19 @@ public partial class Block : Node2D {
     QueueFree();
   }
 
+  // A seam only needs an edge area when the two blocks disagree on color: the area
+  // joins both groups so a face straddling the seam matches whichever color it wears
+  // instead of being killed by the neighbor it is not touching yet.
+  internal static bool NeedsEdgeBetween(string? colorGroup, string? neighborColorGroup) =>
+    neighborColorGroup != null && neighborColorGroup != colorGroup;
+
   private void AddPermissivenessBoundsIfNeeded() {
     bool rightEdge = I + 1 < Constants.TETRIS_POOL_WIDTH &&
         Grid?[I + 1, J] != null &&
-        Grid[I + 1, J]!.ColorGroup == ColorGroup;
+        NeedsEdgeBetween(ColorGroup, Grid[I + 1, J]!.ColorGroup);
     bool leftEdge = I > 0 &&
         Grid?[I - 1, J] != null &&
-        Grid[I - 1, J]!.ColorGroup == ColorGroup;
+        NeedsEdgeBetween(ColorGroup, Grid[I - 1, J]!.ColorGroup);
 
     if (leftEdge) {
       AddPermissivenessBounds(DIR_LEFT);

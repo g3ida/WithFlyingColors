@@ -17,8 +17,9 @@ public partial class PianoScene : Node2D {
   }
 
   private void _onTriggerAreaBodyEntered(Node2D body) {
-    if (body! is Player.Player)
+    if (body is not Player.Player) {
       return;
+    }
 
     if (_pianoNodeScene.IsStopped()) {
       _pianoNodeScene.StartGame();

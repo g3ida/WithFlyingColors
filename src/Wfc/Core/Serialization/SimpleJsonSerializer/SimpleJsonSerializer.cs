@@ -13,7 +13,10 @@ public class SimpleJsonSerializer : ISerializer {
     _serializationOptions.Converters.Add(new SlotMetaDataJsonConverter());
   }
 
-  public string Serialize<T>(T obj) => System.Text.Json.JsonSerializer.Serialize(obj);
-  public T? Deserialize<T>(string data) => System.Text.Json.JsonSerializer.Deserialize<T>(data);
+  // Both calls have to pass the options or the three converters registered above are
+  // dead: enums would persist as ordinals, so inserting a level in the middle of LevelId
+  // would silently point every existing save at a different level.
+  public string Serialize<T>(T obj) => JsonSerializer.Serialize(obj, _serializationOptions);
+  public T? Deserialize<T>(string data) => JsonSerializer.Deserialize<T>(data, _serializationOptions);
 }
 
