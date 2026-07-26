@@ -7,6 +7,7 @@ using Godot;
 using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
 using Wfc.Core.Types;
+using Wfc.Entities.Ui.Slots;
 using Wfc.Screens.MenuManager;
 
 [Meta(typeof(IAutoNode))]
@@ -35,7 +36,7 @@ public partial class PlaySubMenu : Control {
         },
         new()
         {
-            Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_selectedSlot) + $": {SaveManager.GetSelectedSlotIndex() + 1}",
+            Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_selectedSlot) + $": {SaveManager.GetSelectedSlotText()}",
             MenuAction = MenuAction.GoToSlotSelect,
             DisplayCondition = ButtonDef.ButtonCondition.None
         },

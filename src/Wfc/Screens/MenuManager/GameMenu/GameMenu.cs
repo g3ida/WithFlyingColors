@@ -51,7 +51,11 @@ public partial class GameMenu : Control {
   public bool HandleBackEvent = true;
 
   private readonly List<UITransition> _transitionElements = [];
+  // Counted separately rather than as one balance: exiting while the screen is still
+  // entering leaves some elements that will never report Entered, and a single
+  // counter would go negative and never come back to zero, stranding the screen.
   private int _enteredTransitionElementsCount;
+  private int _exitedTransitionElementsCount;
 
   // Dependencies
   private DependenciesWrapper _dependenciesWrapper = null!;
@@ -87,6 +91,8 @@ public partial class GameMenu : Control {
 
   public void ConfigureTransitionElements() {
     _parseTransitionElements();
+    _enteredTransitionElementsCount = 0;
+    _exitedTransitionElementsCount = 0;
     _screenState = _hasNoTransitionElements() ? MenuScreenState.Entered : MenuScreenState.Entering;
     _enterTransitionElements();
   }
@@ -134,7 +140,6 @@ public partial class GameMenu : Control {
         StopProcessInput();
         _exitTransitionElements();
       }
-      OnExit();
     }
   }
 
@@ -176,7 +181,9 @@ public partial class GameMenu : Control {
   }
 
   private void _parseTransitionElements() {
-    _transitionElements.Clear();
+    // Disconnect first so a second call can't leave the previous set connected and
+    // double-count every signal.
+    _clearTransitionElements();
     foreach (var child in GetChildren()) {
       // only look 3 levels deep for performance
       _collectTransitionsRecursive(child, 3);
@@ -205,6 +212,7 @@ public partial class GameMenu : Control {
       transition.Disconnect(UITransition.SignalName.Entered, new Callable(this, nameof(_onTransitionElementEntered)));
       transition.Disconnect(UITransition.SignalName.Exited, new Callable(this, nameof(_onTransitionElementExited)));
     }
+    _transitionElements.Clear();
   }
 
   private void _enterTransitionElements() {
@@ -235,8 +243,8 @@ public partial class GameMenu : Control {
   }
 
   private void _onTransitionElementExited() {
-    _enteredTransitionElementsCount--;
-    if (_enteredTransitionElementsCount == 0) {
+    _exitedTransitionElementsCount++;
+    if (_exitedTransitionElementsCount == _transitionElements.Count) {
       _screenState = MenuScreenState.Exited;
       MenuManager.GoToMenu(_destinationScreen);
     }

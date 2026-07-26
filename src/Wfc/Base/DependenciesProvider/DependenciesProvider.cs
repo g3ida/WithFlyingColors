@@ -57,6 +57,11 @@ public partial class DependenciesProvider :
     // You can optionally implement this method. It gets called once you call
     // this.Provide() to inform AutoInject that the provided values are now
     // available.
+    // Before the first screen is built, not after: the main menu reads the selected
+    // slot in its _Ready, so loading the save data second left it showing slot 1 on
+    // every cold start whatever the player had actually selected.
+    _saveManager.Init();
+
     var mainMenuScenePath = _menuManager.Value.GetMenuScenePath(GameMenus.MAIN_MENU);
     if (mainMenuScenePath != null) {
       _menuManager.Value.SwitchScene(mainMenuScenePath);
@@ -64,6 +69,5 @@ public partial class DependenciesProvider :
     else {
       throw new GameExceptions.InvalidArgumentException("Main menu scene not found");
     }
-    _saveManager.Init();
   }
 }

@@ -52,8 +52,6 @@ public partial class Events : RefCounted {
   [Signal]
   public delegate void OnActionBoundEventHandler(string action, int key);
   [Signal]
-  public delegate void TabChangedEventHandler();
-  [Signal]
   public delegate void FocusChangedEventHandler();
   [Signal]
   public delegate void KeyboardActionBindingEventHandler();

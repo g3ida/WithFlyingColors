@@ -55,7 +55,6 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.VsyncToggled += OnButtonToggle;
     EventHandler.Instance.Events.ScreenSizeChanged += OnButtonToggle;
     EventHandler.Instance.Events.OnActionBound += OnKeyBound;
-    EventHandler.Instance.Events.TabChanged += OnTabChanged;
     EventHandler.Instance.Events.FocusChanged += OnFocusChanged;
     EventHandler.Instance.Events.MenuBoxRotated += OnMenuBoxRotated;
     EventHandler.Instance.Events.KeyboardActionBinding += OnKeyboardActionBinding;
@@ -91,7 +90,6 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.VsyncToggled -= OnButtonToggle;
     EventHandler.Instance.Events.ScreenSizeChanged -= OnButtonToggle;
     EventHandler.Instance.Events.OnActionBound -= OnKeyBound;
-    EventHandler.Instance.Events.TabChanged -= OnTabChanged;
     EventHandler.Instance.Events.FocusChanged -= OnFocusChanged;
     EventHandler.Instance.Events.MenuBoxRotated -= OnMenuBoxRotated;
     EventHandler.Instance.Events.KeyboardActionBinding -= OnKeyboardActionBinding;
@@ -174,7 +172,6 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnButtonToggle(float value) => OnPlaySfx("menuValueChange");
   private void OnButtonToggle(Vector2 value) => OnPlaySfx("menuValueChange");
   private void OnKeyBound(string action, int key) => OnPlaySfx("menuValueChange");
-  private void OnTabChanged() => OnPlaySfx("menuFocus");
   private void OnFocusChanged() => OnPlaySfx("menuFocus");
   private void OnMenuBoxRotated() => OnPlaySfx("rotateRight");
   private void OnKeyboardActionBinding() => OnPlaySfx("menuValueChange");

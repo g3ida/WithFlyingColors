@@ -24,8 +24,9 @@ public partial class SelectSlotMenu : GameMenu {
   private DialogContainer _noSelectedSlotDialogContainer = default!;
   [NodePath("CurrentSlotLabel")]
   private Label CurrentSlotLabelNode = default!;
+  // The slot the player last acted on, and the one the reset dialog will wipe if it
+  // is confirmed.
   private int _currentSlotOnFocus;
-  private int _deleteTmpId = 0; // Used to save the currently deleting slot
 
   public void OnResolved() {
 
@@ -39,28 +40,25 @@ public partial class SelectSlotMenu : GameMenu {
     SetSelectedSlotLabel();
   }
 
-  private void OnBackButtonPressed() {
-    if (SaveManager.GetSelectedSlotIndex() == -1) {
-      EventHandler.EmitMenuActionPressed(MenuAction.ShowDialog);
-
-    }
-    else {
-      EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
-    }
-  }
+  private void OnBackButtonPressed() => EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
 
   public override bool OnMenuButtonPressed(MenuAction menuAction) {
-    base.OnMenuButtonPressed(menuAction);
     switch (menuAction) {
       case MenuAction.ShowDialog:
         _noSelectedSlotDialogContainer.ShowDialog();
         return true;
       case MenuAction.DeleteSlot:
-        return true;
       case MenuAction.SelectSlot:
         return true;
       case MenuAction.GoBack:
-        return false; // We don't return true here because we want the default behavior to be called
+        // Leaving with no slot selected would strand the game with nowhere to save,
+        // so the screen holds the player here. The guard lives on the action rather
+        // than on the Back button so UICancel goes through it too.
+        if (!SaveManager.HasSelectedSlot()) {
+          _noSelectedSlotDialogContainer.ShowDialog();
+          return true;
+        }
+        return false; // Let GameMenu run the default back navigation.
       default:
         return false;
     }
@@ -80,7 +78,6 @@ public partial class SelectSlotMenu : GameMenu {
 
     }
     else if (action == "delete") {
-      _deleteTmpId = id;
       _resetDialogContainerNode.ShowDialog();
       EventHandler.EmitMenuActionPressed(MenuAction.DeleteSlot);
     }
@@ -98,17 +95,10 @@ public partial class SelectSlotMenu : GameMenu {
 
   private void OnResetSlotConfirmed() {
     SaveManager.RemoveSaveSlot(_currentSlotOnFocus);
-    _slotsContainer.UpdateSlot(_deleteTmpId, true);
+    _slotsContainer.UpdateSlot(_currentSlotOnFocus, true);
     _slotsContainer.SetGameCurrentSelectedSlot(SaveManager.GetSelectedSlotIndex());
     SetSelectedSlotLabel();
   }
 
-  private void SetSelectedSlotLabel() {
-    if (SaveManager.GetSelectedSlotIndex() != -1) {
-      CurrentSlotLabelNode.Text = $"{SaveManager.GetSelectedSlotIndex() + 1}";
-    }
-    else {
-      CurrentSlotLabelNode.Text = "None";
-    }
-  }
+  private void SetSelectedSlotLabel() => CurrentSlotLabelNode.Text = SaveManager.GetSelectedSlotText();
 }

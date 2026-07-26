@@ -49,7 +49,6 @@ public interface IEventHandler {
   public void EmitSfxVolumeChanged(float volume);
   public void EmitMusicVolumeChanged(float volume);
   public void EmitOnActionBound(string action, int key);
-  public void EmitTabChanged();
   public void EmitFocusChanged();
   public void EmitKeyboardActionBiding();
   public void EmitGamepadActionBinding();
