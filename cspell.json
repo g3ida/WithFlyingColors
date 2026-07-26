@@ -138,6 +138,10 @@
     "SCRL",
     "PGUP",
     "PGDN",
-    "PRNT"
+    "PRNT",
+    "reparents",
+    "recognisably",
+    "autoloaded",
+    "autoloads"
   ]
 }
