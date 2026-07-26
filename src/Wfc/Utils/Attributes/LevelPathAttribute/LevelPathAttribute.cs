@@ -82,8 +82,12 @@ public class LevelPathAttribute : Attribute {
       return string.Empty;
     }
 
-    // Find the part after "WithFlyingColors"
-    var index = callerFilePath.IndexOf("WithFlyingColors", StringComparison.OrdinalIgnoreCase);
+    // Find the part after the last "WithFlyingColors": a checkout can sit inside a
+    // directory of the same name, which is exactly what GitHub Actions does
+    // (/home/runner/work/WithFlyingColors/WithFlyingColors/src/...). Splitting on the
+    // first occurrence there leaves the repo name glued to the front of the path and
+    // every level resolves to a res:// that does not exist.
+    var index = callerFilePath.LastIndexOf("WithFlyingColors", StringComparison.OrdinalIgnoreCase);
     if (index == -1) {
       return string.Empty;
     }

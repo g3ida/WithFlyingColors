@@ -47,22 +47,16 @@ public partial class SceneOrchester : Node2D {
 
   public void OnResolved() {
     var metaData = SaveManager.GetSlotMetaData();
-    var isNewGame = (metaData == null) || (metaData.Progress == 0);
+    var decision = LevelStartPolicy.Choose(
+      MenuManager.GetCurrentLevelId(),
+      metaData?.LevelId,
+      metaData?.Progress ?? 0,
+      LevelDispatcher.LEVELS.First().Id
+    );
 
-    var levelId = MenuManager.GetCurrentLevelId();
-    if (levelId != null) {
-      _loadLevel((LevelId)levelId);
-      // need to load level here
-    }
-    else if (isNewGame) {
-      levelId = LevelDispatcher.LEVELS.First().Id;
-      _loadLevel((LevelId)levelId);
-    }
-    else {
-      _currentLevel = _loadLevel(metaData!.LevelId);
-      if (_currentLevel != null) {
-        SaveManager.LoadGame(GetTree(), _currentLevel.PlayerNode, _currentLevel.CameraNode);
-      }
+    _currentLevel = _loadLevel(decision.LevelId);
+    if (_currentLevel != null && decision.ShouldRestoreSavedGame) {
+      SaveManager.LoadGame(GetTree(), _currentLevel.PlayerNode, _currentLevel.CameraNode);
     }
   }
 
@@ -93,6 +87,10 @@ public partial class SceneOrchester : Node2D {
   }
 
   private void OnLevelCleared() {
-    _currentLevel?.PauseMenuNode.NavigateToScreen(GameMenus.LEVEL_CLEAR_MENU);
+    if (_currentLevel == null) {
+      GD.PushError("LevelCleared raised with no current level: the level clear screen cannot be shown.");
+      return;
+    }
+    _currentLevel.PauseMenuNode.NavigateToScreen(GameMenus.LEVEL_CLEAR_MENU);
   }
 }

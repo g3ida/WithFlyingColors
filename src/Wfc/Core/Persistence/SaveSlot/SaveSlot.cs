@@ -12,7 +12,6 @@ public partial class SaveSlot {
   private readonly int _slotIndex;
   public string Path => $"user://slots/{_slotIndex}/save_slot.save";
   public string MetaPath => $"user://slots/{_slotIndex}/save_slot_meta.save";
-  public string ImagePath => $"user://slots/{_slotIndex}/save_slot_image.save";
   public bool IsFilled => FileAccess.FileExists(MetaPath);
   public bool HasProgress => FileAccess.FileExists(Path);
 
@@ -53,7 +52,6 @@ public partial class SaveSlot {
 
   public void Save(ISerializer serializer, SceneTree sceneTree, bool newEmptySlot = false) {
     _saveMetaData(serializer, sceneTree, newEmptySlot);
-    _saveScreenshot(sceneTree);
     if (!newEmptySlot) {
       _saveLevelState(serializer, sceneTree, newEmptySlot);
     }
@@ -67,7 +65,6 @@ public partial class SaveSlot {
     var saveGameMetaDataFile = FileAccess.Open(MetaPath, FileAccess.ModeFlags.Read);
     MetaData = serializer.Deserialize<SlotMetaData>(saveGameMetaDataFile.GetLine());
     saveGameMetaDataFile.Close();
-    _loadImage();
   }
 
   public void Delete() {
@@ -76,9 +73,6 @@ public partial class SaveSlot {
     }
     if (FileAccess.FileExists(MetaPath)) {
       DirAccess.RemoveAbsolute(MetaPath);
-    }
-    if (FileAccess.FileExists(ImagePath)) {
-      DirAccess.RemoveAbsolute(ImagePath);
     }
   }
 
@@ -142,25 +136,5 @@ public partial class SaveSlot {
 
   private static ulong _getUnixTimestamp() {
     return (ulong)Time.GetUnixTimeFromSystem();
-  }
-
-  private void _saveScreenshot(SceneTree sceneTree) {
-    var image = sceneTree.CurrentScene.GetViewport().GetTexture().GetImage();
-    image.FlipY();
-    image.ShrinkX2(); // TODO: resize image to fixed size
-    image.SavePng(ImagePath);
-    if (MetaData != null) {
-      MetaData.Image = ImageTexture.CreateFromImage(image);
-    }
-  }
-
-  private void _loadImage() {
-    if (FileAccess.FileExists(ImagePath)) {
-      var image = new Image();
-      image.Load(ImagePath);
-      if (MetaData != null) {
-        MetaData.Image = ImageTexture.CreateFromImage(image);
-      }
-    }
   }
 }

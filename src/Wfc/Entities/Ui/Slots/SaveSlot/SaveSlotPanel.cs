@@ -35,7 +35,6 @@ public partial class SaveSlotPanel : PanelContainer {
 
   private const int MIN_WIDTH = 1160;
 
-  private ImageTexture? _texture = null;
   private int _timestamp = -1;
   private string _description = "";
   private bool _hasFocus = false;
@@ -84,24 +83,12 @@ public partial class SaveSlotPanel : PanelContainer {
     base._Ready();
     this.WireNodes();
 
-    if (_texture != null) {
-      SetTexture(_texture);
-    }
     SetTimestamp(_timestamp);
     SetDescription(_description);
     SetSlotIndexLabel(_id);
     SetState(State.Default);
     CustomMinimumSize = new Vector2(MIN_WIDTH, CustomMinimumSize.Y);
     _buttonNode.GrabFocusOnHover();
-  }
-
-  public ImageTexture? Texture2D {
-    get => _texture;
-    set => SetTexture(value);
-  }
-
-  public void SetTexture(ImageTexture? value) {
-    _texture = value;
   }
 
   public string Description {
