@@ -77,6 +77,10 @@ public partial class KeyBindingButton : Button, IEditableControl {
     // This button processes Always so it can read a binding while the tree is paused,
     // which also means it hears the mouse under an overlay. Declining then is what
     // stops a stray hover moving focus out of a capture in progress.
+    //
+    // Subscribing in _Ready is deliberate: it happens once, where OnResolved can run
+    // again if the button is moved. ModalStack is only touched when the closure runs,
+    // on a hover, long after dependencies have resolved.
     this.GrabFocusOnHover(canFocus: () => !ModalStack.IsAnyOpen);
   }
 

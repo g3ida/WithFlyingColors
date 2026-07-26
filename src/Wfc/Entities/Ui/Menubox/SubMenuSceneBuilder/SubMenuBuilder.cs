@@ -12,11 +12,11 @@ using Wfc.Utils;
 public class SubMenuSceneBuilder {
   public static SubMenu Create(Node instantiator, IEnumerable<ButtonDef> buttons, ColorGroup colorGroup, ISaveManager saveManager) {
     var subMenuButtons = buttons
-      .Where(button => button.DisplayCondition.Verify(saveManager))
+      .Where(button => button.DisplayCondition.ShouldDisplay(saveManager))
       .Select(button => new SubMenuButton {
         Text = button.Text,
         OnClick = () => button.MenuAction.Emit(),
-        IsDisabled = button.DisableCondition.Verify(saveManager),
+        IsDisabled = button.DisableCondition.ShouldDisable(saveManager),
       });
     var instance = SceneHelpers.InstantiateNode<SubMenu>();
     instance.Ready += () => instance.PopulateWith(subMenuButtons, colorGroup);
