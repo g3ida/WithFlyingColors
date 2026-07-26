@@ -3,7 +3,7 @@
 
 [ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://src/Wfc/Entities/Ui/Slots/Dialogs/DialogContainer/DialogContainer.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://c4hq2bn66yx0g" path="res://src/Wfc/Entities/Ui/Slots/Dialogs/ResetSlotDialog.tscn" id="2"]
-[ext_resource type="PackedScene" uid="uid://cxa4nf011mofs" path="res://src/Wfc/Entities/Ui/TitleLabel/TitleLabel.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://wj8mouy5wyl2" path="res://src/Wfc/Entities/Ui/MenuTitle/MenuTitle.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://ca46a088ioysj" path="res://src/Wfc/Entities/Ui/Slots/SlotsContainer/SlotsContainer.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://ccjrqyrj01x5f" path="res://Assets/Sprites/MainMenu/ArrowBack.png" id="5"]
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="6"]
@@ -65,32 +65,18 @@ time = 0.5
 Delay = 0.5
 HiddenRelativePosition = Vector2(0, 1000)
 
-[node name="SELECT" parent="." instance=ExtResource("3")]
+[node name="MenuTitle" parent="." instance=ExtResource("3")]
 layout_mode = 0
-offset_right = 431.0
-text = "SLOT"
-content = "SLOT"
-
-[node name="UITransition" parent="SELECT" instance=ExtResource("11")]
-anchors_preset = 0
-HiddenRelativePosition = Vector2(-900, 0)
-
-[node name="SLOT" parent="." instance=ExtResource("3")]
-layout_mode = 0
-offset_top = 250.0
-offset_right = 985.0
-offset_bottom = 450.0
-text = "SELECT"
-content = "SELECT"
-
-[node name="UITransition" parent="SLOT" instance=ExtResource("11")]
-anchors_preset = 0
-Delay = 0.5
-HiddenRelativePosition = Vector2(-900, 0)
+DummyContent = "SELECT SLOT"
+Content = 51
+MaxLineWidth = 640.0
 
 [node name="ResetDialogContainer" parent="." instance=ExtResource("1")]
 layout_mode = 1
 DialogNodePath = NodePath("ResetSlotDialog")
+DialogTextKey = 59
+ConfirmTextKey = 57
+CancelTextKey = 58
 
 [node name="ResetSlotDialog" parent="ResetDialogContainer" instance=ExtResource("2")]
 initial_position = 2
@@ -99,11 +85,12 @@ visible = true
 borderless = true
 content_scale_mode = 2
 content_scale_aspect = 3
-ok_button_text = "confirm"
 
 [node name="NoSelectedSlotDialogContainer" parent="." instance=ExtResource("1")]
 layout_mode = 1
 DialogNodePath = NodePath("AcceptDialog")
+DialogTextKey = 60
+ConfirmTextKey = 62
 
 [node name="AcceptDialog" type="AcceptDialog" parent="NoSelectedSlotDialogContainer"]
 size = Vector2i(186, 265)
@@ -112,14 +99,18 @@ dialog_text = "Please select a save slot to continue."
 dialog_autowrap = true
 
 [node name="CurrentSlotLabel" type="Label" parent="."]
-layout_mode = 0
-offset_left = 1767.0
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -900.0
 offset_top = 31.0
-offset_right = 1886.0
+offset_right = -24.0
 offset_bottom = 91.0
-size_flags_horizontal = 3
+grow_horizontal = 0
 theme = ExtResource("12")
-text = "NONE"
+text = "Current slot:"
+horizontal_alignment = 2
 
 [node name="UITransition" parent="CurrentSlotLabel" instance=ExtResource("11")]
 anchors_preset = 0
@@ -130,16 +121,6 @@ offset_bottom = 417.0
 time = 0.5
 Delay = 0.7
 HiddenRelativePosition = Vector2(2000, 0)
-
-[node name="CurrentSlotLabel2" type="Label" parent="CurrentSlotLabel"]
-layout_mode = 0
-offset_left = -384.0
-offset_right = 100.0
-offset_bottom = 60.0
-size_flags_horizontal = 3
-theme = ExtResource("12")
-text = "Current slot:"
-
 
 [node name="InputHintBar" parent="." instance=ExtResource("hintbar_ext")]
 

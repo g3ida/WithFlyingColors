@@ -30,8 +30,21 @@ public partial class MainMenu : GameMenu {
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
-    _currentSlotLabelNode.Text = $"{LocalizationService.GetLocalizedString(TranslationKey.menu_label_currentSlot)}: {SaveManager.GetSelectedSlotText()}";
+    _refreshCurrentSlotLabel();
   }
+
+  // The label holds a string that was already translated when the screen was built,
+  // so the engine's own auto-translation has nothing left to redo once the player
+  // picks another language.
+  public override void _Notification(int what) {
+    base._Notification(what);
+    if (what == NotificationTranslationChanged && IsNodeReady()) {
+      _refreshCurrentSlotLabel();
+    }
+  }
+
+  private void _refreshCurrentSlotLabel() =>
+    _currentSlotLabelNode.Text = SaveManager.GetCurrentSlotLine(LocalizationService);
 
   public void ShowResetDataDialog() => _resetSlotDialogNode.ShowDialog();
 

@@ -33,7 +33,7 @@ public partial class UISelectButton : Button {
   [NodePath("HBoxContainer/Right/AnimationPlayer")]
   private AnimationPlayer RightArrowAnimationNode = default!;
   [NodePath("HBoxContainer/Label")]
-  private Label LabelNode = default!;
+  private MarqueeLabel LabelNode = default!;
   [NodePath("HBoxContainer/Label/AnimationPlayer")]
   private AnimationPlayer AnimationPlayerNode = default!;
   #endregion Nodes

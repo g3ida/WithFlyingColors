@@ -33,6 +33,11 @@ public partial class UIGridRow : PanelContainer {
 
   private const string THEME_OVERRIDE_NAME = "panel";
 
+  // Keeps the label and the value clear of the panel's edges. Without it a value
+  // that happened to fill its half of the row - the full name of a connected
+  // gamepad, say - sat flush against the side of the settings panel.
+  private const int SIDE_MARGIN = 30;
+
   [Export]
   public TranslationKey TranslationKey { get; set; }
 
@@ -50,6 +55,8 @@ public partial class UIGridRow : PanelContainer {
     style.BgColor = hasFocus ? new Color(0f, 0f, 0f, 0.2f) : IsDark ? new Color(0f, 0f, 0f, 0.05f) : Colors.Transparent;
     style.ContentMarginTop = 5;
     style.ContentMarginBottom = 5;
+    style.ContentMarginLeft = SIDE_MARGIN;
+    style.ContentMarginRight = SIDE_MARGIN;
     // Fixme: this hack is to fix line spacing between items in the parent grid.
     style.ExpandMarginTop = 4;
     if (HasThemeStyleboxOverride(THEME_OVERRIDE_NAME)) {

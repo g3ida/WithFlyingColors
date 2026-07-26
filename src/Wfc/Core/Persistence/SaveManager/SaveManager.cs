@@ -111,26 +111,47 @@ public partial class SaveManager : ISaveManager {
     }
   }
 
+  // Deserialized as JsonElement rather than object: System.Text.Json hands back the
+  // raw element for an untyped value, so unboxing one straight to int threw. Any
+  // unreadable file falls back to the first slot rather than stranding the player.
   private void _loadSlotsInfo() {
-    if (FileAccess.FileExists(SLOT_INFO_PATH)) {
-      var metaDataFile = FileAccess.Open(SLOT_INFO_PATH, FileAccess.ModeFlags.Read);
-      var data = JsonSerializer.Deserialize<Dictionary<string, object>>(metaDataFile.GetLine());
-      if (data == null) {
-        LatestLoadedSlot = 0;
-      }
-      else {
-        var lastLoadedDate = data[LATEST_LOADED_SLOT_FIELD_NAME];
-        LatestLoadedSlot = lastLoadedDate != null ? (int)lastLoadedDate : 0;
-        metaDataFile.Close();
+    LatestLoadedSlot = 0;
+    if (!FileAccess.FileExists(SLOT_INFO_PATH)) {
+      return;
+    }
+
+    using var metaDataFile = FileAccess.Open(SLOT_INFO_PATH, FileAccess.ModeFlags.Read);
+    if (metaDataFile == null) {
+      return;
+    }
+
+    try {
+      var data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(metaDataFile.GetLine());
+      if (data != null
+          && data.TryGetValue(LATEST_LOADED_SLOT_FIELD_NAME, out var latest)
+          && latest.TryGetInt32(out var slotIndex)
+          && slotIndex is >= 0 and < NUM_SLOTS) {
+        LatestLoadedSlot = slotIndex;
       }
     }
-    else {
-      LatestLoadedSlot = 0;
+    catch (JsonException error) {
+      GD.PushError($"Could not read {SLOT_INFO_PATH}: {error.Message}");
     }
   }
 
   private void _saveSlotsInfo() {
+    // The slots folder doesn't exist on a first run, and FileAccess won't create the
+    // path it is handed: opening for write under a missing directory hands back null
+    // rather than failing loudly, which surfaced as a NullReferenceException out of
+    // the first screen to select a slot - taking the rest of that screen's _Ready
+    // with it.
+    DirAccess.MakeDirRecursiveAbsolute(SLOT_INFO_PATH.GetBaseDir());
+
     var saveFile = FileAccess.Open(SLOT_INFO_PATH, FileAccess.ModeFlags.Write);
+    if (saveFile == null) {
+      GD.PushError($"Could not write {SLOT_INFO_PATH}: {FileAccess.GetOpenError()}");
+      return;
+    }
     var data = new Dictionary<string, object> { { LATEST_LOADED_SLOT_FIELD_NAME, LatestLoadedSlot } };
     saveFile.StoreLine(JsonSerializer.Serialize(data));
     saveFile.Close();

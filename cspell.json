@@ -149,6 +149,7 @@
     "autoloads",
     "ultrawide",
     "platformer",
-    "tilesets"
+    "tilesets",
+    "neighbours"
   ]
 }

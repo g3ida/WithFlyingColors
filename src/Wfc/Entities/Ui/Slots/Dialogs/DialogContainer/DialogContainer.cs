@@ -4,6 +4,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Input;
+using Wfc.Core.Localization;
 using Wfc.Core.Ui;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils.Attributes;
@@ -30,15 +31,34 @@ public partial class DialogContainer : Control {
   }
 
   #region Dependencies
-  public override void _Notification(int what) => this.Notify(what);
+  // The dialog holds strings that were already translated when the screen was built,
+  // so the engine's own auto-translation has nothing left to redo once the player
+  // picks another language.
+  public override void _Notification(int what) {
+    this.Notify(what);
+    if (what == NotificationTranslationChanged && _isWired) {
+      _applyLocalizedText();
+    }
+  }
 
   [Dependency]
   public IInputManager InputManager => this.DependOn<IInputManager>();
   [Dependency]
   public IModalStack ModalStack => this.DependOn<IModalStack>();
+  [Dependency]
+  public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
   #endregion Dependencies
 
   [Export] public NodePath DialogNodePath = default!;
+
+  // Every dialog is worded in the player's language, so the wording belongs to the
+  // container that puts one on screen rather than to the scene it sits in. The first
+  // two are required - a container added without them shows the first entry in the
+  // table, which is loud enough to be caught on the first run - while the third is
+  // only read for a ConfirmationDialog, the one kind that has a second button.
+  [Export] public TranslationKey DialogTextKey { get; set; }
+  [Export] public TranslationKey ConfirmTextKey { get; set; }
+  [Export] public TranslationKey CancelTextKey { get; set; }
 
   private ColorRect _colorRectNode = default!;
   private AcceptDialog _dialogNode = default!;
@@ -55,13 +75,18 @@ public partial class DialogContainer : Control {
   // reason about which half of a tween it was interrupted in.
   private bool _holdsModal;
 
-  public void OnResolved() { }
+  // The dialog is only reachable from _Ready onwards, which is also the guard for
+  // the translation notification: it arrives on screens still being built.
+  private bool _isWired;
+
+  public void OnResolved() => _applyLocalizedText();
 
   public override void _Ready() {
     base._Ready();
     ProcessMode = ProcessModeEnum.Always;
     _colorRectNode = GetNode<ColorRect>("ColorRect");
     _dialogNode = GetNode<AcceptDialog>(DialogNodePath);
+    _isWired = true;
 
     _shownPosY = _dialogNode.Position.Y;
     _hiddenPosY = _shownPosY - HIDDEN_OFFSET_Y;
@@ -79,6 +104,19 @@ public partial class DialogContainer : Control {
     _releaseModal();
     _dialogNode.Disconnect(AcceptDialog.SignalName.CloseRequested, new Callable(this, nameof(Dismiss)));
     _dialogNode.Disconnect(AcceptDialog.SignalName.Confirmed, new Callable(this, nameof(_onConfirmed)));
+  }
+
+  // A ConfirmationDialog has a cancel button; a plain AcceptDialog has only the one,
+  // and asking it for the other would build a second button nobody ever sees.
+  private void _applyLocalizedText() {
+    if (!_isWired) {
+      return;
+    }
+    _dialogNode.DialogText = LocalizationService.GetLocalizedString(DialogTextKey);
+    _dialogNode.OkButtonText = LocalizationService.GetLocalizedString(ConfirmTextKey);
+    if (_dialogNode is ConfirmationDialog confirmation) {
+      confirmation.CancelButtonText = LocalizationService.GetLocalizedString(CancelTextKey);
+    }
   }
 
   public void ShowDialog() {

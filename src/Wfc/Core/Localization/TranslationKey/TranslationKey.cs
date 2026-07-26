@@ -60,6 +60,21 @@ public enum TranslationKey {
   menu_hint_back = 48,
   menu_hint_switchTab = 49,
   menu_hint_navigate = 50,
+  menu_header_selectSlot = 51,
+  menu_header_selectLevel = 52,
+  menu_header_levelCleared = 53,
+  menu_button_levelSelection = 54,
+  menu_button_mainMenu = 55,
+  menu_label_noSlot = 56,
+  menu_button_confirm = 57,
+  menu_button_cancel = 58,
+  menu_dialog_deleteSlot = 59,
+  menu_dialog_selectSlotRequired = 60,
+  menu_dialog_bindAllKeys = 61,
+  menu_button_ok = 62,
+  menu_label_emptySlot = 63,
+  menu_label_slotProgress = 64,
+  menu_label_slotIndex = 65,
 }
 
 public static partial class TranslationKeyExtensions {
