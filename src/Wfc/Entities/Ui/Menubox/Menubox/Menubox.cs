@@ -102,13 +102,13 @@ public partial class Menubox : Control {
     }
   }
 
+  // UICancel is deliberately absent: the screen owns back, and MainMenu answers it by
+  // closing this sub-menu. Handling it here as well meant one key press got two
+  // answers.
   public override void _PhysicsProcess(double delta) {
     _playSubMenuNode?.SetPosition(_playSubMenuPos);
 
-    if (InputManager.IsJustPressed(IInputManager.Action.UICancel)) {
-      HideSubMenuIfNeeded();
-    }
-    else if (InputManager.IsJustPressed(IInputManager.Action.RotateLeft)
+    if (InputManager.IsJustPressed(IInputManager.Action.RotateLeft)
       || InputManager.IsJustPressed(IInputManager.Action.UILeft)
       || InputManager.IsJustPressed(IInputManager.Action.UITabPrevious)) {
       OnLeftButtonPressed();
@@ -132,6 +132,9 @@ public partial class Menubox : Control {
   }
 
   public void OnRightButtonPressed() {
+    if (!CanRespondToInput()) {
+      return;
+    }
     HideSubMenuIfNeeded();
     if (_boxRotationNode.Fire(MathUtils.PI2, 0.1f, forceRotationIfBusy: false)) {
       _setActiveButton((_activeIndex - 1 + _buttons.Length) % _buttons.Length);
@@ -140,6 +143,9 @@ public partial class Menubox : Control {
   }
 
   public void OnLeftButtonPressed() {
+    if (!CanRespondToInput()) {
+      return;
+    }
     HideSubMenuIfNeeded();
     if (_boxRotationNode.Fire(-MathUtils.PI2, 0.1f, forceRotationIfBusy: false)) {
       _setActiveButton((_activeIndex + 1) % _buttons.Length);
@@ -172,7 +178,10 @@ public partial class Menubox : Control {
   }
 
   private void _clickOnActiveButton() {
-    if (_isSubMenuDisplayed()) {
+    // Only from the resting state. During the sub-menu's exit tween one of its items
+    // still holds focus, so ui_accept would press both that item and the box button
+    // behind it.
+    if (_currentState != States.MENU) {
       return;
     }
     if (_buttons[ActiveIndex] == _playButtonNode) {
@@ -243,8 +252,10 @@ public partial class Menubox : Control {
 
   private void _onOutsideButtonPressed() => HideSubMenuIfNeeded();
 
+  // Null parent screen when the box is previewed outside a menu, in which case there
+  // is no transition to wait on.
   private bool CanRespondToInput() {
-    var isInTransition = GetParent<GameMenu>().IsInTransitionState();
-    return _currentState != States.EXIT && !isInTransition;
+    var screen = GetParent() as GameMenu;
+    return _currentState != States.EXIT && screen?.IsInTransitionState() != true;
   }
 }

@@ -13,6 +13,7 @@ using Wfc.Core.Localization;
 using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Settings;
+using Wfc.Core.Ui;
 using Wfc.Screens.MenuManager;
 
 [Meta(typeof(IAutoNode))]
@@ -25,14 +26,17 @@ public partial class DependenciesProvider :
   IProvide<ILocalizationService>,
   IProvide<ISfxManager>,
   IProvide<IMusicTrackManager>,
-  IProvide<IInputManager> {
+  IProvide<IInputManager>,
+  IProvide<IModalStack> {
   public override void _Notification(int what) => this.Notify(what);
 
   private readonly Lazy<IMenuManager> _menuManager;
   private readonly Lazy<IInputManager> _inputManager;
+  private readonly Lazy<IModalStack> _modalStack;
   private readonly ILogger _logger = new GDLogger();
   private readonly SaveManager _saveManager = new SaveManager();
   IMenuManager IProvide<IMenuManager>.Value() => _menuManager.Value;
+  IModalStack IProvide<IModalStack>.Value() => _modalStack.Value;
   ISaveManager IProvide<ISaveManager>.Value() => _saveManager;
   ILocalizationService IProvide<ILocalizationService>.Value() => new LocalizationService();
   ILogger IProvide<ILogger>.Value() => _logger;
@@ -44,6 +48,8 @@ public partial class DependenciesProvider :
   public DependenciesProvider() : base() {
     _menuManager = new Lazy<IMenuManager>(() => new MenuManager(this));
     _inputManager = new Lazy<IInputManager>(() => new InputManager());
+    // Lazy so GetTree() is only reached once this node is in the tree.
+    _modalStack = new Lazy<IModalStack>(() => new ModalStack(GetTree()));
   }
 
   public void OnReady() {

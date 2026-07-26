@@ -101,14 +101,7 @@ public partial class SettingsMenu : GameMenu {
     return GameSettings.AreActionKeysValid();
   }
 
-  private void OnBackButtonPressed() {
-    if (!IsInTransitionState()) {
-      if (IsValidState()) {
-        EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
-      }
-      else {
-        EventHandler.EmitMenuActionPressed(MenuAction.ShowDialog);
-      }
-    }
-  }
+  // Only reports the intent. Whether the bindings are valid is decided in one place,
+  // the GoBack case above, so the button and UICancel can't disagree.
+  private void OnBackButtonPressed() => EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
 }

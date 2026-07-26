@@ -5,6 +5,7 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core;
 using Wfc.Core.Audio;
+using Wfc.Core.Input;
 using Wfc.Entities.Ui.InputHint;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
@@ -35,6 +36,8 @@ public partial class PauseMenu : CanvasLayer {
   public ISfxManager SfxManager => this.DependOn<ISfxManager>();
   [Dependency]
   public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
+  [Dependency]
+  public IInputManager InputManager => this.DependOn<IInputManager>();
 
   public void OnResolved() { }
 
@@ -45,15 +48,21 @@ public partial class PauseMenu : CanvasLayer {
     _backButtonButton.Pressed += _onBackButtonPressed;
   }
 
-  public override void _Process(double delta) {
-    if (Input.IsActionJustPressed("pause")) {
-      if (_isPaused) {
-        Resume();
-      }
-      else {
-        PauseGame();
-      }
+  // Event-based and through the input manager, matching the menus: polling the raw
+  // action name every frame both bypassed the rebindable action table and repeated
+  // for each event delivered in the frame the key went down.
+  public override void _Input(InputEvent @event) {
+    if (!InputManager.IsEventActionJustPressed(IInputManager.Action.Pause, @event)) {
+      return;
     }
+
+    if (_isPaused) {
+      Resume();
+    }
+    else {
+      PauseGame();
+    }
+    GetViewport().SetInputAsHandled();
   }
 
   private void Resume() {

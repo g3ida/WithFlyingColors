@@ -9,6 +9,7 @@ using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
+using Wfc.Core.Ui;
 using Wfc.Entities.Ui;
 using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
@@ -32,6 +33,8 @@ public partial class GameMenu : Control {
     public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
     [Dependency]
     public IInputManager InputManager => this.DependOn<IInputManager>();
+    [Dependency]
+    public IModalStack ModalStack => this.DependOn<IModalStack>();
     public void OnResolved() {
       // This is called on resolving dependencies to make sure localized text is configured.
       (Owner as GameMenu)?.ConfigureTransitionElements();
@@ -64,6 +67,7 @@ public partial class GameMenu : Control {
   protected ISaveManager SaveManager => _dependenciesWrapper.SaveManager;
   protected ILocalizationService LocalizationService => _dependenciesWrapper.LocalizationService;
   protected IInputManager InputManager => _dependenciesWrapper.InputManager;
+  protected IModalStack ModalStack => _dependenciesWrapper.ModalStack;
 
   public override void _EnterTree() {
     base._EnterTree();
@@ -115,16 +119,29 @@ public partial class GameMenu : Control {
     // Override this method in derived classes.
   }
 
+  // The screen is the single owner of back for everything it contains: its widgets
+  // and the settings focus manager leave UICancel alone and let it land here.
   public override void _Input(InputEvent @event) {
     base._Input(@event);
-    if (_screenState is ((int)MenuScreenState.Entering) or MenuScreenState.Exiting) {
+    // Nothing on a screen mid-transition may be touched, children included, so the
+    // event is marked handled rather than merely ignored.
+    if (IsInTransitionState()) {
       GetViewport().SetInputAsHandled();
+      return;
     }
 
-    if (HandleBackEvent &&
-        (InputManager.IsJustPressed(IInputManager.Action.UICancel) ||
-         InputManager.IsJustPressed(IInputManager.Action.UIHome))) {
+    // An overlay speaks for the screen while it is up.
+    if (!HandleBackEvent || ModalStack.IsAnyOpen) {
+      return;
+    }
+
+    // Tested against the event rather than polled: _Input runs once per event, and
+    // IsJustPressed stays true for the whole frame, so polling here fired once per
+    // event delivered in that frame - several times over with a gamepad connected.
+    if (InputManager.IsEventActionJustPressed(IInputManager.Action.UICancel, @event) ||
+        InputManager.IsEventActionJustPressed(IInputManager.Action.UIHome, @event)) {
       EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
+      GetViewport().SetInputAsHandled();
     }
   }
 
