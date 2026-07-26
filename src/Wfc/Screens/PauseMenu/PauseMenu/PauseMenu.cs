@@ -5,6 +5,7 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core;
 using Wfc.Core.Audio;
+using Wfc.Entities.Ui.InputHint;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -25,6 +26,8 @@ public partial class PauseMenu : CanvasLayer {
   private Button _resumeButton = null!;
   [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/BackButton")]
   private Button _backButtonButton = null!;
+  [NodePath("InputHintBar")]
+  private InputHintBar _inputHintBar = null!;
 
   private bool _isPaused;
 
@@ -58,6 +61,7 @@ public partial class PauseMenu : CanvasLayer {
     MusicTrackManager.SetPauseMenuEffect(false);
     _screenShaders.DisablePauseShader();
     _pauseMenu._Hide();
+    _inputHintBar.Exit();
     _isPaused = false;
     GetTree().Paused = false;
     EventHandler.Instance.EmitPauseMenuExit();
@@ -68,6 +72,7 @@ public partial class PauseMenu : CanvasLayer {
     MusicTrackManager.SetPauseMenuEffect(true);
     _screenShaders.Call("ActivatePauseShader");
     _pauseMenu._Show();
+    _inputHintBar.Enter();
     _isPaused = true;
     GetTree().Paused = true;
     EventHandler.Instance.EmitPauseMenuEnter();

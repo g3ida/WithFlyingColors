@@ -46,3 +46,7 @@ controller.type.keyboard,Keyboard,Clavier,Tastatur,Teclado,Tastiera,Teclado,Toet
 controller.type.gamepad,Gamepad,Manette,Gamepad,Mando,Gamepad,Comando,Gamepad
 controller.label.controls,Controls,Commandes,Steuerung,Controles,Comandi,Controlos,Besturing
 game.command.empty,(EMPTY),(VIDE),(LEER),(VACÍO),(VUOTO),(VAZIO),(LEEG)
+menu.hint.select,Select,Sélectionner,Auswählen,Seleccionar,Seleziona,Selecionar,Selecteren
+menu.hint.back,Back,Retour,Zurück,Atrás,Indietro,Voltar,Terug
+menu.hint.switch_tab,Switch Tab,Changer d'onglet,Tab wechseln,Cambiar pestaña,Cambia scheda,Mudar aba,Wissel tabblad
+menu.hint.navigate,Navigate,Naviguer,Navigieren,Navegar,Naviga,Navegar,Navigeren

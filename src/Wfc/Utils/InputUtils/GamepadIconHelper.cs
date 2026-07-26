@@ -62,6 +62,17 @@ public static class GamepadIconHelper {
         return GD.Load<Texture2D>(iconPath);
     }
 
+    // Gets the icon texture for the whole directional pad (used by hints that
+    // stand for "any direction", like menu navigation).
+    public static Texture2D? GetDirectionalPadIcon(ControllerIconType? iconType = null) {
+        var type = iconType ?? DetectControllerType();
+        var iconPath = type == ControllerIconType.PlayStation
+            ? PlayStationIconPath + "d-pad.png"
+            : Xbox360IconPath + "hat.png";
+
+        return GD.Load<Texture2D>(iconPath);
+    }
+
     private static string GetButtonIconPath(JoyButton button, ControllerIconType iconType) {
         if (iconType == ControllerIconType.PlayStation) {
             return button switch {
