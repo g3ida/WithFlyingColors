@@ -44,7 +44,7 @@ position = Vector2(683.333, -860.667)
 position = Vector2(34.667, -21)
 scale = Vector2(9, 3)
 FullViewportDragMargin = true
-Zoom = 1.5
+Zoom = 0.6667
 LimitXAxisToViewSize = true
 
 [node name="TopRight" type="Marker2D" parent="CameraLocalizer"]

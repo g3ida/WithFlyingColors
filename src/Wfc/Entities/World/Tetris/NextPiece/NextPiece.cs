@@ -11,9 +11,10 @@ public partial class NextPiece : Node {
   private Tetromino? _nextPieceNode = null;
 
   public void SetNextPiece(PackedScene piece) {
-    if (_nextPieceNode != null) {
-      RemoveChild(_nextPieceNode);
-    }
+    // QueueFree detaches as well, so the RemoveChild this used to do on its own only orphaned
+    // the outgoing preview - and the one reference to it was overwritten on the next line, so
+    // a ~45-node subtree was stranded for every piece the pool ever spawned.
+    _nextPieceNode?.QueueFree();
     _nextPieceNode = piece.Instantiate<Tetromino>();
     AddChild(_nextPieceNode);
     _nextPieceNode.Owner = this;

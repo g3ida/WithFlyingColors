@@ -15,6 +15,11 @@ public partial class CheckpointArea : Area2D, IPersistent {
 
   private bool _isChecked = false;
 
+  // Read by the orchestrator to work out how far through a level the player is - the count of
+  // checkpoints passed against the count in the scene is the only progress measure the level
+  // data supports.
+  public bool IsChecked => _isChecked;
+
   private sealed record SaveData(bool isChecked = false);
   private SaveData _saveData = new SaveData();
 
@@ -33,7 +38,7 @@ public partial class CheckpointArea : Area2D, IPersistent {
       _isChecked = true;
       _saveData = new SaveData(isChecked: true);
       EmitSignal(nameof(checkpoint_hit));
-      EventHandler.Instance.EmitCheckpointReached(this);
+      EventHandler.Instance.EmitCheckpointReached(GlobalPosition, ColorGroup);
     }
   }
 

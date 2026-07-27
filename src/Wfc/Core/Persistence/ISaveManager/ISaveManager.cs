@@ -3,6 +3,7 @@ namespace Wfc.Core.Persistence;
 using Godot;
 using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Player;
+using Wfc.Screens.Levels;
 
 public interface ISaveManager {
   // Two meanings, deliberately the same value: what GetSelectedSlotIndex returns
@@ -13,6 +14,7 @@ public interface ISaveManager {
   public const int NO_SLOT = -1;
 
   public void SaveGame(SceneTree tree, int slotIndex = NO_SLOT);
+  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, int slotIndex = NO_SLOT);
   public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = NO_SLOT);
   public bool IsSLotFilled(int slotIndex = NO_SLOT);
   public int GetSelectedSlotIndex();

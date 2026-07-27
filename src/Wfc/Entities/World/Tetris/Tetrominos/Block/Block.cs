@@ -126,9 +126,21 @@ public partial class Block : Node2D {
   private const int DIR_RIGHT = 1;
   private const int DIR_BOTH = 2;
 
+  private bool _hasEdgeLeft;
+  private bool _hasEdgeRight;
+
   private void AddPermissivenessBounds(int dir) {
+    // Once per side. A block is asked for its edge by its own AddToGrid and again by each
+    // neighbor that lands beside it, and TetrisPool never nulls _shape when a piece locks,
+    // so the same side really does come round twice. The subtraction below is only correct
+    // once per side: run twice it takes the color area to nothing and then past it, into a
+    // negative scale that mirrors the shape onto the wrong half of the block.
+    if (dir == DIR_LEFT ? _hasEdgeLeft : _hasEdgeRight) {
+      return;
+    }
+
     var group = Grid?[I + dir, J]?.ColorGroup;
-    var edgeArea = new EdgeArea();
+    var edgeArea = SceneHelpers.InstantiateNode<EdgeArea>();
     if (group != null) {
       edgeArea.AddToGroup(group);
     }
@@ -136,18 +148,31 @@ public partial class Block : Node2D {
     AddChild(edgeArea);
     edgeArea.Owner = this;
 
-    var areaShape = areaShapeNode.Shape as RectangleShape2D;
-    if (areaShape != null) {
-      edgeArea.Position = new Vector2(
-          dir == DIR_LEFT ? areaShape.Size.X : Constants.TETRIS_BLOCK_SIZE - areaShape.Size.X,
-          areaShape.Size.Y
-      );
-
-      float edgeAreaX = (edgeArea.CollisionShapeNode?.Shape as RectangleShape2D)?.Size.X ?? 0;
-      float areaX = areaShape.Size.X;
-      float factor = 1 - (edgeAreaX / areaX);
-      areaShapeNode.Scale = new Vector2(factor - (1 - areaShapeNode.Scale.X), areaShapeNode.Scale.Y);
-      areaShapeNode.Position -= new Vector2(dir * 0.5f * (1 - factor) * Constants.TETRIS_BLOCK_SIZE, 0);
+    if (dir == DIR_LEFT) {
+      _hasEdgeLeft = true;
     }
+    else {
+      _hasEdgeRight = true;
+    }
+
+    if (areaShapeNode.Shape is not RectangleShape2D areaShape) {
+      return;
+    }
+
+    // Godot 3 stored a rectangle as its half size and the port kept that arithmetic while
+    // the property became the full size, which is how a left-hand edge ended up at
+    // (74, 74) - diagonally outside the 72-wide block it belongs to. Halving explicitly is
+    // what that missing conversion looks like.
+    var edgeWidth = edgeArea.Width;
+    var seamX = dir == DIR_LEFT ? 0f : Constants.TETRIS_BLOCK_SIZE;
+    edgeArea.Position = new Vector2(seamX - (dir * edgeWidth * 0.5f), areaShapeNode.Position.Y);
+
+    // The band is only permissive if this block's own color area stops short of it. A face
+    // is killed by contact with any area it shares no group with, so a two-color seam laid
+    // on top of an unchanged single-color area would still be fatal. Subtracting rather
+    // than multiplying keeps a block with edges on both sides from shrinking twice over.
+    var shrunk = (areaShape.Size.X - edgeWidth) / areaShape.Size.X;
+    areaShapeNode.Scale = new Vector2(shrunk - (1 - areaShapeNode.Scale.X), areaShapeNode.Scale.Y);
+    areaShapeNode.Position -= new Vector2(dir * edgeWidth * 0.5f, 0);
   }
 }

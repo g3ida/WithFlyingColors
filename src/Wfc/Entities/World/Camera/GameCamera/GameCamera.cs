@@ -69,7 +69,7 @@ public partial class GameCamera : Camera2D, IPersistent {
     }
   }
 
-  private void _OnCheckpointHit(Node checkpoint) {
+  private void _OnCheckpointHit(Vector2 _position, string _colorGroup) {
     _saveData = new SaveData(
       Zoom: TargetZoom,
       BottomLimit: LimitBottom,

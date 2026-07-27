@@ -37,7 +37,7 @@ public interface IEventHandler {
   public void EmitPlayerFall();
   public void EmitPlayerDash(Vector2 dir);
   public void EmitGemCollected(string color, Vector2 position, SpriteFrames frames);
-  public void EmitCheckpointReached(Node checkpoint);
+  public void EmitCheckpointReached(Vector2 position, string colorGroup);
   public void EmitCheckpointLoaded();
 
   public void EmitMenuActionPressed(MenuAction menuAction);

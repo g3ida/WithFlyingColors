@@ -92,8 +92,12 @@ public partial class Gem : Area2D, IPersistent {
     DisconnectSignals();
   }
 
-  private void _OnCheckpointHit(Node checkpoint) {
-    _saveData = new SaveData(_currentState! is GemNotCollectedState);
+  // A gem in the middle of its collection animation counts as collected: the pickup is
+  // already committed and GemCollectingState only exists until the animation ends. The
+  // flag used to be written inverted, which turned every uncollected gem into a collected
+  // one on the next death - hidden, uncollectable, and missing from the temple's set.
+  private void _OnCheckpointHit(Vector2 _position, string _colorGroup) {
+    _saveData = new SaveData(_currentState is GemCollectedState or GemCollectingState);
   }
 
   public void Reset() {

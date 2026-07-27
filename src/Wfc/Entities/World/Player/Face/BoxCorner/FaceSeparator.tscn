@@ -7,7 +7,7 @@ size = Vector2(3.156, 3.156)
 
 [node name="FaceSeparator" type="Area2D"]
 collision_layer = 16
-collision_mask = 108
+collision_mask = 1260
 script = ExtResource("1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

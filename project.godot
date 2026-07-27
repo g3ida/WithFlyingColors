@@ -143,6 +143,7 @@ locale/translations=PackedStringArray("res://Assets/Locale/translations.de.trans
 2d_physics/layer_9="PowerUp"
 2d_physics/layer_10="BouncingBall"
 2d_physics/layer_11="Bricks"
+2d_physics/layer_12="Shield"
 
 [mono]
 

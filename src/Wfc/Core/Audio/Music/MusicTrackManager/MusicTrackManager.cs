@@ -214,7 +214,7 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
     }
   }
 
-  private void OnCheckpointHit(Node _checkpoint) {
+  private void OnCheckpointHit(Vector2 _position, string _colorGroup) {
     if (_currentState == State.FADE_OUT) {
       if (_nextTrack != null) {
         _saveData = new SaveData(_nextTrack.Name, _pitchScale);

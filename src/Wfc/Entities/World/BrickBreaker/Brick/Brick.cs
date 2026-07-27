@@ -3,6 +3,7 @@ namespace Wfc.Entities.World.BrickBreaker;
 using System;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Entities.World.Player;
 using Wfc.Skin;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -43,6 +44,17 @@ public partial class Brick : Node2D {
   // cleared. Breaking is a one-way door, so latch it and stop listening immediately.
   private void _on_Area2D_area_entered(Area2D area) {
     if (_isBroken) {
+      return;
+    }
+
+    // The player only breaks a brick it can safely touch. A face of the wrong color is
+    // already fatal - BoxFace raises the death from its own handler on the same contact -
+    // so the brick has to survive it, or the player would smash the very brick that
+    // killed them and the arena would clear itself as they died.
+    //
+    // Balls carry a color group too, but theirs is an echo of the last surface they
+    // bounced off rather than an identity, so they go on breaking anything.
+    if (area is BaseFace face && !face.IsInGroup(ColorGroup)) {
       return;
     }
     _isBroken = true;

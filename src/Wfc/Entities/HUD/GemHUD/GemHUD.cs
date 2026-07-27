@@ -132,7 +132,7 @@ public partial class GemHUD : Node2D, IPersistent {
     }
   }
 
-  private void OnCheckpointHit(Node checkpoint) {
+  private void OnCheckpointHit(Vector2 _position, string _colorGroup) {
     var state = currentState == State.Empty ? State.Empty : State.Collected;
     _saveData = new SaveData(state);
   }

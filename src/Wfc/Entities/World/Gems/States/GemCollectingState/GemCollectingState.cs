@@ -20,6 +20,10 @@ public partial class GemCollectingState : GemBaseState {
   }
 
   public override void Enter(Gem o) {
+    // Shared instance: see GemNotCollectedState.Enter. A stale request here skips straight
+    // to GemCollectedState without ever waiting for the animation.
+    _requestedState = null;
+
     o.CollisionShapeNode.Disabled = true;
     _cachedCollisionMask = o.CollisionMask;
     _cachedCollisionLayer = o.CollisionLayer;

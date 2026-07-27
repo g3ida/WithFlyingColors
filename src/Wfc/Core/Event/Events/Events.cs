@@ -31,7 +31,12 @@ public partial class Events : RefCounted {
   [Signal]
   public delegate void GemCollectedEventHandler(string color, Vector2 position, SpriteFrames frames);
   [Signal]
-  public delegate void CheckpointReachedEventHandler(CheckpointArea checkpointObject);
+  // Values, not the node that raised them. Only the player reads either of these, and passing
+  // the node made two whole classes of bug possible: the deprecated Checkpoint typed itself as
+  // an Area2D and failed conversion inside the native emit - taking every other subscriber down
+  // with it - and a room wanting a checkpoint of its own fabricated a CheckpointArea it never
+  // added to the tree, whose GlobalPosition was the world origin.
+  public delegate void CheckpointReachedEventHandler(Vector2 position, string colorGroup);
   [Signal]
   public delegate void CheckpointLoadedEventHandler();
   [Signal]

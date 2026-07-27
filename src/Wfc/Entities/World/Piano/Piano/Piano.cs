@@ -48,7 +48,6 @@ public partial class Piano : Node2D {
       _pianoNote7
     ];
     EventHandler.Instance.Events.CheckpointLoaded += Reset;
-    _solfegeBoardNode.WrongNotePlayed += _onSolfegeBoardWrongNotePlayed;
     _solfegeBoardNode.ExpectedNoteChanged += _onSolfegeBoardExpectedNoteChanged;
     _solfegeBoardNode.BoardNotesPlayed += _onSolfegeBoardNotesPlayed;
     foreach (var note in _pianoNotesNodes) {
@@ -59,7 +58,6 @@ public partial class Piano : Node2D {
 
   public override void _ExitTree() {
     EventHandler.Instance.Events.CheckpointLoaded -= Reset;
-    _solfegeBoardNode.WrongNotePlayed -= _onSolfegeBoardWrongNotePlayed;
     _solfegeBoardNode.ExpectedNoteChanged -= _onSolfegeBoardExpectedNoteChanged;
     _solfegeBoardNode.BoardNotesPlayed -= _onSolfegeBoardNotesPlayed;
     foreach (var note in _pianoNotesNodes) {
@@ -107,24 +105,28 @@ public partial class Piano : Node2D {
     var node = SceneHelpers.InstantiateNode<NextNotePointer>();
     _lettersContainerNode.AddChild(node);
     node.Owner = _lettersContainerNode;
-    return node as NextNotePointer;
+    return node;
   }
 
   private void _onSolfegeBoardExpectedNoteChanged(int newExpectedNote) {
     _updateNotesPointerPosition(MusicNoteHelper.MusicNoteFromInt(newExpectedNote));
   }
 
+  // Builds the pointer if it is missing rather than only repositioning an existing one.
+  //
+  // The board only reports an expected note while the puzzle is live, so being asked for one
+  // is itself the signal that a pointer is wanted. That is what makes loading a checkpoint
+  // mid-puzzle survivable: _EnterTree propagates parent-first, so Reset below runs before the
+  // board's and cannot see the state it is about to restore - it would drop the pointer, the
+  // board would come back Playing, and nothing would ever build another, since StartGame is
+  // the only other construction site and it is gated on the board being stopped.
   private void _updateNotesPointerPosition(MusicNote? newExpectedNote) {
-    if (_notesPointerNode != null) {
-      var note = _getNoteNode(newExpectedNote);
-      if (note != null) {
-        _notesPointerNode.Position = new Vector2(note.Position.X, 0);
-      }
+    var note = _getNoteNode(newExpectedNote);
+    if (note == null) {
+      return;
     }
-  }
-
-  private void _onSolfegeBoardWrongNotePlayed() {
-    // Replace with function body.
+    _notesPointerNode ??= _instanceNotesPointer();
+    _notesPointerNode.Position = new Vector2(note.Position.X, 0);
   }
 
   private PianoNote? _getNoteNode(MusicNote? newExpectedNote) {
@@ -139,12 +141,10 @@ public partial class Piano : Node2D {
     return null;
   }
 
+  // Drops the pointer belonging to the run that just ended. The board rebuilds it on the way
+  // back up, through ExpectedNoteChanged - see _updateNotesPointerPosition.
   public void Reset() {
     _removePointerNode();
-  }
-
-  private void _setupNotePointerPosition() {
-    _updateNotesPointerPosition(_solfegeBoardNode.GetExpectedNote());
   }
 
   public bool IsStopped() {

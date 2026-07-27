@@ -12,6 +12,7 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 public partial class SolfegeBoard : Node2D, IPersistent {
   private const float DURATION = 0.8f;
+  private static readonly Vector2 FLIP_CYLINDER_DIRECTION = new Vector2(5.0f, 1.0f);
   private Texture2D MusicPaperRectTexture = GD.Load<Texture2D>("res://Assets/Sprites/Piano/music-paper-rect.png");
 
   [Signal]
@@ -99,7 +100,7 @@ public partial class SolfegeBoard : Node2D, IPersistent {
     var paperShaderMaterial = MusicPaperRectNode.Material as ShaderMaterial;
     if (paperShaderMaterial != null) {
       paperShaderMaterial.SetShaderParameter("flip_left", true);
-      paperShaderMaterial.SetShaderParameter("cylinder_direction", new Vector2(5.0f, 1.0f));
+      paperShaderMaterial.SetShaderParameter("cylinder_direction", FLIP_CYLINDER_DIRECTION);
       paperShaderMaterial.SetShaderParameter("next_page", nextTexture);
       if (_currentTexture != null) {
         paperShaderMaterial.SetShaderParameter("current_page", _currentTexture);
@@ -116,6 +117,9 @@ public partial class SolfegeBoard : Node2D, IPersistent {
     paperShaderMaterial?.SetShaderParameter("flip_duration", DURATION);
     paperShaderMaterial?.SetShaderParameter("cylinder_ratio", 0.3f);
     paperShaderMaterial?.SetShaderParameter("rect", MusicPaperRectNode.GetRect().Size);
+    // The scene ships this at (0, 0) and only the flip sets it, so before the first page turn
+    // the shader was normalizing a zero vector.
+    paperShaderMaterial?.SetShaderParameter("cylinder_direction", FLIP_CYLINDER_DIRECTION);
   }
 
   public override void _Process(double delta) {
@@ -151,9 +155,13 @@ public partial class SolfegeBoard : Node2D, IPersistent {
       if (_notesCursor != null) {
         _notesCursor.QueueFree();
         _notesCursor = null;
-        MusicPaperRectNode.Texture = MusicPaperRectTexture;
-        MusicPaperRectNode.Visible = false;
       }
+      // Hiding the sheet is not conditional on there being a cursor to remove. On the very
+      // first _InitState - the one from _Ready - there is no cursor yet, so this was skipped
+      // and the shader-driven sprite stayed visible with its page samplers unassigned, which
+      // Godot binds as white: a blank rectangle sitting over the piano for the whole level.
+      MusicPaperRectNode.Texture = MusicPaperRectTexture;
+      MusicPaperRectNode.Visible = false;
     }
   }
 
@@ -190,7 +198,7 @@ public partial class SolfegeBoard : Node2D, IPersistent {
     }
     else {
       _currentNoteIndex = 0;
-      EmitSignal(nameof(WrongNotePlayed));
+      EmitWrongNoteEvent();
     }
 
     _SetNotesCursorPosition();
@@ -203,6 +211,11 @@ public partial class SolfegeBoard : Node2D, IPersistent {
     }
   }
 
+  // The only way to report a wrong note. The wrong-note branch used to emit the local signal
+  // by itself and this method had no callers at all, so the global event - the one SfxManager
+  // answers with an actual sound - was never raised: the player's only cue that they had
+  // missed was the cursor snapping back over ~40 ms, on a board mounted well above the keys,
+  // while the note they played sounded exactly as if it had been right.
   private void EmitWrongNoteEvent() {
     EventHandler.Instance.EmitWrongPianoNotePlayed();
     EmitSignal(nameof(WrongNotePlayed));
@@ -215,7 +228,7 @@ public partial class SolfegeBoard : Node2D, IPersistent {
     return null;
   }
 
-  private void _OnCheckpointHit(Node checkpoint) {
+  private void _OnCheckpointHit(Vector2 _position, string _colorGroup) {
     _saveData = new SaveData(_currentState);
   }
 

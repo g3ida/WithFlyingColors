@@ -9,6 +9,7 @@ using Godot;
 using Wfc.Core.Serialization;
 using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Player;
+using Wfc.Screens.Levels;
 
 public partial class SaveManager : ISaveManager {
 
@@ -25,9 +26,34 @@ public partial class SaveManager : ISaveManager {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
     }
-    _saveSlots[slotIndex].Save(_serializer, tree, false);
+    _saveSlots[slotIndex].Save(_serializer, tree);
     _loadSlotsMetaData();
     GD.Print("Game saved!");
+  }
+
+  // Records how far the player has got and writes the slot out.
+  //
+  // Nothing used to assign Progress or LevelId anywhere outside the SlotMetaData constructor, and
+  // SaveGame had a single call site - creating a blank slot. Reaching a checkpoint wrote nothing
+  // to disk at all, so the Continue button never appeared, the resume branch in SceneOrchester
+  // was unreachable, the slot panel showed 0% for a finished run, and quitting lost everything.
+  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, int slotIndex = ISaveManager.NO_SLOT) {
+    slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
+    if (slotIndex is < 0 or >= NUM_SLOTS) {
+      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
+      return;
+    }
+
+    var slot = _saveSlots[slotIndex];
+    if (!slot.IsFilled) {
+      // The player is in a level without having picked a slot - there is nothing to record into,
+      // and writing one here would invent a save they never asked for.
+      return;
+    }
+
+    slot.RecordProgress(levelId, progressPercent);
+    slot.Save(_serializer, tree);
+    _loadSlotsMetaData();
   }
 
   public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = ISaveManager.NO_SLOT) {
