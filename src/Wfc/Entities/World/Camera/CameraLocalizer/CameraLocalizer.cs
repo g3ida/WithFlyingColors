@@ -277,7 +277,7 @@ public partial class CameraLocalizer : Node2D {
     if (GameLevel.PlayerNode is not { } playerNode) {
       return;
     }
-    var half = playerNode.GetCollisionShapeSize() * playerNode.Scale * 0.5f;
+    var half = playerNode.GetCollisionHalfExtents();
     var min = playerNode.GlobalPosition - half;
     var max = playerNode.GlobalPosition + half;
 

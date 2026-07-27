@@ -122,29 +122,39 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     return null;
   }
 
+  // The cube's lower corner on the side `dir` points to, in the player's own frame. Which
+  // physical corner that is changes with every quarter turn, so it is measured rather than named.
+  //
+  // A cube resting on an exact diagonal has no corner that is both to one side and below, and the
+  // corner directly underneath is the one worth probing from.
   public Vector2 _getPlayerEdgePosition(Player player, int dir) {
+    var half = player.CollisionHalfExtentsLocal;
     var corners = new[] {
-      ( player.FaceCollisionShapeTL_node, new Vector2(-0.5f, -0.5f) ),
-      ( player.FaceCollisionShapeTR_node, new Vector2(0.5f, -0.5f) ),
-      ( player.FaceCollisionShapeBL_node, new Vector2(-0.5f, 0.5f) ),
-      ( player.FaceCollisionShapeBR_node, new Vector2(0.5f, 0.5f) )
+      new Vector2(-half.X, -half.Y),
+      new Vector2(half.X, -half.Y),
+      new Vector2(-half.X, half.Y),
+      new Vector2(half.X, half.Y)
     };
 
-    var pp = player.GlobalPosition;
-    var position = pp;
-    var size = player.GetCollisionShapeSize() * 0.5f * player.Scale;
-    var positionLocal = pp;
+    var center = player.GlobalPosition;
+    var toTheSide = Vector2.Zero;
+    var lowest = Vector2.Zero;
+    var toTheSideY = float.NegativeInfinity;
+    var lowestY = float.NegativeInfinity;
 
-    foreach (var (cc, offset) in corners) {
-      var cp = cc.GlobalPosition;
-      if (Mathf.Sign(pp.X - cp.X) == -dir && cp.Y > position.Y) {
-        position = cp;
-        size = (cc.Shape as RectangleShape2D)?.Size ?? Vector2.Zero;
-        positionLocal = cc.Position + offset * size * player.Scale;
-        return positionLocal;
+    foreach (var corner in corners) {
+      var global = player.ToGlobal(corner);
+      if (global.Y > lowestY) {
+        lowest = corner;
+        lowestY = global.Y;
+      }
+      if ((global.X - center.X) * dir > 0f && global.Y > center.Y && global.Y > toTheSideY) {
+        toTheSide = corner;
+        toTheSideY = global.Y;
       }
     }
-    return positionLocal;
+
+    return toTheSideY > float.NegativeInfinity ? toTheSide : lowest;
   }
 
   // This method is used to raycast a ray of one of the two players ground corners.
