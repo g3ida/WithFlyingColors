@@ -86,7 +86,7 @@ public partial class PlayerDashingState : PlayerBaseState {
     if (!_dashTimer.IsRunning()) {
       return statesStore.GetState<PlayerFallingState>();
     }
-    else {
+    else if (HoldsHeightDuringDash(_direction)) {
       player.Velocity = new Vector2(player.Velocity.X, 0);
     }
 
@@ -95,6 +95,12 @@ public partial class PlayerDashingState : PlayerBaseState {
 
     return null;
   }
+
+  // A horizontal dash pins the cube at its current height by zeroing gravity every frame.
+  // A down-dash's whole payload is a vertical velocity, so doing it there overwrote the
+  // DASH_SPEED just assigned above: the cube hovered for DASH_DURATION and fell ~33px
+  // instead of ~300, on every frame but the last.
+  internal static bool HoldsHeightDuringDash(Vector2 direction) => Mathf.Abs(direction.Y) <= 0.01f;
 
   private void _setDashDirection(Player player) {
     _direction = Vector2.Zero;

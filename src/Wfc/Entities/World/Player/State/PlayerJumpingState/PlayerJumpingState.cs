@@ -11,6 +11,7 @@ public partial class PlayerJumpingState : PlayerBaseState {
   private const float PERMISSIVENESS = 0.09f;
   private const float FACE_SEPARATOR_SCALE_FACTOR = 4.5f;
   private const float JUMP_FORCE = 1200f;
+  private const float JUMP_CUT_FACTOR = 0.5f;
 
   private bool _entered = false;
   private CountdownTimer _jumpTimer = new CountdownTimer();
@@ -62,7 +63,7 @@ public partial class PlayerJumpingState : PlayerBaseState {
     if (_jumpTimer.IsRunning() && inputManager.IsJustReleased(IInputManager.Action.Jump)) {
       _jumpTimer.Stop();
       if (player.Velocity.Y < 0) {
-        player.Velocity = new Vector2(player.Velocity.X * 0.5f, player.Velocity.Y);
+        player.Velocity = ApplyJumpCut(player.Velocity, JUMP_CUT_FACTOR);
       }
     }
 
@@ -70,6 +71,12 @@ public partial class PlayerJumpingState : PlayerBaseState {
     _permissivenessTimer.Step(delta);
     return null;
   }
+
+  // Releasing Jump early cuts the jump short, so it is the rising component that gets
+  // damped. Damping X instead gave every tap-jump full height and half run speed, which
+  // shortened the arc without ever letting the player duck under a low ceiling.
+  internal static Vector2 ApplyJumpCut(Vector2 velocity, float factor) =>
+    new(velocity.X, velocity.Y * factor);
 
   public PlayerJumpingState WithJumpPower(float jumpPower) {
     _touchJumpPower = jumpPower;

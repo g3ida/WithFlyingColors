@@ -141,14 +141,23 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   }
 
   private void OnPlayerHit(PowerUp powerUp, PackedScene hitNode) {
+    powerUp.OnPlayerHit -= OnPlayerHit;
     RemoveIrrelevantPowerups();
-    if (CheckIfCanAddPowerup(hitNode)) {
+
+    // A power-up scene that never set OnHitScript used to dereference null here, and the
+    // throw happened inside the signal emission - so the power-up on the other side never
+    // reached its own QueueFree and kept falling forever with its monitoring already
+    // switched off. Report the authoring mistake and let the pickup itself still count.
+    if (hitNode == null) {
+      GD.PushError($"Power-up '{powerUp.SceneFilePath}' has no OnHitScript; no effect applied.");
+    }
+    else if (CheckIfCanAddPowerup(hitNode)) {
       var hit = hitNode.Instantiate<PowerUpScript>();
       _activePowerupNodes.Add(hit);
       hit.SetBrickBreakerNode(_brickBreakerNode);
       CallDeferred(Node.MethodName.AddChild, hit);
     }
-    powerUp.OnPlayerHit -= OnPlayerHit;
+
     EventHandler.Instance.EmitPickedPowerup();
   }
 
