@@ -1,12 +1,16 @@
 namespace Wfc.Entities.World.Player;
 
-using System;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Entities.World.Gems;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BoxCorner : BaseFace {
+  private Vector2 _outerCorner;
+
+  // How far this corner's outer corner stands from the cube's center along each axis. The seam
+  // grows about it, so making the corners more forgiving never changes the cube's silhouette.
+  public float OuterReach => Mathf.Abs(_outerCorner.X);
 
   public override void _EnterTree() {
     base._EnterTree();
@@ -20,8 +24,14 @@ public partial class BoxCorner : BaseFace {
 
   public override void _Ready() {
     base._Ready();
-    RectangleShape2D? collisionShape = CollisionShapeNode.Shape as RectangleShape2D;
-    EdgeLength = collisionShape?.Size.X ?? 0;
+    _outerCorner = Position + (Position.Sign() * EdgeLength * 0.5f);
+  }
+
+  public void SetSeamSide(float side) {
+    if (ShapeRect is not null) {
+      ShapeRect.Size = new Vector2(side, side);
+    }
+    Position = _outerCorner - (_outerCorner.Sign() * side * 0.5f);
   }
 
   public void _onAreaEntered(Area2D area) {

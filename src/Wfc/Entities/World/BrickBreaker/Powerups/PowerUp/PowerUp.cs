@@ -55,14 +55,21 @@ public partial class PowerUp : Node2D {
   }
 
   private void _onArea2DBodyEntered(Node body) {
-    if (body == Global.Instance().Player) {
-      if (!Global.Instance().Player.IsDying()) {
-        AreaNode.SetDeferred(Area2D.PropertyName.Monitorable, false);
-        AreaNode.SetDeferred(Area2D.PropertyName.Monitoring, false);
-        EmitSignal(nameof(OnPlayerHit), this, OnHitScript);
-        QueueFree();
-      }
+    var player = Global.Instance().Player;
+    if (body != player || player.IsDying()) {
+      return;
     }
+    // A power-up wears the color of the brick it fell from, and the cube has to be showing that
+    // color where it catches it. The tint was decorative until now, which reads as a rule in a
+    // game whose only rule is that color decides what you may touch - so a wrong-colored one
+    // falls straight through instead of killing, which would make the arena a gauntlet.
+    if (!player.AcceptsColorOfAt(AreaNode.GlobalPosition, AreaNode)) {
+      return;
+    }
+    AreaNode.SetDeferred(Area2D.PropertyName.Monitorable, false);
+    AreaNode.SetDeferred(Area2D.PropertyName.Monitoring, false);
+    EmitSignal(nameof(OnPlayerHit), this, OnHitScript);
+    QueueFree();
   }
 
   private void _onArea2DAreaEntered(Area2D area) {

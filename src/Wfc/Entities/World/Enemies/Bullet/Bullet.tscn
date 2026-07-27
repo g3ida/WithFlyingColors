@@ -28,5 +28,4 @@ collision_mask = 23
 scale = Vector2(1.05, 1.05)
 shape = SubResource("2")
 
-[connection signal="body_entered" from="CharacterBody2D/ColorArea" to="." method="_on_ColorArea_body_entered"]
-[connection signal="body_shape_entered" from="CharacterBody2D/ColorArea" to="." method="_onColorAreaBodyShapeEntered"]
+[connection signal="body_entered" from="CharacterBody2D/ColorArea" to="." method="_onColorAreaBodyEntered"]

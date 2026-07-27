@@ -42,7 +42,7 @@ public class BallPaddleBounceTests(Node testScene) : TestClass(testScene) {
 
   private async Task _jumpIntoBall(float acrossFace) {
     var player = await _addPlayer();
-    var half = player.GetCollisionShapeSize() * 0.5f;
+    var half = player.GetCollisionHalfExtents();
 
     var ball = SceneHelpers.InstantiateNode<BouncingBall>();
     _provider.AddChild(ball);

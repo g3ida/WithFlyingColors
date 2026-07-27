@@ -7,6 +7,7 @@ using Wfc.Entities.World.Player;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class Bullet : Node2D, IBullet {
@@ -57,16 +58,15 @@ public partial class Bullet : Node2D, IBullet {
     }
   }
 
-  private void _on_ColorArea_body_entered(Node body) {
+  // The cube's own color query, at the point the bullet reached it, rather than whichever of the
+  // cube's collision shapes the contact was reported against. A shape index says nothing about
+  // how near a corner the bullet struck, so the corner seam every other collision partner is
+  // judged against never reached bullets at all.
+  private void _onColorAreaBodyEntered(Node body) {
+    if (body == Global.Instance().Player && body is Player player && !player.IsDying()
+        && !player.AcceptsColorOfAt(_colorAreaNode.GlobalPosition, _colorAreaNode)) {
+      EventHandler.Instance.EmitPlayerDying(_colorAreaNode, player.GlobalPosition, EntityType.Bullet);
+    }
     QueueFree();
-  }
-
-  private void _onColorAreaBodyShapeEntered(Rid bodyRid, Node body, uint bodyShapeIndex, int localShapeIndex) {
-    if (body != Global.Instance().Player) {
-      return;
-    }
-    if (body is Player player) {
-      player.OnFastAreaCollidingWithPlayerShape(bodyShapeIndex, _colorAreaNode, EntityType.Bullet);
-    }
   }
 }

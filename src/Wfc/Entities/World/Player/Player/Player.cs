@@ -82,22 +82,6 @@ public partial class Player : CharacterBody2D, IPersistent {
   private BoxFace _leftFaceNode = null!;
   [NodePath("RightFace")]
   private BoxFace _rightFaceNode = null!;
-  [NodePath("FaceCollisionShapeL")]
-  private CollisionShape2D FaceCollisionShapeL_node = null!;
-  [NodePath("FaceCollisionShapeR")]
-  private CollisionShape2D FaceCollisionShapeR_node = null!;
-  [NodePath("FaceCollisionShapeT")]
-  private CollisionShape2D FaceCollisionShapeT_node = null!;
-  [NodePath("FaceCollisionShapeB")]
-  private CollisionShape2D FaceCollisionShapeB_node = null!;
-  [NodePath("FaceCollisionShapeTL")]
-  public CollisionShape2D FaceCollisionShapeTL_node = null!;
-  [NodePath("FaceCollisionShapeTR")]
-  public CollisionShape2D FaceCollisionShapeTR_node = null!;
-  [NodePath("FaceCollisionShapeBL")]
-  public CollisionShape2D FaceCollisionShapeBL_node = null!;
-  [NodePath("FaceCollisionShapeBR")]
-  public CollisionShape2D FaceCollisionShapeBR_node = null!;
   [NodePath("CollisionShape2D")]
   private CollisionShape2D _collisionShapeNode = null!;
   [NodePath("AnimatedSprite2D")]
@@ -106,8 +90,6 @@ public partial class Player : CharacterBody2D, IPersistent {
   public Timer DashGhostTimerNode = null!;
   private List<BoxCorner> faceSeparatorNodes = new List<BoxCorner>();
   private List<BoxFace> faceNodes = new List<BoxFace>();
-  private List<CollisionShape2D> faceCollisionNodes = new List<CollisionShape2D>();
-  private List<CollisionShape2D> faceCornerCollisionNodes = new List<CollisionShape2D>();
   #endregion Nodes
 
   private SaveData _saveData = new SaveData();
@@ -117,10 +99,9 @@ public partial class Player : CharacterBody2D, IPersistent {
   private List<Dictionary<string, int>> _faceNodesMaskBackup = new List<Dictionary<string, int>>();
   private bool _colorAreasAreHidden;
 
-
-
   public float CurrentDefaultCornerScaleFactor { get; set; } = 1.0f;
   private float _currentScaleFactor = 1.0f; // Do not edit by yourself this is used by scale_corners_by
+  private PlayerBox.Ring _colorRing;
 
   [NodePath("AnimatedSprite2D/LightOccluder2D")]
   public LightOccluder2D LightOccluder = null!;
@@ -141,22 +122,6 @@ public partial class Player : CharacterBody2D, IPersistent {
             _leftFaceNode,
             _rightFaceNode
         };
-
-    faceCollisionNodes = new List<CollisionShape2D>
-        {
-            FaceCollisionShapeB_node,
-            FaceCollisionShapeT_node,
-            FaceCollisionShapeL_node,
-            FaceCollisionShapeR_node
-        };
-
-    faceCornerCollisionNodes = new List<CollisionShape2D>
-        {
-            FaceCollisionShapeBR_node,
-            FaceCollisionShapeBL_node,
-            FaceCollisionShapeTL_node,
-            FaceCollisionShapeTR_node
-        };
   }
 
   public void OnResolved() {
@@ -174,7 +139,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     InitSpriteAnimation();
     WasOnFloor = IsOnFloor();
     UpDirection = Vector2.Up;
-    InitFacesAreas();
+    InitColorAreas();
 
     _saveData = new SaveData(GlobalPosition.X, GlobalPosition.Y, 0f, 1f);
   }
@@ -193,18 +158,16 @@ public partial class Player : CharacterBody2D, IPersistent {
     PlayerRotationState?.Enter(this);
   }
 
-  private void InitFacesAreas() {
-    for (int i = 0; i < faceCollisionNodes.Count; i++) {
-      foreach (string grp in faceNodes[i].GetGroups()) {
-        faceCollisionNodes[i].AddToGroup(grp);
-      }
-    }
-
-    for (int i = 0; i < faceCornerCollisionNodes.Count; i++) {
-      foreach (string grp in faceSeparatorNodes[i].GetGroups()) {
-        faceCornerCollisionNodes[i].AddToGroup(grp);
-      }
-    }
+  private void InitColorAreas() {
+    var corner = faceSeparatorNodes[0];
+    _colorRing = new PlayerBox.Ring(
+      CornerOuterEdge: corner.OuterReach,
+      RestingCornerSide: corner.EdgeLength,
+      Overlap: (faceNodes[0].EdgeLength * 0.5f) - (corner.OuterReach - corner.EdgeLength)
+    );
+    // Lays the areas out where they were authored, and seeds the seam every color query reads.
+    // Not through ScaleCornersBy, which short-circuits on the factor it already holds.
+    _layOutColorAreas(_currentScaleFactor);
 
     _fillFaceNodesBackup();
     _fillFaceSeparatorsBackup();
@@ -345,91 +308,67 @@ public partial class Player : CharacterBody2D, IPersistent {
     }
   }
 
-  private void _scaleFaceSeparatorsBy(float factor) {
-    foreach (var face_sep in faceSeparatorNodes) {
-      face_sep.ScaleBy(factor);
-    }
-  }
-
-  private void _scaleFacesBy(float factor) {
-    foreach (var face_sep in faceNodes) {
-      face_sep.ScaleBy(factor);
-    }
-  }
+  // How forgiving the corners are, in the cube's own units: the seam reaches this far back along
+  // each of the two faces it joins. The color areas are laid out from it and every color query
+  // reads it, so a contact is judged the same wherever it came from.
+  public float CornerSeam { get; private set; }
 
   public void ScaleCornersBy(float factor) {
     if (_currentScaleFactor == factor)
       return;
     _currentScaleFactor = factor;
-    var edge = faceSeparatorNodes[0].EdgeLength;
-    var face = faceNodes[0].EdgeLength;
-    var total_length = 2 * edge + face;
-    var reverse_factor = (total_length - 2f * edge * factor) / face;
-    _scaleFaceSeparatorsBy(factor);
-    _scaleFacesBy(reverse_factor);
+    _layOutColorAreas(factor);
   }
 
-  public Vector2 GetCollisionShapeSize() {
-    var extra_w = (FaceCollisionShapeL_node.Shape as RectangleShape2D)?.Size.X ?? 0f;
-    return (((_collisionShapeNode.Shape as RectangleShape2D)?.Size ?? Vector2.Zero) * 0.5f + 2.0f * new Vector2(extra_w, extra_w)) * 2.0f;
+  // The corner squares grow about their pinned outer corners and the faces give way to meet
+  // them. Only the extent along each edge moves: face thickness is what decides how deep a
+  // contact must be before it registers at all, and dragging it along with the corner tolerance
+  // made flat-face contacts harder to detect exactly when corners were made easier.
+  private void _layOutColorAreas(float factor) {
+    var half = CollisionHalfExtentsLocal;
+    CornerSeam = PlayerBox.ClampSeam(_colorRing.SeamFor(factor, half.X), half);
+
+    var faceHalfLength = _colorRing.FaceHalfLengthFor(CornerSeam, half.X);
+    foreach (var corner in faceSeparatorNodes) {
+      corner.SetSeamSide(_colorRing.CornerSideFor(faceHalfLength));
+    }
+    foreach (var face in faceNodes) {
+      face.SetEdgeLength(faceHalfLength * 2.0f);
+    }
   }
 
-  // The cube's outer surface in world units - the hull plus the colored plates standing proud
-  // of it, which is what anything bouncing off the cube actually meets. GetCollisionShapeSize
-  // adds the plates twice over and so reports a cube noticeably larger than the one on screen.
-  public Vector2 GetCollisionHalfExtents() {
-    var plate = ((FaceCollisionShapeR_node.Shape as RectangleShape2D)?.Size.X ?? 0f) * 0.5f;
-    return new Vector2(
-      Mathf.Abs(FaceCollisionShapeR_node.Position.X) + plate,
-      Mathf.Abs(FaceCollisionShapeB_node.Position.Y) + plate
-    ) * GlobalScale.Abs();
-  }
+  // The cube's outer surface, in its own units and in world units. One rectangle, which is what
+  // anything bouncing off the cube, probing the ground under it or framing it in the camera
+  // measures itself against.
+  public Vector2 CollisionHalfExtentsLocal =>
+    ((_collisionShapeNode.Shape as RectangleShape2D)?.Size ?? Vector2.Zero) * 0.5f;
+
+  public Vector2 GetCollisionHalfExtents() => CollisionHalfExtentsLocal * GlobalScale.Abs();
 
   // Whether the cube survives touching `colorGroup` at a point on its surface. A point out near
   // a corner lies on the seam two faces share and either of their colors is safe there, which
   // is what the corner separators are for - and why widening them, as the brick breaker does,
   // makes the cube more forgiving to play.
-  public bool AcceptsColorAt(Vector2 globalPoint, string colorGroup) {
-    var half = GetCollisionHalfExtents();
-    var seam = _cornerSeamReach();
-    var local = (globalPoint - GlobalPosition).Rotated(-GlobalRotation);
+  public bool AcceptsColorAt(Vector2 globalPoint, string colorGroup) =>
+    _acceptsAt(globalPoint, face => face.AcceptsColor(colorGroup));
 
-    var onSide = Mathf.Abs(local.X) >= half.X - seam;
-    var onEnd = Mathf.Abs(local.Y) >= half.Y - seam;
+  // The same question asked of an area that carries its color as a group, which is how every
+  // object the cube can touch is tagged.
+  public bool AcceptsColorOfAt(Vector2 globalPoint, Area2D area) =>
+    _acceptsAt(globalPoint, face => face.AcceptsColorOf(area));
 
-    if (onSide && (local.X >= 0.0f ? _rightFaceNode : _leftFaceNode).AcceptsColor(colorGroup)) {
-      return true;
-    }
-    if (onEnd && (local.Y >= 0.0f ? _bottomFaceNode : _topFaceNode).AcceptsColor(colorGroup)) {
-      return true;
-    }
+  private bool _acceptsAt(Vector2 globalPoint, Func<BoxFace, bool> accepts) {
+    var box = new PlayerBox(GetCollisionHalfExtents(), CornerSeam * Mathf.Abs(GlobalScale.X));
+    var faces = box.FacesAt((globalPoint - GlobalPosition).Rotated(-GlobalRotation));
+
     // A point that belongs to no face at all is not one this cube has an opinion about.
-    return !onSide && !onEnd;
-  }
-
-  // How far a corner separator reaches along each of the two faces it joins.
-  private float _cornerSeamReach() =>
-    _faceSeparatorBR_node.EdgeLength * _faceSeparatorBR_node.Scale.X * GlobalScale.X * 0.5f;
-
-  // This function is a hack for bullets and fast moving objects because of this Godot issue:
-  // https://github.com/godotengine/godot/issues/43743
-  //
-  public void OnFastAreaCollidingWithPlayerShape(uint bodyShapeIndex, Area2D colorArea, EntityType entityType) {
-    var collisionShape = (CollisionShape2D)ShapeOwnerGetOwner(bodyShapeIndex);
-    var shapeGroups = collisionShape.GetGroups();
-    if (shapeGroups.Count == 0) {
-      return;
+    if (faces == PlayerBox.Faces.None) {
+      return true;
     }
-    var groupFound = false;
-    foreach (string group in shapeGroups) {
-      if (colorArea.IsInGroup(group)) {
-        groupFound = true;
-        break;
-      }
-    }
-    if (!groupFound) {
-      EventHandler.Instance.EmitPlayerDying(colorArea, GlobalPosition, entityType);
-    }
+    return (faces.HasFlag(PlayerBox.Faces.Right) && accepts(_rightFaceNode))
+      || (faces.HasFlag(PlayerBox.Faces.Left) && accepts(_leftFaceNode))
+      || (faces.HasFlag(PlayerBox.Faces.Bottom) && accepts(_bottomFaceNode))
+      || (faces.HasFlag(PlayerBox.Faces.Top) && accepts(_topFaceNode));
   }
 
   // Face areas backup
@@ -482,12 +421,6 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   private void _setCollisionShapesDisabledFlag(bool disable) {
-    foreach (var face in faceCollisionNodes) {
-      face.Disabled = disable;
-    }
-    foreach (var face in faceCornerCollisionNodes) {
-      face.Disabled = disable;
-    }
     _collisionShapeNode.Disabled = disable;
   }
 
