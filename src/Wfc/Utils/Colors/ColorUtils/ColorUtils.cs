@@ -9,7 +9,28 @@ public partial class ColorUtils : Node {
   public const string PINK = "pink";
   public const string YELLOW = "yellow";
   public const string PURPLE = "purple";
+  // For iterating over the four colors and for validating one. Order carries no meaning here -
+  // see FromTileSourceId for the one place a color is identified by its index.
   public static readonly string[] COLOR_GROUPS = { BLUE, PINK, YELLOW, PURPLE };
+
+  // The tile source ids saved into the brick-breaker tilemaps. These integers are level data:
+  // every arena `.tscn` in the project names its bricks' colors this way, so changing the mapping
+  // recolors every arena ever authored - and since a face of the wrong color is fatal, it rewrites
+  // which bricks kill the player.
+  //
+  // The mapping used to be nothing more than the position of a name inside COLOR_GROUPS, an array
+  // with no [Export], no comment and two other declaration orders elsewhere in the codebase to
+  // disagree with (ColorGroup declares Blue/Pink/Purple/Yellow, GameSkin slots blue/pink/purple/
+  // yellow) - so reordering what looks like a cosmetic literal silently rewrote the levels.
+  public static string? FromTileSourceId(int tileSourceId) => tileSourceId switch {
+    0 => BLUE,
+    1 => PINK,
+    2 => YELLOW,
+    3 => PURPLE,
+    _ => null,
+  };
+
+  public const int TILE_SOURCE_ID_COUNT = 4;
 
   public static HSLColor RgbToHsl(Color color) {
     float R = color.R * 255.0f;

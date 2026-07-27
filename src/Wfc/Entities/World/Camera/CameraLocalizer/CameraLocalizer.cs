@@ -9,6 +9,7 @@ using Godot;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
+using Wfc.Utils.Layers;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
@@ -36,6 +37,9 @@ public partial class CameraLocalizer : Node2D {
 
   [Export] public bool FullViewportDragMargin = false;
   [Export] public CameraLimit PositionClippingMode = CameraLimit.FullLimit;
+  // Godot 4 semantics, the same as Camera2D.Zoom: above 1 magnifies, below 1 pulls back.
+  // Godot 3 read the number the other way round and the ported scenes still carried its
+  // values, so a room asking to see more of itself was told to move closer instead.
   [Export] public float Zoom = 1.0f;
   [Export] public NodePath? FollowNode = null;
   [Export] public bool LimitXAxisToViewSize = false;
@@ -55,6 +59,12 @@ public partial class CameraLocalizer : Node2D {
         _positionsNodes.Add(position2D);
       }
       else if (child is Area2D area2D) {
+        // These trigger volumes are authored per level and not one of them ever set a
+        // mask, so they all sat on Godot's default layer 1 / mask 1 while the player is on
+        // layer 2. body_entered could never fire, and no localizer in the game had ever
+        // applied its zoom, limits or drag margins. The node that depends on the contract
+        // is the one that gets to enforce it, rather than every scene remembering.
+        area2D.CollisionMask = PhysicsLayers.Player.Mask;
         _areaNodes.Add(area2D);
         area2D.Connect(Area2D.SignalName.BodyEntered, new Callable(this, nameof(_onBodyEntered)));
       }
@@ -114,8 +124,11 @@ public partial class CameraLocalizer : Node2D {
         }
         break;
       case CameraLimit.LimitXAxis:
-        if (_positionsNodes.Count != 1) {
-          GD.PushError("Position limiting LIMIT_X_AXIS mode requires you to add ONLY one child position node");
+        // Two, not one: the body below reads _positionsNodes[1]. The guard said one, so
+        // any scene that actually used this mode threw an index error inside the guard
+        // that was meant to prevent exactly that.
+        if (_positionsNodes.Count != 2) {
+          GD.PushError("Position limiting LIMIT_X_AXIS mode requires you to add two child position nodes");
         }
         else {
           _left = (int)Math.Min(_positionsNodes[0].GlobalPosition.X, _positionsNodes[1].GlobalPosition.X);
@@ -123,8 +136,9 @@ public partial class CameraLocalizer : Node2D {
         }
         break;
       case CameraLimit.LimitYAxis:
-        if (_positionsNodes.Count != 1) {
-          GD.PushError("Position limiting LIMIT_Y_AXIS mode requires you to add ONLY one child position node");
+        // Same as LIMIT_X_AXIS: the body reads _positionsNodes[1].
+        if (_positionsNodes.Count != 2) {
+          GD.PushError("Position limiting LIMIT_Y_AXIS mode requires you to add two child position nodes");
         }
         else {
           _top = (int)Math.Min(_positionsNodes[0].GlobalPosition.Y, _positionsNodes[1].GlobalPosition.Y);
@@ -207,25 +221,28 @@ public partial class CameraLocalizer : Node2D {
   }
 
   private void _adaptLimitsToScreenSize() {
-    Vector2 viewportRect = GetViewport().GetVisibleRect().Size;
-    float invZoom = 1.0f / Zoom;
+    // How much world the camera will actually show at this zoom. Godot 3 scaled the
+    // viewport up by the zoom to get this; Godot 4 divides, so the ported arithmetic was
+    // wrong by zoom squared and left the room's limits wider than the view it clamps.
+    Vector2 visibleWorld = GetViewport().GetVisibleRect().Size / Zoom;
 
     if (LimitXAxisToViewSize && X_AXIS_LIMITS.Contains(PositionClippingMode)) {
-      float diff = (_right - _left) * invZoom - viewportRect.X;
-      _left += (int)(diff * 0.5f * Zoom);
-      _right = _left + (int)(viewportRect.X * Zoom);
+      float diff = (_right - _left) - visibleWorld.X;
+      _left += (int)(diff * 0.5f);
+      _right = _left + (int)visibleWorld.X;
     }
 
     if (LimitYAxisToViewSize && Y_AXIS_LIMITS.Contains(PositionClippingMode)) {
-      float diff = (_bottom - _top) * invZoom - viewportRect.Y;
-      _bottom -= (int)(diff * 0.5f * Zoom);
-      _top = _bottom - (int)(viewportRect.Y * Zoom);
+      float diff = (_bottom - _top) - visibleWorld.Y;
+      _bottom -= (int)(diff * 0.5f);
+      _top = _bottom - (int)visibleWorld.Y;
     }
   }
 
   private void _onBodyEntered(Node body) {
     if (body == GameLevel.PlayerNode) {
       ApplyCameraChanges();
+      _widenLimitsToIncludeThePlayer(GameLevel.CameraNode);
     }
   }
 
@@ -243,6 +260,31 @@ public partial class CameraLocalizer : Node2D {
         GameLevel.CameraNode.SetFollowNode(node);
       }
     }
+  }
+
+  // A limit may frame the room however the level wants, but it may not put the player outside the
+  // view: the camera clamps behind them and they keep walking with nothing following.
+  //
+  // Widened by the least that includes them rather than thrown away. A room whose limits are derived
+  // from its markers and then fitted to the viewport can miss the player by a few tens of pixels
+  // purely through that arithmetic - the brick breaker arena is a couple of pixels taller than the
+  // view, so it cannot hold both its own top edge and the player's feet - and dropping the limit
+  // outright turns a rounding-scale overshoot into a room with no framing at all.
+  //
+  // Only from the trigger, never from SetCameraLimits: BrickBreaker drives that directly to frame its
+  // own arena, and this has no business touching limits that code set on purpose a moment earlier.
+  private void _widenLimitsToIncludeThePlayer(Godot.Camera2D cameraNode) {
+    if (GameLevel.PlayerNode is not { } playerNode) {
+      return;
+    }
+    var half = playerNode.GetCollisionShapeSize() * playerNode.Scale * 0.5f;
+    var min = playerNode.GlobalPosition - half;
+    var max = playerNode.GlobalPosition + half;
+
+    cameraNode.LimitRight = Mathf.Max(cameraNode.LimitRight, Mathf.CeilToInt(max.X));
+    cameraNode.LimitLeft = Mathf.Min(cameraNode.LimitLeft, Mathf.FloorToInt(min.X));
+    cameraNode.LimitBottom = Mathf.Max(cameraNode.LimitBottom, Mathf.CeilToInt(max.Y));
+    cameraNode.LimitTop = Mathf.Min(cameraNode.LimitTop, Mathf.FloorToInt(min.Y));
   }
 
   public void SetCameraLimits() {

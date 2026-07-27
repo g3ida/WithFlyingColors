@@ -116,7 +116,7 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitPlayerFall() => Events.EmitSignal(Events.SignalName.PlayerFall);
   public void EmitPlayerDash(Vector2 dir) => Events.EmitSignal(Events.SignalName.PlayerDash, dir);
   public void EmitGemCollected(string color, Vector2 position, SpriteFrames frames) => Events.EmitSignal(Events.SignalName.GemCollected, color, position, frames);
-  public void EmitCheckpointReached(Node checkpoint) => Events.EmitSignal(Events.SignalName.CheckpointReached, checkpoint);
+  public void EmitCheckpointReached(Vector2 position, string colorGroup) => Events.EmitSignal(Events.SignalName.CheckpointReached, position, colorGroup);
   public void EmitCheckpointLoaded() => Events.EmitSignal(Events.SignalName.CheckpointLoaded);
   public void EmitMenuActionPressed(MenuAction menuAction) => Events.EmitSignal(Events.SignalName.MenuButtonPressed, (int)menuAction);
   public void EmitMenuBoxRotated() => Events.EmitSignal(Events.SignalName.MenuBoxRotated);

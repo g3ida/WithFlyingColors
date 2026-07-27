@@ -26,14 +26,21 @@ public partial class BricksLevelTilemap : TileMap {
   }
 
   private void FillGrid() {
-    for (int i = 0; i < ColorUtils.COLOR_GROUPS.Length; i++) {
-      foreach (Vector2I cell in GetUsedCellsById(0, i)) {
+    for (int tileSourceId = 0; tileSourceId < ColorUtils.TILE_SOURCE_ID_COUNT; tileSourceId++) {
+      // The tile source id is level data, so the color it means goes through the named mapping
+      // rather than through whatever order an array of color names happens to be declared in.
+      var colorGroup = ColorUtils.FromTileSourceId(tileSourceId);
+      if (colorGroup == null) {
+        continue;
+      }
+
+      foreach (Vector2I cell in GetUsedCellsById(0, tileSourceId)) {
         Vector2 pos = MapToLocal(cell);
         SetCell(0, cell, -1); //Layer cell value
 
         if (_parent.should_instance_bricks) {
           var brick = _brickScene.Instantiate<Brick>();
-          brick.ColorGroup = ColorUtils.COLOR_GROUPS[i];
+          brick.ColorGroup = colorGroup;
           _parent.CallDeferred(Node2D.MethodName.AddChild, brick);
           brick.CallDeferred(Node2D.MethodName.SetOwner, _parent);
           brick.Connect(Brick.SignalName.brickBroken, new Callable(this, nameof(OnBrickBroken)));

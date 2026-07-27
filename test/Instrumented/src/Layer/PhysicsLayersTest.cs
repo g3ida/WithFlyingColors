@@ -38,6 +38,7 @@ public class PhysicsLayersTest(Node testScene) : TestClass(testScene) {
       (PhysicsLayers.PowerUp, 9),
       (PhysicsLayers.BouncingBall, 10),
       (PhysicsLayers.Bricks, 11),
+      (PhysicsLayers.Shield, 12),
     };
 
     foreach (var (info, idx) in layers) {

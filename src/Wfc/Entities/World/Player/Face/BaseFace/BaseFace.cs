@@ -22,6 +22,22 @@ public partial class BaseFace : Area2D {
     PositionY = Position.Y;
   }
 
+  // A face's groups are the colors it is allowed to touch: one for a flat face, two for a
+  // corner that straddles the seam between them. Contact is safe as soon as any of them
+  // matches, which is what lets a corner graze either of its own colors. Answering this
+  // question from GetGroups()[0] alone - as BoxFace and LazerBeam each used to - makes a
+  // corner lethal on one of the two sides it exists to accept.
+  public bool AcceptsColorOf(Area2D area) {
+    foreach (string group in GetGroups()) {
+      if (area.IsInGroup(group)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public bool AcceptsColor(string colorGroup) => IsInGroup(colorGroup);
+
   public virtual void ScaleBy(float factor) {
     float scaleFactor = factor;
     Scale = new Vector2(scaleFactor, scaleFactor);

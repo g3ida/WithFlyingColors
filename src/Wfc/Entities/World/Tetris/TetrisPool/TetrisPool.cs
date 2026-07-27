@@ -45,6 +45,14 @@ public partial class TetrisPool : Node2D {
   private bool _isPaused = false;
   private bool _haveActiveBlock = false;
   private int _nbQueuedLinesToRemove = 0;
+
+  // Bumped by every reset. The line-clear and piece-drop routines below are async and hold
+  // state across an await on a timer, and reset runs on CheckpointLoaded - i.e. on every
+  // death, which does not reload the level. A continuation that resumes into a pool that has
+  // already been reset used to decrement a counter reset had zeroed, leaving it at -1; since
+  // _PhysicsProcess only gates on "> 0", the pool then kept spawning and dropping pieces while
+  // rows were shifted out from under them, overwriting live grid entries.
+  private int _resetGeneration = 0;
   private TetrisAI _ai = new TetrisAI();
   private bool _shapeIsInWaitTime = false;
   private Tetromino? _shape = null;
@@ -155,22 +163,27 @@ public partial class TetrisPool : Node2D {
     return shape;
   }
 
-  private void GenerateBlocks() {
+  // False when the new piece has nowhere to go, i.e. when the spawn is the game over.
+  private bool GenerateBlocks() {
     _haveActiveBlock = true;
     _shape = AiSpawnBlock();
 
     if (!_shape.CanMoveDown()) {
       _isPaused = true;
       EmitSignal(TetrisPool.SignalName.GameOver);
+      return false;
     }
+    return true;
   }
 
   public override void _PhysicsProcess(double delta) {
     if (_isPaused || _nbQueuedLinesToRemove > 0)
       return;
 
-    if (!_haveActiveBlock) {
-      GenerateBlocks();
+    // Returning on game over rather than falling through: the frame that ends the run used to
+    // go on to lock the piece it had just declared unplaceable, and could score a line with it.
+    if (!_haveActiveBlock && !GenerateBlocks()) {
+      return;
     }
 
     if (_shape != null && !_shapeIsInWaitTime) {
@@ -179,17 +192,40 @@ public partial class TetrisPool : Node2D {
   }
 
   private async void MoveShapeDown() {
+    var generation = _resetGeneration;
     _shapeIsInWaitTime = true;
+
     if (_shape?.MoveDownSafe() == true) {
       _shapeWaitTimerNode.Start();
       await ToSignal(_shapeWaitTimerNode, Timer.SignalName.Timeout);
+      // A reset while this was waiting has already cleared the flag and freed the piece; the
+      // pool has a new one falling by now and clearing the flag again would let it skip a step.
+      if (generation != _resetGeneration) {
+        return;
+      }
     }
     else {
-      _shape?.AddToGrid();
-      RemoveLines();
-      _haveActiveBlock = false;
+      LockShape();
     }
+
     _shapeIsInWaitTime = false;
+  }
+
+  private void LockShape() {
+    var shape = _shape;
+    // Nulled before anything else: the piece belongs to the grid from here on, and leaving the
+    // field pointing at it let a later frame re-run MoveShapeDown on a locked piece and shrink
+    // its blocks' color areas a second time.
+    _shape = null;
+    _haveActiveBlock = false;
+
+    if (shape != null) {
+      shape.AddToGrid();
+      shape.ReleaseBlocksTo(this);
+      shape.QueueFree();
+    }
+
+    RemoveLines();
   }
 
   private void RemoveLines() {
@@ -204,6 +240,7 @@ public partial class TetrisPool : Node2D {
   }
 
   private async void RemoveLineCells(int line) {
+    var generation = _resetGeneration;
     _nbQueuedLinesToRemove += 1;
     _removeLinesDurationTimerNode.WaitTime = Block.BLINK_ANIMATION_DURATION;
     for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++) {
@@ -212,6 +249,13 @@ public partial class TetrisPool : Node2D {
     }
     _removeLinesDurationTimerNode.Start();
     await ToSignal(_removeLinesDurationTimerNode, Timer.SignalName.Timeout);
+
+    // The grid this line belonged to is gone: shifting rows in the new one would move somebody
+    // else's blocks, and the counter has already been zeroed on our behalf.
+    if (generation != _resetGeneration) {
+      return;
+    }
+
     MoveDownLinesAbove(line);
     _nbQueuedLinesToRemove -= 1;
   }
@@ -259,6 +303,7 @@ public partial class TetrisPool : Node2D {
     if (_isVirgin && !firstTime)
       return;
 
+    _resetGeneration += 1;
     _isPaused = true;
     _nbQueuedLinesToRemove = 0;
     _score = 0;

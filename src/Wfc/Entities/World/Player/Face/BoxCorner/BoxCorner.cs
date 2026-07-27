@@ -38,8 +38,7 @@ public partial class BoxCorner : BaseFace {
       return;
     }
 
-    var groups = GetGroups();
-    if (!_checkGroup(area, groups)) {
+    if (!AcceptsColorOf(area)) {
       EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, EntityType.Platform);
     }
     else if (area is Gem gem) {
@@ -48,14 +47,5 @@ public partial class BoxCorner : BaseFace {
     else if (!player.IsStanding()) {
       EventHandler.Instance.EmitPlayerLanded(area, GlobalPosition);
     }
-  }
-
-  private static bool _checkGroup(Area2D area, Godot.Collections.Array<StringName> groups) {
-    foreach (string group in groups) {
-      if (area.IsInGroup(group)) {
-        return true;
-      }
-    }
-    return false;
   }
 }

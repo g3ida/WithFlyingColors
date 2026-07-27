@@ -15,6 +15,7 @@ using Wfc.State;
 using Wfc.Utils;
 using Wfc.Utils.Animation;
 using Wfc.Utils.Attributes;
+using Wfc.Utils.Colors;
 using Wfc.Utils.Interpolation;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -114,6 +115,9 @@ public partial class Player : CharacterBody2D, IPersistent {
   // Used to backup collision layer and collision mask of the player areas
   private List<Dictionary<string, int>> _faceSeparatorsMaskBackup = new List<Dictionary<string, int>>();
   private List<Dictionary<string, int>> _faceNodesMaskBackup = new List<Dictionary<string, int>>();
+  private bool _colorAreasAreHidden;
+
+
 
   public float CurrentDefaultCornerScaleFactor { get; set; } = 1.0f;
   private float _currentScaleFactor = 1.0f; // Do not edit by yourself this is used by scale_corners_by
@@ -227,6 +231,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     GlobalPosition = new Vector2(_saveData.PositionX, _saveData.PositionY);
     Velocity = Vector2.Zero;
     Rotate(_saveData.Angle - Rotation);
+    PlayerRotationAction.Reset(_saveData.Angle);
     CurrentDefaultCornerScaleFactor = _saveData.DefaultCornerScaleFactor;
     ShowColorAreas();
     _switchRotationState(_statesStore?.GetState<PlayerRotatingIdleState>());
@@ -234,28 +239,50 @@ public partial class Player : CharacterBody2D, IPersistent {
     HandleInputIsDisabled = false;
   }
 
-  private void OnCheckpointHit(CheckpointArea checkpointObject) {
-    var angle = 0f;
-
-    if (_bottomFaceNode.GetGroups().Contains(checkpointObject.ColorGroup)) {
-      angle = 0f;
+  private void OnCheckpointHit(Vector2 position, string colorGroup) {
+    var angle = _respawnAngleForColor(colorGroup);
+    if (angle == null) {
+      // No face wears this color, so there is no orientation to respawn in. This used to fall
+      // through with angle 0 - the bottom face - and overwrite a perfectly good save with an
+      // orientation nobody asked for.
+      GD.PushError($"Checkpoint color group '{colorGroup}' matches no face of the player; keeping the previous respawn point.");
+      return;
     }
 
-    else if (_leftFaceNode.GetGroups().Contains(checkpointObject.ColorGroup)) {
-      angle = -Mathf.Pi / 2f;
-    }
-    else if (_rightFaceNode.GetGroups().Contains(checkpointObject.ColorGroup)) {
-      angle = Mathf.Pi / 2f;
-    }
-    else if (_topFaceNode.GetGroups().Contains(checkpointObject.ColorGroup)) {
-      angle = Mathf.Pi;
-    }
+    _saveData = new SaveData(position.X, position.Y, angle.Value, CurrentDefaultCornerScaleFactor);
+  }
 
-    Vector2 position = checkpointObject.IsInsideTree()
-        ? new Vector2(checkpointObject.GlobalPosition.X, checkpointObject.GlobalPosition.Y)
-        : new Vector2(0f, 0f);
+  // A checkpoint names the color it wants facing the floor; this is the rotation that puts it
+  // there.
+  private float? _respawnAngleForColor(string colorGroup) {
+    if (_bottomFaceNode.GetGroups().Contains(colorGroup)) {
+      return 0f;
+    }
+    if (_leftFaceNode.GetGroups().Contains(colorGroup)) {
+      return -Mathf.Pi / 2f;
+    }
+    if (_rightFaceNode.GetGroups().Contains(colorGroup)) {
+      return Mathf.Pi / 2f;
+    }
+    if (_topFaceNode.GetGroups().Contains(colorGroup)) {
+      return Mathf.Pi;
+    }
+    return null;
+  }
 
-    _saveData = new SaveData(position.X, position.Y, angle, CurrentDefaultCornerScaleFactor);
+  // The color currently facing the floor - what a room that wants to record a checkpoint of its
+  // own, with no colored post to read an orientation off, should ask for.
+  public string GroundColorGroup {
+    get {
+      var lowest = faceNodes[0];
+      foreach (var face in faceNodes) {
+        if (face.GlobalPosition.Y > lowest.GlobalPosition.Y) {
+          lowest = face;
+        }
+      }
+      var groups = lowest.GetGroups();
+      return groups.Count > 0 ? groups[0].ToString() : ColorUtils.BLUE;
+    }
   }
 
   private void ConnectSignals() {
@@ -273,11 +300,24 @@ public partial class Player : CharacterBody2D, IPersistent {
     this.WireNodes();
     Global.Instance().Player = this;
     ConnectSignals();
+    // Leaving the tree exits the active states, which is what drops their subscriptions;
+    // coming back has to put them back or the player would be inert. On the first entry
+    // there is no FSM yet - InitState builds and enters it once dependencies resolve.
+    PlayerState?.Enter(this);
+    PlayerRotationState?.Enter(this);
   }
 
   public override void _ExitTree() {
-    base._EnterTree();
+    base._ExitTree();
     DisconnectSignals();
+
+    // Every state subscribes to the process-lifetime EventHandler in Enter and unsubscribes
+    // in Exit, so a state left active when the level unloads keeps an autoload holding a
+    // strong handle to it. That one handle roots the states store and all of its sibling
+    // states, and a stale PlayerDying subscription then fires on the next level's player -
+    // quit and replay a few times and the events pile up along with the objects.
+    PlayerState?.Exit(this);
+    PlayerRotationState?.Exit(this);
   }
 
   private bool _isJustHitTheFloor() {
@@ -334,8 +374,46 @@ public partial class Player : CharacterBody2D, IPersistent {
     return (((_collisionShapeNode.Shape as RectangleShape2D)?.Size ?? Vector2.Zero) * 0.5f + 2.0f * new Vector2(extra_w, extra_w)) * 2.0f;
   }
 
+  // The cube's outer surface in world units - the hull plus the colored plates standing proud
+  // of it, which is what anything bouncing off the cube actually meets. GetCollisionShapeSize
+  // adds the plates twice over and so reports a cube noticeably larger than the one on screen.
+  public Vector2 GetCollisionHalfExtents() {
+    var plate = ((FaceCollisionShapeR_node.Shape as RectangleShape2D)?.Size.X ?? 0f) * 0.5f;
+    return new Vector2(
+      Mathf.Abs(FaceCollisionShapeR_node.Position.X) + plate,
+      Mathf.Abs(FaceCollisionShapeB_node.Position.Y) + plate
+    ) * GlobalScale.Abs();
+  }
+
+  // Whether the cube survives touching `colorGroup` at a point on its surface. A point out near
+  // a corner lies on the seam two faces share and either of their colors is safe there, which
+  // is what the corner separators are for - and why widening them, as the brick breaker does,
+  // makes the cube more forgiving to play.
+  public bool AcceptsColorAt(Vector2 globalPoint, string colorGroup) {
+    var half = GetCollisionHalfExtents();
+    var seam = _cornerSeamReach();
+    var local = (globalPoint - GlobalPosition).Rotated(-GlobalRotation);
+
+    var onSide = Mathf.Abs(local.X) >= half.X - seam;
+    var onEnd = Mathf.Abs(local.Y) >= half.Y - seam;
+
+    if (onSide && (local.X >= 0.0f ? _rightFaceNode : _leftFaceNode).AcceptsColor(colorGroup)) {
+      return true;
+    }
+    if (onEnd && (local.Y >= 0.0f ? _bottomFaceNode : _topFaceNode).AcceptsColor(colorGroup)) {
+      return true;
+    }
+    // A point that belongs to no face at all is not one this cube has an opinion about.
+    return !onSide && !onEnd;
+  }
+
+  // How far a corner separator reaches along each of the two faces it joins.
+  private float _cornerSeamReach() =>
+    _faceSeparatorBR_node.EdgeLength * _faceSeparatorBR_node.Scale.X * GlobalScale.X * 0.5f;
+
   // This function is a hack for bullets and fast moving objects because of this Godot issue:
   // https://github.com/godotengine/godot/issues/43743
+  //
   public void OnFastAreaCollidingWithPlayerShape(uint bodyShapeIndex, Area2D colorArea, EntityType entityType) {
     var collisionShape = (CollisionShape2D)ShapeOwnerGetOwner(bodyShapeIndex);
     var shapeGroups = collisionShape.GetGroups();
@@ -377,7 +455,16 @@ public partial class Player : CharacterBody2D, IPersistent {
     }
   }
 
+  // Hiding is what the dying states use to stop the corpse reporting further collisions.
+  // It has to be idempotent: the backup is the only record of what the masks were, so
+  // hiding twice would capture the zeroes it just wrote and the restore afterwards would
+  // leave the player permanently unable to touch any colored surface again.
   public void HideColorAreas() {
+    if (_colorAreasAreHidden) {
+      return;
+    }
+    _colorAreasAreHidden = true;
+
     _fillFaceSeparatorsBackup();
     foreach (var face in faceSeparatorNodes) {
       face.CollisionLayer = 0;
@@ -404,7 +491,15 @@ public partial class Player : CharacterBody2D, IPersistent {
     _collisionShapeNode.Disabled = disable;
   }
 
+  // Reset() calls this whether or not the player was dying, and the backups only exist
+  // once something has hidden them - restoring from an empty list used to be an index
+  // error thrown inside a checkpoint callback.
   public void ShowColorAreas() {
+    if (!_colorAreasAreHidden) {
+      return;
+    }
+    _colorAreasAreHidden = false;
+
     for (int i = 0; i < faceSeparatorNodes.Count; i++) {
       faceSeparatorNodes[i].CollisionLayer = (uint)_faceSeparatorsMaskBackup[i]["layer"];
       faceSeparatorNodes[i].CollisionMask = (uint)_faceSeparatorsMaskBackup[i]["mask"];

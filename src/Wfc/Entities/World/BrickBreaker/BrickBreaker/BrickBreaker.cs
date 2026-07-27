@@ -173,11 +173,8 @@ public partial class BrickBreaker : Node2D, IPersistent {
     return _currentState;
   }
 
-  private void _OnCheckpointHit(Node _checkpoint) {
+  private void _OnCheckpointHit(Vector2 _position, string _colorGroup) {
     _saveData = new SaveData(GetSaveStateFromCurrentState());
-    if (this._checkpointNode == _checkpoint) {
-      // nothing to do for now
-    }
   }
 
   private void _OnPlayerDying(Node? _area, Vector2 _position, int _entityType) {
@@ -197,6 +194,9 @@ public partial class BrickBreaker : Node2D, IPersistent {
     if (_currentState != BrickBreakerState.PLAYING) {
       _currentState = BrickBreakerState.PLAYING;
       _currentLevel = 0;
+      // Winning switches the spawner off for the celebration, and nothing else ever switched it
+      // back on: a second round in the same session dropped no power-ups at all.
+      _bricksPowerUpHandler.SetActive(true);
       BricksTileMapNode = SpawnBricks();
       EventHandler.Instance.EmitBrickBreakerStart();
       if (_bricksMoveTweener != null) {
@@ -281,7 +281,16 @@ public partial class BrickBreaker : Node2D, IPersistent {
       MusicTrackManager.SetPitchScale(1);
       _slidingDoorNode.ResumeSlider();
       ChangeCameraViewAfterWin();
-      Helpers.TriggerFunctionalCheckpoint();
+      // A checkpoint with no post to stand on. Clearing the arena is progress worth keeping -
+      // Level1 has no checkpoint of its own between here and the piano - so the room records one
+      // where the player actually is, facing the way they actually are.
+      //
+      // This used to go through a helper that newed up a CheckpointArea, never added it to the
+      // tree and called its collision callback by hand: the position came back as the world
+      // origin and the fabricated color group flipped the cube upside down, so every death for
+      // the rest of the level teleported the player to (0, 0) rotated 180 degrees.
+      var player = GameLevel.PlayerNode;
+      EventHandler.Instance.EmitCheckpointReached(player.GlobalPosition, player.GroundColorGroup);
     }
   }
 

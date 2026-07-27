@@ -109,7 +109,7 @@ position = Vector2(216, 0)
 
 [node name="ExitCameraLocalizer" parent="." instance=ExtResource("9")]
 position = Vector2(1188, -36)
-PositionClippingMode = 2
+PositionClippingMode = 15
 
 [node name="Area2D" type="Area2D" parent="ExitCameraLocalizer"]
 position = Vector2(216, 0)

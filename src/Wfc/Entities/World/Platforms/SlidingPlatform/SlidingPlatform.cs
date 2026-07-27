@@ -156,7 +156,7 @@ public partial class SlidingPlatform : Node2D, IPersistent {
     DisconnectSignals();
   }
 
-  private void OnCheckpointHit(Node checkpoint) {
+  private void OnCheckpointHit(Vector2 _position, string _colorGroup) {
     if (_delayedStop && !restore_delayed_stop) {
       var dest = _getDestinationPosition();
       _saveData = new SaveData(

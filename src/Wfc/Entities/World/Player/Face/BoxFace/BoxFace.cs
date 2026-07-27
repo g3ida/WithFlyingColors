@@ -42,13 +42,11 @@ public partial class BoxFace : BaseFace {
     if (player.IsDying()) {
       return;
     }
-    var groups = GetGroups();
-
     if (area.IsInGroup("fallzone")) {
       EventHandler.Instance.EmitPlayerDying(GlobalPosition, EntityType.FallZone);
       return;
     }
-    else if (!area.IsInGroup(groups[0])) {
+    else if (!AcceptsColorOf(area)) {
       EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, EntityType.Platform);
     }
     else if (!player.IsStanding()) {

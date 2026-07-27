@@ -10,7 +10,7 @@ shader_parameter/time = 0.0
 shader_parameter/flip_left = false
 shader_parameter/flip_duration = 0.0
 shader_parameter/cylinder_ratio = 0.0
-shader_parameter/cylinder_direction = Vector2(0, 0)
+shader_parameter/cylinder_direction = Vector2(5, 1)
 shader_parameter/rect = Vector2(0, 0)
 
 [node name="SolfegeBoard" type="Node2D"]
@@ -23,6 +23,7 @@ texture = ExtResource("2")
 centered = false
 
 [node name="MusicPaperRect" type="Sprite2D" parent="."]
+visible = false
 material = SubResource("2")
 position = Vector2(-177, -216)
 texture = ExtResource("2")

@@ -27,8 +27,11 @@ public partial class TripleBallsPowerUp : PowerUpScript {
           if (spawnVelocity.Y > 0) {
             spawnVelocity.Y = -spawnVelocity.Y;
           }
-          ball.BallVelocity = spawnVelocity;
-          ball.CallDeferred(BouncingBall.MethodName.SetVelocity, spawnVelocity);
+          // Deferred, because SpawnBall adds the ball to the tree deferred and its _Ready picks a
+          // random spawn direction: an aim set before that runs is thrown away. This used to
+          // assign the aim immediately and then defer CharacterBody2D.SetVelocity, which is the
+          // body's own velocity field - a value this ball never reads, since it sweeps itself.
+          ball.CallDeferred(nameof(BouncingBall.SetBallVelocity), spawnVelocity);
         }
       }
     }

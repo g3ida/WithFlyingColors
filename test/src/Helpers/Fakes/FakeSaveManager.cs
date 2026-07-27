@@ -22,6 +22,7 @@ public sealed class FakeSaveManager : ISaveManager {
 
   // Records so tests can assert what the menus asked for.
   public int SaveGameCallCount { get; private set; }
+  public int RecordProgressCallCount { get; private set; }
   public int RemoveSaveSlotCallCount { get; private set; }
 
   public FakeSaveManager(int selectedSlot = 0) {
@@ -81,6 +82,16 @@ public sealed class FakeSaveManager : ISaveManager {
     if (_isValid(index)) {
       _slots[index] ??= new SlotMetaData(index, 1_700_000_000UL, LevelId.Level1, 0, 1_700_000_000UL);
     }
+  }
+
+  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, int slotIndex = ISaveManager.NO_SLOT) {
+    RecordProgressCallCount++;
+    var index = _resolve(slotIndex);
+    if (!_isValid(index) || _slots[index] is not { } slot) {
+      return;
+    }
+    slot.LevelId = levelId;
+    slot.Progress = progressPercent;
   }
 
   public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = ISaveManager.NO_SLOT) {

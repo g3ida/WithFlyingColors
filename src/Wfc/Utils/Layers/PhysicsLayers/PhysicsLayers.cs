@@ -14,4 +14,5 @@ static class PhysicsLayers {
   public static readonly LayerInfo PowerUp = new LayerInfo("PowerUp", 256);
   public static readonly LayerInfo BouncingBall = new LayerInfo("BouncingBall", 512);
   public static readonly LayerInfo Bricks = new LayerInfo("Bricks", 1024);
+  public static readonly LayerInfo Shield = new LayerInfo("Shield", 2048);
 }

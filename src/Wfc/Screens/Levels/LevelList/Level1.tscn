@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://ctn6tng7nqhus"]
+[gd_scene load_steps=24 format=3 uid="uid://ctn6tng7nqhus"]
 
 [ext_resource type="PackedScene" uid="uid://0cgvvyxmoalw" path="res://src/Wfc/Entities/World/CutScenes/CutScene/Cutscene.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://nvn44bv2puaj" path="res://src/Wfc/Entities/World/Player/Player/Player.tscn" id="2"]
@@ -9,7 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://src/Wfc/Entities/World/Gems/Gem/Gem.tscn" id="10"]
 [ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="11"]
 [ext_resource type="PackedScene" uid="uid://lycx13j354o3" path="res://src/Wfc/Entities/HUD/GemsHUDContainer/GemsHUDContainer.tscn" id="16"]
-[ext_resource type="PackedScene" uid="uid://cblfcag52yydu" path="res://src/Wfc/Entities/World/Checkpoints/Checkpoint/Checkpoint.tscn" id="18"]
 [ext_resource type="PackedScene" uid="uid://bijboehpv0gsh" path="res://src/Wfc/Screens/PauseMenu/PauseMenu/PauseMenu.tscn" id="19"]
 [ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="20"]
 [ext_resource type="PackedScene" uid="uid://dhoxs1h5dhijp" path="res://src/Wfc/Entities/World/Platforms/Platform/Platform.tscn" id="21"]
@@ -32,7 +31,7 @@ size = Vector2(29, 92)
 script = ExtResource("3")
 Track = "level1"
 
-[node name="Checkpoint" parent="." instance=ExtResource("18")]
+[node name="Checkpoint" parent="." instance=ExtResource("36")]
 position = Vector2(-425, -141)
 ColorGroup = "purple"
 
@@ -159,7 +158,7 @@ position = Vector2(5950, -987)
 
 [node name="CameraLocalizer" parent="." instance=ExtResource("32")]
 position = Vector2(4358, 559)
-PositionClippingMode = 2
+PositionClippingMode = 15
 
 [node name="Area2D" type="Area2D" parent="CameraLocalizer"]
 

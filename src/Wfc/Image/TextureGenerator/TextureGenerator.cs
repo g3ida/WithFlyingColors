@@ -8,12 +8,8 @@ using Wfc.Utils.Images;
 
 public static partial class TextureGenerator {
 
-  public static Texture2D GenerateTexture(Vector2I outTextureSize, IEnumerable<TextureGenRecipe> recipe) {
-    if (SkinManager.Instance.CurrentSkin == null) {
-      GD.PushError("There are no selected skin!!!");
-    }
-    return TransformRecipeIntoTexture(outTextureSize, recipe);
-  }
+  public static Texture2D GenerateTexture(Vector2I outTextureSize, IEnumerable<TextureGenRecipe> recipe) =>
+    TransformRecipeIntoTexture(outTextureSize, recipe);
 
   private static ImageTexture TransformRecipeIntoTexture(Vector2I outTextureSize, IEnumerable<TextureGenRecipe> recipe) {
     var image = TransformRecipeIntoImage(outTextureSize, recipe);
@@ -53,18 +49,30 @@ public static partial class TextureGenerator {
     };
   }
 
+  // Keeps the source alpha and replaces every RGB with one flat color.
+  //
+  // One buffer round trip rather than a GetPixel/SetPixel pair per pixel: the menu box alone is
+  // eight PNGs totalling just over two million pixels, so the old form crossed into the engine
+  // about four million times, on the main thread, every time the box was rebuilt.
   private static Image CreateColoredCopyFromImage(Image srcImage, Color color) {
-    var width = srcImage.GetWidth();
-    var height = srcImage.GetHeight();
-    var format = srcImage.GetFormat();
-    var image = Image.CreateEmpty(width, height, false, format);
-    for (var i = 0; i < width; i++) {
-      for (var j = 0; j < height; j++) {
-        var pix = srcImage.GetPixel(i, j);
-        var col = new Color(color.R, color.G, color.B, pix.A);
-        image.SetPixel(i, j, col);
-      }
+    var source = srcImage;
+    if (source.GetFormat() != Image.Format.Rgba8) {
+      // BlendRect refuses to mix formats, and the destination is always Rgba8.
+      source = (Image)srcImage.Duplicate();
+      source.Convert(Image.Format.Rgba8);
     }
-    return image;
+
+    var data = source.GetData();
+    // Truncating, which is what Image.SetPixel does for an 8-bit channel.
+    var r = (byte)Mathf.Clamp(color.R * 255.0f, 0.0f, 255.0f);
+    var g = (byte)Mathf.Clamp(color.G * 255.0f, 0.0f, 255.0f);
+    var b = (byte)Mathf.Clamp(color.B * 255.0f, 0.0f, 255.0f);
+    for (var i = 0; i < data.Length; i += 4) {
+      data[i] = r;
+      data[i + 1] = g;
+      data[i + 2] = b;
+    }
+
+    return Image.CreateFromData(source.GetWidth(), source.GetHeight(), false, Image.Format.Rgba8, data);
   }
 }

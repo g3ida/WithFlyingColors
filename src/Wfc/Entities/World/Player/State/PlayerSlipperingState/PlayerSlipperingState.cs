@@ -39,7 +39,10 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     player.PlayerRotationAction.Execute(direction, MathUtils.PI2, SLIPPERING_ROTATION_DURATION, true, false, true);
     EventHandler.Instance.EmitPlayerSlippering();
     player.CanDash = true;
-    _initialRotation = player.Rotation;
+    // The rotation action's accumulator, not player.Rotation: the transform folds the angle
+    // into (-pi, pi], so a cube slipping while upside down crosses the branch and the
+    // "how far have I tipped" measurements below jump by a full turn.
+    _initialRotation = player.PlayerRotationAction.CurrentAngle;
   }
 
   protected override void _Exit(Player player) {
@@ -50,8 +53,18 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     //    for gameplay so the combination is the best option )
     if (!_skipExitRotation) {
       player.PlayerRotationAction.Execute(-direction, MathUtils.PI2, SLIPPERING_RECOVERY_INITIAL_DURATION, true, false, false);
+
+      // Captured by value: this state is a singleton, so by the time the timer fires the
+      // fields may already describe a second slip in the other direction and the cube would
+      // snap the wrong way. The validity check covers the level being torn down inside those
+      // 50 ms, which leaves the timer holding the only reference to a freed player.
+      var recoveryDirection = -direction;
+      var recoveryDuration = _exitRotationSpeed;
       player.GetTree().CreateTimer(0.05f).Connect(Timer.SignalName.Timeout, Callable.From(() => {
-        player.PlayerRotationAction.Execute(-direction, MathUtils.PI2, _exitRotationSpeed, true, false, false);
+        if (!GodotObject.IsInstanceValid(player) || !player.IsInsideTree()) {
+          return;
+        }
+        player.PlayerRotationAction.Execute(recoveryDirection, MathUtils.PI2, recoveryDuration, true, false, false);
       }));
     }
   }
@@ -71,7 +84,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
       if (fallingState != null) {
         // added to avoid complete rotation when falling if the current angle is small enough or if the floor is
         // too close
-        if (Mathf.Abs(player.Rotation - player.PlayerRotationAction.ThetaZero) > MathUtils.PI10
+        if (Mathf.Abs(player.PlayerRotationAction.CurrentAngle - player.PlayerRotationAction.ThetaZero) > MathUtils.PI10
             && !_checkIfGroundIsNear(player, direction, RAY_LEN_FOR_FALLING)
         ) {
           _exitRotationSpeed = CORRECT_ROTATION_FALL_SPEED;
@@ -100,7 +113,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     }
 
     // A small speed depending on the current angle to simulate a slippering effect
-    var rotCoef = Mathf.Abs(_initialRotation - player.Rotation) / MathUtils.PI2;
+    var rotCoef = Mathf.Abs(_initialRotation - player.PlayerRotationAction.CurrentAngle) / MathUtils.PI2;
     player.Velocity = new Vector2(
       player.Velocity.X + player.Scale.X * direction * rotCoef * PLAYER_GROUND_SLIPPERING_FACTOR,
       player.Velocity.Y

@@ -23,6 +23,12 @@ public partial class GemNotCollectedState : GemBaseState {
   }
 
   public override void Enter(Gem o) {
+    // The store hands out one instance per state, so this field outlives the visit that
+    // set it. Left over, the very first physics frame after a respawn re-requests the
+    // transition the gem made before it died - the gem collects itself, silently, before
+    // the animation can emit GemCollected.
+    _requestedState = null;
+
     o.AnimationPlayerNode.Play("RESET");
     o.AnimatedSpriteNode.Play("default");
     o.ShineSfxNode.Play();

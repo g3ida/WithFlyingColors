@@ -96,39 +96,51 @@ public partial class TetrisAI : Node {
     return heightScore + linesScore + holesScore + bumpinessScore;
   }
 
+  // Scores every rotation in every column and reports the best placement. Nothing here is
+  // added to the tree - the piece is a scratch object used to ask the grid questions.
+  //
+  // One instance for the whole search, walked from candidate to candidate. It used to build a
+  // fresh ~45-node subtree per candidate, 40 of them synchronously inside the physics frame
+  // that spawns a piece, each one running four BlockSprite color setters (three skin lookups
+  // and three node path resolutions apiece). Worse, only the candidates that fit were ever
+  // freed, and rejections are guaranteed - an I piece rejects 3 of 10 columns on an empty
+  // board - so the rest leaked for the rest of the level.
   public Dictionary<string, float> Best(Block?[,] grid, PackedScene tetromino) {
+    // A column, not a row: seeded with the spawn row this would send an unplaceable piece to
+    // column 2 and overwrite whatever the grid holds there.
+    int bestPosition = Constants.TETRIS_SPAWN_I;
     int bestRotation = 0;
-    int bestPosition = Constants.TETRIS_SPAWN_J;
     float bestScore = float.NegativeInfinity;
 
-    for (int i = 0; i < 4; i++) {
-      for (int c = 0; c < Constants.TETRIS_POOL_WIDTH; c++) {
-        // FIXME: The piece is never added to the tree.
-        var rotatedPiece = tetromino.Instantiate<Tetromino>();
-        rotatedPiece.SetGrid(grid);
-        rotatedPiece.MoveBy(0, Constants.TETRIS_SPAWN_J);
+    var piece = tetromino.Instantiate<Tetromino>();
+    try {
+      piece.SetGrid(grid);
 
-        for (int j = 0; j < i; j++) {
-          rotatedPiece.RotateLeft();
-        }
+      for (int rotation = 0; rotation < 4; rotation++) {
+        for (int c = 0; c < Constants.TETRIS_POOL_WIDTH; c++) {
+          piece.PlaceAt(c, Constants.TETRIS_SPAWN_J, rotation);
+          if (!piece.IsInValidPosition()) {
+            continue;
+          }
 
-        if (rotatedPiece.CanMoveBy(c, 0)) {
-          rotatedPiece.MoveBy(c, 0);
-          while (rotatedPiece.MoveDownSafe())
+          while (piece.MoveDownSafe())
             ;
-          rotatedPiece.AddToGrid(false);
+          piece.AddToGrid(false);
 
           float score = CalculateGridScore(grid);
           if (score > bestScore) {
             bestScore = score;
             bestPosition = c;
-            bestRotation = i;
+            bestRotation = rotation;
           }
-          rotatedPiece.RemoveFromGrid();
-          rotatedPiece.QueueFree();
+          piece.RemoveFromGrid();
         }
       }
     }
+    finally {
+      piece.QueueFree();
+    }
+
     return new Dictionary<string, float>
     {
             { "position", bestPosition },
