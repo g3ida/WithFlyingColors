@@ -46,7 +46,7 @@ public partial class Brick : Node2D {
     if (_isBroken) {
       return;
     }
-
+    
     // The player only breaks a brick it can safely touch. A face of the wrong color is
     // already fatal - BoxFace raises the death from its own handler on the same contact -
     // so the brick has to survive it, or the player would smash the very brick that
