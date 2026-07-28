@@ -18,23 +18,27 @@ public partial class NextPiece : Node {
     _nextPieceNode = piece.Instantiate<Tetromino>();
     AddChild(_nextPieceNode);
     _nextPieceNode.Owner = this;
-    _nextPieceNode.Position -= _getPieceBounds(_nextPieceNode);
+    _nextPieceNode.Position -= _centerOffset(_nextPieceNode);
   }
 
-  // Used to center piece in container
-  private static Vector2 _getPieceBounds(Tetromino piece) {
-    float minI = 3f;
-    float minJ = 3f;
-    float maxI = -3f;
-    float maxJ = -3f;
+  // The offset that lands the piece's bounding box on the container's origin. A block's own
+  // origin is its top-left corner, so the box runs a full cell past the last one. Both terms
+  // have to be in pixels: scaling only half the sum leaves a cell count added to a pixel
+  // count, which is a whole cell of error for any piece whose shape does not start at -1.
+  private static Vector2 _centerOffset(Tetromino piece) {
+    float minI = float.MaxValue;
+    float minJ = float.MaxValue;
+    float maxI = float.MinValue;
+    float maxJ = float.MinValue;
     foreach (Node ch in piece.GetChildren()) {
-      Block block = (Block)ch;
+      if (ch is not Block block) {
+        continue;
+      }
       minI = Mathf.Min(block.I, minI);
       minJ = Mathf.Min(block.J, minJ);
       maxI = Mathf.Max(block.I, maxI);
       maxJ = Mathf.Max(block.J, maxJ);
     }
-    // FIXME: Why did I had to change this from +1f to -1f (C# migration) ?
-    return new Vector2(minI, minJ) + new Vector2(maxI - minI - 1f, maxJ - minJ - 1f) * 0.5f * Constants.TETRIS_BLOCK_SIZE;
+    return new Vector2(minI + maxI + 1f, minJ + maxJ + 1f) * 0.5f * Constants.TETRIS_BLOCK_SIZE;
   }
 }

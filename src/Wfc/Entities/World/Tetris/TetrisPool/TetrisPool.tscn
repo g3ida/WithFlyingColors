@@ -30,8 +30,6 @@ position = Vector2(-1, -1154)
 [node name="LevelUpPosition" type="Marker2D" parent="."]
 position = Vector2(-1, -600)
 
-[node name="ShapeWaitTimer" type="Timer" parent="."]
-
 [node name="RemoveLinesDurationTimer" type="Timer" parent="."]
 
 [node name="ScoreBoard" parent="." instance=ExtResource("4")]

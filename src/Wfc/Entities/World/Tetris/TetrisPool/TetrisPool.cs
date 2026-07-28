@@ -46,15 +46,17 @@ public partial class TetrisPool : Node2D {
   private bool _haveActiveBlock = false;
   private int _nbQueuedLinesToRemove = 0;
 
-  // Bumped by every reset. The line-clear and piece-drop routines below are async and hold
-  // state across an await on a timer, and reset runs on CheckpointLoaded - i.e. on every
-  // death, which does not reload the level. A continuation that resumes into a pool that has
-  // already been reset used to decrement a counter reset had zeroed, leaving it at -1; since
-  // _PhysicsProcess only gates on "> 0", the pool then kept spawning and dropping pieces while
-  // rows were shifted out from under them, overwriting live grid entries.
+  // Bumped by every reset. The line-clear routine below is async and holds state across an
+  // await on a timer, and reset runs on CheckpointLoaded - i.e. on every death, which does
+  // not reload the level. A continuation that resumes into a pool that has already been reset
+  // used to decrement a counter reset had zeroed, leaving it at -1; since _PhysicsProcess only
+  // gates on "> 0", the pool then kept spawning and dropping pieces while rows were shifted
+  // out from under them, overwriting live grid entries.
   private int _resetGeneration = 0;
   private TetrisAI _ai = new TetrisAI();
-  private bool _shapeIsInWaitTime = false;
+  private float _stepInterval = Constants.TETRIS_SPEEDS[0];
+  private float _phaseElapsed = 0.0f;
+  private bool _isTravelling = false;
   private Tetromino? _shape = null;
   private Block?[,] _grid = new Block?[Constants.TETRIS_POOL_WIDTH, Constants.TETRIS_POOL_HEIGHT];
   private bool _isVirgin = true;
@@ -64,8 +66,6 @@ public partial class TetrisPool : Node2D {
   private Marker2D _spawnPosNode = default!;
   [NodePath("ScoreBoard")]
   private ScoreBoard _scoreBoardNode = default!;
-  [NodePath("ShapeWaitTimer")]
-  private Timer _shapeWaitTimerNode = default!;
   [NodePath("RemoveLinesDurationTimer")]
   private Timer _removeLinesDurationTimerNode = default!;
   [NodePath("NextPiece")]
@@ -153,12 +153,15 @@ public partial class TetrisPool : Node2D {
     var rot = (int)best["rotation"];
     var shape = currentTetromino.Instantiate<Tetromino>();
     shape.SetGrid(_grid);
-    shape.MoveBy(pos, Constants.TETRIS_SPAWN_J);
+    // The same call the search scored this candidate with, so the piece that spawns is the one
+    // that was checked against the walls. Stepping RotateLeft to get there instead walks the
+    // rotation map backwards: an odd rotation spawns the mirrored shape, which for a placement
+    // hard against either wall starts a column outside the grid, where it can neither fall nor
+    // be moved back.
+    shape.PlaceAt(pos, Constants.TETRIS_SPAWN_J, rot);
+    shape.SetShape();
     AddChild(shape);
     shape.Owner = this;
-    for (int i = 0; i < rot; i++) {
-      shape.RotateLeft();
-    }
     shape.Position = _spawnPosNode.Position + new Vector2(Constants.TETRIS_BLOCK_SIZE * (pos - Constants.TETRIS_SPAWN_I), 0);
     return shape;
   }
@@ -166,6 +169,8 @@ public partial class TetrisPool : Node2D {
   // False when the new piece has nowhere to go, i.e. when the spawn is the game over.
   private bool GenerateBlocks() {
     _haveActiveBlock = true;
+    _isTravelling = false;
+    _phaseElapsed = 0.0f;
     _shape = AiSpawnBlock();
 
     if (!_shape.CanMoveDown()) {
@@ -186,35 +191,57 @@ public partial class TetrisPool : Node2D {
       return;
     }
 
-    if (_shape != null && !_shapeIsInWaitTime) {
-      MoveShapeDown();
+    if (_shape != null) {
+      AdvanceShape((float)delta);
     }
   }
 
-  private async void MoveShapeDown() {
-    var generation = _resetGeneration;
-    _shapeIsInWaitTime = true;
+  // A row's period splits into the descent and a hold on the row it arrives at. Bounding the
+  // descent by speed rather than by a fraction of the period keeps the per-frame displacement
+  // small at every level; past the point where a row's period is shorter than the descent the
+  // hold vanishes and the fall becomes continuous, which is as slow as it can be made.
+  private float TravelDuration =>
+    Math.Min(_stepInterval, Constants.TETRIS_BLOCK_SIZE / Constants.TETRIS_MAX_FALL_SPEED);
 
-    if (_shape?.MoveDownSafe() == true) {
-      _shapeWaitTimerNode.Start();
-      await ToSignal(_shapeWaitTimerNode, Timer.SignalName.Timeout);
-      // A reset while this was waiting has already cleared the flag and freed the piece; the
-      // pool has a new one falling by now and clearing the flag again would let it skip a step.
-      if (generation != _resetGeneration) {
+  private void AdvanceShape(float delta) {
+    _phaseElapsed += delta;
+
+    if (_isTravelling) {
+      var travel = TravelDuration;
+      if (_phaseElapsed < travel) {
+        _shape!.SetFallOffset(Constants.TETRIS_BLOCK_SIZE * (_phaseElapsed / travel));
         return;
       }
+      _isTravelling = false;
+      _phaseElapsed -= travel;
+      _shape!.SetFallOffset(0.0f);
+      _shape.MoveDown();
+    }
+
+    var hold = _stepInterval - TravelDuration;
+    if (_phaseElapsed < hold) {
+      return;
+    }
+    _phaseElapsed -= hold;
+
+    // Asked while the piece sits squarely on its row and nothing else is moving in the grid,
+    // so the descent this starts cannot carry it into an occupied cell, and the piece is
+    // always grid-aligned on the frame it locks.
+    if (_shape!.CanMoveDown()) {
+      _isTravelling = true;
     }
     else {
       LockShape();
     }
-
-    _shapeIsInWaitTime = false;
   }
 
   private void LockShape() {
+    _isTravelling = false;
+    _phaseElapsed = 0.0f;
+
     var shape = _shape;
     // Nulled before anything else: the piece belongs to the grid from here on, and leaving the
-    // field pointing at it let a later frame re-run MoveShapeDown on a locked piece and shrink
+    // field pointing at it let a later frame re-run AdvanceShape on a locked piece and shrink
     // its blocks' color areas a second time.
     _shape = null;
     _haveActiveBlock = false;
@@ -266,7 +293,7 @@ public partial class TetrisPool : Node2D {
         Block? currentBlock = _grid[i, j];
         if (currentBlock != null) {
           currentBlock.J += 1;
-          currentBlock.Position += new Vector2(0, Constants.TETRIS_BLOCK_SIZE);
+          currentBlock.QueueDrop(Constants.TETRIS_BLOCK_SIZE);
         }
         Block? belowBlock = _grid[i, j + 1];
         if (belowBlock != null) {
@@ -308,8 +335,9 @@ public partial class TetrisPool : Node2D {
     _nbQueuedLinesToRemove = 0;
     _score = 0;
     _haveActiveBlock = false;
-    _shapeIsInWaitTime = false;
-    _shapeWaitTimerNode.WaitTime = Constants.TETRIS_SPEEDS[0];
+    _isTravelling = false;
+    _phaseElapsed = 0.0f;
+    _stepInterval = Constants.TETRIS_SPEEDS[0];
     _randomBag.Clear();
     _shape?.QueueFree();
     _shape = null;
@@ -329,7 +357,7 @@ public partial class TetrisPool : Node2D {
     if (oldLevel != _level) {
       _scoreBoardNode.SetLevel(_level);
       int speed = Math.Min(_level, Constants.TETRIS_MAX_LEVELS);
-      _shapeWaitTimerNode.WaitTime = Constants.TETRIS_SPEEDS[speed];
+      _stepInterval = Constants.TETRIS_SPEEDS[speed];
       MusicTrackManager.SetPitchScale(1 + (speed - 1) * 0.1f);
       if (_level > 1) {
         var levelUpNode = SceneHelpers.InstantiateNode<LevelUp>();
