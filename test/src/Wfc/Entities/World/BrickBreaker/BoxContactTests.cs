@@ -58,9 +58,9 @@ public class BoxContactTests(Node testScene) : TestClass(testScene) {
   [Test]
   public void ABallTheCubeHasDashedOntoLeavesBySideItCameIn() {
     var buried = new Vector2(18.0f, 24.0f);
-    var dashingRight = new Vector2(-1920.0f, 0.0f);
+    var backOutTheRightFace = new Vector2(1920.0f, 0.0f);
 
-    BoxContact.Find(buried, RADIUS, HALF, dashingRight, out var contact).ShouldBeTrue();
+    BoxContact.Find(buried, RADIUS, HALF, backOutTheRightFace, out var contact).ShouldBeTrue();
 
     contact.Normal.ShouldBe(Vector2.Right);
     contact.Point.ShouldBe(new Vector2(HALF.X, buried.Y));
@@ -72,15 +72,15 @@ public class BoxContactTests(Node testScene) : TestClass(testScene) {
   [Test]
   public void ABallTheCubeHasJumpedIntoLeavesByTheFaceThatStruckIt() {
     var buried = new Vector2(30.0f, -10.0f);
-    var jumpingUp = new Vector2(0.0f, 1620.0f);
+    var backOutTheTopFace = new Vector2(0.0f, -1620.0f);
 
-    BoxContact.Find(buried, RADIUS, HALF, jumpingUp, out var contact).ShouldBeTrue();
+    BoxContact.Find(buried, RADIUS, HALF, backOutTheTopFace, out var contact).ShouldBeTrue();
 
     contact.Normal.ShouldBe(Vector2.Up);
     contact.Point.ShouldBe(new Vector2(buried.X, -HALF.Y));
   }
 
-  // Nothing is moving, so there is no side it came in from; the nearest way out is all that is left.
+  // No side named and nothing moving, so the nearest way out is all that is left.
   [Test]
   public void ABallSittingInsideAStillCubeLeavesByTheNearestSide() {
     BoxContact.Find(new Vector2(6.0f, HALF.Y - 2.0f), RADIUS, HALF, AT_REST, out var contact)
@@ -93,7 +93,7 @@ public class BoxContactTests(Node testScene) : TestClass(testScene) {
   // inside it: a ball the cube keeps hold of is a ball it carries around the arena.
   [Test]
   public void EveryContactPushesTheBallClearOfTheCube() {
-    var traveling = new Vector2(-500.0f, 120.0f);
+    var wayOut = new Vector2(500.0f, -120.0f);
     foreach (var start in new[] {
       new Vector2(52.0f, 0.0f),
       new Vector2(50.0f, 50.0f),
@@ -101,7 +101,7 @@ public class BoxContactTests(Node testScene) : TestClass(testScene) {
       new Vector2(0.0f, -40.0f),
       new Vector2(-30.0f, 12.0f),
     }) {
-      BoxContact.Find(start, RADIUS, HALF, traveling, out var contact).ShouldBeTrue();
+      BoxContact.Find(start, RADIUS, HALF, wayOut, out var contact).ShouldBeTrue();
 
       var settled = start + (contact.Normal * contact.Depth);
       var nearest = new Vector2(

@@ -7,7 +7,6 @@ using Wfc.Entities.World.Player;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
-using Wfc.Utils.Layers;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
@@ -49,6 +48,13 @@ public partial class BouncingBall : CharacterBody2D {
   private Vector2 _direction = SPAWN_DIRECTION;
   private float _baseSpeed = SPEED;
   private float _speed = SPEED;
+
+  // The side of the cube this ball is resting against, in world space, held for as long as the two
+  // stay in touch. Once the cube has the ball inside it, its position no longer says which side it
+  // came in through, and a cube stopped dead against a wall has no motion left to say either: the
+  // ball's own travel then reads as one arriving from the far side, and out it went through the back
+  // of the cube.
+  private Vector2? _restingOn;
 
   public Vector2 BallVelocity => _direction * _speed;
 
@@ -125,19 +131,22 @@ public partial class BouncingBall : CharacterBody2D {
   // to a ball. A static mirror could only send the ball away at its own speed, so a cube jumping faster
   // than the ball could never be escaped at all.
   private void _offPaddle() {
-    if (!_paddleInReach(out var player)) {
+    if (!_hasPaddle(out var player)) {
+      _restingOn = null;
       return;
     }
 
     var paddle = player.Velocity;
     var approach = BallVelocity - paddle;
     if (!_contactWith(player, approach, out var contact)) {
+      _restingOn = null;
       return;
     }
+    _restingOn = contact.Normal;
 
     // Out of the cube first, whatever comes next: a cube climbing into the ball buries it deeper than
     // its own radius in a frame, and a ball left inside is a ball the cube carries around with it.
-    GlobalPosition += contact.Normal * contact.Depth;
+    _separateFrom(player, contact);
 
     // Judged by where the cube's surface met the ball. Reading the color off the two centers instead
     // let the far side of the cube condemn a ball the near side had just struck, which is exactly what
@@ -173,35 +182,42 @@ public partial class BouncingBall : CharacterBody2D {
     _speed = Mathf.Clamp(outgoing.Length(), _baseSpeed, _baseSpeed + closing);
   }
 
-  // Found with a live query rather than from this ball's own overlap list, which is a physics frame
-  // stale: a dashing cube crosses most of its own width in that time, so by the time the list catches
-  // up the ball is already past the face that should have struck it.
-  private bool _paddleInReach(out Player player) {
-    var query = new PhysicsShapeQueryParameters2D {
-      ShapeRid = _bodyCollisionShape.Shape.GetRid(),
-      Transform = new Transform2D(0.0f, Scale, 0.0f, GlobalPosition),
-      CollisionMask = PhysicsLayers.Player.Mask,
-      CollideWithBodies = true,
-      CollideWithAreas = false,
-    };
-
-    foreach (var hit in GetWorld2D().DirectSpaceState.IntersectShape(query, 1)) {
-      if (hit["collider"].As<GodotObject>() is Player found) {
-        player = found;
-        return true;
-      }
+  // Swept rather than teleported, because the room to get clear is not always there: a cube dashing
+  // at a wall closes the very gap the ball is sitting in, and a teleport spent that room whether it
+  // existed or not - the ball went through the wall and was driven back inside the cube by the
+  // recovery, where it stayed for as long as the dash held.
+  private void _separateFrom(Player player, BoxContact contact) {
+    var crushed = MoveAndCollide(contact.Normal * contact.Depth);
+    if (crushed == null) {
+      return;
     }
-    player = null!;
-    return false;
+
+    // The ball has run out of room with the cube still on top of it, so it is the cube that gives
+    // way. The ball is what holds that gap open, and a cube that closes it is a cube resting
+    // against the wall with the ball somewhere inside it.
+    player.MoveAndCollide(-crushed.GetRemainder());
+  }
+
+  // Taken straight from the cube rather than asked of the physics server, whose answer - like this
+  // ball's own overlap list - is a physics frame behind a paddle that has already moved this frame.
+  // A dashing cube crosses most of its own width in that time, so the contact came in a frame late,
+  // by which point a cube that has run into a wall stands still and has nothing left to say about
+  // which of its faces did the reaching. The contact itself is worked out from the two transforms.
+  private static bool _hasPaddle(out Player player) {
+    player = Global.Instance().Player;
+    return GodotObject.IsInstanceValid(player);
   }
 
   // Against the cube's outer surface, in the cube's own frame so that a rotated cube needs no special
-  // case, and back into world space for whoever reads the contact.
+  // case, and back into world space for whoever reads the contact. The side the ball came to rest on
+  // outranks where it is heading, which is only evidence of the side it came in through for as long
+  // as it is still arriving.
   private bool _contactWith(Player player, Vector2 approach, out BoxContact contact) {
     var facing = player.GlobalRotation;
     var local = (GlobalPosition - player.GlobalPosition).Rotated(-facing);
+    var wayOut = (_restingOn ?? -approach).Rotated(-facing);
 
-    if (!BoxContact.Find(local, _radius(), player.GetCollisionHalfExtents(), approach.Rotated(-facing), out var found)) {
+    if (!BoxContact.Find(local, _radius(), player.GetCollisionHalfExtents(), wayOut, out var found)) {
       contact = default;
       return false;
     }
