@@ -12,6 +12,7 @@ using Wfc.Core.Serialization;
 using Wfc.Entities.World;
 using Wfc.Entities.World.BrickBreaker.Powerups;
 using Wfc.Entities.World.Camera;
+using Wfc.Entities.World.Checkpoints;
 using Wfc.Entities.World.Platforms;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
@@ -49,7 +50,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
   [NodePath("BricksContainer/BrickPowerUpHandler")]
   private IPowerUpHandler _bricksPowerUpHandler = default!;
   [NodePath("CheckpointArea")]
-  private Area2D _checkpointNode = default!;
+  private CheckpointArea _checkpointNode = default!;
   [NodePath("TriggerEnterArea")]
   private Area2D? _triggerEnterAreaNode = default!;
   [NodePath("SlidingFloor")]
@@ -220,7 +221,9 @@ public partial class BrickBreaker : Node2D, IPersistent {
   private void _onTriggerEnterAreaBodyEntered(Node body) {
     if (body != GameLevel.PlayerNode)
       return;
-    if (_currentState == BrickBreakerState.STOPPED) {
+    var isStarting = _currentState == BrickBreakerState.STOPPED;
+    if (isStarting) {
+      _currentState = BrickBreakerState.INIT_PLAYING;
       CallDeferred(nameof(Play));
       _slidingFloorSliderNode.SetLooping(false);
       _slidingFloorSliderNode.StopSlider(false);
@@ -236,6 +239,15 @@ public partial class BrickBreaker : Node2D, IPersistent {
     if (_triggerEnterAreaNode != null) {
       _triggerEnterAreaNode.QueueFree();
       _triggerEnterAreaNode = null;
+    }
+
+    if (isStarting) {
+      // The arena's checkpoint sits below this trigger, so the lift carries the player across it
+      // first, and everything it saved describes a room that had not been entered yet: a stopped
+      // arena, a lift still on its loop and the level's own music. Dying in here then restored a
+      // room with no game in it and no trigger left to start one. Record it again now that the
+      // arena is running.
+      EventHandler.Instance.EmitCheckpointReached(_checkpointNode.GlobalPosition, _checkpointNode.ColorGroup);
     }
   }
 
