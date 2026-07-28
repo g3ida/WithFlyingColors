@@ -104,6 +104,8 @@ public partial class PlayerSlipperingState : PlayerBaseState {
       return statesStore.GetState<PlayerStandingState>();
     }
 
+    // Scale.X is the cube's size and never a facing sign - `direction` is the only thing that
+    // decides which way it slides. A power-up that resizes the cube resizes how hard it pushes.
     if (_checkIfGroundIsNear(player, direction, RAY_LENGTH_FOR_SLIPPER)) {
       player.Velocity = new Vector2(
         player.Velocity.X + player.Scale.X * direction * PLAYER_SPEED_THRESHOLD_TO_STAND,
