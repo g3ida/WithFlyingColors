@@ -23,6 +23,8 @@ public partial class Block : Node2D {
   public const float BLINK_ANIMATION_DURATION = 0.5f;
   public Block?[,]? Grid = null;
 
+  private float _pendingDrop = 0.0f;
+
   [NodePath("BlockSprite")]
   private BlockSprite spriteNode = default!;
   [NodePath("BlockSprite/AnimationPlayer")]
@@ -35,10 +37,29 @@ public partial class Block : Node2D {
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
+    SetPhysicsProcess(false);
 
     if (ColorGroup != null) {
       areaNode.AddToGroup(ColorGroup);
       spriteNode.ColorGroup = ColorGroup;
+    }
+  }
+
+  // A cleared line moves every row above it down in the grid at once, but the body under a
+  // settled block only follows its transform: covering the distance in one frame lands it
+  // inside anything standing on the stack. Successive clears stack up rather than race.
+  public void QueueDrop(float distance) {
+    _pendingDrop += distance;
+    SetPhysicsProcess(true);
+  }
+
+  public override void _PhysicsProcess(double delta) {
+    var step = Math.Min(_pendingDrop, Constants.TETRIS_MAX_FALL_SPEED * (float)delta);
+    Position += new Vector2(0.0f, step);
+    _pendingDrop -= step;
+    if (_pendingDrop <= 0.0f) {
+      _pendingDrop = 0.0f;
+      SetPhysicsProcess(false);
     }
   }
 

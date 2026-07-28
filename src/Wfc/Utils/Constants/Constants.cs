@@ -11,6 +11,11 @@ public static class Constants {
   public static readonly float[] TETRIS_SPEEDS = { 0.3f, 0.23f, 0.17f, 0.11f, 0.07f };
   public const int TETRIS_MAX_LEVELS = 4;
 
+  // Pieces and cleared rows slide down at this rate instead of jumping a whole cell in a
+  // single frame. Block bodies are moved by transform, so a jump that size drops one deep
+  // inside whoever is standing there with no contact generated on the way in.
+  public const float TETRIS_MAX_FALL_SPEED = 720.0f;
+
   public const float DEFAULT_DRAG_MARGIN_LR = 0.27f;
   public const float DEFAULT_DRAG_MARGIN_TB = 0.05f;
   public const int DEFAULT_CAMERA_LIMIT_LEFT = -100000;

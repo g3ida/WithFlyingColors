@@ -13,6 +13,7 @@ public abstract partial class Tetromino : Node2D {
   protected abstract Vector2[][] RotationMap { get; }
   private int rotateIndex = 0;
   private Block?[,]? grid = null;
+  private float _fallOffset = 0.0f;
 
   public void IncRotateIndex() => rotateIndex = (rotateIndex + 1) % DIRECTIONS;
   public void DecRotateIndex() => rotateIndex = (rotateIndex - 1 + DIRECTIONS) % DIRECTIONS;
@@ -108,6 +109,14 @@ public abstract partial class Tetromino : Node2D {
     Position += new Vector2(i * Constants.TETRIS_BLOCK_SIZE, j * Constants.TETRIS_BLOCK_SIZE);
   }
 
+  // How far below the row it logically occupies the piece is drawn. The grid step stays
+  // discrete - only the descent between two rows is spread over several frames - so the
+  // offset is back to zero on every frame the pool is allowed to lock the piece.
+  public void SetFallOffset(float offset) {
+    Position += new Vector2(0.0f, offset - _fallOffset);
+    _fallOffset = offset;
+  }
+
   private bool MoveBySafe(int i, int j) {
     if (CanMoveBy(i, j)) {
       MoveBy(i, j);
@@ -135,6 +144,11 @@ public abstract partial class Tetromino : Node2D {
   // Drops this piece straight onto a grid cell in a given rotation, without moving through
   // the intermediate states. It exists so the placement search can walk one instance over
   // every candidate rather than instantiating a ~45-node scene per (rotation, column) pair.
+  //
+  // The spawn goes through it too, so a placement is expressed the same way whether it is
+  // being scored or played. Only the spawn needs SetShape after it: the search reads cells,
+  // not positions. The rotation is an index into the map and not a number of turns - the
+  // Rotate* pair steps the index the other way.
   public void PlaceAt(int originI, int originJ, int rotationIndex) {
     rotateIndex = ((rotationIndex % DIRECTIONS) + DIRECTIONS) % DIRECTIONS;
     var offsets = RotationMap[rotateIndex];
