@@ -26,6 +26,9 @@ public class BallHitsPlayerTests(Node testScene) : TestClass(testScene) {
   private const string LEFT_FACE_COLOR = ColorUtils.PINK;
   private const float REACHED_MID_DASH = 120.0f;
   private const int DASH_FRAMES = 14;
+  private const float ARENA_CORNER_SCALE = 3.5f;
+  private const float SCALED_UP = 1.3f;
+  private const float NEAR_THE_EDGE = 8.0f;
 
   private FakeDependenciesProvider _provider = default!;
   private int _deaths;
@@ -57,6 +60,33 @@ public class BallHitsPlayerTests(Node testScene) : TestClass(testScene) {
     await _dropBallOnTopFace(TOP_FACE_COLOR);
 
     _deaths.ShouldBe(0);
+  }
+
+  // The arena widens the cube's corners so an edge catch is forgiven in either of the two colors the
+  // corner joins. It asks for that with the player already standing in it, so the widening has to be
+  // in force without a state change to carry it in. Scaled up, as it was when this was reported.
+  [Test]
+  public async Task AnEdgeCatchIsForgivenAsSoonAsTheArenaWidensTheCorners() {
+    var player = await _addPlayer();
+    player.Scale = new Vector2(SCALED_UP, SCALED_UP);
+    player.CurrentDefaultCornerScaleFactor = ARENA_CORNER_SCALE;
+
+    var half = player.GetCollisionHalfExtents();
+    var ball = _addBall(
+      RIGHT_FACE_COLOR,
+      player.GlobalPosition + new Vector2(half.X - NEAR_THE_EDGE, -half.Y),
+      Vector2.Down
+    );
+    _deaths = 0;
+
+    await _physicsFrame();
+    await _physicsFrame();
+
+    _deaths.ShouldBe(0, "a ball caught on the top-right seam wears one of that corner's own colors");
+
+    player.QueueFree();
+    ball.QueueFree();
+    await _physicsFrame();
   }
 
   // Dashing closes on the ball far faster than it can arrive on its own, so the contact lands deep and

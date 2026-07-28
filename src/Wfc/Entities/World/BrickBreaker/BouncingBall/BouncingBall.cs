@@ -31,6 +31,13 @@ public partial class BouncingBall : CharacterBody2D {
   // A ball leaving a wall along that wall's normal comes back to the same spot forever.
   private const float GRAZING_DEGREES = 5.0f;
   private const float GRAZING_CORRECTION_DEGREES = 10.0f;
+
+  // How long a paddle's blow keeps half of whatever speed it lent. Dropping the lot at the next
+  // thing the ball meets read as the ball hitting treacle, since that is usually the very first
+  // wall it reaches. The floor is what carries the last of the loan away: halving alone leaves a
+  // tail the player cannot see and the ball never settles.
+  private const float LENT_SPEED_HALF_LIFE = 0.5f;
+  private const float LENT_SPEED_FLOOR = SPEED_UNIT;
   #endregion Constants
 
   #region Nodes
@@ -44,7 +51,7 @@ public partial class BouncingBall : CharacterBody2D {
 
   // Direction and speed are held apart so the speed cannot be mangled by a bounce writing a whole
   // velocity. The base is what the ball settles back to; a hit from a moving paddle can leave it
-  // traveling faster until it meets something else.
+  // traveling faster, and that surplus bleeds off over time rather than at the next contact.
   private Vector2 _direction = SPAWN_DIRECTION;
   private float _baseSpeed = SPEED;
   private float _speed = SPEED;
@@ -89,10 +96,14 @@ public partial class BouncingBall : CharacterBody2D {
 
   public void IncrementSpeed() {
     _baseSpeed += SPEED_UNIT;
-    _speed = _baseSpeed;
+    _speed = Mathf.Max(_speed, _baseSpeed);
   }
 
   public override void _PhysicsProcess(double delta) {
+    // Before the paddle is asked for more, so a ball struck this frame keeps the whole of what it
+    // was just given.
+    _spendLentSpeed((float)delta);
+
     // The paddle is resolved by hand, not by the sweep below, because the paddle is deliberately not
     // something the ball can collide with. A cube climbing into the ball buries it deeper than its own
     // radius in one frame, and a body that overlaps another cannot be swept out of it: the ball's
@@ -119,9 +130,6 @@ public partial class BouncingBall : CharacterBody2D {
     // Out of what was hit before deciding where to go. Godot's own recovery only nudges a body out of
     // a shallow overlap, and a moving obstacle can bury the ball further than that in a single frame.
     GlobalPosition += normal * collision.GetDepth();
-
-    // Whatever the paddle lent the ball is spent on the next thing it meets.
-    _speed = _baseSpeed;
 
     var bounced = _bounceOff(normal);
     _direction = _isWall(collision) ? _breakGrazingLoop(bounced, normal) : bounced;
@@ -174,12 +182,26 @@ public partial class BouncingBall : CharacterBody2D {
     var aim = normal.Rotated(deflection);
 
     // The paddle lends at most its own speed, bounded in its own frame. Bounding the world velocity
-    // instead scaled the escape back out of it again.
-    var lent = Mathf.Min(approach.Length(), _baseSpeed + closing);
+    // instead scaled the escape back out of it again. A surplus the ball is still carrying raises
+    // that bound rather than being cut by it, so a slower paddle cannot undo an earlier slam.
+    var ceiling = Mathf.Max(_speed, _baseSpeed + closing);
+    var lent = Mathf.Min(approach.Length(), ceiling);
     var outgoing = (aim * lent) + paddle;
 
     _direction = outgoing.LengthSquared() > MathUtils.EPSILON ? outgoing.Normalized() : aim;
-    _speed = Mathf.Clamp(outgoing.Length(), _baseSpeed, _baseSpeed + closing);
+    _speed = Mathf.Clamp(outgoing.Length(), _baseSpeed, ceiling);
+  }
+
+  // Halved on a fixed clock rather than shed at a fixed rate, so a hard slam loses its edge quickly
+  // and a gentle nudge still lingers for about as long.
+  private void _spendLentSpeed(float delta) {
+    var surplus = _speed - _baseSpeed;
+    if (surplus <= 0.0f) {
+      _speed = _baseSpeed;
+      return;
+    }
+    var halved = _baseSpeed + (surplus * Mathf.Pow(0.5f, delta / LENT_SPEED_HALF_LIFE));
+    _speed = Mathf.MoveToward(halved, _baseSpeed, LENT_SPEED_FLOOR * delta);
   }
 
   // Swept rather than teleported, because the room to get clear is not always there: a cube dashing

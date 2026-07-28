@@ -13,6 +13,7 @@ using Wfc.Utils.Colors;
 // each was free to drift on its own. These pin the ones that matter to the scene.
 public class PlayerCollisionGeometryTests(Node testScene) : TestClass(testScene) {
   private const float JUMPING_SCALE = 4.5f;
+  private const float ARENA_SCALE = 3.5f;
   private const float A_LITTLE_WAY_IN = 6.0f;
 
   private FakeDependenciesProvider _provider = default!;
@@ -130,6 +131,32 @@ public class PlayerCollisionGeometryTests(Node testScene) : TestClass(testScene)
     player.ScaleCornersBy(JUMPING_SCALE);
 
     player.CornerSeam.ShouldBeGreaterThan(atRest);
+  }
+
+  // The brick breaker widens the corners for the whole minigame and says so while the player is
+  // already standing in it. Recording the number is not applying it: the seam used to wait for the
+  // next state change, and a paddle that only ever slides never has one.
+  [Test]
+  public async Task ANewDefaultFactorWidensTheSeamWithoutWaitingForAStateChange() {
+    var player = await _addPlayer();
+    var atRest = player.CornerSeam;
+
+    player.CurrentDefaultCornerScaleFactor = ARENA_SCALE;
+
+    player.CornerSeam.ShouldBeGreaterThan(atRest);
+  }
+
+  // A state that asked for its own tolerance keeps it. The new default is what it falls back to,
+  // and it lands when that state lets go.
+  [Test]
+  public async Task ANewDefaultDoesNotNarrowASeamAStateIsHoldingOpen() {
+    var player = await _addPlayer();
+    player.ScaleCornersBy(JUMPING_SCALE);
+    var airborne = player.CornerSeam;
+
+    player.CurrentDefaultCornerScaleFactor = ARENA_SCALE;
+
+    player.CornerSeam.ShouldBe(airborne, 0.001f);
   }
 
   // Reachable from save data, where the scale factor is persisted.

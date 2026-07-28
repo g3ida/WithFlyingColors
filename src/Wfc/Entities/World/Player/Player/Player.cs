@@ -99,7 +99,21 @@ public partial class Player : CharacterBody2D, IPersistent {
   private List<Dictionary<string, int>> _faceNodesMaskBackup = new List<Dictionary<string, int>>();
   private bool _colorAreasAreHidden;
 
-  public float CurrentDefaultCornerScaleFactor { get; set; } = 1.0f;
+  // How forgiving the corners are whenever no state is asking for anything else. Applied on the
+  // spot rather than left for the next state to carry in: the brick breaker widens them with the
+  // player already standing in the arena, and a paddle that only ever slides never changes state.
+  public float CurrentDefaultCornerScaleFactor {
+    get => _defaultScaleFactor;
+    set {
+      var stateIsHoldingItOpen = _currentScaleFactor != _defaultScaleFactor;
+      _defaultScaleFactor = value;
+      if (!stateIsHoldingItOpen) {
+        ScaleCornersBy(value);
+      }
+    }
+  }
+
+  private float _defaultScaleFactor = 1.0f;
   private float _currentScaleFactor = 1.0f; // Do not edit by yourself this is used by scale_corners_by
   private PlayerBox.Ring _colorRing;
 

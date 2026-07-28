@@ -13,7 +13,9 @@ using Wfc.Utils;
 // it and carried it for as long as the jump lasted. The ball has to leave the face faster than the
 // face advances, whatever the cube is doing and wherever along the face it was struck - the far end
 // of the face being the case that broke, since that is where the aim deflects hardest and so takes
-// the most speed away from the direction that matters.
+// the most speed away from the direction that matters. What the paddle lends runs out, so a cube
+// that never stops climbing does catch the ball up again and throw it clear a second time: it is
+// the clearance the ball keeps, not a gap that grows forever, that says it was not carried.
 public class BallPaddleBounceTests(Node testScene) : TestClass(testScene) {
   private const string PLAYER_SCENE = "res://src/Wfc/Entities/World/Player/Player/Player.tscn";
   private const float JUMP_SPEED = 1200.0f;
@@ -52,8 +54,9 @@ public class BallPaddleBounceTests(Node testScene) : TestClass(testScene) {
     ball.SetBallVelocity(Vector2.Down);
 
     var speedBefore = ball.BallVelocity.Length();
-    var closest = float.MaxValue;
-    var gap = 0.0f;
+    var radius = _radiusOf(ball);
+    var fastest = 0.0f;
+    var clearest = float.MaxValue;
 
     // The cube climbs at a constant jump speed, never slowing: a ball that only gets free because
     // the paddle ran out of jump is still stuck.
@@ -61,13 +64,24 @@ public class BallPaddleBounceTests(Node testScene) : TestClass(testScene) {
       player.Velocity = Vector2.Up * JUMP_SPEED;
       player.MoveAndSlide();
       await _physicsFrame();
-      gap = player.GlobalPosition.DistanceTo(ball.GlobalPosition);
-      closest = Mathf.Min(closest, gap);
+      fastest = Mathf.Max(fastest, ball.BallVelocity.Length());
+      clearest = Mathf.Min(clearest, _clearanceOf(ball, player.GlobalPosition, half));
     }
 
-    ball.BallVelocity.Length().ShouldBeGreaterThan(speedBefore, "the paddle should have struck the ball and lent it speed");
-    gap.ShouldBeGreaterThan(closest + half.Y, "the ball should have left the face rather than riding it up");
+    fastest.ShouldBeGreaterThan(speedBefore, "the paddle should have struck the ball and lent it speed");
+    fastest.ShouldBeGreaterThan(JUMP_SPEED, "the ball should leave the face faster than the face climbs");
+    clearest.ShouldBeGreaterThan(radius, "the ball should have stayed clear of the face rather than riding it up");
   }
+
+  // How far the ball's center sits outside the cube's box, along whichever axis it left by, so that
+  // a ball thrown off the end of the face is measured the same as one thrown straight up.
+  private static float _clearanceOf(BouncingBall ball, Vector2 center, Vector2 half) {
+    var outside = (ball.GlobalPosition - center).Abs() - half;
+    return Mathf.Max(outside.X, outside.Y);
+  }
+
+  private static float _radiusOf(BouncingBall ball) =>
+    ((CircleShape2D)ball.GetNode<CollisionShape2D>("CollisionShape2D").Shape).Radius * ball.Scale.X;
 
   // The player scene, with its own physics turned off: the jump is driven from the test so the cube
   // climbs at a known speed, and none of this depends on the player's state machine.
