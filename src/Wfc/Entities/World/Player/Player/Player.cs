@@ -193,6 +193,9 @@ public partial class Player : CharacterBody2D, IPersistent {
     AnimatedSpriteNode.Stop();
     GlobalPosition = new Vector2(_saveData.PositionX, _saveData.PositionY);
     Velocity = Vector2.Zero;
+    // The brick breaker's power-ups are the only thing that resizes the cube, and none of them
+    // outlives a respawn.
+    Scale = Vector2.One;
     Rotate(_saveData.Angle - Rotation);
     PlayerRotationAction.Reset(_saveData.Angle);
     CurrentDefaultCornerScaleFactor = _saveData.DefaultCornerScaleFactor;
