@@ -121,6 +121,10 @@ public partial class Events : RefCounted {
   public delegate void LevelClearedEventHandler();
   [Signal]
   public delegate void GemPutInTempleEventHandler();
+  // Both carry how hard they want it, so one move can ask for a nudge where it starts and a
+  // jolt where it lands without either reading as the other.
   [Signal]
-  public delegate void CameraShakeRequestEventHandler();
+  public delegate void CameraShakeRequestEventHandler(float amplitude);
+  [Signal]
+  public delegate void CameraZoomPunchRequestEventHandler(float strength);
 }

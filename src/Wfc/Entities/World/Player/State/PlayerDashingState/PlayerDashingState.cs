@@ -2,7 +2,6 @@ namespace Wfc.Entities.World.Player;
 
 using Godot;
 using Wfc.Core.Input;
-using Wfc.Entities.World.Camera;
 using Wfc.State;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -12,12 +11,23 @@ public partial class PlayerDashingState : PlayerBaseState {
   private const float PERMISSIVENESS = 0.05f;
   private const float DASH_SPEED = 20 * Constants.WORLD_TO_SCREEN;
 
+  // How little of a frame's worth of dash the cube has to cover before the frame counts as
+  // having been spent on something solid rather than on ground.
+  private const float BLOCKED_TRAVEL_FRACTION = 0.35f;
+
+  // What a dash that reached open air hands back to the run. The run damping bleeds it off over
+  // the frames that follow, so the cube slides out of the dash rather than arriving stopped.
+  private const float COAST_SPEED_FRACTION = 0.3f;
+
   private CountdownTimer _dashTimer = new CountdownTimer();
   private CountdownTimer _permissivenessTimer = new CountdownTimer();
   private bool _dashDone = false;
   private Vector2 _direction = Vector2.Zero;
   private float _elapsed = 0.0f;
   private float _committedAt = 0.0f;
+  private float _lastDelta = 0.0f;
+  private Vector2 _lastPosition = Vector2.Zero;
+  private bool _impacted = false;
 
   public PlayerDashingState(IPlayerStatesStore statesStore, IInputManager inputManager)
     : base(statesStore, inputManager) {
@@ -29,6 +39,8 @@ public partial class PlayerDashingState : PlayerBaseState {
     _dashTimer.Reset();
     _elapsed = 0.0f;
     _committedAt = 0.0f;
+    _lastDelta = 0.0f;
+    _impacted = false;
     player.CanDash = false;
 
     if (_direction == Vector2.Zero) {
@@ -45,12 +57,27 @@ public partial class PlayerDashingState : PlayerBaseState {
 
   protected override void _Exit(Player player) {
     if (_dashDone) {
-      player.Velocity = new Vector2(0, player.Velocity.Y);
+      _arrive(player);
+    }
+    else {
+      DashVisuals.End(player);
     }
     _dashTimer.Stop();
     _permissivenessTimer.Stop();
-    DashVisuals.End(player);
     _direction = Vector2.Zero;
+  }
+
+  // The last frame of the dash is moved after this state has stopped being asked anything, so
+  // whether it was the one that hit the wall is only knowable here.
+  private void _arrive(Player player) {
+    _watchForImpact(player);
+    if (_impacted) {
+      player.Velocity = new Vector2(0, player.Velocity.Y);
+      return;
+    }
+
+    player.Velocity = new Vector2(DASH_SPEED * _direction.X * COAST_SPEED_FRACTION, player.Velocity.Y);
+    DashVisuals.Coast(player);
   }
 
   protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
@@ -72,7 +99,12 @@ public partial class PlayerDashingState : PlayerBaseState {
       if (Mathf.Abs(_direction.Y) > 0.01f) {
         player.Velocity = new Vector2(player.Velocity.X, DASH_SPEED * _direction.Y);
       }
-      _stepVisuals(player);
+      // Past the impact the stretch is being taken off the cube by the hit, and stepping it
+      // here would put it straight back on for as long as the state has left to run.
+      if (!_impacted) {
+        _stepVisuals(player);
+        _watchForImpact(player);
+      }
     }
 
     if (!_dashTimer.IsRunning()) {
@@ -85,8 +117,28 @@ public partial class PlayerDashingState : PlayerBaseState {
     _dashTimer.Step(delta);
     _permissivenessTimer.Step(delta);
     _elapsed += delta;
+    _lastDelta = delta;
 
     return null;
+  }
+
+  // The cube has hit something when a frame carries it a fraction of the ground the speed it was
+  // given would have. Read off the move itself rather than asked of the body, so a wall, the
+  // ceiling and the floor all answer the same, and measured a frame late because the move that
+  // this state asks for happens after it has been asked for it.
+  private void _watchForImpact(Player player) {
+    if (_impacted || _elapsed <= _committedAt) {
+      return;
+    }
+
+    var travelled = (player.GlobalPosition - _lastPosition).Dot(_direction.Normalized());
+    _lastPosition = player.GlobalPosition;
+    if (travelled >= DASH_SPEED * _direction.Length() * _lastDelta * BLOCKED_TRAVEL_FRACTION) {
+      return;
+    }
+
+    _impacted = true;
+    DashVisuals.Impact(player, _direction);
   }
 
   // A horizontal dash pins the cube at its current height by zeroing gravity every frame.
@@ -101,8 +153,8 @@ public partial class PlayerDashingState : PlayerBaseState {
   // announces anything at all.
   private void _commit(Player player) {
     _committedAt = _elapsed;
+    _lastPosition = player.GlobalPosition;
     EventHandler.Instance.EmitPlayerDash(_direction);
-    EventHandler.Instance.EmitCameraShakeRequest();
     // Each axis of a dash runs at DASH_SPEED of its own, so a diagonal one covers more ground
     // than a flat one and the trail has to be laid out over the distance actually covered.
     DashVisuals.Begin(player, _direction, DASH_SPEED * _travelWindow() * _direction.Length());

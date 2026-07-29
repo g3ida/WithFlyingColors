@@ -12,6 +12,11 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 public partial class GameCamera : Camera2D, IPersistent {
   public const float CAMERA_DRAG_JUMP = 0.45f;
 
+  // A punch snaps out and eases back in over a longer beat, so what the player reads is the
+  // leaving rather than the returning.
+  private const float PUNCH_ATTACK = 0.06f;
+  private const float PUNCH_RELEASE = 0.3f;
+
   [Export] public NodePath FollowPath { get; set; } = default!;
 
   public Node2D FollowNode = default!;
@@ -54,8 +59,23 @@ public partial class GameCamera : Camera2D, IPersistent {
     CacheDragMargins();
   }
 
-  public void OnCameraShakeRequest() {
-    GetNode<CameraShake>("CameraShake").Start();
+  public void OnCameraShakeRequest(float amplitude) {
+    GetNode<CameraShake>("CameraShake").Start(amplitude: amplitude);
+  }
+
+  // A pulse around the zoom the camera is already meant to be at, and never a new zoom of its
+  // own: TargetZoom is left alone, so a real zoom change taken mid-punch kills the pulse and
+  // wins outright rather than being pulled back to where the punch started.
+  public void OnCameraZoomPunchRequest(float strength) {
+    var punched = TargetZoom * (1.0f - strength);
+    ZoomTweener?.Kill();
+    ZoomTweener = CreateTween();
+    ZoomTweener.TweenProperty(this, "zoom", new Vector2(punched, punched), PUNCH_ATTACK)
+      .SetTrans(Tween.TransitionType.Quad)
+      .SetEase(Tween.EaseType.Out);
+    ZoomTweener.TweenProperty(this, "zoom", new Vector2(TargetZoom, TargetZoom), PUNCH_RELEASE)
+      .SetTrans(Tween.TransitionType.Back)
+      .SetEase(Tween.EaseType.Out);
   }
 
   public override void _Process(double delta) {
@@ -147,6 +167,7 @@ public partial class GameCamera : Camera2D, IPersistent {
     EventHandler.Instance.Events.PlayerLand += _OnPlayerLand;
     EventHandler.Instance.Events.PlayerDying += _OnPlayerDying;
     EventHandler.Instance.Events.CameraShakeRequest += OnCameraShakeRequest;
+    EventHandler.Instance.Events.CameraZoomPunchRequest += OnCameraZoomPunchRequest;
   }
 
   private void _disconnectSignals() {
@@ -156,6 +177,7 @@ public partial class GameCamera : Camera2D, IPersistent {
     EventHandler.Instance.Events.PlayerLand -= _OnPlayerLand;
     EventHandler.Instance.Events.PlayerDying -= _OnPlayerDying;
     EventHandler.Instance.Events.CameraShakeRequest -= OnCameraShakeRequest;
+    EventHandler.Instance.Events.CameraZoomPunchRequest -= OnCameraZoomPunchRequest;
   }
 
   public async void UpdatePosition(Vector2 pos) {

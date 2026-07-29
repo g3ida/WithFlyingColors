@@ -30,10 +30,10 @@ public partial class CameraShake : Node2D {
     _camera = GetParent<Camera2D>();
   }
 
-  public void Start(float duration = 0.15f, float frequency = 10.0f, float _amplitude = 10, int _priority = 0) {
-    if (_priority >= this._priority) {
-      this._priority = _priority;
-      this._amplitude = _amplitude;
+  public void Start(float duration = 0.15f, float frequency = 10.0f, float amplitude = 10, int priority = 0) {
+    if (priority >= _priority) {
+      _priority = priority;
+      _amplitude = amplitude;
       _durationNode.WaitTime = duration;
       _frequencyNode.WaitTime = 1.0f / frequency;
       _durationNode.Start();

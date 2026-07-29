@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://nvn44bv2puaj"]
+[gd_scene load_steps=18 format=3 uid="uid://nvn44bv2puaj"]
 
 [ext_resource type="SpriteFrames" path="res://Assets/Animations/player_frames.tres" id="1"]
 [ext_resource type="Script" uid="uid://btfa8iyy5gce2" path="res://src/Wfc/Entities/World/Player/Player/Player.cs" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://byaynnxa1dwb6" path="res://src/Wfc/Entities/World/Player/Face/BoxCorner/FaceSeparator.tscn" id="4"]
 [ext_resource type="Shader" path="res://Assets/Shaders/DashBullet.gdshader" id="5"]
 [ext_resource type="Script" path="res://src/Wfc/Utils/Hitstop/Hitstop.cs" id="6"]
+[ext_resource type="Texture2D" uid="uid://bifub54irtuvc" path="res://Assets/Sprites/Particles/glow_circle.png" id="8"]
 
 [sub_resource type="ShaderMaterial" id="7"]
 resource_local_to_scene = true
@@ -23,6 +24,22 @@ point_count = 2
 
 [sub_resource type="Gradient" id="5"]
 colors = PackedColorArray(1, 1, 1, 0.454902, 1, 1, 1, 0.113725)
+
+[sub_resource type="Curve" id="8"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.35, 0.75), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="9"]
+offsets = PackedFloat32Array(0, 0.25, 1)
+colors = PackedColorArray(1, 1, 1, 0.7, 1, 1, 1, 0.45, 1, 1, 1, 0)
+
+[sub_resource type="Curve" id="10"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.2, 0.85), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="11"]
+offsets = PackedFloat32Array(0, 0.15, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.8, 1, 1, 1, 0)
 
 [sub_resource type="OccluderPolygon2D" id="2"]
 polygon = PackedVector2Array(-47, -47, 47, -47, 47, 47, -47, 47)
@@ -47,6 +64,52 @@ gravity = Vector2(0, 0)
 angle_curve = SubResource("6")
 scale_amount_curve = SubResource("4")
 color_ramp = SubResource("5")
+
+[node name="DashLaunchParticles" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 10
+lifetime = 0.3
+one_shot = true
+explosiveness = 1.0
+lifetime_randomness = 0.35
+local_coords = false
+texture = ExtResource("8")
+emission_shape = 1
+emission_sphere_radius = 24.0
+direction = Vector2(-1, 0)
+spread = 30.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 90.0
+initial_velocity_max = 260.0
+damping_min = 200.0
+damping_max = 340.0
+scale_amount_min = 0.35
+scale_amount_max = 0.7
+scale_amount_curve = SubResource("8")
+color_ramp = SubResource("9")
+
+[node name="DashImpactParticles" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 16
+lifetime = 0.38
+one_shot = true
+explosiveness = 1.0
+lifetime_randomness = 0.3
+local_coords = false
+texture = ExtResource("8")
+emission_shape = 1
+emission_sphere_radius = 14.0
+direction = Vector2(-1, 0)
+spread = 65.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 220.0
+initial_velocity_max = 560.0
+damping_min = 420.0
+damping_max = 700.0
+scale_amount_min = 0.4
+scale_amount_max = 0.85
+scale_amount_curve = SubResource("10")
+color_ramp = SubResource("11")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 material = SubResource("7")
