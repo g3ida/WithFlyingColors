@@ -4,7 +4,7 @@ using System;
 using Godot;
 using Wfc.Utils.Colors;
 
-public partial class BricksLevelTilemap : TileMap {
+public partial class BricksLevelTilemap : TileMapLayer {
   [Signal]
   public delegate void levelBricksClearedEventHandler(int id);
 
@@ -34,9 +34,9 @@ public partial class BricksLevelTilemap : TileMap {
         continue;
       }
 
-      foreach (Vector2I cell in GetUsedCellsById(0, tileSourceId)) {
+      foreach (Vector2I cell in GetUsedCellsById(tileSourceId)) {
         Vector2 pos = MapToLocal(cell);
-        SetCell(0, cell, -1); //Layer cell value
+        SetCell(cell, -1);
 
         if (_parent.should_instance_bricks) {
           var brick = _brickScene.Instantiate<Brick>();

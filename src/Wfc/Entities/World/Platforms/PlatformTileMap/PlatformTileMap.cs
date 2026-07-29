@@ -8,7 +8,7 @@ using Wfc.Screens.Levels;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Meta(typeof(IAutoNode))]
-public partial class PlatformTileMap : TileMap {
+public partial class PlatformTileMap : TileMapLayer {
   public override void _Notification(int what) => this.Notify(what);
   [Dependency]
   public IGameLevel GameLevel => this.DependOn<IGameLevel>();

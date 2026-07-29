@@ -7,23 +7,20 @@
 [node name="BricksTileMap" type="Node2D"]
 script = ExtResource("4")
 
-[node name="level0" type="TileMap" parent="."]
+[node name="level0" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray(0, 0, 3, 0, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 7, 0, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 3, 0, 7, 0, 3, 0, 0, 0, 0, 0, 0, 0, 4, 0, 7, 0, 3, 0, 0, 0, 0, 0, 0, 0, 5, 0, 7, 0, 3, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 3, 0, 0, 0, 0, 0, 0, 0, 2, 0, 8, 0, 4, 0, 0, 0, 0, 0, 0, 0, 3, 0, 8, 0, 3, 0, 0, 0, 0, 0, 0, 0, 4, 0, 8, 0, 2, 0, 0, 0, 0, 0, 0, 0, 5, 0, 8, 0, 1, 0, 0, 0, 0, 0, 0, 0, 6, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 8, 0, 2, 0, 0, 0, 0, 0, 0, 0, 8, 0, 8, 0, 4, 0, 0, 0, 0, 0, 0, 0)
 tile_set = ExtResource("1")
-format = 2
-layer_0/tile_data = PackedInt32Array(262147, 4, 0, 262151, 4, 0, 458755, 3, 0, 458756, 3, 0, 458757, 3, 0, 458759, 3, 0, 524290, 4, 0, 524291, 3, 0, 524292, 2, 0, 524293, 1, 0, 524294, 0, 0, 524295, 2, 0, 524296, 4, 0)
 script = ExtResource("3")
 
-[node name="level1" type="TileMap" parent="."]
+[node name="level1" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray(0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 1, 0, 4, 0, 0, 0, 0, 0, 0, 0)
 tile_set = ExtResource("1")
-format = 2
-layer_0/tile_data = PackedInt32Array(7, 0, 0, 65541, 4, 0)
 script = ExtResource("3")
 id = 1
 
-[node name="level2" type="TileMap" parent="."]
+[node name="level2" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray(0, 0, 5, 0, 246, 255, 4, 0, 0, 0, 0, 0, 0, 0, 2, 0, 252, 255, 4, 0, 0, 0, 0, 0, 0, 0, 5, 0, 252, 255, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 252, 255, 4, 0, 0, 0, 0, 0, 0, 0)
 tile_set = ExtResource("1")
-format = 2
-layer_0/tile_data = PackedInt32Array(-655355, 4, 0, -262142, 4, 0, -262139, 0, 0, -262136, 4, 0)
 script = ExtResource("3")
 id = 2
 
