@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.BrickBreaker;
 
 using System.Linq;
 using Godot;
+using Wfc.Autoload;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
 using Wfc.Utils;

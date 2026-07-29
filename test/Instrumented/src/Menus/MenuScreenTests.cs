@@ -125,7 +125,7 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
     var items = await _buildPlaySubMenu();
 
     items.Count.ShouldBe(2);
-    items.Any(item => item.ButtonInfo.Text.Contains("1")).ShouldBeTrue("no button naming the selected slot");
+    items.Any(item => item.ButtonInfo.Text.Contains('1')).ShouldBeTrue("no button naming the selected slot");
   }
 
   // An untouched slot swaps continue for a new game, and still names the slot.

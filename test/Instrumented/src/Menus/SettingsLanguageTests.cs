@@ -24,6 +24,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 public class SettingsLanguageTests(Node testScene) : TestClass(testScene) {
   private const double SETTLE_TIMEOUT_SECONDS = 6.0;
 
+  private static readonly string[] FRENCH_TITLE_WORDS = ["Options", "du", "jeu"];
+
   private FakeDependenciesProvider _provider = default!;
   private Language _languageBeforeTest;
 
@@ -73,7 +75,7 @@ public class SettingsLanguageTests(Node testScene) : TestClass(testScene) {
     await _idle();
 
     var words = screen.FindDescendants<TitleLabel>().Select(label => label.content).ToList();
-    words.ShouldBe(new[] { "Options", "du", "jeu" });
+    words.ShouldBe(FRENCH_TITLE_WORDS);
   }
 
   // Rebuilding the title throws away the transitions that went with it, and the screen
@@ -115,7 +117,7 @@ public class SettingsLanguageTests(Node testScene) : TestClass(testScene) {
     }
   }
 
-  private void _pick(GameMenu screen, Language language) {
+  private static void _pick(GameMenu screen, Language language) {
     var driver = screen.FindDescendants<LanguageSelectDriver>().FirstOrDefault();
     driver.ShouldNotBeNull("the general tab has no language select");
     driver.onItemSelected(Variant.CreateFrom(language.GetLanguageCode()));

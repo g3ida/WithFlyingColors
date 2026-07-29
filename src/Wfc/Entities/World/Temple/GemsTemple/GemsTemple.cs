@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Autoload;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;

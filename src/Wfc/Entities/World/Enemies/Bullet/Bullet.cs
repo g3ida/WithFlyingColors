@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Enemies;
 
 using System;
 using Godot;
+using Wfc.Autoload;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
 using Wfc.Skin;

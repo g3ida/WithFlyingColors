@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.BrickBreaker.Powerups;
 
 using Godot;
+using Wfc.Autoload;
 
 // Both scale power-ups drive the same value on the player, so which of them is entitled to hand it
 // back cannot be read off that value: for as long as a tween runs it matches neither one's target.

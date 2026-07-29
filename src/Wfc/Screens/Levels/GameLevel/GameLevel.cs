@@ -4,6 +4,7 @@ using System;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Autoload;
 using Wfc.Core.Audio;
 using Wfc.Entities.HUD;
 using Wfc.Entities.World.Camera;
