@@ -29,6 +29,7 @@ public class BallHitsPlayerTests(Node testScene) : TestClass(testScene) {
   private const float ARENA_CORNER_SCALE = 3.5f;
   private const float SCALED_UP = 1.3f;
   private const float NEAR_THE_EDGE = 8.0f;
+  private const int RESTING_FRAMES = 6;
 
   private FakeDependenciesProvider _provider = default!;
   private int _deaths;
@@ -52,7 +53,7 @@ public class BallHitsPlayerTests(Node testScene) : TestClass(testScene) {
   public async Task AWrongColorBallKillsThePlayer() {
     await _dropBallOnTopFace(A_DIFFERENT_COLOR);
 
-    _deaths.ShouldBeGreaterThan(0);
+    _deaths.ShouldBe(1, "the ball reported the same contact more than once");
   }
 
   [Test]
@@ -176,9 +177,11 @@ public class BallHitsPlayerTests(Node testScene) : TestClass(testScene) {
     var ball = _addBall(color, player.GlobalPosition + Vector2.Up * player.GetCollisionHalfExtents().Y, Vector2.Down);
     _deaths = 0;
 
-    // Long enough for the contact to be reported and acted on.
-    await _physicsFrame();
-    await _physicsFrame();
+    // Long enough for the contact to be reported and acted on, and to go on being a contact
+    // afterwards - a ball resting against a face it cannot take is one death, not one a frame.
+    for (var frame = 0; frame < RESTING_FRAMES; frame++) {
+      await _physicsFrame();
+    }
 
     player.QueueFree();
     ball.QueueFree();

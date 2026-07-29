@@ -22,6 +22,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
   private const float PLAYER_GROUND_SLIPPERING_FACTOR = 5.0f;
   private const float SLIPPERING_ROTATION_DURATION = 2.0f;
   private const float SLIPPERING_RECOVERY_INITIAL_DURATION = 0.8f;
+  private const float SLIPPERING_RECOVERY_HANDOFF = 0.05f;
 
   private float _exitRotationSpeed = CORRECT_ROTATION_JUMP_SPEED;
   private bool _skipExitRotation = false;
@@ -56,12 +57,18 @@ public partial class PlayerSlipperingState : PlayerBaseState {
 
       // Captured by value: this state is a singleton, so by the time the timer fires the
       // fields may already describe a second slip in the other direction and the cube would
-      // snap the wrong way. The validity check covers the level being torn down inside those
-      // 50 ms, which leaves the timer holding the only reference to a freed player.
+      // snap the wrong way. The generation covers a respawn landing inside the handoff, which
+      // would otherwise start turning a cube the checkpoint just stood back up. The validity
+      // check covers the level being torn down, which leaves the timer holding the only
+      // reference to a freed player.
       var recoveryDirection = -direction;
       var recoveryDuration = _exitRotationSpeed;
-      player.GetTree().CreateTimer(0.05f).Connect(Timer.SignalName.Timeout, Callable.From(() => {
+      var generation = player.PlayerRotationAction.Generation;
+      player.GetTree().CreateTimer(SLIPPERING_RECOVERY_HANDOFF).Connect(Timer.SignalName.Timeout, Callable.From(() => {
         if (!GodotObject.IsInstanceValid(player) || !player.IsInsideTree()) {
+          return;
+        }
+        if (player.PlayerRotationAction.Generation != generation) {
           return;
         }
         player.PlayerRotationAction.Execute(recoveryDirection, MathUtils.PI2, recoveryDuration, true, false, false);

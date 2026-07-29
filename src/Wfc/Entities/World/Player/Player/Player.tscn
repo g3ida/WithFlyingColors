@@ -1,9 +1,15 @@
-[gd_scene load_steps=10 format=3 uid="uid://nvn44bv2puaj"]
+[gd_scene load_steps=13 format=3 uid="uid://nvn44bv2puaj"]
 
 [ext_resource type="SpriteFrames" path="res://Assets/Animations/player_frames.tres" id="1"]
 [ext_resource type="Script" uid="uid://btfa8iyy5gce2" path="res://src/Wfc/Entities/World/Player/Player/Player.cs" id="2"]
 [ext_resource type="PackedScene" uid="uid://bcrcp4q2theea" path="res://src/Wfc/Entities/World/Player/Face/BoxFace/BoxFace.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://byaynnxa1dwb6" path="res://src/Wfc/Entities/World/Player/Face/BoxCorner/FaceSeparator.tscn" id="4"]
+[ext_resource type="Shader" path="res://Assets/Shaders/DashBullet.gdshader" id="5"]
+[ext_resource type="Script" path="res://src/Wfc/Utils/Hitstop/Hitstop.cs" id="6"]
+
+[sub_resource type="ShaderMaterial" id="7"]
+resource_local_to_scene = true
+shader = ExtResource("5")
 
 [sub_resource type="Curve" id="6"]
 _limits = [0.0, 45.0, 0.0, 1.0]
@@ -43,6 +49,7 @@ scale_amount_curve = SubResource("4")
 color_ramp = SubResource("5")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+material = SubResource("7")
 sprite_frames = ExtResource("1")
 animation = &"idle"
 
@@ -86,5 +93,5 @@ rotation = -1.5708
 [node name="FallTimer" type="Timer" parent="."]
 wait_time = 1.5
 
-[node name="DashGhostTimer" type="Timer" parent="."]
-wait_time = 0.1
+[node name="Hitstop" type="Node" parent="."]
+script = ExtResource("6")

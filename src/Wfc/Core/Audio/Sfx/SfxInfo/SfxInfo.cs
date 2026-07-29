@@ -12,6 +12,7 @@ public static class GameSfx {
   public static readonly Dictionary<string, SfxInfo> Data = new() {
     ["brick"] = new SfxInfo(BASE_PATH + "brick.ogg", -4),
     ["bricksSlide"] = new SfxInfo(BASE_PATH + "bricks_slide.ogg"),
+    ["dash"] = new SfxInfo(BASE_PATH + "dash.ogg", -6),
     ["gemCollect"] = new SfxInfo(BASE_PATH + "gem.ogg", -15),
     ["GemEngine"] = new SfxInfo(BASE_PATH + "gems/gem-engine.ogg", 8),
     ["GemPut"] = new SfxInfo(BASE_PATH + "gems/temple_put_gem.ogg", -5),

@@ -1,17 +1,15 @@
 namespace Wfc.Entities.World.Player;
 
 using Godot;
-using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
 using Wfc.Utils;
-using static Wfc.Core.Event.EventHandler;
 
 public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
   const float GRAVITY = 9.8f * Constants.WORLD_TO_SCREEN;
   const float FALL_FACTOR = 2.5f;
+  const float RUN_DAMPING = 0.25f;
 
-  private EntityType _deathCollisionEntityType = EntityType.None;
   protected IInputManager inputManager;
   protected IPlayerStatesStore statesStore;
   protected bool playerMoved = false;
@@ -22,15 +20,12 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
   }
 
   public void Enter(Player player) {
-    _deathCollisionEntityType = EntityType.None;
     player.ScaleCornersBy(player.CurrentDefaultCornerScaleFactor);
-    EventHandler.Instance.Events.PlayerDying += _onPlayerDying;
     playerMoved = false;
     _Enter(player);
   }
 
   public void Exit(Player player) {
-    EventHandler.Instance.Events.PlayerDying -= _onPlayerDying;
     _Exit(player);
   }
 
@@ -42,51 +37,57 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
   }
 
   public virtual IState<Player>? PhysicsUpdate(Player player, float delta) {
-    if (_deathCollisionEntityType != EntityType.None) {
-      return _handlePlayerDying(player);
+    var death = player.TakePendingDeath();
+    if (death != EntityType.None) {
+      return _dyingStateFor(death);
     }
     if (!player.IsDying()) {
       if (DashActionPressed(player)) {
         return OnDash(player);
       }
-      if (!player.HandleInputIsDisabled) {
-        if (!player.IsDashing()) {
-          if (inputManager.IsPressed(IInputManager.Action.MoveRight)) {
-            playerMoved = true;
-            player.Velocity = new Vector2(Mathf.Clamp(player.Velocity.X + player.SpeedUnit, 0, player.SpeedLimit), player.Velocity.Y);
-          }
-          else if (inputManager.IsPressed(IInputManager.Action.MoveLeft)) {
-            playerMoved = true;
-            player.Velocity = new Vector2(Mathf.Clamp(player.Velocity.X - player.SpeedUnit, -player.SpeedLimit, 0), player.Velocity.Y);
-          }
-        }
-      }
-      player.Velocity = new Vector2(player.Velocity.X, player.Velocity.Y + GRAVITY * delta * FALL_FACTOR);
+      _applyWalkInput(player);
+      _applyGravity(player, delta);
     }
 
     var newState = _PhysicsUpdate(player, delta);
-
-    player.MoveAndSlide();
-    player.Velocity = new Vector2(Mathf.Lerp(player.Velocity.X, 0, 0.25f), player.Velocity.Y);
-    player.CurrentAnimation.Step(player, player.AnimatedSpriteNode, delta);
+    _move(player, delta);
 
     return newState;
   }
 
   protected virtual IState<Player>? _PhysicsUpdate(Player player, float delta) { return null; }
 
-  private void _onPlayerDying(Node? area, Vector2 position, int entityType) {
-    _deathCollisionEntityType = (EntityType)entityType;
+  // Which way the cube dies. What dying then does to it belongs to the state named here.
+  private PlayerBaseState? _dyingStateFor(EntityType death) =>
+    death == EntityType.FallZone
+      ? statesStore.GetState<PlayerFallZoneDyingState>()
+      : statesStore.GetState<PlayerExplosionState>();
+
+  // The two directions are exclusive, so holding both is holding neither. A dash owns the run
+  // speed for as long as it lasts.
+  private void _applyWalkInput(Player player) {
+    if (player.HandleInputIsDisabled || player.IsDashing()) {
+      return;
+    }
+    if (inputManager.IsPressed(IInputManager.Action.MoveRight)) {
+      playerMoved = true;
+      player.Velocity = new Vector2(Mathf.Clamp(player.Velocity.X + player.SpeedUnit, 0, player.SpeedLimit), player.Velocity.Y);
+    }
+    else if (inputManager.IsPressed(IInputManager.Action.MoveLeft)) {
+      playerMoved = true;
+      player.Velocity = new Vector2(Mathf.Clamp(player.Velocity.X - player.SpeedUnit, -player.SpeedLimit, 0), player.Velocity.Y);
+    }
   }
 
-  private PlayerBaseState? _handlePlayerDying(Player player) {
-    if (_deathCollisionEntityType == EntityType.FallZone) {
-      return statesStore.GetState<PlayerFallZoneDyingState>();
-    }
-    else {
-      player.Velocity = Vector2.Zero;
-      return statesStore.GetState<PlayerExplosionState>();
-    }
+  private static void _applyGravity(Player player, float delta) =>
+    player.Velocity = new Vector2(player.Velocity.X, player.Velocity.Y + GRAVITY * delta * FALL_FACTOR);
+
+  // The same three steps close out every state: travel, bleed off the run speed, and let the
+  // squash and stretch follow the cube there.
+  private static void _move(Player player, float delta) {
+    player.MoveAndSlide();
+    player.Velocity = new Vector2(Mathf.Lerp(player.Velocity.X, 0, RUN_DAMPING), player.Velocity.Y);
+    player.CurrentAnimation.Step(player, player.AnimatedSpriteNode, delta);
   }
 
   public PlayerBaseState? OnLand(Player player) {

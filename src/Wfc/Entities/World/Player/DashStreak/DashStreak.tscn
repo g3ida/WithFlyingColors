@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/Wfc/Entities/World/Player/DashStreak/DashStreak.cs" id="1"]
+
+[sub_resource type="Gradient" id="1"]
+offsets = PackedFloat32Array(0, 0.45, 0.85, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.35, 1, 1, 1, 1, 1, 1, 1, 0.75)
+
+[sub_resource type="GradientTexture2D" id="2"]
+gradient = SubResource("1")
+width = 128
+height = 8
+fill_from = Vector2(0, 0)
+fill_to = Vector2(1, 0)
+
+[node name="DashStreak" type="Sprite2D"]
+texture = SubResource("2")
+offset = Vector2(64, 0)
+script = ExtResource("1")

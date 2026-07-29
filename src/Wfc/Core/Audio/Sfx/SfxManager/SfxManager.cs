@@ -30,6 +30,12 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void FillSfxPool() {
     foreach (var (key, data) in GameSfx.Data) {
       var stream = GD.Load<AudioStream>(data.Path);
+      // A sound the editor has not imported yet resolves to null, and taking the whole pool
+      // down with it would leave the game silent rather than just that one effect.
+      if (stream is null) {
+        GD.PushError("Could not load sfx stream: ", data.Path);
+        continue;
+      }
       var audioPlayer = new AudioStreamPlayer {
         Stream = stream,
         VolumeDb = data.Volume,
@@ -50,6 +56,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PlayerJumped += OnPlayerJumped;
     EventHandler.Instance.Events.PlayerRotate += OnPlayerRotate;
     EventHandler.Instance.Events.PlayerLand += OnPlayerLand;
+    EventHandler.Instance.Events.PlayerDash += OnPlayerDash;
     EventHandler.Instance.Events.GemCollected += OnGemCollected;
     EventHandler.Instance.Events.FullscreenToggled += OnButtonToggle;
     EventHandler.Instance.Events.VsyncToggled += OnButtonToggle;
@@ -87,6 +94,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PlayerJumped -= OnPlayerJumped;
     EventHandler.Instance.Events.PlayerRotate -= OnPlayerRotate;
     EventHandler.Instance.Events.PlayerLand -= OnPlayerLand;
+    EventHandler.Instance.Events.PlayerDash -= OnPlayerDash;
     EventHandler.Instance.Events.GemCollected -= OnGemCollected;
     EventHandler.Instance.Events.FullscreenToggled -= OnButtonToggle;
     EventHandler.Instance.Events.VsyncToggled -= OnButtonToggle;
@@ -170,6 +178,7 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnPlayerJumped() => OnPlaySfx("jump");
   private void OnPlayerRotate(int dir) => OnPlaySfx(dir == -1 ? "rotateLeft" : "rotateRight");
   private void OnPlayerLand() => OnPlaySfx("land");
+  private void OnPlayerDash(Vector2 direction) => OnPlaySfx("dash");
   private void OnMenuButtonPressed(int menuButton) => OnPlaySfx("menuSelect");
   private void OnGemCollected(string color, Vector2 position, SpriteFrames x) => OnPlaySfx("gemCollect");
   private void OnButtonToggle(bool value) => OnPlaySfx("menuValueChange");
