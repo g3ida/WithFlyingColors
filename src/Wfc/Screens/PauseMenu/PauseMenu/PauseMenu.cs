@@ -15,7 +15,19 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class PauseMenu : CanvasLayer {
-  public override void _Notification(int what) => this.Notify(what);
+  public override void _Notification(int what) {
+    this.Notify(what);
+
+    // Alt-tabbing away is not the player choosing to play on: the level would go
+    // on running behind whatever they switched to, with nobody watching it.
+    //
+    // The window's notification, not the application's, which the display server
+    // only sends once a debounce has gone by - too late to stop the cube walking
+    // into a saw, and not sent at all to a player who alt-tabs straight back.
+    if (what == NotificationWMWindowFocusOut && !_isPaused) {
+      PauseGame();
+    }
+  }
 
   [NodePath("ScreenShaders")]
   private ScreenShaders _screenShaders = null!;

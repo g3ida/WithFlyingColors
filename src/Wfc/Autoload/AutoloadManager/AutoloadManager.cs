@@ -13,15 +13,18 @@ public partial class AutoloadManager : Node {
   public IMusicTrackManager MusicTrackManager = null!;
   public ISfxManager SfxManager = null!;
   public InputDeviceDetector InputDeviceDetector = null!;
+  public InputFocusGuard InputFocusGuard = null!;
   public override void _EnterTree() {
     base._EnterTree();
     Instance = GetTree().Root.GetNode<AutoloadManager>("AutoloadManager");
     MusicTrackManager = this.InstantiateChildNode<MusicTrackManager>();
     SfxManager = this.InstantiateChildNode<SfxManager>();
-    // Built by hand rather than instantiated from a scene: it has no scene of
-    // its own, it only listens.
+    // Built by hand rather than instantiated from a scene: neither has a scene of
+    // its own, they only listen.
     InputDeviceDetector = new InputDeviceDetector { Name = nameof(InputDeviceDetector) };
     AddChild(InputDeviceDetector);
+    InputFocusGuard = new InputFocusGuard { Name = nameof(InputFocusGuard) };
+    AddChild(InputFocusGuard);
   }
 
   public override void _Ready() {
