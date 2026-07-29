@@ -11,12 +11,13 @@ public partial class PlayerDashingState : PlayerBaseState {
   private const float DASH_DURATION = 0.17f;
   private const float PERMISSIVENESS = 0.05f;
   private const float DASH_SPEED = 20 * Constants.WORLD_TO_SCREEN;
-  private const float DASH_GHOST_INSTANCE_DELAY = 0.04f;
 
   private CountdownTimer _dashTimer = new CountdownTimer();
   private CountdownTimer _permissivenessTimer = new CountdownTimer();
   private bool _dashDone = false;
   private Vector2 _direction = Vector2.Zero;
+  private float _elapsed = 0.0f;
+  private float _committedAt = 0.0f;
 
   public PlayerDashingState(IPlayerStatesStore statesStore, IInputManager inputManager)
     : base(statesStore, inputManager) {
@@ -25,12 +26,11 @@ public partial class PlayerDashingState : PlayerBaseState {
   }
 
   protected override void _Enter(Player player) {
-    player.DashGhostTimerNode.WaitTime = DASH_GHOST_INSTANCE_DELAY;
+    _dashTimer.Reset();
+    _elapsed = 0.0f;
+    _committedAt = 0.0f;
+    player.CanDash = false;
 
-    player.DashGhostTimerNode.Connect(
-      Timer.SignalName.Timeout,
-      new Callable(this, nameof(_onDashGhostTimerTimeout))
-    );
     if (_direction == Vector2.Zero) {
       _permissivenessTimer.Reset();
       _setDashDirection(player);
@@ -39,13 +39,8 @@ public partial class PlayerDashingState : PlayerBaseState {
     else {
       _dashDone = true;
       _permissivenessTimer.Stop();
+      _commit(player);
     }
-
-    _dashTimer.Reset();
-    player.CanDash = false;
-    EventHandler.Instance.EmitCameraShakeRequest();
-    InstanceGhost(player);
-    player.DashGhostTimerNode.Start();
   }
 
   protected override void _Exit(Player player) {
@@ -54,11 +49,7 @@ public partial class PlayerDashingState : PlayerBaseState {
     }
     _dashTimer.Stop();
     _permissivenessTimer.Stop();
-    player.DashGhostTimerNode.Stop();
-    player.DashGhostTimerNode.Disconnect(
-      Timer.SignalName.Timeout,
-      new Callable(this, nameof(_onDashGhostTimerTimeout))
-    );
+    DashVisuals.End(player);
     _direction = Vector2.Zero;
   }
 
@@ -70,7 +61,7 @@ public partial class PlayerDashingState : PlayerBaseState {
       }
       else {
         _dashDone = true;
-        EventHandler.Instance.EmitPlayerDash(_direction);
+        _commit(player);
       }
     }
 
@@ -81,6 +72,7 @@ public partial class PlayerDashingState : PlayerBaseState {
       if (Mathf.Abs(_direction.Y) > 0.01f) {
         player.Velocity = new Vector2(player.Velocity.X, DASH_SPEED * _direction.Y);
       }
+      _stepVisuals(player);
     }
 
     if (!_dashTimer.IsRunning()) {
@@ -92,6 +84,7 @@ public partial class PlayerDashingState : PlayerBaseState {
 
     _dashTimer.Step(delta);
     _permissivenessTimer.Step(delta);
+    _elapsed += delta;
 
     return null;
   }
@@ -101,6 +94,27 @@ public partial class PlayerDashingState : PlayerBaseState {
   // DASH_SPEED just assigned above: the cube hovered for DASH_DURATION and fell ~33px
   // instead of ~300, on every frame but the last.
   internal static bool HoldsHeightDuringDash(Vector2 direction) => Mathf.Abs(direction.Y) <= 0.01f;
+
+  // Everything that announces the dash fires here rather than on entry, because on entry there
+  // is not yet a direction to announce: a dash held inside the permissiveness window is still
+  // waiting to find out which way it is going, and one that never finds a direction never
+  // announces anything at all.
+  private void _commit(Player player) {
+    _committedAt = _elapsed;
+    EventHandler.Instance.EmitPlayerDash(_direction);
+    EventHandler.Instance.EmitCameraShakeRequest();
+    // Each axis of a dash runs at DASH_SPEED of its own, so a diagonal one covers more ground
+    // than a flat one and the trail has to be laid out over the distance actually covered.
+    DashVisuals.Begin(player, _direction, DASH_SPEED * _travelWindow() * _direction.Length());
+  }
+
+  // The dash clock starts on entry but the cube does not move until a direction is settled, so
+  // this is the part of DASH_DURATION that actually goes anywhere - and the only part the trail
+  // may be laid out over.
+  private float _travelWindow() => Mathf.Max(DASH_DURATION - _committedAt, MathUtils.EPSILON);
+
+  private void _stepVisuals(Player player) =>
+    DashVisuals.Step(player, _direction, _elapsed - _committedAt, _travelWindow());
 
   private void _setDashDirection(Player player) {
     _direction = Vector2.Zero;
@@ -122,18 +136,5 @@ public partial class PlayerDashingState : PlayerBaseState {
     if (inputManager.IsPressed(IInputManager.Action.Down)) {
       _direction.Y = 1;
     }
-  }
-
-  private static void _onDashGhostTimerTimeout() {
-    InstanceGhost(Global.Instance().Player);
-  }
-
-  private static void InstanceGhost(Player player) {
-    Sprite2D ghost = SceneHelpers.InstantiateNode<DashGhost>();
-    ghost.Scale = player.Scale;
-    player.GetParent().AddChild(ghost);
-    ghost.GlobalPosition = player.GlobalPosition;
-    ghost.Texture = player.AnimatedSpriteNode.SpriteFrames.GetFrameTexture(player.AnimatedSpriteNode.Animation, player.AnimatedSpriteNode.Frame);
-    ghost.Rotate(player.Rotation);
   }
 }

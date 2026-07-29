@@ -28,6 +28,8 @@ public partial class LazerBeam : Node2D {
   [Export]
   public string ColorGroup { get; set; } = "blue";
 
+  private bool _wasBurning;
+
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
@@ -132,8 +134,11 @@ public partial class LazerBeam : Node2D {
     // Ending on the player, not on the wall behind them.
     _drawBeamTo(hit?.Position ?? worldEnd);
 
-    if (hit is { } landing && !landing.Face.AcceptsColor(ColorGroup)) {
+    // The beam crossing a face it burns is one event, not one per frame it goes on crossing it.
+    var burns = hit is { } landing && !landing.Face.AcceptsColor(ColorGroup);
+    if (burns && !_wasBurning) {
       EventHandler.Instance.EmitPlayerDying(GlobalPosition, EntityType.Lazer);
     }
+    _wasBurning = burns;
   }
 }

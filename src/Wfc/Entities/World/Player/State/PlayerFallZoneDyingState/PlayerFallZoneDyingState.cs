@@ -25,6 +25,9 @@ public partial class PlayerFallZoneDyingState : PlayerDyingBaseState {
 
   protected override void _Exit(Player player) {
     base._Exit(player);
+    // The timer repeats, so leaving it running leaves it counting down to a death report for
+    // the rest of the level.
+    player.FallTimerNode.Stop();
     player.FallTimerNode.Timeout -= OnFallTimeout;
   }
 }

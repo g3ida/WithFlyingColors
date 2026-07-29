@@ -61,6 +61,12 @@ public partial class Player : CharacterBody2D, IPersistent {
   private int _spriteSize;
   private Texture2D? _playerSprite = null;
 
+  // A hazard reports a contact; whether that contact kills is the cube's own business. Held here
+  // rather than in the active state so there is one answer to it, and one place that knows a cube
+  // already dying does not die again - hazards report per contact, and some report every frame
+  // they still cover the corpse.
+  private EntityType _pendingDeath = EntityType.None;
+
   #region Nodes
   [NodePath("JumpParticles")]
   public CpuParticles2D JumpParticlesNode = null!;
@@ -86,8 +92,8 @@ public partial class Player : CharacterBody2D, IPersistent {
   private CollisionShape2D _collisionShapeNode = null!;
   [NodePath("AnimatedSprite2D")]
   public AnimatedSprite2D AnimatedSpriteNode = null!;
-  [NodePath("DashGhostTimer")]
-  public Timer DashGhostTimerNode = null!;
+  [NodePath("Hitstop")]
+  public Hitstop HitstopNode = null!;
   private List<BoxCorner> faceSeparatorNodes = new List<BoxCorner>();
   private List<BoxFace> faceNodes = new List<BoxFace>();
   #endregion Nodes
@@ -203,6 +209,16 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   public void Reset() {
+    // The states are torn down first. Leaving one is its last chance to act on the cube - the
+    // slippering state hands back a rotation on the way out - and a respawn does not always
+    // interrupt a corpse: a late death report arrives on a cube that is up and playing. Whatever
+    // the outgoing state asks for, the checkpoint's own description of the cube comes after it.
+    CurrentDefaultCornerScaleFactor = _saveData.DefaultCornerScaleFactor;
+    _switchRotationState(_statesStore?.GetState<PlayerRotatingIdleState>());
+    _switchState(_statesStore?.GetState<PlayerFallingState>());
+    // A contact reported in the same breath as the respawn belongs to the run that ended.
+    _pendingDeath = EntityType.None;
+
     AnimatedSpriteNode.Play("idle");
     AnimatedSpriteNode.Stop();
     GlobalPosition = new Vector2(_saveData.PositionX, _saveData.PositionY);
@@ -212,10 +228,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     Scale = Vector2.One;
     Rotate(_saveData.Angle - Rotation);
     PlayerRotationAction.Reset(_saveData.Angle);
-    CurrentDefaultCornerScaleFactor = _saveData.DefaultCornerScaleFactor;
     ShowColorAreas();
-    _switchRotationState(_statesStore?.GetState<PlayerRotatingIdleState>());
-    _switchState(_statesStore?.GetState<PlayerFallingState>());
     HandleInputIsDisabled = false;
   }
 
@@ -265,14 +278,31 @@ public partial class Player : CharacterBody2D, IPersistent {
     }
   }
 
+  private void _onPlayerDying(Node? area, Vector2 position, int entityType) {
+    if (IsDying()) {
+      return;
+    }
+    _pendingDeath = (EntityType)entityType;
+  }
+
+  // Taken, not read: one contact is one death, and the state that takes it is the one that turns
+  // it into a way of dying.
+  public EntityType TakePendingDeath() {
+    var death = _pendingDeath;
+    _pendingDeath = EntityType.None;
+    return death;
+  }
+
   private void ConnectSignals() {
     EventHandler.Instance.Events.CheckpointReached += OnCheckpointHit;
     EventHandler.Instance.Events.CheckpointLoaded += Reset;
+    EventHandler.Instance.Events.PlayerDying += _onPlayerDying;
   }
 
   private void DisconnectSignals() {
     EventHandler.Instance.Events.CheckpointReached -= OnCheckpointHit;
     EventHandler.Instance.Events.CheckpointLoaded -= Reset;
+    EventHandler.Instance.Events.PlayerDying -= _onPlayerDying;
   }
 
   public override void _EnterTree() {

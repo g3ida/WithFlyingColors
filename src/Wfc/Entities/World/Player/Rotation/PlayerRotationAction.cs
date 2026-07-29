@@ -28,6 +28,11 @@ public partial class PlayerRotationAction : GodotObject {
   private float _thetaTarget = 0.0f; // target angle, after the rotation is completed.
   private float _thetaPoint = 0.0f; // angular speed to apply, in radians per second.
   public bool CanRotate { get; private set; } = true; // set to false when rotation is in progress.
+
+  // Counts the resets. A rotation queued to start later belongs to the run it was queued in, and
+  // has no business turning the cube the checkpoint has since put back on its feet.
+  public int Generation { get; private set; }
+
   private CharacterBody2D? _body;
 
   public void SetBody(CharacterBody2D body) {
@@ -40,6 +45,7 @@ public partial class PlayerRotationAction : GodotObject {
   // accumulator has to be told about it - otherwise the next rotation interpolates from
   // whichever way the player happened to be facing when they died.
   public void Reset(float angle) {
+    Generation++;
     _rotationTimer.Stop();
     CanRotate = true;
     CurrentAngle = angle;

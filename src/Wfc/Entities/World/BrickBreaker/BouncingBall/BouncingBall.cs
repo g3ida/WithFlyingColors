@@ -63,6 +63,10 @@ public partial class BouncingBall : CharacterBody2D {
   // of the cube.
   private Vector2? _restingOn;
 
+  // Whether the contact the ball is currently in has already been reported as fatal, so that
+  // resting against a face the cube cannot take reports one death rather than one a frame.
+  private bool _wasFatalContact;
+
   public Vector2 BallVelocity => _direction * _speed;
 
   public Area2D? DeathZone = null; // FIXME: this is set in breakBreaker. better logic ?
@@ -141,6 +145,7 @@ public partial class BouncingBall : CharacterBody2D {
   private void _offPaddle() {
     if (!_hasPaddle(out var player)) {
       _restingOn = null;
+      _wasFatalContact = false;
       return;
     }
 
@@ -148,6 +153,7 @@ public partial class BouncingBall : CharacterBody2D {
     var approach = BallVelocity - paddle;
     if (!_contactWith(player, approach, out var contact)) {
       _restingOn = null;
+      _wasFatalContact = false;
       return;
     }
     _restingOn = contact.Normal;
@@ -159,10 +165,17 @@ public partial class BouncingBall : CharacterBody2D {
     // Judged by where the cube's surface met the ball. Reading the color off the two centers instead
     // let the far side of the cube condemn a ball the near side had just struck, which is exactly what
     // a dash looks like from the inside - and it is the one hit the player aims deliberately.
+    //
+    // Reported once per contact, and again if the cube turns a face the ball cannot take onto a ball
+    // it is already resting against, which is a fresh way for the same touch to become fatal.
     if (!player.AcceptsColorAt(contact.Point, ColorGroup)) {
-      EventHandler.Instance.EmitPlayerDying(_areaNode, GlobalPosition, EntityType.Ball);
+      if (!_wasFatalContact) {
+        _wasFatalContact = true;
+        EventHandler.Instance.EmitPlayerDying(_areaNode, GlobalPosition, EntityType.Ball);
+      }
       return;
     }
+    _wasFatalContact = false;
 
     // Only a ball the cube is closing on is struck. Taken from the two velocities rather than the two
     // positions, which stop meaning "towards" the moment a dash carries the cube past the ball.
