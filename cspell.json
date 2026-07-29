@@ -171,6 +171,7 @@
     "smoothstep",
     "Respawns",
     "Respawned",
-    "texels"
+    "texels",
+    "travelled"
   ]
 }

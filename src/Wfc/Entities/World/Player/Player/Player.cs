@@ -70,6 +70,10 @@ public partial class Player : CharacterBody2D, IPersistent {
   #region Nodes
   [NodePath("JumpParticles")]
   public CpuParticles2D JumpParticlesNode = null!;
+  [NodePath("DashLaunchParticles")]
+  public CpuParticles2D DashLaunchParticlesNode = null!;
+  [NodePath("DashImpactParticles")]
+  public CpuParticles2D DashImpactParticlesNode = null!;
   [NodePath("FallTimer")]
   public Timer FallTimerNode = null!;
   [NodePath("FaceSeparatorBR")]

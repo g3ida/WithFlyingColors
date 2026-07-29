@@ -160,6 +160,7 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitLevelCleared() => Events.EmitSignal(Events.SignalName.LevelCleared);
   public void EmitGemPutInTemple() => Events.EmitSignal(Events.SignalName.GemPutInTemple);
 
-  public void EmitCameraShakeRequest() => Events.EmitSignal(Events.SignalName.CameraShakeRequest);
+  public void EmitCameraShakeRequest(float amplitude) => Events.EmitSignal(Events.SignalName.CameraShakeRequest, amplitude);
+  public void EmitCameraZoomPunchRequest(float strength) => Events.EmitSignal(Events.SignalName.CameraZoomPunchRequest, strength);
 }
 
