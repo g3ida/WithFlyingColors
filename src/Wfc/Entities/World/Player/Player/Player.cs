@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Autoload;
 using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Core.Persistence;

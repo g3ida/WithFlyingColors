@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.BrickBreaker.Powerups;
 
 using System;
 using Godot;
+using Wfc.Autoload;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;

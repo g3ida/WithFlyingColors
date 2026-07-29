@@ -3,6 +3,7 @@ namespace Wfc.Entities.World.Piano;
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Autoload;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;

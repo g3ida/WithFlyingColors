@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Gems;
 
 using System;
 using Godot;
+using Wfc.Autoload;
 using Wfc.State;
 using Wfc.Utils.Animation;
 using static Godot.Area2D;

@@ -1,14 +1,13 @@
-using System;
-using System.Collections.Generic;
+namespace Wfc.Autoload;
+
 using Godot;
-using Wfc.Entities.HUD;
-using Wfc.Entities.World.Camera;
-using Wfc.Entities.World.Cutscenes;
 using Wfc.Entities.World.Player;
-using Wfc.Screens;
 
 public partial class Global : Node2D {
   private static Global _instance = null!;
+
+  // Claimed by the player as it enters the tree, and again by the level that owns it.
+  public Player Player = null!;
 
   public override void _Ready() {
     base._Ready();
@@ -19,5 +18,4 @@ public partial class Global : Node2D {
   public static Global Instance() {
     return _instance;
   }
-  public Player Player;
 }
