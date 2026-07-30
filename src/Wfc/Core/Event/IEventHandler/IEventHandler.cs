@@ -35,6 +35,7 @@ public interface IEventHandler {
   public void EmitPlayerLand();
   public void EmitPlayerExplode();
   public void EmitPlayerFall();
+  public void EmitPlayerSquashed();
   public void EmitPlayerDash(Vector2 dir);
   public void EmitGemCollected(string color, Vector2 position, SpriteFrames frames);
   public void EmitCheckpointReached(Vector2 position, string colorGroup);

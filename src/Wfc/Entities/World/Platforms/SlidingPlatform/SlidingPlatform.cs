@@ -3,6 +3,7 @@ namespace Wfc.Entities.World.Platforms;
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Autoload;
 using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
@@ -42,6 +43,10 @@ public partial class SlidingPlatform : Node2D, IPersistent {
   private Vector2 _startPos;
   private Vector2 _endPos;
 
+  // The moving body's own rectangle, in the body's frame. Read once, because the shape never
+  // changes and hunting for it every frame would be the platform's most expensive habit.
+  private Rect2? _bodyRect;
+
   private sealed record SaveData(
     State State = State.Wait1,
     float PositionX = 0f,
@@ -57,6 +62,7 @@ public partial class SlidingPlatform : Node2D, IPersistent {
     _gearNone = GetNode<Node2D>("Gear");
     _follow = _platform.GlobalPosition;
     _destination = ParseDestination();
+    _bodyRect = _findBodyRect();
 
     Setup();
     ProcessTween();
@@ -69,6 +75,7 @@ public partial class SlidingPlatform : Node2D, IPersistent {
     else {
       _platform.GlobalPosition = _follow;
     }
+    _reportCrushedPlayer();
   }
 
   private Vector2 ParseDestination() {
@@ -89,6 +96,81 @@ public partial class SlidingPlatform : Node2D, IPersistent {
       _gearNone.Visible = false;
     }
   }
+
+  #region Crushing
+  private Rect2? _findBodyRect() {
+    foreach (Node child in _platform.GetChildren()) {
+      if (child is CollisionShape2D shape && shape.Shape is RectangleShape2D rect) {
+        return new Rect2(shape.Position - (rect.Size * 0.5f), rect.Size);
+      }
+    }
+    return null;
+  }
+
+  // Which way the platform is under power. Waiting does not count, tween or no tween: the
+  // destination it is running to over a wait is the place it already stands.
+  private Vector2 _travelDirection() => _currentState switch {
+    State.SlidingForth => (_endPos - _startPos).Normalized(),
+    State.SlidingBack => (_startPos - _endPos).Normalized(),
+    _ => Vector2.Zero,
+  };
+
+  // The cube has no rigid body to be shoved aside with, so a platform that arrives at it just
+  // keeps going and takes the cube with it - through the floor it was standing on, if that is
+  // where the platform is headed. Which is why the cube is asked whether it has anywhere left to
+  // go rather than watched to see how far in the platform gets: the answer to the second question
+  // is always "not much", right up until the cube is somewhere it should never have been.
+  private void _reportCrushedPlayer() {
+    if (is_stopped || _bodyRect is null) {
+      return;
+    }
+    var travel = _travelDirection();
+    if (travel == Vector2.Zero) {
+      return;
+    }
+    var player = Global.Instance()?.Player;
+    if (player is null || !IsInstanceValid(player) || !player.IsInsideTree() || player.IsDying()) {
+      return;
+    }
+
+    var crusher = _worldBodyRect(_bodyRect.Value);
+    var half = player.GetCollisionHalfExtents();
+    var body = new Rect2(player.GlobalPosition - half, half * 2.0f);
+    if (!PlatformCrush.HasArrivedInto(crusher, body, travel)) {
+      return;
+    }
+    if (_hasSomewhereToGo(player, PlatformCrush.EscapeMotion(crusher, body, travel))) {
+      return;
+    }
+
+    EventHandler.Instance.EmitPlayerDying(
+      _platform,
+      PlatformCrush.ContactPoint(crusher, body, travel),
+      EntityType.Crusher
+    );
+  }
+
+  // Whether the body could still be got out of the platform's way, asked of the body's own shape so
+  // that what counts as room is whatever that body would collide with - the level's own floor as
+  // readily as a tetromino that happened to land there.
+  //
+  // The platform is left out of the test. The body is already inside it, and the engine answers an
+  // overlap it starts out in with a collision whichever way the test motion points - which would
+  // make every arrival its own proof, and a cube being lifted into the arena dies of it.
+  private bool _hasSomewhereToGo(CharacterBody2D body, Vector2 escape) {
+    var probe = new PhysicsTestMotionParameters2D {
+      From = body.GlobalTransform,
+      Motion = escape,
+      ExcludeBodies = new Godot.Collections.Array<Rid> { _platform.GetRid() },
+    };
+    return !PhysicsServer2D.BodyTestMotion(body.GetRid(), probe);
+  }
+
+  private Rect2 _worldBodyRect(Rect2 local) {
+    var scale = _platform.GlobalScale.Abs();
+    return new Rect2(_platform.GlobalPosition + (local.Position * scale), local.Size * scale);
+  }
+  #endregion Crushing
 
   private void CleanTween() {
     _tweener?.Kill();

@@ -71,6 +71,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PauseMenuEnter += OnPauseMenuEnter;
     EventHandler.Instance.Events.PauseMenuExit += OnPauseMenuExit;
     EventHandler.Instance.Events.PlayerFall += OnPlayerFalling;
+    EventHandler.Instance.Events.PlayerSquashed += OnPlayerSquashed;
     EventHandler.Instance.Events.TetrisLinesRemoved += OnTetrisLinesRemoved;
     EventHandler.Instance.Events.PickedPowerUp += OnPickedPowerup;
     EventHandler.Instance.Events.BrickBroken += OnBrickBroken;
@@ -109,6 +110,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PauseMenuEnter -= OnPauseMenuEnter;
     EventHandler.Instance.Events.PauseMenuExit -= OnPauseMenuExit;
     EventHandler.Instance.Events.PlayerFall -= OnPlayerFalling;
+    EventHandler.Instance.Events.PlayerSquashed -= OnPlayerSquashed;
     EventHandler.Instance.Events.TetrisLinesRemoved -= OnTetrisLinesRemoved;
     EventHandler.Instance.Events.PickedPowerUp -= OnPickedPowerup;
     EventHandler.Instance.Events.BrickBroken -= OnBrickBroken;
@@ -192,6 +194,7 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnKeyboardActionBinding() => OnPlaySfx("menuValueChange");
   private void OnPlayerExplode() => OnPlaySfx("playerExplode");
   private void OnPlayerFalling() => OnPlaySfx("playerFalling");
+  private void OnPlayerSquashed() => OnPlaySfx("playerSquashed");
   private void OnTetrisLinesRemoved() => OnPlaySfx("tetrisLine");
   private void OnPickedPowerup() => OnPlaySfx("pickup");
   private void OnBrickBroken(string color, Vector2 _) => OnPlaySfx("brick");

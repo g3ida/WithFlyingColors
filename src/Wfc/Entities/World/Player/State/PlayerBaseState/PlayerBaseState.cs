@@ -38,8 +38,8 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
 
   public virtual IState<Player>? PhysicsUpdate(Player player, float delta) {
     var death = player.TakePendingDeath();
-    if (death != EntityType.None) {
-      return _dyingStateFor(death);
+    if (death.Type != EntityType.None) {
+      return _dyingStateFor(player, death);
     }
     if (!player.IsDying()) {
       if (DashActionPressed(player)) {
@@ -58,10 +58,19 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
   protected virtual IState<Player>? _PhysicsUpdate(Player player, float delta) { return null; }
 
   // Which way the cube dies. What dying then does to it belongs to the state named here.
-  private PlayerBaseState? _dyingStateFor(EntityType death) =>
-    death == EntityType.FallZone
-      ? statesStore.GetState<PlayerFallZoneDyingState>()
-      : statesStore.GetState<PlayerExplosionState>();
+  private PlayerBaseState? _dyingStateFor(Player player, Player.PendingDeath death) => death.Type switch {
+    EntityType.FallZone => statesStore.GetState<PlayerFallZoneDyingState>(),
+    EntityType.Crusher => _squashedBy(player, death),
+    _ => statesStore.GetState<PlayerExplosionState>(),
+  };
+
+  // Told before it is entered, the way the slippering state is told which way it tips: a squash is
+  // drawn entirely from which side of the cube was caught.
+  private PlayerSquashedState? _squashedBy(Player player, Player.PendingDeath death) {
+    var squashed = statesStore.GetState<PlayerSquashedState>();
+    squashed?.TakeCrush(player, death);
+    return squashed;
+  }
 
   // The two directions are exclusive, so holding both is holding neither. A dash owns the run
   // speed for as long as it lasts.

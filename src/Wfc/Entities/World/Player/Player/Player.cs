@@ -62,11 +62,24 @@ public partial class Player : CharacterBody2D, IPersistent {
   private int _spriteSize;
   private Texture2D? _playerSprite = null;
 
+  // One reported contact, as the way of dying that takes it will want to read it: what did it,
+  // where on the cube it landed, and the hazard itself for the deaths that go on using it.
+  // The contact is also kept in the hazard's own frame, and the cube's position at the report
+  // goes with it, both captured here because this handler runs inside the hazard's report: by
+  // the time a state acts on the death, a moving hazard has travelled on and has shoved the
+  // cube along with it, and anything read then is off by that travel.
+  public readonly record struct PendingDeath(
+    EntityType Type, Vector2 Position, Node? Source, Vector2 SourceAnchor, Vector2 SelfPosition
+  ) {
+    public static readonly PendingDeath Nothing =
+      new(EntityType.None, Vector2.Zero, null, Vector2.Zero, Vector2.Zero);
+  }
+
   // A hazard reports a contact; whether that contact kills is the cube's own business. Held here
   // rather than in the active state so there is one answer to it, and one place that knows a cube
   // already dying does not die again - hazards report per contact, and some report every frame
   // they still cover the corpse.
-  private EntityType _pendingDeath = EntityType.None;
+  private PendingDeath _pendingDeath = PendingDeath.Nothing;
 
   #region Nodes
   [NodePath("JumpParticles")]
@@ -222,7 +235,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     _switchRotationState(_statesStore?.GetState<PlayerRotatingIdleState>());
     _switchState(_statesStore?.GetState<PlayerFallingState>());
     // A contact reported in the same breath as the respawn belongs to the run that ended.
-    _pendingDeath = EntityType.None;
+    _pendingDeath = PendingDeath.Nothing;
 
     AnimatedSpriteNode.Play("idle");
     AnimatedSpriteNode.Stop();
@@ -287,14 +300,20 @@ public partial class Player : CharacterBody2D, IPersistent {
     if (IsDying()) {
       return;
     }
-    _pendingDeath = (EntityType)entityType;
+    _pendingDeath = new PendingDeath(
+      (EntityType)entityType,
+      position,
+      area,
+      area is Node2D source ? source.ToLocal(position) : Vector2.Zero,
+      GlobalPosition
+    );
   }
 
   // Taken, not read: one contact is one death, and the state that takes it is the one that turns
   // it into a way of dying.
-  public EntityType TakePendingDeath() {
+  public PendingDeath TakePendingDeath() {
     var death = _pendingDeath;
-    _pendingDeath = EntityType.None;
+    _pendingDeath = PendingDeath.Nothing;
     return death;
   }
 

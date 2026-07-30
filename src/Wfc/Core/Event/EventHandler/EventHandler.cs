@@ -114,6 +114,7 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitPlayerLand() => Events.EmitSignal(Events.SignalName.PlayerLand);
   public void EmitPlayerExplode() => Events.EmitSignal(Events.SignalName.PlayerExplode);
   public void EmitPlayerFall() => Events.EmitSignal(Events.SignalName.PlayerFall);
+  public void EmitPlayerSquashed() => Events.EmitSignal(Events.SignalName.PlayerSquashed);
   public void EmitPlayerDash(Vector2 dir) => Events.EmitSignal(Events.SignalName.PlayerDash, dir);
   public void EmitGemCollected(string color, Vector2 position, SpriteFrames frames) => Events.EmitSignal(Events.SignalName.GemCollected, color, position, frames);
   public void EmitCheckpointReached(Vector2 position, string colorGroup) => Events.EmitSignal(Events.SignalName.CheckpointReached, position, colorGroup);
