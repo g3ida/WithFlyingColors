@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://da8nidklmg0v"]
 
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Tetris/BlockSprite/BlockSprite.tscn" id="1"]
-[ext_resource type="Script" uid="uid://7cdct6onr7g4" path="res://src/Wfc/Entities/World/Tetris/Blocks/Tetrominos/Block.cs" id="2"]
+[ext_resource type="Script" uid="uid://7cdct6onr7g4" path="res://src/Wfc/Entities/World/Tetris/Tetrominos/Block/Block.cs" id="2"]
 [sub_resource type="Animation" id="5"]
 resource_name = "Blink"
 length = 0.5

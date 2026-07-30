@@ -117,6 +117,22 @@ public abstract partial class Tetromino : Node2D {
     _fallOffset = offset;
   }
 
+  // Asked by the pool on every frame the piece came down some way. The whole piece's bodies
+  // are excluded from the escape probe together, since they all move as one.
+  public void ResolveDescentContact() {
+    var moving = new Godot.Collections.Array<Rid>();
+    foreach (Node ch in GetChildren()) {
+      if (ch is Block block) {
+        moving.Add(block.BodyRid);
+      }
+    }
+    foreach (Node ch in GetChildren()) {
+      if (ch is Block block) {
+        block.ResolveDescentContact(moving);
+      }
+    }
+  }
+
   private bool MoveBySafe(int i, int j) {
     if (CanMoveBy(i, j)) {
       MoveBy(i, j);

@@ -210,12 +210,14 @@ public partial class TetrisPool : Node2D {
       var travel = TravelDuration;
       if (_phaseElapsed < travel) {
         _shape!.SetFallOffset(Constants.TETRIS_BLOCK_SIZE * (_phaseElapsed / travel));
+        _shape.ResolveDescentContact();
         return;
       }
       _isTravelling = false;
       _phaseElapsed -= travel;
       _shape!.SetFallOffset(0.0f);
       _shape.MoveDown();
+      _shape.ResolveDescentContact();
     }
 
     var hold = _stepInterval - TravelDuration;

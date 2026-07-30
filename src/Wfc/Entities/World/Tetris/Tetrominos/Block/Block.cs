@@ -3,8 +3,12 @@ namespace Wfc.Entities.Tetris.Tetrominos;
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Autoload;
+using Wfc.Entities.World;
+using Wfc.Entities.World.Platforms;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class Block : Node2D {
@@ -33,6 +37,10 @@ public partial class Block : Node2D {
   private Area2D areaNode = default!;
   [NodePath("Area2D/CollisionShape2D")]
   private CollisionShape2D areaShapeNode = default!;
+  [NodePath("CharacterBody2D")]
+  private CharacterBody2D bodyNode = default!;
+  [NodePath("CharacterBody2D/CollisionShape2D")]
+  private CollisionShape2D bodyShapeNode = default!;
 
   public override void _Ready() {
     base._Ready();
@@ -61,6 +69,86 @@ public partial class Block : Node2D {
       _pendingDrop = 0.0f;
       SetPhysicsProcess(false);
     }
+    if (step > 0.0f) {
+      ResolveDescentContact([bodyNode.GetRid()]);
+    }
+  }
+
+  internal Rid BodyRid => bodyNode.GetRid();
+
+  // A block descends by transform, so nothing in the engine stops it at the player: left to
+  // itself it sweeps its kill area through every face of a cube it comes down on, and the
+  // death reported is whichever color happened to be touched second. So a block that has
+  // arrived into the cube does what the engine would have done for a real kinematic pusher:
+  // carries the cube along ahead of it while the cube has anywhere to go, and squashes it
+  // once it has not. Either way the overlap never grows past the cube's top edge band, so
+  // the only color reading ever taken is the one face actually being touched.
+  internal void ResolveDescentContact(Godot.Collections.Array<Rid> movingBodies) {
+    var player = Global.Instance()?.Player;
+    if (player is null || !IsInstanceValid(player) || !player.IsInsideTree() || player.IsDying()) {
+      return;
+    }
+    if (bodyShapeNode.Shape is not RectangleShape2D rect) {
+      return;
+    }
+
+    var travel = Vector2.Down;
+    var size = rect.Size * bodyShapeNode.GlobalScale.Abs();
+    var crusher = new Rect2(bodyShapeNode.GlobalPosition - (size * 0.5f), size);
+    var half = player.GetCollisionHalfExtents();
+    var body = new Rect2(player.GlobalPosition - half, half * 2.0f);
+
+    // Everything below works on the whole guard band under the block, not just on contact.
+    // Penetration cannot be corrected after the fact: the cube's own move this frame is swept
+    // against the block's stale pre-descent transform, and the overlap the physics step then
+    // records is delivered as kill signals before anyone can undo it. So the cube is kept
+    // clear of the leading edge the whole way down - the band is wider than the two of them
+    // can close in one frame.
+    var separation = body.Position.Y - crusher.End.Y;
+    if (separation >= GUARD_BAND || !PlatformCrush.IsAhead(crusher, body, travel)) {
+      return;
+    }
+    var overlapX = Math.Min(crusher.End.X, body.End.X) - Math.Max(crusher.Position.X, body.Position.X);
+    if (overlapX <= body.Size.X * PlatformCrush.MIN_COVERAGE) {
+      return;
+    }
+
+    // Meeting a descending block from below is a ceiling hit; the upward speed ends here.
+    if (player.Velocity.Y < 0f) {
+      player.Velocity = new Vector2(player.Velocity.X, 0f);
+    }
+
+    if (-separation > PlatformCrush.TOUCH_DEPTH &&
+        !_hasSomewhereToGo(player, PlatformCrush.EscapeMotion(crusher, body, travel), movingBodies)) {
+      EventHandler.Instance.EmitPlayerDying(
+        this,
+        PlatformCrush.ContactPoint(crusher, body, travel),
+        EntityType.Crusher
+      );
+      return;
+    }
+
+    var shortfall = PlatformCrush.ESCAPE_MARGIN - separation;
+    if (shortfall > 0f && _hasSomewhereToGo(player, travel * shortfall, movingBodies)) {
+      player.GlobalPosition += travel * shortfall;
+    }
+  }
+
+  // Wider than the piece's descent plus a jumping cube's rise in one frame, so the band is
+  // entered before the two of them can meet inside it.
+  private const float GUARD_BAND = 40f;
+
+  // Every body descending this frame is left out of the escape probe, not just this block: the
+  // engine answers an overlap the cube starts out in with a collision whichever way the motion
+  // points, and a sibling block one cell over is exactly such an overlap while the piece is
+  // into the cube.
+  private static bool _hasSomewhereToGo(CharacterBody2D body, Vector2 escape, Godot.Collections.Array<Rid> movingBodies) {
+    var probe = new PhysicsTestMotionParameters2D {
+      From = body.GlobalTransform,
+      Motion = escape,
+      ExcludeBodies = movingBodies,
+    };
+    return !PhysicsServer2D.BodyTestMotion(body.GetRid(), probe);
   }
 
   public void MoveDown() => J += 1;
