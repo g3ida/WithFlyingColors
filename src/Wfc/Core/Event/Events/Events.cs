@@ -24,6 +24,9 @@ public partial class Events : RefCounted {
   public delegate void PlayerExplodeEventHandler();
   [Signal]
   public delegate void PlayerFallEventHandler();
+  // Caught between a moving platform and something solid.
+  [Signal]
+  public delegate void PlayerSquashedEventHandler();
   [Signal]
   public delegate void PlayerDashEventHandler(Vector2 direction);
   [Signal]

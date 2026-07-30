@@ -7,5 +7,6 @@ public enum EntityType {
   Lazer = 2,
   Bullet = 3,
   Ball = 4,
-  BrickBreaker = 5
+  BrickBreaker = 5,
+  Crusher = 6
 }

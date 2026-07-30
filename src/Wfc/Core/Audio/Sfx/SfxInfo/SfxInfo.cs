@@ -33,6 +33,7 @@ public static class GameSfx {
     ["pickup"] = new SfxInfo(BASE_PATH + "pickup.ogg", -4),
     ["playerExplode"] = new SfxInfo(BASE_PATH + "die.ogg", -10),
     ["playerFalling"] = new SfxInfo(BASE_PATH + "falling.ogg", -10),
+    ["playerSquashed"] = new SfxInfo(BASE_PATH + "squash.ogg", -2),
     ["rotateLeft"] = new SfxInfo(BASE_PATH + "rotate-box.ogg", -20, 0.9f),
     ["rotateRight"] = new SfxInfo(BASE_PATH + "rotate-box.ogg", -20),
     ["shine"] = new SfxInfo(BASE_PATH + "shine.ogg", -5),

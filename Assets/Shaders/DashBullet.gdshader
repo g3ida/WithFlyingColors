@@ -23,6 +23,14 @@ uniform float belly : hint_range(0.0, 0.4) = 0.16;
 uniform float glow : hint_range(0.0, 1.0) = 0.5;
 uniform float tail_fade : hint_range(0.0, 1.0) = 0.35;
 
+// The other way the cube loses its shape: crushed flat along the axis whatever caught it came in
+// on. The node's scale does the flattening and the widening; this rounds the two free sides out
+// into a barrel, which is what stops a flattened cube reading as a rectangle. Same inverse map as
+// the bullet, and never in play at the same time as one.
+uniform vec2 squash_axis = vec2(0.0, 1.0);
+uniform float squash : hint_range(0.0, 1.0) = 0.0;
+uniform float side_round : hint_range(0.0, 0.6) = 0.34;
+
 // Writing COLOR wholesale throws away the node's modulate, which the dying states tween, so
 // it is carried over from the vertex stage and multiplied back in by hand.
 varying vec4 vertex_modulate;
@@ -57,6 +65,28 @@ float half_width(float along) {
   return max(0.2, (1.0 - pinch + bulge) / (1.0 + belly * morph()));
 }
 
+// Full width across the middle and drawn in towards the two pressed faces, so the widest point of
+// the barrel lands exactly on the edge of the quad rather than outside it.
+float squash_half_width(float along) {
+  return 1.0 - side_round * squash * clamp(4.0 * along * along, 0.0, 1.0);
+}
+
+vec2 squash_map(vec2 uv) {
+  if (squash <= 0.0) {
+    return uv;
+  }
+  vec2 axis = normalize(squash_axis);
+  vec2 side = vec2(-axis.y, axis.x);
+  float along_reach = abs(axis.x) + abs(axis.y);
+  float across_reach = abs(side.x) + abs(side.y);
+
+  vec2 centered = uv - 0.5;
+  float along = dot(centered, axis) / along_reach;
+  float across = dot(centered, side) / across_reach / squash_half_width(along);
+
+  return 0.5 + (along * along_reach * axis) + (across * across_reach * side);
+}
+
 void fragment() {
   vec2 forward = normalize(dash_dir);
   vec2 side = vec2(-forward.y, forward.x);
@@ -84,11 +114,11 @@ void fragment() {
     src_across = across / half_width(src_along);
   }
 
-  vec2 uv = 0.5 + (src_along * along_reach * forward) + (src_across * across_reach * side);
+  vec2 uv = squash_map(0.5 + (src_along * along_reach * forward) + (src_across * across_reach * side));
   // At rest the map is the identity, but rounding can still put a corner a hair outside the
   // quad, and discarding there would leave the resting cube missing a pixel off its edge.
   bool outside = uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0;
-  if (morph() > 0.0 && outside) {
+  if ((morph() > 0.0 || squash > 0.0) && outside) {
     discard;
   }
   uv = clamp(uv, vec2(0.0), vec2(1.0));
