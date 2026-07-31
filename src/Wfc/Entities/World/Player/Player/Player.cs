@@ -296,8 +296,28 @@ public partial class Player : CharacterBody2D, IPersistent {
     }
   }
 
+  // Whether the face the cube would meet something arriving from `toward` with wears this
+  // color - what a descending block asks before deciding the touch is survivable.
+  public bool WearsColorToward(string colorGroup, Vector2 toward) {
+    var facing = faceNodes[0];
+    foreach (var face in faceNodes) {
+      if ((face.GlobalPosition - GlobalPosition).Dot(toward) >
+          (facing.GlobalPosition - GlobalPosition).Dot(toward)) {
+        facing = face;
+      }
+    }
+    return facing.IsInGroup(colorGroup);
+  }
+
   private void _onPlayerDying(Node? area, Vector2 position, int entityType) {
     if (IsDying()) {
+      return;
+    }
+    // A crush is reported before the report is taken - the state machine may already have run
+    // this frame - and the same shove that pinned the cube drives the crusher's kill area into
+    // whatever face is buried by the time the physics flush runs. That color reading lands here
+    // after the crush does, and letting it win turns every squash into an ordinary explosion.
+    if (_pendingDeath.Type == EntityType.Crusher && (EntityType)entityType != EntityType.Crusher) {
       return;
     }
     _pendingDeath = new PendingDeath(

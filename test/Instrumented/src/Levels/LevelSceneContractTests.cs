@@ -6,9 +6,11 @@ using System.Linq;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Platforms;
 using Wfc.Screens.Levels;
 using Wfc.Utils.Colors;
+using Wfc.Utils.Layers;
 
 // Scene-vs-script contracts fail silently: a level card whose scene does not exist, or a
 // platform whose script override was deleted, loads without a word and breaks in a
@@ -73,6 +75,59 @@ public class LevelSceneContractTests(Node testScene) : TestClass(testScene) {
           ColorUtils.COLOR_GROUPS.ShouldContain(
             group,
             $"{info.Id} / {node.Name} is in group '{group}', which is not a color group"
+          );
+        }
+      }
+
+      level.QueueFree();
+    }
+  }
+
+  // A level can override the cube's collision mask per instance, and Level1's did: a mask
+  // written for Godot 3, where a tetromino's own mask was enough to make the pair collide.
+  // Godot 4 asks only the mover, so a cube whose mask has lost a body layer walks straight
+  // into those bodies and is killed by whatever face ends up buried - which read as "the
+  // tetrominos kill every color". The body layers the Player scene masks are the contract.
+  [Test]
+  public void EveryLevelsCubeKeepsCollidingWithEveryBodyLayerTheSceneMasks() {
+    var bodyLayers = PhysicsLayers.Default.Mask | PhysicsLayers.Platform.Mask | PhysicsLayers.Tetris.Mask;
+    foreach (var info in LevelDispatcher.LEVELS) {
+      var level = LevelDispatcher.InstantiateLevel(info.Id);
+      level.ShouldNotBeNull();
+
+      if (level.GetNodeOrNull("Player") is CharacterBody2D player) {
+        (player.CollisionMask & bodyLayers).ShouldBe(
+          bodyLayers,
+          $"{info.Id} overrides the cube's collision mask and drops a body layer with it"
+        );
+      }
+
+      level.QueueFree();
+    }
+  }
+
+  // A localizer that freezes the camera behind a viewport-sized drag box takes following
+  // out of the picture, so its limits must decide the whole frame: full limits with both
+  // axes collapsed to the view size, one legal framing. The pool shipped with vertical
+  // slack in its band, and the framing rested wherever history parked the camera - a
+  // squash death parked it somewhere else for good.
+  [Test]
+  public void EveryCameraFreezingLocalizerFullyDeterminesItsFraming() {
+    foreach (var info in LevelDispatcher.LEVELS) {
+      var level = LevelDispatcher.InstantiateLevel(info.Id);
+      level.ShouldNotBeNull();
+
+      foreach (var node in _descendantsOf(level)) {
+        if (node is CameraLocalizer localizer && localizer.FullViewportDragMargin) {
+          localizer.PositionClippingMode.ShouldBe(
+            CameraLimit.FullLimit,
+            $"{info.Id} / {node.Name} freezes the camera without full limits to decide the frame"
+          );
+          localizer.LimitXAxisToViewSize.ShouldBeTrue(
+            $"{info.Id} / {node.Name} freezes the camera but leaves the horizontal framing to history"
+          );
+          localizer.LimitYAxisToViewSize.ShouldBeTrue(
+            $"{info.Id} / {node.Name} freezes the camera but leaves the vertical framing to history"
           );
         }
       }

@@ -7,6 +7,7 @@ using Godot;
 using Shouldly;
 using Wfc.Core.Input;
 using Wfc.Entities.World.Player;
+using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 
 // How a dash ends is not the same event as how it started. One that ran into something has had
@@ -112,8 +113,5 @@ public class DashArrivalTests(Node testScene) : TestClass(testScene) {
     return player;
   }
 
-  private async Task _physicsFrame() {
-    var tree = TestScene.GetTree();
-    await tree.ToSignal(tree, SceneTree.SignalName.PhysicsFrame);
-  }
+  private Task _physicsFrame() => PhysicsFrames.Frame(TestScene);
 }

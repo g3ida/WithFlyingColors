@@ -5,6 +5,7 @@ using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
 using Wfc.Entities.World.Enemies;
+using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
@@ -78,8 +79,5 @@ public class LazerBeamTests(Node testScene) : TestClass(testScene) {
 
   private void _onPlayerDying(Node? area, Vector2 position, int entityType) => _deaths++;
 
-  private async Task _physicsFrame() {
-    var tree = TestScene.GetTree();
-    await tree.ToSignal(tree, SceneTree.SignalName.PhysicsFrame);
-  }
+  private Task _physicsFrame() => PhysicsFrames.Frame(TestScene);
 }

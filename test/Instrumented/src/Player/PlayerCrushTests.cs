@@ -1,5 +1,6 @@
 namespace Wfc.test.instrumented.Player;
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
@@ -8,6 +9,7 @@ using Shouldly;
 using Wfc.Core.Event;
 using Wfc.Entities.World.Player;
 using Wfc.test;
+using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -184,25 +186,10 @@ public class PlayerCrushTests(Node testScene) : TestClass(testScene) {
     floor.AddChild(slider);
   }
 
-  private async Task<bool> _waitFor(System.Func<bool> until) {
-    var deadline = CRUSH_TIMEOUT * Engine.PhysicsTicksPerSecond;
-    for (var frame = 0; frame < deadline; frame++) {
-      if (until()) {
-        return true;
-      }
-      await _physicsFrame();
-    }
-    return false;
-  }
+  private Task<bool> _waitFor(Func<bool> until) =>
+    PhysicsFrames.WaitFor(TestScene, until, CRUSH_TIMEOUT);
 
-  private async Task _frames(int count) {
-    for (var frame = 0; frame < count; frame++) {
-      await _physicsFrame();
-    }
-  }
+  private Task _frames(int count) => PhysicsFrames.Advance(TestScene, count);
 
-  private async Task _physicsFrame() {
-    var tree = TestScene.GetTree();
-    await tree.ToSignal(tree, SceneTree.SignalName.PhysicsFrame);
-  }
+  private Task _physicsFrame() => PhysicsFrames.Frame(TestScene);
 }

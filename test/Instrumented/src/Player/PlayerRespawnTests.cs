@@ -8,6 +8,7 @@ using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Entities.World;
 using Wfc.test;
+using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -230,14 +231,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
     return player;
   }
 
-  private async Task _frames(int count) {
-    for (var i = 0; i < count; i++) {
-      await _physicsFrame();
-    }
-  }
+  private Task _frames(int count) => PhysicsFrames.Advance(TestScene, count);
 
-  private async Task _physicsFrame() {
-    var tree = TestScene.GetTree();
-    await tree.ToSignal(tree, SceneTree.SignalName.PhysicsFrame);
-  }
+  private Task _physicsFrame() => PhysicsFrames.Frame(TestScene);
 }
