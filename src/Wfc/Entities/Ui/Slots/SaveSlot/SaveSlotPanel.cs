@@ -115,6 +115,9 @@ public partial class SaveSlotPanel : PanelContainer {
     }
   }
 
+  public void SetAllowSelectingEmptySlots(bool allow) =>
+    _actionButtonsNode.AllowSelectingEmptySlots = allow;
+
   public int Timestamp {
     get => _timestamp;
     set => SetTimestamp(value);

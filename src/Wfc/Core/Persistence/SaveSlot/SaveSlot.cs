@@ -52,6 +52,17 @@ public partial class SaveSlot {
   }
 
   public void Save(ISerializer serializer, SceneTree sceneTree) {
+    // A blank slot picked from a menu has never been loaded or played, so nothing has
+    // materialized its metadata yet. Without this the meta file was never written, the
+    // slot stayed "unfilled", and every later RecordProgress refused to save into it -
+    // a fresh install could play forever and keep nothing.
+    MetaData ??= new SlotMetaData(
+      _slotIndex,
+      _getUnixTimestamp(),
+      LevelId.Tutorial,
+      0,
+      _getUnixTimestamp()
+    );
     _saveMetaData(serializer);
     _saveLevelState(serializer, sceneTree);
   }
@@ -69,6 +80,17 @@ public partial class SaveSlot {
     var isNewLevel = MetaData.LevelId != levelId;
     MetaData.LevelId = levelId;
     MetaData.Progress = isNewLevel ? clamped : Math.Max(MetaData.Progress, clamped);
+    MetaData.SaveTimestamp = _getUnixTimestamp();
+  }
+
+  // Cleared is forever: the set only grows, unlike the resume pointer RecordProgress
+  // moves around. Replays of a finished level therefore cannot re-lock anything.
+  public void RecordCompletion(LevelId levelId) {
+    if (MetaData == null) {
+      MetaData = new SlotMetaData(_slotIndex, _getUnixTimestamp(), levelId, 0, _getUnixTimestamp(), [levelId]);
+      return;
+    }
+    MetaData.ClearedLevels.Add(levelId);
     MetaData.SaveTimestamp = _getUnixTimestamp();
   }
 

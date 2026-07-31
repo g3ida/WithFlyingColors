@@ -1,0 +1,49 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/Wfc/Entities/Ui/LevelTitleCard/LevelTitleCard.cs" id="1"]
+[ext_resource type="FontFile" uid="uid://f5bvg4kq86ed" path="res://Assets/Fonts/TitleFontt.tres" id="2"]
+
+[node name="LevelTitleCard" type="CanvasLayer"]
+process_mode = 3
+layer = 120
+script = ExtResource("1")
+
+[node name="Cover" type="ColorRect" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.05, 0.07, 1)
+
+[node name="Title" type="Control" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TitleText" type="Label" parent="Title"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.97, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.55)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 6
+theme_override_fonts/font = ExtResource("2")
+theme_override_font_sizes/font_size = 110
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HoldTimer" type="Timer" parent="."]
+one_shot = true

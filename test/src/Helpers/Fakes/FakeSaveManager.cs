@@ -16,6 +16,8 @@ using Wfc.Screens.Levels;
 public sealed class FakeSaveManager : ISaveManager {
   public const int NUM_SLOTS = 3;
 
+  public int SlotCount => NUM_SLOTS;
+
   private readonly SlotMetaData?[] _slots = new SlotMetaData?[NUM_SLOTS];
 
   public int SelectedSlot { get; private set; }
@@ -23,6 +25,7 @@ public sealed class FakeSaveManager : ISaveManager {
   // Records so tests can assert what the menus asked for.
   public int SaveGameCallCount { get; private set; }
   public int RecordProgressCallCount { get; private set; }
+  public int RecordLevelClearedCallCount { get; private set; }
   public int RemoveSaveSlotCallCount { get; private set; }
 
   public FakeSaveManager(int selectedSlot = 0) {
@@ -30,8 +33,17 @@ public sealed class FakeSaveManager : ISaveManager {
   }
 
   // Gives a slot some progress, which is what the play sub-menu keys "continue" off.
-  public FakeSaveManager WithFilledSlot(int slotIndex, int progress = 50) {
-    _slots[slotIndex] = new SlotMetaData(slotIndex, 1_700_000_000UL, LevelId.Level1, progress, 1_700_000_000UL);
+  // The timestamp is settable so tests can decide which slot was played most recently.
+  public FakeSaveManager WithFilledSlot(int slotIndex, int progress = 50, ulong timestamp = 1_700_000_000UL) {
+    _slots[slotIndex] = new SlotMetaData(slotIndex, timestamp, LevelId.Level1, progress, timestamp);
+    return this;
+  }
+
+  // A slot whose only trace of play is a finished level: progress alone must not be
+  // the definition of "played", or clearing a level then quitting hides Continue.
+  public FakeSaveManager WithClearedLevel(int slotIndex, LevelId levelId) {
+    _slots[slotIndex] ??= new SlotMetaData(slotIndex, 1_700_000_000UL, levelId, 0, 1_700_000_000UL);
+    _slots[slotIndex]!.ClearedLevels.Add(levelId);
     return this;
   }
 
@@ -92,6 +104,18 @@ public sealed class FakeSaveManager : ISaveManager {
     }
     slot.LevelId = levelId;
     slot.Progress = progressPercent;
+  }
+
+  public void RecordLevelCleared(SceneTree tree, LevelId clearedLevelId, LevelId? nextLevelId, int slotIndex = ISaveManager.NO_SLOT) {
+    RecordLevelClearedCallCount++;
+    var index = _resolve(slotIndex);
+    // Mirrors the real manager: clearing a level with no save slot records nothing.
+    if (!_isValid(index) || _slots[index] is not { } slot) {
+      return;
+    }
+    slot.ClearedLevels.Add(clearedLevelId);
+    slot.LevelId = nextLevelId ?? clearedLevelId;
+    slot.Progress = nextLevelId == null ? 100 : 0;
   }
 
   public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = ISaveManager.NO_SLOT) {

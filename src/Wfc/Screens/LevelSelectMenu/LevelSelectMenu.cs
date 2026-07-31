@@ -1,6 +1,7 @@
 namespace Wfc.Screens;
 
 using System.Collections.Generic;
+using System.Linq;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
@@ -32,15 +33,24 @@ public partial class LevelSelectMenu : GameMenu {
   }
 
   private void PopulateWithCards() {
+    var metaData = SaveManager.GetSlotMetaData();
+    var chain = LevelDispatcher.LEVELS.Select(level => level.Id).ToList();
+    var clearedLevels = metaData?.ClearedLevels ?? [];
+
     var index = 0;
     foreach (var level in LevelDispatcher.LEVELS) {
       index++;
       var sceneCard = AddSceneCard(index, level);
+      sceneCard.Locked = !LevelUnlockPolicy.IsUnlocked(level.Id, chain, clearedLevels, metaData?.LevelId);
       _sceneCards.Add(sceneCard);
     }
-    if (_sceneCards.Count > 0) {
-      _sceneCards[^1].GrabFocus();
-    }
+
+    // Focus follows the save: the level the player would resume, or failing that the
+    // furthest one the slot has earned.
+    var resumeLevelId = metaData?.LevelId ?? chain[0];
+    var focusCard = _sceneCards.FirstOrDefault(card => card.LevelScene == resumeLevelId && !card.Locked)
+      ?? _sceneCards.LastOrDefault(card => !card.Locked);
+    focusCard?.GrabFocus();
   }
 
   private SceneCard AddSceneCard(int index, LevelDispatcher.LevelInfo level) {

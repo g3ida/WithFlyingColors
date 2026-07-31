@@ -1,0 +1,150 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="PackedScene" uid="uid://dmrllj22gpdev" path="res://src/Wfc/Screens/Levels/GameLevel/GameLevel.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://src/Wfc/Entities/World/Fallzone/Fallzone.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://src/Wfc/Entities/World/Platforms/SimplePlatform/SimplePlatform.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://src/Wfc/Entities/World/Gems/Gem/Gem.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://blkbqb8j6rnda" path="res://src/Wfc/Entities/World/Temple/GemsTemple/GemsTemple.tscn" id="5"]
+[ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="6"]
+[ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="7"]
+
+[node name="LevelHandler" instance=ExtResource("1")]
+Track = "fight"
+
+[node name="Camera2D" parent="." index="1"]
+limit_left = -350
+limit_top = -1000
+limit_right = 8600
+limit_bottom = 620
+
+[node name="FallZone" parent="." index="3" instance=ExtResource("2")]
+position = Vector2(4000, 1122)
+scale = Vector2(250, 4.788)
+
+[node name="StartGround" type="StaticBody2D" parent="." index="4"]
+
+[node name="Visual" type="Polygon2D" parent="StartGround" index="0"]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(-600, -900, -200, -900, -200, 414, 1800, 414, 1800, 958, -600, 960)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StartGround" index="1"]
+polygon = PackedVector2Array(-600, -900, -200, -900, -200, 414, 1800, 414, 1800, 958, -600, 960)
+
+[node name="ColorArea" type="Area2D" parent="StartGround" index="2" groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StartGround/ColorArea" index="0"]
+polygon = PackedVector2Array(-600, -900, -200, -900, -200, 414, 1800, 414, 1800, 958, -600, 960)
+
+[node name="EndGround" type="StaticBody2D" parent="." index="5"]
+
+[node name="Visual" type="Polygon2D" parent="EndGround" index="0"]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(6600, 414, 8200, 414, 8200, 958, 6600, 958)
+
+[node name="WallVisual" type="Polygon2D" parent="EndGround" index="1"]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(8200, -900, 8600, -900, 8600, 958, 8200, 958)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround" index="2"]
+polygon = PackedVector2Array(6600, 414, 8200, 414, 8200, 958, 6600, 958)
+
+[node name="WallCollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround" index="3"]
+polygon = PackedVector2Array(8200, -900, 8600, -900, 8600, 958, 8200, 958)
+
+[node name="ColorArea" type="Area2D" parent="EndGround" index="4" groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround/ColorArea" index="0"]
+polygon = PackedVector2Array(6600, 414, 8200, 414, 8200, 958, 6600, 958)
+
+[node name="WallCollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround/ColorArea" index="1"]
+polygon = PackedVector2Array(8200, -900, 8600, -900, 8600, 958, 8200, 958)
+
+[node name="Platforms" type="Node2D" parent="." index="6"]
+
+[node name="BluePlatform" parent="Platforms" index="0" instance=ExtResource("3")]
+position = Vector2(2200, 686)
+scale = Vector2(5, 6.75)
+Group = "blue"
+
+[node name="PinkPlatform" parent="Platforms" index="1" instance=ExtResource("3")]
+position = Vector2(2900, 686)
+scale = Vector2(5, 6.75)
+Group = "pink"
+
+[node name="PurplePlatform" parent="Platforms" index="2" instance=ExtResource("3")]
+position = Vector2(3600, 686)
+scale = Vector2(5, 6.75)
+Group = "purple"
+
+[node name="YellowPlatform" parent="Platforms" index="3" instance=ExtResource("3")]
+position = Vector2(4300, 686)
+scale = Vector2(5, 6.75)
+Group = "yellow"
+
+[node name="YellowStep" parent="Platforms" index="4" instance=ExtResource("3")]
+position = Vector2(5000, 550)
+scale = Vector2(4, 4)
+Group = "yellow"
+
+[node name="PinkStep" parent="Platforms" index="5" instance=ExtResource("3")]
+position = Vector2(5600, 420)
+scale = Vector2(4, 4)
+Group = "pink"
+
+[node name="BlueStep" parent="Platforms" index="6" instance=ExtResource("3")]
+position = Vector2(6200, 290)
+scale = Vector2(4, 4)
+Group = "blue"
+
+[node name="Gems" type="Node2D" parent="." index="7"]
+
+[node name="BlueGem" parent="Gems" index="0" instance=ExtResource("4")]
+position = Vector2(2200, 100)
+GroupName = "blue"
+
+[node name="PinkGem" parent="Gems" index="1" instance=ExtResource("4")]
+position = Vector2(2900, 100)
+GroupName = "pink"
+
+[node name="PurpleGem" parent="Gems" index="2" instance=ExtResource("4")]
+position = Vector2(3600, 100)
+GroupName = "purple"
+
+[node name="YellowGem" parent="Gems" index="3" instance=ExtResource("4")]
+position = Vector2(4300, 100)
+GroupName = "yellow"
+
+[node name="GemsTemple" parent="." index="8" instance=ExtResource("5")]
+position = Vector2(7600, 128)
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="." index="9"]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground" index="0"]
+motion_mirroring = Vector2(2048, 2048)
+
+[node name="Spr" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer" index="0"]
+scale = Vector2(32, 32)
+texture = ExtResource("6")
+centered = false
+
+[node name="Player" parent="." index="10"]
+position = Vector2(400, 200)
+
+[node name="StartCheckpoint" parent="." index="11" instance=ExtResource("7")]
+position = Vector2(600, 266)
+scale = Vector2(1, 8)
+ColorGroup = "purple"
+
+[node name="MidCheckpoint" parent="." index="12" instance=ExtResource("7")]
+position = Vector2(4400, 266)
+scale = Vector2(1, 8)
+ColorGroup = "yellow"
+
+[node name="EndCheckpoint" parent="." index="13" instance=ExtResource("7")]
+position = Vector2(6900, 266)
+scale = Vector2(1, 8)
+ColorGroup = "blue"

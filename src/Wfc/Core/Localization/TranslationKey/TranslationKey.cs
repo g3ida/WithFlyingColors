@@ -75,6 +75,10 @@ public enum TranslationKey {
   menu_label_emptySlot = 63,
   menu_label_slotProgress = 64,
   menu_label_slotIndex = 65,
+  game_level_title_fourColors = 66,
+  game_level_title_letsPlayWithColors = 67,
+  menu_button_loadGame = 68,
+  menu_dialog_overwriteSlot = 69,
 }
 
 public static partial class TranslationKeyExtensions {

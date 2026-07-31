@@ -44,6 +44,11 @@ public partial class PauseMenu : CanvasLayer {
 
   private bool _isPaused;
 
+  // Whether this menu currently owns the tree's pause. The orchestrator asks before
+  // unpausing after a level swap, so an auto-pause that fired during the title card
+  // (the window losing focus) is not silently undone.
+  public bool IsPaused => _isPaused;
+
   [Dependency]
   public ISfxManager SfxManager => this.DependOn<ISfxManager>();
   [Dependency]

@@ -175,6 +175,7 @@
     "texels",
     "travelled",
     "finalizer",
-    "lazers"
+    "lazers",
+    "pressable"
   ]
 }

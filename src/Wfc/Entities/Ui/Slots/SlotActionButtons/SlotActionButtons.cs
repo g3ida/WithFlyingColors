@@ -23,6 +23,10 @@ public partial class SlotActionButtons : HBoxContainer {
 
   public int SlotIndex { get; set; } = 0;
 
+  // In new-game mode an empty slot is a perfectly good place to start, so the picker
+  // asks for the select button on it; everywhere else empty slots offer nothing.
+  public bool AllowSelectingEmptySlots { get; set; }
+
   #region Nodes
   [NodePath("DeleteButton")]
   private SlotButton _deleteButtonNode = default!;
@@ -84,7 +88,7 @@ public partial class SlotActionButtons : HBoxContainer {
   }
 
   private bool ShouldShowSelectButton() {
-    return SaveManager.IsSLotFilled(SlotIndex);
+    return AllowSelectingEmptySlots || SaveManager.IsSLotFilled(SlotIndex);
   }
 
   private void _on_ConfirmButton_pressed() {
