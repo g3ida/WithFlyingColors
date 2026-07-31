@@ -7,8 +7,10 @@ using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils;
+using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
+[ScenePath]
 public partial class GameCamera : Camera2D, IPersistent {
   public const float CAMERA_DRAG_JUMP = 0.45f;
 
@@ -105,7 +107,13 @@ public partial class GameCamera : Camera2D, IPersistent {
   }
 
   public void Reset() {
-    zoom_by(_saveData.Zoom);
+    // A respawn is a cut, not a transition. The death that led here may have left a zoom punch
+    // mid-release, and easing back from it would carry the death's camera into the next life.
+    // The checkpoint saved no such transient, so none is kept: the zoom snaps before the limits
+    // are trusted again. The offset is CameraShake's to clear, on the same signal.
+    ZoomTweener?.Kill();
+    TargetZoom = _saveData.Zoom;
+    Zoom = new Vector2(TargetZoom, TargetZoom);
     LimitBottom = _saveData.BottomLimit;
     LimitTop = _saveData.TopLimit;
     LimitLeft = _saveData.LeftLimit;
@@ -117,6 +125,22 @@ public partial class GameCamera : Camera2D, IPersistent {
     DragTopMargin = _saveData.DragTopMargin;
 
     FollowNode = FollowPath.IsEmpty ? FollowNode : GetNode<Node2D>(FollowPath);
+
+    // Snapped to the follow target after every other CheckpointLoaded handler has run - the
+    // player's teleport among them - and clamped by the restored limits from there. A room
+    // that wants a particular framing expresses it in its limits (a localizer that freezes
+    // the camera collapses them to exactly one legal view), so aligning and clamping is the
+    // whole restore: there is no hidden camera state worth carrying over a death.
+    Callable.From(_snapToFollowTarget).CallDeferred();
+  }
+
+  private void _snapToFollowTarget() {
+    if (FollowNode == null || !IsInsideTree()) {
+      return;
+    }
+    GlobalPosition = FollowNode.GlobalPosition;
+    Align();
+    ResetSmoothing();
   }
 
   private void _OnPlayerJump() {

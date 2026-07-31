@@ -5,6 +5,7 @@ using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
 using Wfc.Entities.World.Player;
+using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils.Colors;
 
@@ -203,8 +204,5 @@ public class PlayerCollisionGeometryTests(Node testScene) : TestClass(testScene)
     return player;
   }
 
-  private async Task _physicsFrame() {
-    var tree = TestScene.GetTree();
-    await tree.ToSignal(tree, SceneTree.SignalName.PhysicsFrame);
-  }
+  private Task _physicsFrame() => PhysicsFrames.Frame(TestScene);
 }

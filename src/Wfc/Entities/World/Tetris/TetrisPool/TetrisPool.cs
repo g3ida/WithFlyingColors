@@ -182,8 +182,14 @@ public partial class TetrisPool : Node2D {
   }
 
   public override void _PhysicsProcess(double delta) {
-    if (_isPaused || _nbQueuedLinesToRemove > 0)
+    if (_isPaused) {
+      _finishStartedDescent((float)delta);
       return;
+    }
+
+    if (_nbQueuedLinesToRemove > 0) {
+      return;
+    }
 
     // Returning on game over rather than falling through: the frame that ends the run used to
     // go on to lock the piece it had just declared unplaceable, and could score a line with it.
@@ -196,6 +202,36 @@ public partial class TetrisPool : Node2D {
     }
   }
 
+  // A death pauses the pool with the piece that caused it hanging mid-step, half sunk into
+  // the cube it caught - and the squash tracks the crusher's face, so the press would hang
+  // with it until its timeout bursts the cube under a hovering piece. The step already
+  // underway is played out instead: the piece comes down flush and the press follows its
+  // real travel. Nothing new starts, and the piece is never locked - the reset that follows
+  // every death clears it.
+  private void _finishStartedDescent(float delta) {
+    if (_isTravelling && _shape is not null) {
+      _stepDescent(delta);
+    }
+  }
+
+  // One frame of a descent already under way. True once the piece has arrived on its row; the
+  // caller decides whether anything follows.
+  private bool _stepDescent(float delta) {
+    _phaseElapsed += delta;
+    var travel = TravelDuration;
+    if (_phaseElapsed < travel) {
+      _shape!.SetFallOffset(Constants.TETRIS_BLOCK_SIZE * (_phaseElapsed / travel));
+      _shape.ResolveDescentContact();
+      return false;
+    }
+    _isTravelling = false;
+    _phaseElapsed -= travel;
+    _shape!.SetFallOffset(0.0f);
+    _shape.MoveDown();
+    _shape.ResolveDescentContact();
+    return true;
+  }
+
   // A row's period splits into the descent and a hold on the row it arrives at. Bounding the
   // descent by speed rather than by a fraction of the period keeps the per-frame displacement
   // small at every level; past the point where a row's period is shorter than the descent the
@@ -204,20 +240,13 @@ public partial class TetrisPool : Node2D {
     Math.Min(_stepInterval, Constants.TETRIS_BLOCK_SIZE / Constants.TETRIS_MAX_FALL_SPEED);
 
   private void AdvanceShape(float delta) {
-    _phaseElapsed += delta;
-
     if (_isTravelling) {
-      var travel = TravelDuration;
-      if (_phaseElapsed < travel) {
-        _shape!.SetFallOffset(Constants.TETRIS_BLOCK_SIZE * (_phaseElapsed / travel));
-        _shape.ResolveDescentContact();
+      if (!_stepDescent(delta)) {
         return;
       }
-      _isTravelling = false;
-      _phaseElapsed -= travel;
-      _shape!.SetFallOffset(0.0f);
-      _shape.MoveDown();
-      _shape.ResolveDescentContact();
+    }
+    else {
+      _phaseElapsed += delta;
     }
 
     var hold = _stepInterval - TravelDuration;

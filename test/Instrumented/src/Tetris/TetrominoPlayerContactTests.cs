@@ -1,12 +1,14 @@
 namespace Wfc.test.instrumented.Tetris;
 
+using System;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
 using Wfc.Entities.Tetris.Tetrominos;
-using Wfc.Utils;
+using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
+using Wfc.Utils;
 
 // The user-facing contract of a landed piece: it is a platform. Walking into it with the
 // matching face stops the cube against its side; walking into it with any other face kills.
@@ -92,7 +94,9 @@ public class TetrominoPlayerContactTests(Node testScene) : TestClass(testScene) 
     block.Position = new Vector2(
       PIECE_X - (Constants.TETRIS_BLOCK_SIZE / 2f),
       playerTop - Constants.TETRIS_BLOCK_SIZE - 8f);
-    _root.AddChild(block);
+    // After the cube in the tree, the way pool-owned blocks are in Level1: the cube's state
+    // machine then runs before the block reports the crush, which is the order the race needs.
+    _provider.AddChild(block);
     await _frames(2);
 
     block.QueueDrop(Constants.TETRIS_BLOCK_SIZE);
@@ -136,25 +140,10 @@ public class TetrominoPlayerContactTests(Node testScene) : TestClass(testScene) 
     return player;
   }
 
-  private async Task<bool> _waitFor(System.Func<bool> until) {
-    var deadline = WALK_TIMEOUT * Engine.PhysicsTicksPerSecond;
-    for (var frame = 0; frame < deadline; frame++) {
-      if (until()) {
-        return true;
-      }
-      await _physicsFrame();
-    }
-    return false;
-  }
+  private Task<bool> _waitFor(Func<bool> until) =>
+    PhysicsFrames.WaitFor(TestScene, until, WALK_TIMEOUT);
 
-  private async Task _frames(int count) {
-    for (var frame = 0; frame < count; frame++) {
-      await _physicsFrame();
-    }
-  }
+  private Task _frames(int count) => PhysicsFrames.Advance(TestScene, count);
 
-  private async Task _physicsFrame() {
-    var tree = TestScene.GetTree();
-    await tree.ToSignal(tree, SceneTree.SignalName.PhysicsFrame);
-  }
+  private Task _physicsFrame() => PhysicsFrames.Frame(TestScene);
 }

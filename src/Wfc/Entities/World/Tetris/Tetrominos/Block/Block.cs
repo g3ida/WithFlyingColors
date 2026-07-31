@@ -113,6 +113,13 @@ public partial class Block : Node2D {
       return;
     }
 
+    // The carry only shields a face the block cannot kill. Met with any other color, the
+    // touch itself is the death - the same rule as walking into the piece's side - so the
+    // block stands aside and lets the color areas read the contact.
+    if (!player.WearsColorToward(ColorGroup, -travel)) {
+      return;
+    }
+
     // Meeting a descending block from below is a ceiling hit; the upward speed ends here.
     if (player.Velocity.Y < 0f) {
       player.Velocity = new Vector2(player.Velocity.X, 0f);

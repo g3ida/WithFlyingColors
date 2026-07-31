@@ -5,6 +5,7 @@ using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
 using Wfc.Entities.World.BrickBreaker;
+using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
@@ -112,8 +113,5 @@ public class BallPaddleCrushTests(Node testScene) : TestClass(testScene) {
   private static float _radiusOf(BouncingBall ball) =>
     ((CircleShape2D)ball.GetNode<CollisionShape2D>("CollisionShape2D").Shape).Radius * ball.Scale.X;
 
-  private async Task _physicsFrame() {
-    var tree = TestScene.GetTree();
-    await tree.ToSignal(tree, SceneTree.SignalName.PhysicsFrame);
-  }
+  private Task _physicsFrame() => PhysicsFrames.Frame(TestScene);
 }

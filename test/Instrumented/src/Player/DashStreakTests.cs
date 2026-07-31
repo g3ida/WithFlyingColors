@@ -7,6 +7,7 @@ using Godot;
 using Shouldly;
 using Wfc.Core.Input;
 using Wfc.Entities.World.Player;
+using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 
 // The speed lines are drawn from where the cube passed to where the cube is. Laid out over the
@@ -107,8 +108,5 @@ public class DashStreakTests(Node testScene) : TestClass(testScene) {
     return player;
   }
 
-  private async Task _physicsFrame() {
-    var tree = TestScene.GetTree();
-    await tree.ToSignal(tree, SceneTree.SignalName.PhysicsFrame);
-  }
+  private Task _physicsFrame() => PhysicsFrames.Frame(TestScene);
 }

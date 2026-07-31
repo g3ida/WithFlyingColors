@@ -6,6 +6,7 @@ using System.Linq;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Platforms;
 using Wfc.Screens.Levels;
 using Wfc.Utils.Colors;
@@ -92,12 +93,43 @@ public class LevelSceneContractTests(Node testScene) : TestClass(testScene) {
     var bodyLayers = PhysicsLayers.Default.Mask | PhysicsLayers.Platform.Mask | PhysicsLayers.Tetris.Mask;
     foreach (var info in LevelDispatcher.LEVELS) {
       var level = LevelDispatcher.InstantiateLevel(info.Id);
+      level.ShouldNotBeNull();
 
       if (level.GetNodeOrNull("Player") is CharacterBody2D player) {
         (player.CollisionMask & bodyLayers).ShouldBe(
           bodyLayers,
           $"{info.Id} overrides the cube's collision mask and drops a body layer with it"
         );
+      }
+
+      level.QueueFree();
+    }
+  }
+
+  // A localizer that freezes the camera behind a viewport-sized drag box takes following
+  // out of the picture, so its limits must decide the whole frame: full limits with both
+  // axes collapsed to the view size, one legal framing. The pool shipped with vertical
+  // slack in its band, and the framing rested wherever history parked the camera - a
+  // squash death parked it somewhere else for good.
+  [Test]
+  public void EveryCameraFreezingLocalizerFullyDeterminesItsFraming() {
+    foreach (var info in LevelDispatcher.LEVELS) {
+      var level = LevelDispatcher.InstantiateLevel(info.Id);
+      level.ShouldNotBeNull();
+
+      foreach (var node in _descendantsOf(level)) {
+        if (node is CameraLocalizer localizer && localizer.FullViewportDragMargin) {
+          localizer.PositionClippingMode.ShouldBe(
+            CameraLimit.FullLimit,
+            $"{info.Id} / {node.Name} freezes the camera without full limits to decide the frame"
+          );
+          localizer.LimitXAxisToViewSize.ShouldBeTrue(
+            $"{info.Id} / {node.Name} freezes the camera but leaves the horizontal framing to history"
+          );
+          localizer.LimitYAxisToViewSize.ShouldBeTrue(
+            $"{info.Id} / {node.Name} freezes the camera but leaves the vertical framing to history"
+          );
+        }
       }
 
       level.QueueFree();

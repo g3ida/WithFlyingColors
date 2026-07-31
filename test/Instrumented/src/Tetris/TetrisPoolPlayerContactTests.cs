@@ -1,5 +1,6 @@
 namespace Wfc.test.instrumented.Tetris;
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
@@ -9,8 +10,9 @@ using Wfc.Core.Input;
 using Wfc.Entities.Tetris;
 using Wfc.Entities.Tetris.Tetrominos;
 using Wfc.Entities.World.Player;
-using Wfc.Utils;
+using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
+using Wfc.Utils;
 
 // The same contract as TetrominoPlayerContactTests, but through the real pool: the piece is
 // picked and placed by the AI, falls the whole way and locks on its own. The cube then walks
@@ -35,6 +37,9 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
   private const double FIRST_LOCK_TIMEOUT = 12.0;
   private const double WALK_TIMEOUT = 4.0;
   private const float REST_TOLERANCE = 4f;
+  // Looser than a body already at rest: a descent lands on its grid row, and the row's plane
+  // and the floor's are only aligned to the pool's own scaled cell arithmetic.
+  private const float DESCENT_REST_TOLERANCE = 8f;
 
   private FakeDependenciesProvider _provider = default!;
 
@@ -59,8 +64,7 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
 
   [Test]
   public async Task WalkingIntoAPoolLandedPieceWithTheMatchingFaceStopsAgainstIt() {
-    var pool = _startPool();
-    var player = await _admitAndParkPlayer(pool);
+    var (pool, player) = await _admitAndParkPlayer();
     var blocks = await _waitForFirstLockedPiece(pool);
 
     var (start, dir, edgeX) = _approachFor(pool, blocks);
@@ -87,8 +91,7 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
 
   [Test]
   public async Task WalkingIntoAPoolLandedPieceWithTheWrongFaceKills() {
-    var pool = _startPool();
-    var player = await _admitAndParkPlayer(pool);
+    var (pool, player) = await _admitAndParkPlayer();
     var blocks = await _waitForFirstLockedPiece(pool);
 
     var (start, dir, _) = _approachFor(pool, blocks);
@@ -110,8 +113,7 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
   // the old code would be "nothing happens", and the death that does come is the crush.
   [Test]
   public async Task APieceComingDownOnThePinnedCubeSquashesIt() {
-    var pool = _startPool();
-    var player = await _admitAndParkPlayer(pool);
+    var (pool, player) = await _admitAndParkPlayer();
 
     var piece = pool.GetChildren().OfType<Tetromino>().First();
     var pieceBlocks = piece.GetChildren().OfType<Block>().ToArray();
@@ -119,7 +121,8 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
     // A column from the piece's bottom row: an S or Z's outermost column holds only a top-row
     // block, which locks into the row above the cube's head without ever reaching it.
     var bottomRow = pieceBlocks.Max(b => b.J);
-    var columnX = pieceBlocks.First(b => b.J == bottomRow).GlobalPosition.X + (cell * 0.5f);
+    var bottomBlock = pieceBlocks.First(b => b.J == bottomRow);
+    var columnX = bottomBlock.GlobalPosition.X + (cell * 0.5f);
     await _rotateUntil(player, () => _faceToward(player, Vector2.Up).IsInGroup(pieceBlocks[0].ColorGroup));
 
     player.Position = new Vector2(columnX, FLOOR_TOP - PLAYER_HALF_WIDTH);
@@ -128,6 +131,14 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
     died.ShouldBeTrue("the piece came down on the cube and left it alive");
     (player.PlayerState is PlayerSquashedState).ShouldBeTrue(
       "the cube pinned under the piece died some way other than the crush");
+
+    // The pool pauses on the death it caused, but the step already underway plays out: the
+    // piece comes down flush on the cube's row instead of hanging half a block over the corpse.
+    var landed = await _waitFor(() =>
+      Mathf.Abs(bottomBlock.GlobalPosition.Y + cell - FLOOR_TOP) <= DESCENT_REST_TOLERANCE);
+    landed.ShouldBeTrue(
+      "the piece froze mid-step above the cube it crushed, its underside left hanging " +
+      $"{bottomBlock.GlobalPosition.Y + cell - FLOOR_TOP:F1} px from the floor");
   }
 
   // Meeting the falling piece from below in mid-air, wearing its color on top, with nothing
@@ -136,8 +147,7 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
   // down ahead of it instead, alive.
   [Test]
   public async Task MeetingTheFallingPieceFromBelowInMidAirCarriesTheCubeDown() {
-    var pool = _startPool();
-    var player = await _admitAndParkPlayer(pool);
+    var (pool, player) = await _admitAndParkPlayer();
 
     var piece = pool.GetChildren().OfType<Tetromino>().First();
     var pieceBlocks = piece.GetChildren().OfType<Block>().ToArray();
@@ -162,6 +172,32 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
     bonked.ShouldBeTrue("the cube never reached the piece's underside, so the contact was not exercised");
   }
 
+  // The same leap wearing any other color on top is fatal on contact, exactly as walking
+  // into the piece's side is: the carry only shields a face the piece cannot kill, and it
+  // must not hold the cube clear of a color reading it has earned.
+  [Test]
+  public async Task MeetingTheFallingPieceFromBelowWithTheWrongFaceKills() {
+    var (pool, player) = await _admitAndParkPlayer();
+
+    var piece = pool.GetChildren().OfType<Tetromino>().First();
+    var pieceBlocks = piece.GetChildren().OfType<Block>().ToArray();
+    var cell = Constants.TETRIS_BLOCK_SIZE * POOL_SCALE;
+    var bottomRow = pieceBlocks.Max(b => b.J);
+    var bottomBlock = pieceBlocks.First(b => b.J == bottomRow);
+    await _rotateUntil(player, () => !_faceToward(player, Vector2.Up).IsInGroup(bottomBlock.ColorGroup));
+
+    player.Position = new Vector2(
+      bottomBlock.GlobalPosition.X + (cell * 0.5f),
+      bottomBlock.GlobalPosition.Y + cell + 150f + PLAYER_HALF_WIDTH);
+    player.Velocity = new Vector2(0f, -900f);
+
+    var died = await _waitFor(player.IsDying, FIRST_LOCK_TIMEOUT);
+
+    died.ShouldBeTrue("touching the piece's underside with the wrong color left the cube alive");
+    (player.PlayerState is PlayerSquashedState).ShouldBeFalse(
+      "a fatal color touch was reported as a crush");
+  }
+
   private TetrisPool _startPool() {
     var pool = SceneHelpers.LoadScene<TetrisPool>().Instantiate<TetrisPool>();
     // The localizer reaches for the viewport camera, which a test scene does not have.
@@ -174,16 +210,23 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
   // The pool waits for the cube to step off the lift before it deals a piece. Overlap the
   // trigger until the first piece is dealt, then park the cube clear of every column so the
   // piece cannot land on it.
-  private async Task<Player> _admitAndParkPlayer(TetrisPool pool) {
+  //
+  // The cube goes into the tree BEFORE the pool, as Level1 has it: the cube's state machine
+  // then runs first each frame, so a death the pool reports is only taken next frame - after
+  // the physics flush has had a whole step to shout over it with a color reading. With the
+  // order reversed the report is taken the same frame and the race never shows.
+  private async Task<(TetrisPool pool, Player player)> _admitAndParkPlayer() {
     var player = GD.Load<PackedScene>(PLAYER_SCENE).Instantiate<Player>();
     player.Position = new Vector2(POOL_POS.X + 29.5f, FLOOR_TOP - PLAYER_HALF_WIDTH);
     _provider.AddChild(player);
+
+    var pool = _startPool();
     var dealt = await _waitFor(() => pool.GetChildren().OfType<Tetromino>().Any());
     dealt.ShouldBeTrue("stepping on the entry trigger never started the pool");
 
     player.Position = new Vector2(POOL_LEFT - 500f, FLOOR_TOP - PLAYER_HALF_WIDTH);
     await _physicsFrame();
-    return player;
+    return (pool, player);
   }
 
   // Locking hands the blocks to the pool itself, so the first direct Block child marks it.
@@ -229,25 +272,10 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
       .OrderByDescending(f => (f.GlobalPosition - player.GlobalPosition).Normalized().Dot(dir))
       .First();
 
-  private async Task<bool> _waitFor(System.Func<bool> until, double timeout = WALK_TIMEOUT) {
-    var deadline = timeout * Engine.PhysicsTicksPerSecond;
-    for (var frame = 0; frame < deadline; frame++) {
-      if (until()) {
-        return true;
-      }
-      await _physicsFrame();
-    }
-    return false;
-  }
+  private Task<bool> _waitFor(Func<bool> until, double timeout = WALK_TIMEOUT) =>
+    PhysicsFrames.WaitFor(TestScene, until, timeout);
 
-  private async Task _frames(int count) {
-    for (var frame = 0; frame < count; frame++) {
-      await _physicsFrame();
-    }
-  }
+  private Task _frames(int count) => PhysicsFrames.Advance(TestScene, count);
 
-  private async Task _physicsFrame() {
-    var tree = TestScene.GetTree();
-    await tree.ToSignal(tree, SceneTree.SignalName.PhysicsFrame);
-  }
+  private Task _physicsFrame() => PhysicsFrames.Frame(TestScene);
 }

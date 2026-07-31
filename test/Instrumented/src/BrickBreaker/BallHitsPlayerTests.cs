@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
-using Wfc.Entities.World.BrickBreaker;
-using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Core.Input;
+using Wfc.Entities.World.BrickBreaker;
+using Wfc.test.instrumented.Helpers;
+using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -188,8 +189,5 @@ public class BallHitsPlayerTests(Node testScene) : TestClass(testScene) {
     await _physicsFrame();
   }
 
-  private async Task _physicsFrame() {
-    var tree = TestScene.GetTree();
-    await tree.ToSignal(tree, SceneTree.SignalName.PhysicsFrame);
-  }
+  private Task _physicsFrame() => PhysicsFrames.Frame(TestScene);
 }
