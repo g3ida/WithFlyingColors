@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://ctn6tng7nqhus"]
+[gd_scene load_steps=26 format=3 uid="uid://ctn6tng7nqhus"]
 
 [ext_resource type="PackedScene" uid="uid://0cgvvyxmoalw" path="res://src/Wfc/Entities/World/CutScenes/CutScene/Cutscene.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://nvn44bv2puaj" path="res://src/Wfc/Entities/World/Player/Player/Player.tscn" id="2"]
@@ -21,6 +21,8 @@
 [ext_resource type="PackedScene" uid="uid://byyce56nk7v2h" path="res://src/Wfc/Entities/World/Tetris/SlidingFloor/SlidingFloor.tscn" id="35"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="36"]
 [ext_resource type="PackedScene" uid="uid://dxdpkyrs224cf" path="res://src/Wfc/Entities/World/Piano/PianoScene/PianoScene.tscn" id="37"]
+[ext_resource type="PackedScene" uid="uid://pgbyoi7k30vg" path="res://src/Wfc/Entities/World/Enemies/SlidingLazer/SlidingLazer.tscn" id="38"]
+[ext_resource type="PackedScene" uid="uid://d31u6w1k00q6g" path="res://src/Wfc/Entities/World/Enemies/TimingLazer/TimingLazer.tscn" id="39"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(29, 92)
@@ -146,6 +148,16 @@ position = Vector2(300, 0)
 position = Vector2(2648, 94)
 rotation = -1.5708
 ColorGroup = "yellow"
+
+[node name="SlidingLazer" parent="." instance=ExtResource("38")]
+position = Vector2(-600, -500)
+rotation = 1.5708
+ColorGroup = "pink"
+SlideOffset = Vector2(450, 0)
+
+[node name="TimingLazer" parent="." instance=ExtResource("39")]
+position = Vector2(-665, -190)
+ColorGroup = "blue"
 
 [node name="Canon" parent="." instance=ExtResource("24")]
 position = Vector2(3273, -305)
