@@ -71,6 +71,14 @@ public partial class LazerBeam : Node2D {
 
   public PhysicsDirectSpaceState2D SpaceState => GetWorld2D().DirectSpaceState;
 
+  private static readonly StringName _positionKey = "position";
+  private static readonly StringName _colliderKey = "collider";
+
+  // One query object per cast, reused: the beam fires both every physics tick for as long as
+  // it exists, and building them fresh allocates engine objects every one of those ticks.
+  private PhysicsRayQueryParameters2D? _worldQuery;
+  private PhysicsRayQueryParameters2D? _faceQuery;
+
   // Normalized, because Transform.X carries the node's scale and a scaled beam would otherwise
   // read as a longer or shorter one.
   private Vector2 _beamDirection => Transform.X.Normalized();
@@ -81,14 +89,15 @@ public partial class LazerBeam : Node2D {
     var from = muzzleNode.GlobalPosition;
     var to = from + _beamDirection * BEAM_RANGE;
 
-    var query = PhysicsRayQueryParameters2D.Create(from, to, SOLID_MASK);
-    query.CollideWithAreas = false;
-    var result = SpaceState.IntersectRay(query);
+    _worldQuery ??= new PhysicsRayQueryParameters2D { CollisionMask = SOLID_MASK };
+    _worldQuery.From = from;
+    _worldQuery.To = to;
+    using var result = SpaceState.IntersectRay(_worldQuery);
 
     // IntersectRay returns an empty dictionary when it hits nothing, so the endpoint has to
     // be defaulted rather than read out of it - this used to throw every physics frame the
     // beam pointed at open sky.
-    return result.ContainsKey("position") ? (Vector2)result["position"] : to;
+    return result.Count > 0 ? (Vector2)result[_positionKey] : to;
   }
 
   // The face the beam lands on and where it lands, if it reaches one before the world stops it.
@@ -97,17 +106,21 @@ public partial class LazerBeam : Node2D {
   // the port.
   private (BaseFace Face, Vector2 Position)? _castToFace(Vector2 worldEnd) {
     var from = muzzleNode.GlobalPosition - _beamDirection * MOUNT_CLEARANCE;
-    var query = PhysicsRayQueryParameters2D.Create(from, worldEnd, PhysicsLayers.BoxFace.Mask);
-    query.CollideWithBodies = false;
-    query.CollideWithAreas = true;
-    var result = SpaceState.IntersectRay(query);
+    _faceQuery ??= new PhysicsRayQueryParameters2D {
+      CollisionMask = PhysicsLayers.BoxFace.Mask,
+      CollideWithBodies = false,
+      CollideWithAreas = true,
+    };
+    _faceQuery.From = from;
+    _faceQuery.To = worldEnd;
+    using var result = SpaceState.IntersectRay(_faceQuery);
 
     // An empty dictionary means the ray reached the end of the segment, and indexing a Godot
     // dictionary that does not hold the key throws rather than handing back nil.
-    if (!result.ContainsKey("collider") || result["collider"].As<Node>() is not BaseFace face) {
+    if (result.Count == 0 || result[_colliderKey].As<Node>() is not BaseFace face) {
       return null;
     }
-    return (face, (Vector2)result["position"]);
+    return (face, (Vector2)result[_positionKey]);
   }
 
   // The beam is absorbed by whatever it lands on, so it is drawn only that far. A face resting on

@@ -75,12 +75,10 @@ public partial class PlayerStandingState : PlayerBaseState {
     foreach (var offset in FloorProbeOffsets(half.X)) {
       Vector2 from = player.GlobalPosition + new Vector2(offset, probeBox.Y + RAYCAST_Y_OFFSET);
       Vector2 to = from + new Vector2(0.0f, RAYCAST_LENGTH);
-      var physicsRayQueryParameters = PhysicsRayQueryParameters2D.Create(
-          from, to, exclude: new Godot.Collections.Array<Rid> { player.GetRid() }
-      );
-
-      var result = spaceState.IntersectRay(physicsRayQueryParameters);
-      if (result.ContainsKey("collider")) {
+      // An empty dictionary is a miss; disposing it keeps four probes a tick off the
+      // finalizer queue.
+      using var result = spaceState.IntersectRay(FloorRayQuery(player, from, to));
+      if (result.Count > 0) {
         combination += i;
       }
       i *= 2;

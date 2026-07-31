@@ -122,4 +122,17 @@ public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
       return false;
     return inputManager.IsJustPressed(IInputManager.Action.Jump);
   }
+
+  // One reused query per state: building one per probe allocates three engine objects a ray,
+  // and the standing state probes four times every physics tick the cube spends stood still.
+  private PhysicsRayQueryParameters2D? _rayQuery;
+
+  protected PhysicsRayQueryParameters2D FloorRayQuery(Player player, Vector2 from, Vector2 to) {
+    _rayQuery ??= new PhysicsRayQueryParameters2D {
+      Exclude = new Godot.Collections.Array<Rid> { player.GetRid() },
+    };
+    _rayQuery.From = from;
+    _rayQuery.To = to;
+    return _rayQuery;
+  }
 }

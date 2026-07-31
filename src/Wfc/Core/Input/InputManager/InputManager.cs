@@ -5,7 +5,9 @@ using Godot;
 
 public class InputManager : IInputManager {
 
-  public static readonly Dictionary<IInputManager.Action, string> Actions = new Dictionary<IInputManager.Action, string> {
+  // StringName values, not strings: the player states poll these several times every physics
+  // tick, and Input converts a string to a fresh StringName on every such call.
+  public static readonly Dictionary<IInputManager.Action, StringName> Actions = new Dictionary<IInputManager.Action, StringName> {
     { IInputManager.Action.MoveLeft, "move_left" },
     { IInputManager.Action.MoveRight, "move_right" },
     { IInputManager.Action.Jump, "jump" },

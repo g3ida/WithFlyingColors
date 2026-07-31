@@ -141,6 +141,7 @@ public partial class GameCamera : Camera2D, IPersistent {
     GlobalPosition = FollowNode.GlobalPosition;
     Align();
     ResetSmoothing();
+    ResetPhysicsInterpolation();
   }
 
   private void _OnPlayerJump() {
@@ -207,6 +208,7 @@ public partial class GameCamera : Camera2D, IPersistent {
   public async void UpdatePosition(Vector2 pos) {
     PositionSmoothingEnabled = false;
     GlobalPosition = pos;
+    ResetPhysicsInterpolation();
     await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
     SetDeferred(Camera2D.PropertyName.PositionSmoothingEnabled, true);
   }

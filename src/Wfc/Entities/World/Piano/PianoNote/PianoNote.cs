@@ -68,6 +68,8 @@ public partial class PianoNote : AnimatableBody2D {
   private Vector2 _calculatedPosition;
   private Tween? _tweener = null;
   private bool _isPlayerAboveTheNote = false;
+  private PhysicsRayQueryParameters2D? _playerProbe;
+  private static readonly StringName _colliderKey = "collider";
 
   public override void _EnterTree() {
     base._EnterTree();
@@ -193,36 +195,27 @@ public partial class PianoNote : AnimatableBody2D {
     return (_collisionShapeNode.Shape as RectangleShape2D)?.Size ?? Vector2.Zero;
   }
 
-  private List<Dictionary<string, Vector2>> GetRayLinesInGlobalPosition() {
-    var rays = new List<Dictionary<string, Vector2>>();
-    Vector2 note_half_size = GetDetectionAreaShapeSize() * 0.5f * Scale;
-
-    var from_offset_x = new float[]
-    {
-            -note_half_size.X,
-            -note_half_size.X * 0.5f,
-            0.0f,
-            note_half_size.X * 0.5f,
-            note_half_size.X
-    };
-    var spriteHeight = _spriteNode.Texture.GetHeight();
-    foreach (float offset in from_offset_x) {
-      var from = GlobalPosition + new Vector2(offset, -spriteHeight * 0.5f - RAYCAST_Y_OFFSET);
-      var to = from + new Vector2(0.0f, -RAYCAST_LENGTH);
-      rays.Add(new Dictionary<string, Vector2> { { "from", from }, { "to", to } });
-    }
-    return rays;
-  }
-
+  // Five probes spread across the note's top, reused query and all: this runs every physics
+  // tick the note spends pressed, and building the machinery fresh allocated a dozen engine
+  // objects a tick.
   private bool RaycastPlayer() {
     var spaceState = GetWorld2D().DirectSpaceState;
-    var rays = GetRayLinesInGlobalPosition();
-    foreach (var ray in rays) {
-      var from = ray["from"];
-      var to = ray["to"];
-      var physicsRayQueryParameters = PhysicsRayQueryParameters2D.Create(from, to, exclude: new Godot.Collections.Array<Rid> { GetRid() });
-      var result = spaceState.IntersectRay(physicsRayQueryParameters);
-      if (result.ContainsKey("collider") && result["collider"].As<Player.Player>() != null) {
+    var noteHalfWidth = GetDetectionAreaShapeSize().X * 0.5f * Scale.X;
+    var spriteHeight = _spriteNode.Texture.GetHeight();
+
+    _playerProbe ??= new PhysicsRayQueryParameters2D {
+      Exclude = new Godot.Collections.Array<Rid> { GetRid() },
+    };
+
+    Span<float> offsets = stackalloc float[] {
+      -noteHalfWidth, -noteHalfWidth * 0.5f, 0.0f, noteHalfWidth * 0.5f, noteHalfWidth
+    };
+    foreach (float offset in offsets) {
+      var from = GlobalPosition + new Vector2(offset, (-spriteHeight * 0.5f) - RAYCAST_Y_OFFSET);
+      _playerProbe.From = from;
+      _playerProbe.To = from + new Vector2(0.0f, -RAYCAST_LENGTH);
+      using var result = spaceState.IntersectRay(_playerProbe);
+      if (result.Count > 0 && result[_colliderKey].As<Player.Player>() != null) {
         return true;
       }
     }
