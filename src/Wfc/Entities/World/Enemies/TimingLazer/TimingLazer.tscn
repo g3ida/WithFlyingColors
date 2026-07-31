@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://d31u6w1k00q6g"]
+
+[ext_resource type="Script" uid="uid://dadblha4s8qjp" path="res://src/Wfc/Entities/World/Enemies/TimingLazer/TimingLazer.cs" id="1"]
+[ext_resource type="PackedScene" uid="uid://cgut5po1y8ibm" path="res://src/Wfc/Entities/World/Enemies/LazerBeam/LazerBeam.tscn" id="2"]
+
+[node name="TimingLazer" instance=ExtResource("2")]
+script = ExtResource("1")

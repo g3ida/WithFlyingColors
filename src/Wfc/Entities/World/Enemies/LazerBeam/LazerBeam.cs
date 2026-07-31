@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Enemies;
 
 using Godot;
+using Wfc.Autoload;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
 using Wfc.Skin;
@@ -12,6 +13,10 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [Tool]
 [ScenePath]
 public partial class LazerBeam : Node2D {
+  // Telegraph shows where the beam will land without burning anything - the
+  // warning a timed beam gives before it turns back on.
+  public enum BeamState { Off, Telegraph, On }
+
   #region Nodes
   [NodePath("Line2D")]
   private Line2D beamNode = default!;
@@ -23,12 +28,31 @@ public partial class LazerBeam : Node2D {
   private CpuParticles2D particlesNode = default!;
   [NodePath("Base")]
   private Sprite2D baseNode = default!;
+  [NodePath("MuzzleGlow")]
+  private Sprite2D _muzzleGlowNode = default!;
+  [NodePath("ImpactGlow")]
+  private Sprite2D _impactGlowNode = default!;
+  [NodePath("AudioStreamPlayer2D")]
+  private AudioStreamPlayer2D _audioNode = default!;
   #endregion Nodes
 
   [Export]
   public string ColorGroup { get; set; } = "blue";
 
+  public BeamState State { get; private set; } = BeamState.On;
+
   private bool _wasBurning;
+
+  private const float TELEGRAPH_WIDTH_FACTOR = 0.2f;
+  private const float TELEGRAPH_ALPHA = 0.4f;
+  private const float GLOW_PULSE_AMOUNT = 0.15f;
+  private const float GLOW_PULSE_SPEED = 9.0f;
+
+  private float _bgBeamWidth;
+  private Vector2 _muzzleGlowBaseScale;
+  private Vector2 _impactGlowBaseScale;
+  private float _time;
+  private Vector2 _beamLocalEnd;
 
   public override void _Ready() {
     base._Ready();
@@ -47,6 +71,54 @@ public partial class LazerBeam : Node2D {
     beamBgNode.DefaultColor = new Color(beamBgNode.DefaultColor, 0.63f);
     particlesNode.Color = darkColor;
     baseNode.Modulate = color;
+    _muzzleGlowNode.Modulate = color;
+    _impactGlowNode.Modulate = color;
+
+    _bgBeamWidth = beamBgNode.Width;
+    _muzzleGlowBaseScale = _muzzleGlowNode.Scale;
+    _impactGlowBaseScale = _impactGlowNode.Scale;
+    // The scene's defaults already show the beam firing, and applying the state
+    // in the editor would start the audio there.
+    if (!Engine.IsEditorHint()) {
+      _applyBeamState();
+    }
+  }
+
+  public void SetBeamState(BeamState state) {
+    if (State == state) {
+      return;
+    }
+    State = state;
+    // A face already standing in the path when the beam turns back on is a
+    // fresh contact, not a continuation of the one before the rest.
+    _wasBurning = false;
+    _applyBeamState();
+  }
+
+  private void _applyBeamState() {
+    var firing = State == BeamState.On;
+    beamNode.Visible = firing;
+    beamBgNode.Visible = State != BeamState.Off;
+    beamBgNode.Width = firing ? _bgBeamWidth : _bgBeamWidth * TELEGRAPH_WIDTH_FACTOR;
+    beamBgNode.Modulate = firing ? Colors.White : new Color(1f, 1f, 1f, TELEGRAPH_ALPHA);
+    particlesNode.Emitting = firing;
+    _muzzleGlowNode.Visible = firing;
+    _impactGlowNode.Visible = firing;
+    if (firing && !_audioNode.Playing) {
+      _audioNode.Play();
+    }
+    else if (!firing && _audioNode.Playing) {
+      _audioNode.Stop();
+    }
+  }
+
+  // A perfectly steady glow reads as a sticker; a slight counter-phased
+  // breathing on the two endpoints sells the beam as live energy.
+  private void _pulseGlows(float delta) {
+    _time += delta;
+    var pulse = GLOW_PULSE_AMOUNT * Mathf.Sin(_time * GLOW_PULSE_SPEED);
+    _muzzleGlowNode.Scale = _muzzleGlowBaseScale * (1.0f - pulse);
+    _impactGlowNode.Scale = _impactGlowBaseScale * (1.0f + pulse);
   }
 
   private const float BEAM_RANGE = 1000.0f;
@@ -134,10 +206,31 @@ public partial class LazerBeam : Node2D {
     beamNode.SetPointPosition(1, localEnd);
     beamBgNode.SetPointPosition(1, localEnd);
     particlesNode.Position = localEnd;
+    _impactGlowNode.Position = localEnd;
+    _beamLocalEnd = localEnd;
+  }
+
+  // The hum belongs to the beam, not to its emitter: the audio player sits on
+  // whatever point of the beam is nearest the player, so standing anywhere
+  // along a long beam sounds like standing next to it.
+  private void _placeAudioAlongBeam() {
+    var player = Global.Instance()?.Player;
+    if (player is null || !IsInstanceValid(player) || !player.IsInsideTree()) {
+      return;
+    }
+    var from = muzzleNode.Position;
+    var span = _beamLocalEnd - from;
+    var lengthSquared = span.LengthSquared();
+    if (lengthSquared <= Mathf.Epsilon) {
+      _audioNode.Position = from;
+      return;
+    }
+    var t = Mathf.Clamp((ToLocal(player.GlobalPosition) - from).Dot(span) / lengthSquared, 0f, 1f);
+    _audioNode.Position = from + (span * t);
   }
 
   public override void _PhysicsProcess(double delta) {
-    if (Engine.IsEditorHint()) {
+    if (Engine.IsEditorHint() || State == BeamState.Off) {
       return;
     }
 
@@ -146,6 +239,13 @@ public partial class LazerBeam : Node2D {
 
     // Ending on the player, not on the wall behind them.
     _drawBeamTo(hit?.Position ?? worldEnd);
+    _pulseGlows((float)delta);
+    _placeAudioAlongBeam();
+
+    // A telegraphed beam shows where it will land but burns nothing yet.
+    if (State != BeamState.On) {
+      return;
+    }
 
     // The beam crossing a face it burns is one event, not one per frame it goes on crossing it.
     var burns = hit is { } landing && !landing.Face.AcceptsColor(ColorGroup);

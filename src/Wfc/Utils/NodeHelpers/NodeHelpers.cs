@@ -9,7 +9,16 @@ using Wfc.Utils.Attributes;
 
 public static class NodeHelpers {
   public static void WireNodes(this Node node) {
-    var fields = node.GetType().GetFields(BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+    // Walked one declared level at a time: private [NodePath] fields on a base
+    // type are invisible to a single GetFields call on the runtime type, and a
+    // subclassed scene (TimingLazer : LazerBeam) still has to wire its base.
+    for (var type = node.GetType(); type != null && type != typeof(Node); type = type.BaseType) {
+      _wireDeclaredNodes(node, type);
+    }
+  }
+
+  private static void _wireDeclaredNodes(Node node, System.Type type) {
+    var fields = type.GetFields(BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
 
     foreach (var field in fields) {
       var attribute = field.GetCustomAttribute<NodePathAttribute>();

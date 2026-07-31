@@ -1,10 +1,13 @@
-[gd_scene load_steps=11 format=3 uid="uid://cgut5po1y8ibm"]
+[gd_scene load_steps=18 format=3 uid="uid://cgut5po1y8ibm"]
 
 [ext_resource type="Script" uid="uid://c51cj23ivp1b7" path="res://src/Wfc/Entities/World/Enemies/LazerBeam/LazerBeam.cs" id="1"]
 [ext_resource type="Texture2D" uid="uid://bifub54irtuvc" path="res://Assets/Sprites/Particles/glow_circle.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://bh5d30238xeru" path="res://Assets/Sprites/Platforms/lazer.png" id="3"]
 [ext_resource type="Shader" uid="uid://clljdlovye5nq" path="res://Assets/Shaders/LazerBeam.gdshader" id="4"]
 [ext_resource type="AudioStream" uid="uid://cw1ev77d6t1mb" path="res://Assets/sfx/lazer.ogg" id="5"]
+[ext_resource type="Shader" uid="uid://t5s77lhhul8t" path="res://Assets/Shaders/LazerGlow.gdshader" id="6"]
+[ext_resource type="Shader" uid="uid://bk8nbke8o1kvk" path="res://Assets/Shaders/LazerSpark.gdshader" id="7"]
+[ext_resource type="Shader" uid="uid://darba007d57w" path="res://Assets/Shaders/LazerFireSpark.gdshader" id="8"]
 
 [sub_resource type="FastNoiseLite" id="5"]
 
@@ -15,6 +18,18 @@ noise = SubResource("5")
 [sub_resource type="ShaderMaterial" id="4"]
 shader = ExtResource("4")
 shader_parameter/noise = SubResource("6")
+
+[sub_resource type="ShaderMaterial" id="8"]
+shader = ExtResource("6")
+
+[sub_resource type="ShaderMaterial" id="9"]
+shader = ExtResource("7")
+
+[sub_resource type="ShaderMaterial" id="10"]
+shader = ExtResource("8")
+
+[sub_resource type="CanvasItemMaterial" id="7"]
+blend_mode = 1
 
 [sub_resource type="Curve" id="1"]
 _data = [Vector2(0.018797, 0.913447), 0.0, 0.0, 0, 0, Vector2(0.729323, 0.827861), 0.0, 0.0, 0, 0, Vector2(0.984962, 0.165699), 0.0, 0.0, 0, 0]
@@ -33,35 +48,71 @@ position = Vector2(12.5, 0)
 rotation = 1.5708
 texture = ExtResource("3")
 
+[node name="Line2DBackground" type="Line2D" parent="."]
+show_behind_parent = true
+material = SubResource("8")
+position = Vector2(0.3, 0)
+points = PackedVector2Array(0, 0, 67, 0)
+width = 18.0
+default_color = Color(0, 0.921569, 1, 0.63)
+texture_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
 [node name="Line2D" type="Line2D" parent="."]
 show_behind_parent = true
 material = SubResource("4")
 position = Vector2(0.3, 0)
 points = PackedVector2Array(0, 0, 67, 0)
-width = 6.0
+width = 4.0
 default_color = Color(0, 0.921569, 1, 1)
-
-[node name="Line2DBackground" type="Line2D" parent="."]
-show_behind_parent = true
-position = Vector2(0.3, 0)
-points = PackedVector2Array(0, 0, 67, 0)
-width = 6.0
-default_color = Color(0, 0.921569, 1, 0.63)
+texture_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
 
 [node name="Muzzle" type="Marker2D" parent="."]
 position = Vector2(0.3, 0)
 
-[node name="Particles" type="CPUParticles2D" parent="."]
-position = Vector2(65, 0)
-lifetime = 0.3
+[node name="MuzzleGlow" type="Sprite2D" parent="."]
+show_behind_parent = true
+material = SubResource("7")
+position = Vector2(2, 0)
+scale = Vector2(0.6, 0.6)
 texture = ExtResource("2")
+
+[node name="ImpactGlow" type="Sprite2D" parent="."]
+show_behind_parent = true
+material = SubResource("9")
+position = Vector2(65, 0)
+scale = Vector2(4.5, 4.5)
+texture = ExtResource("2")
+
+[node name="Particles" type="CPUParticles2D" parent="."]
+show_behind_parent = true
+material = SubResource("10")
+position = Vector2(65, 0)
+amount = 16
+lifetime = 0.4
+lifetime_randomness = 0.5
+texture = ExtResource("2")
+direction = Vector2(-1, 0)
+spread = 65.0
 gravity = Vector2(0, 0)
+initial_velocity_min = 160.0
+initial_velocity_max = 380.0
+damping_min = 60.0
+damping_max = 140.0
+particle_flag_align_y = true
+scale_amount_min = 0.5
+scale_amount_max = 0.9
 scale_amount_curve = SubResource("1")
 color = Color(0, 0.827451, 0.898039, 1)
 color_ramp = SubResource("2")
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("5")
+volume_db = 8.0
 autoplay = true
-max_distance = 500.0
+max_distance = 1000.0
+attenuation = 0.7
 bus = &"sfx2d"
