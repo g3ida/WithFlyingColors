@@ -66,6 +66,8 @@ public partial class SimplePlatform : StaticBody2D {
         _areaNode.AddToGroup(colorGroup);
       }
     }
+    // Nothing to feed the shader until something lands; OnPlayerLanded turns this back on.
+    SetProcess(false);
   }
 
   public void correctAreaSize() {
@@ -91,6 +93,7 @@ public partial class SimplePlatform : StaticBody2D {
     if (area == _areaNode) {
       animationTimer = 0;
       contactPosition = position;
+      SetProcess(true);
     }
   }
 
@@ -113,11 +116,14 @@ public partial class SimplePlatform : StaticBody2D {
         // Position in shader coords is now Y instead of 1-Y as it was in Godot 3.x
         Vector2 positionInShaderCoords = new Vector2(pos.X, pos.Y);
 
-        shaderMaterial.SetShaderParameter("u_contact_pos", positionInShaderCoords);
-        shaderMaterial.SetShaderParameter("u_timer", animationTimer);
-        shaderMaterial.SetShaderParameter("u_aspect_ratio", resolution.Y / resolution.X);
-        shaderMaterial.SetShaderParameter("darkness", splash_darkness);
+        shaderMaterial.SetShaderParameter(PlatformSplash.ContactPosParam, positionInShaderCoords);
+        shaderMaterial.SetShaderParameter(PlatformSplash.TimerParam, animationTimer);
+        shaderMaterial.SetShaderParameter(PlatformSplash.AspectRatioParam, resolution.Y / resolution.X);
+        shaderMaterial.SetShaderParameter(PlatformSplash.DarknessParam, splash_darkness);
       }
+    }
+    if (animationTimer > PlatformSplash.Duration(splash_darkness)) {
+      SetProcess(false);
     }
   }
 

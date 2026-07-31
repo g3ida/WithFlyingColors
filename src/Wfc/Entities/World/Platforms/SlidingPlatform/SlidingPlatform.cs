@@ -175,6 +175,9 @@ public partial class SlidingPlatform : Node2D, IPersistent {
   private void CleanTween() {
     _tweener?.Kill();
     _tweener = CreateTween();
+    // _PhysicsProcess is what applies _follow to the body, so the tween has to advance on the
+    // same clock: sampled from the idle clock, the platform's speed pulses with the render rate.
+    _tweener.SetProcessMode(Tween.TweenProcessMode.Physics);
   }
 
   private void ProcessTween() {
@@ -267,6 +270,7 @@ public partial class SlidingPlatform : Node2D, IPersistent {
     _tweener?.Kill();
     _currentState = _saveData.State;
     _platform.GlobalPosition = new Vector2(_saveData.PositionX, _saveData.PositionY);
+    _platform.ResetPhysicsInterpolation();
     _follow = _platform.GlobalPosition;
     SetLooping(_saveData.Looping);
     is_stopped = _saveData.IsStopped;

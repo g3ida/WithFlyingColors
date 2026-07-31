@@ -56,6 +56,8 @@ public partial class Platform : AnimatableBody2D {
       _ninePatchRectNode.Modulate = color;
       _areaNode.AddToGroup(Group);
     }
+    // Nothing to feed the shader until something lands; OnPlayerLanded turns this back on.
+    SetProcess(false);
   }
 
   public override void _EnterTree() {
@@ -72,6 +74,7 @@ public partial class Platform : AnimatableBody2D {
     if (area == _areaNode) {
       _animationTimer = 0;
       _contactPosition = position;
+      SetProcess(true);
     }
   }
 
@@ -96,11 +99,14 @@ public partial class Platform : AnimatableBody2D {
         Vector2 pos = new Vector2(currentPos.X / resolution.X, currentPos.Y / resolution.Y);
         Vector2 positionInShaderCoords = new Vector2(pos.X, 1 - pos.Y);
 
-        shaderMaterial.SetShaderParameter("u_contact_pos", positionInShaderCoords);
-        shaderMaterial.SetShaderParameter("u_timer", _animationTimer);
-        shaderMaterial.SetShaderParameter("u_aspect_ratio", resolution.Y / resolution.X);
-        shaderMaterial.SetShaderParameter("darkness", SplashDarkness);
+        shaderMaterial.SetShaderParameter(PlatformSplash.ContactPosParam, positionInShaderCoords);
+        shaderMaterial.SetShaderParameter(PlatformSplash.TimerParam, _animationTimer);
+        shaderMaterial.SetShaderParameter(PlatformSplash.AspectRatioParam, resolution.Y / resolution.X);
+        shaderMaterial.SetShaderParameter(PlatformSplash.DarknessParam, SplashDarkness);
       }
+    }
+    if (_animationTimer > PlatformSplash.Duration(SplashDarkness)) {
+      SetProcess(false);
     }
   }
 
@@ -120,7 +126,6 @@ public partial class Platform : AnimatableBody2D {
   }
 
   private void _disconnectSignals() {
-    base._ExitTree();
     if (Engine.IsEditorHint())
       return;
     EventHandler.Instance.Events.PlayerLanded -= OnPlayerLanded;

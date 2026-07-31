@@ -246,6 +246,9 @@ public partial class Player : CharacterBody2D, IPersistent {
     Scale = Vector2.One;
     Rotate(_saveData.Angle - Rotation);
     PlayerRotationAction.Reset(_saveData.Angle);
+    // A respawn is a teleport: without this the interpolated cube streaks from the corpse to
+    // the checkpoint for a frame.
+    ResetPhysicsInterpolation();
     ShowColorAreas();
     HandleInputIsDisabled = false;
   }

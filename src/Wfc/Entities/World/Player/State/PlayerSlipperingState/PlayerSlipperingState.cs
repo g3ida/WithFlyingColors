@@ -178,11 +178,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     var to = from + new Vector2(0.0f, rayLength);
 
     var spaceState = player.GetWorld2D().DirectSpaceState;
-    var physicsRayQueryParameters = PhysicsRayQueryParameters2D.Create(
-        from, to, exclude: new Godot.Collections.Array<Rid> { player.GetRid() }
-    );
-
-    var result = spaceState.IntersectRay(physicsRayQueryParameters);
-    return result.ContainsKey("collider");
+    using var result = spaceState.IntersectRay(FloorRayQuery(player, from, to));
+    return result.Count > 0;
   }
 }
