@@ -173,6 +173,7 @@
     "Respawns",
     "Respawned",
     "texels",
-    "travelled"
+    "travelled",
+    "finalizer"
   ]
 }
