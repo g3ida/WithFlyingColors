@@ -5,7 +5,6 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
-using Wfc.Entities.Ui;
 using Wfc.Entities.Ui.Menubox;
 using Wfc.Entities.Ui.Slots;
 using Wfc.Screens.MenuManager;
@@ -20,9 +19,6 @@ public partial class MainMenu : GameMenu {
 
   [NodePath("MenuBox")]
   private Menubox _menuBoxNode = null!;
-
-  [NodePath("ResetDialogContainer")]
-  private DialogContainer _resetSlotDialogNode = null!;
 
   public override void _EnterTree() {
     base._EnterTree();
@@ -45,8 +41,6 @@ public partial class MainMenu : GameMenu {
 
   private void _refreshCurrentSlotLabel() =>
     _currentSlotLabelNode.Text = SaveManager.GetCurrentSlotLine(LocalizationService);
-
-  public void ShowResetDataDialog() => _resetSlotDialogNode.ShowDialog();
 
   public override bool OnMenuButtonPressed(MenuAction menuAction) {
     switch (menuAction) {
@@ -73,41 +67,30 @@ public partial class MainMenu : GameMenu {
 
   private bool ProcessPlaySubMenus(MenuAction menuAction) {
     switch (menuAction) {
-      case MenuAction.NewGame:
-        if (SaveManager.GetSlotMetaData()?.Progress > 0) {
-          _resetSlotDialogNode.ShowDialog();
-        }
-        else {
-          NavigateToScreen(GameMenus.GAME);
-          _menuBoxNode.HideSubMenuIfNeeded();
-        }
-        return true;
+      // Continue is the zero-friction path: it resumes the game most recently played,
+      // whichever slot that was. The button only exists when the query has an answer.
       case MenuAction.ContinueGame:
-        _menuBoxNode.HideSubMenuIfNeeded();
-        NavigateToScreen(GameMenus.GAME);
+        if (SaveManager.MostRecentlyPlayedSlotIndex() is { } slotIndex) {
+          SaveManager.SelectSlot(slotIndex);
+          _menuBoxNode.HideSubMenuIfNeeded();
+          NavigateToScreen(GameMenus.GAME);
+        }
         return true;
-      // The action the play sub-menu's slot button actually emits. This listened for
-      // SelectSlot, which is what the select-slot screen reports when a slot has been
-      // chosen on it, so the button here answered to nothing.
-      case MenuAction.GoToSlotSelect:
+      // Choosing where a new game lives - and confirming a wipe if that spot is
+      // taken - is the slot picker's business, so both of these just open it in the
+      // right mode.
+      case MenuAction.NewGame:
+        MenuManager.SetSlotPickerMode(SlotPickerMode.NewGame);
+        _menuBoxNode.HideSubMenuIfNeeded();
+        NavigateToScreen(GameMenus.SELECT_SLOT);
+        return true;
+      case MenuAction.LoadGame:
+        MenuManager.SetSlotPickerMode(SlotPickerMode.Load);
         _menuBoxNode.HideSubMenuIfNeeded();
         NavigateToScreen(GameMenus.SELECT_SLOT);
         return true;
       default:
         return false;
     }
-  }
-
-  private void OnResetSlotConfirmed() {
-    if (SaveManager.HasSelectedSlot()) {
-      var slotIndex = SaveManager.GetSelectedSlotIndex();
-      SaveManager.RemoveSaveSlot(slotIndex);
-      // Wiping the selected slot clears the selection, but the player is starting a
-      // new game in that very slot: keep it selected so the first save doesn't
-      // silently land in slot 0.
-      SaveManager.SelectSlot(slotIndex);
-    }
-    _menuBoxNode.HideSubMenuIfNeeded();
-    NavigateToScreen(GameMenus.GAME);
   }
 }

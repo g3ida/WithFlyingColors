@@ -7,10 +7,14 @@ using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Entities.Ui;
 using Wfc.Entities.Ui.Slots;
+using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
+// One screen, two jobs, told apart by the mode the caller left on the menu manager:
+// picking where a new game lives (empty slots welcome, filled ones ask before being
+// wiped) or picking which existing game to load.
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class SelectSlotMenu : GameMenu {
@@ -20,13 +24,14 @@ public partial class SelectSlotMenu : GameMenu {
   private SlotsContainer _slotsContainer = default!;
   [NodePath("ResetDialogContainer")]
   private DialogContainer _resetDialogContainerNode = default!;
-  [NodePath("NoSelectedSlotDialogContainer")]
-  private DialogContainer _noSelectedSlotDialogContainer = default!;
+  [NodePath("NewGameDialogContainer")]
+  private DialogContainer _newGameDialogContainerNode = default!;
   [NodePath("CurrentSlotLabel")]
   private Label CurrentSlotLabelNode = default!;
-  // The slot the player last acted on, and the one the reset dialog will wipe if it
-  // is confirmed.
+  // The slot the player last acted on: the one a confirmed dialog will wipe.
   private int _currentSlotOnFocus;
+
+  private SlotPickerMode _pickerMode = SlotPickerMode.Load;
 
   public void OnResolved() {
 
@@ -35,6 +40,8 @@ public partial class SelectSlotMenu : GameMenu {
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
+    _pickerMode = MenuManager.GetSlotPickerMode();
+    _slotsContainer.SetAllowSelectingEmptySlots(_pickerMode == SlotPickerMode.NewGame);
     _currentSlotOnFocus = SaveManager.GetSelectedSlotIndex();
     _slotsContainer.SetGameCurrentSelectedSlot(SaveManager.GetSelectedSlotIndex());
     SetSelectedSlotLabel();
@@ -44,22 +51,13 @@ public partial class SelectSlotMenu : GameMenu {
 
   public override bool OnMenuButtonPressed(MenuAction menuAction) {
     switch (menuAction) {
-      case MenuAction.ShowDialog:
-        _noSelectedSlotDialogContainer.ShowDialog();
-        return true;
       case MenuAction.DeleteSlot:
       case MenuAction.SelectSlot:
         return true;
-      case MenuAction.GoBack:
-        // Leaving with no slot selected would strand the game with nowhere to save,
-        // so the screen holds the player here. The guard lives on the action rather
-        // than on the Back button so UICancel goes through it too.
-        if (!SaveManager.HasSelectedSlot()) {
-          _noSelectedSlotDialogContainer.ShowDialog();
-          return true;
-        }
-        return false; // Let GameMenu run the default back navigation.
       default:
+        // Backing out without picking is fine in both modes: every write path
+        // refuses a slot that holds nothing, and the play sub-menu only offers
+        // what the slots can actually answer for.
         return false;
     }
   }
@@ -71,11 +69,21 @@ public partial class SelectSlotMenu : GameMenu {
   private void _on_SlotsContainer_SlotPressed(int id, string action) {
     _currentSlotOnFocus = id;
     if (action == "select") {
-      SaveManager.SelectSlot(id);
-      _on_confirm_slot_button_selected(id);
-      _slotsContainer.SetGameCurrentSelectedSlot(id);
-      EventHandler.EmitMenuActionPressed(MenuAction.SelectSlot);
-
+      if (_pickerMode == SlotPickerMode.NewGame) {
+        if (SaveManager.IsSLotFilled(id)) {
+          _newGameDialogContainerNode.ShowDialog();
+        }
+        else {
+          _startNewGameInSlot(id);
+        }
+      }
+      else {
+        SaveManager.SelectSlot(id);
+        _slotsContainer.SetGameCurrentSelectedSlot(id);
+        SetSelectedSlotLabel();
+        EventHandler.EmitMenuActionPressed(MenuAction.SelectSlot);
+        NavigateToScreen(GameMenus.GAME);
+      }
     }
     else if (action == "delete") {
       _resetDialogContainerNode.ShowDialog();
@@ -83,14 +91,18 @@ public partial class SelectSlotMenu : GameMenu {
     }
   }
 
-  private void _on_confirm_slot_button_selected(int slotIndex) {
-    if (SaveManager.IsSLotFilled(slotIndex)) {
-      SaveManager.SelectSlot(slotIndex);
-    }
-    else {
-      SaveManager.SaveGame(GetTree(), slotIndex);
-    }
-    SetSelectedSlotLabel();
+  private void _onNewGameOverwriteConfirmed() => _startNewGameInSlot(_currentSlotOnFocus);
+
+  private void _startNewGameInSlot(int slotIndex) {
+    // Wiping the slot clears the selection when it was the selected one, so the
+    // reselect puts the new game exactly where the player pointed rather than
+    // letting the first save land in slot 0.
+    SaveManager.RemoveSaveSlot(slotIndex);
+    SaveManager.SelectSlot(slotIndex);
+    // A blank but real save: the meta file is what lets every later checkpoint
+    // write into this slot.
+    SaveManager.SaveGame(GetTree(), slotIndex);
+    NavigateToLevelScreen(LevelDispatcher.LEVELS[0].Id);
   }
 
   private void OnResetSlotConfirmed() {

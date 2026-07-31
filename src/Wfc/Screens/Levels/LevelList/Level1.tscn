@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://ctn6tng7nqhus"]
+[gd_scene load_steps=29 format=3 uid="uid://ctn6tng7nqhus"]
 
 [ext_resource type="PackedScene" uid="uid://0cgvvyxmoalw" path="res://src/Wfc/Entities/World/CutScenes/CutScene/Cutscene.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://nvn44bv2puaj" path="res://src/Wfc/Entities/World/Player/Player/Player.tscn" id="2"]
@@ -23,15 +23,23 @@
 [ext_resource type="PackedScene" uid="uid://dxdpkyrs224cf" path="res://src/Wfc/Entities/World/Piano/PianoScene/PianoScene.tscn" id="37"]
 [ext_resource type="PackedScene" uid="uid://pgbyoi7k30vg" path="res://src/Wfc/Entities/World/Enemies/SlidingLazer/SlidingLazer.tscn" id="38"]
 [ext_resource type="PackedScene" uid="uid://d31u6w1k00q6g" path="res://src/Wfc/Entities/World/Enemies/TimingLazer/TimingLazer.tscn" id="39"]
+[ext_resource type="PackedScene" uid="uid://blkbqb8j6rnda" path="res://src/Wfc/Entities/World/Temple/GemsTemple/GemsTemple.tscn" id="40"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(29, 92)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q82u4"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_temple_floor"]
+size = Vector2(1000, 200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_temple_floor_area"]
+size = Vector2(1000, 212)
+
 [node name="Level1" type="Node2D"]
 script = ExtResource("3")
 Track = "level1"
+IntroWalkTime = 0.0
 
 [node name="Checkpoint" parent="." instance=ExtResource("36")]
 position = Vector2(-425, -141)
@@ -216,3 +224,23 @@ position = Vector2(-400, 0)
 position = Vector2(-468, -295)
 scale = Vector2(20, 5)
 shape = SubResource("RectangleShape2D_q82u4")
+
+[node name="TempleGround" type="StaticBody2D" parent="."]
+position = Vector2(9500, 516)
+
+[node name="Visual" type="Polygon2D" parent="TempleGround"]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(-500, -100, 500, -100, 500, 100, -500, 100)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TempleGround"]
+shape = SubResource("RectangleShape2D_temple_floor")
+
+[node name="ColorArea" type="Area2D" parent="TempleGround" groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TempleGround/ColorArea"]
+shape = SubResource("RectangleShape2D_temple_floor_area")
+
+[node name="GemsTemple" parent="." instance=ExtResource("40")]
+position = Vector2(9500, 128)

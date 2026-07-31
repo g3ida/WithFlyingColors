@@ -22,6 +22,11 @@ public partial class GameLevel :
   public override void _Notification(int what) => this.Notify(what);
   [Export]
   public string Track { get; set; } = default!;
+  // How long the intro cutscene walks the player forward when this level starts from
+  // its beginning. Per level, because spawns differ: a level whose spawn hangs in the
+  // air or sits near a ledge sets zero rather than walking the player blind.
+  [Export]
+  public float IntroWalkTime { get; set; } = 1.2f;
   [NodePath("Cutscene")]
   private Cutscene _cutsceneNode = default!;
   [NodePath("Player")]

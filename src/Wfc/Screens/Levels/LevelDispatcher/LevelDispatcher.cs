@@ -21,10 +21,30 @@ public static class LevelDispatcher {
   }
 
 
+  // The canonical play order: the level select numbers its cards from it, the
+  // orchestrator advances along it, and the first entry is what a new game boots
+  // into. LevelId's own ordinals mean nothing here (they are serialization ids).
   public static readonly List<LevelInfo> LEVELS = [
-          new() { Id = LevelId.Level1, TranslationKey = TranslationKey.game_level_title_darkGames },
-          new() { Id = LevelId.Tutorial, TranslationKey = TranslationKey.game_level_title_tutorial }
+          new() { Id = LevelId.Tutorial, TranslationKey = TranslationKey.game_level_title_tutorial },
+          new() { Id = LevelId.FourColors, TranslationKey = TranslationKey.game_level_title_fourColors },
+          new() { Id = LevelId.Level1, TranslationKey = TranslationKey.game_level_title_letsPlayWithColors }
   ];
+
+  // The level after this one in play order, or null at the end of the chain (and for
+  // a level the chain does not know, which the caller treats the same way: nowhere
+  // to advance to).
+  public static LevelId? NextLevel(LevelId levelId) {
+    var index = LEVELS.FindIndex(level => level.Id == levelId);
+    if (index < 0 || index + 1 >= LEVELS.Count) {
+      return null;
+    }
+    return LEVELS[index + 1].Id;
+  }
+
+  public static TranslationKey? TitleKeyOf(LevelId levelId) {
+    var index = LEVELS.FindIndex(level => level.Id == levelId);
+    return index < 0 ? null : LEVELS[index].TranslationKey;
+  }
 
   public partial struct LevelInfo {
     public LevelId Id { get; set; }

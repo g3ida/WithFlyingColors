@@ -20,6 +20,7 @@ public enum MenuAction {
   ConfirmDialog = 15,
   ExitClearedLevel = 16,
   DismissDialog = 17,
+  LoadGame = 18,
 }
 
 public static partial class MenuActionExtensions {

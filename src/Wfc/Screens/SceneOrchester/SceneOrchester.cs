@@ -1,6 +1,5 @@
 namespace Wfc.Screens;
 
-using System;
 using System.Linq;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
@@ -8,9 +7,11 @@ using Godot;
 using Wfc.Core.Audio;
 using Wfc.Core.Event;
 using Wfc.Core.Persistence;
+using Wfc.Entities.Ui;
 using Wfc.Entities.World.Checkpoints;
 using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
+using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -28,8 +29,23 @@ public partial class SceneOrchester : Node2D {
   [Dependency]
   public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
 
+  // The id the level's Cutscene node matches start and end requests on. Unique to
+  // the intro so it cannot collide with a cutscene the level itself is running.
+  private const string INTRO_CUTSCENE_ID = "LevelIntro";
+
+  [NodePath("LevelTitleCard")]
+  private LevelTitleCard _titleCardNode = default!;
+
   GameLevel? _currentLevel = null;
   LevelId? _currentLevelId = null;
+  // The level the swap will land on: set when a clear starts the cover, cleared once
+  // the swap has happened behind it.
+  private LevelId? _pendingLevelId = null;
+
+  // The intro walks the player forward while the title fades over the scene; the
+  // walk budget comes from the level itself.
+  private bool _introActive;
+  private float _introWalkTimeLeft;
 
   public override void _EnterTree() {
     base._EnterTree();
@@ -44,7 +60,10 @@ public partial class SceneOrchester : Node2D {
 
   public override void _Ready() {
     base._Ready();
+    this.WireNodes();
     SetProcess(false);
+    _titleCardNode.Covered += _onTitleCardCovered;
+    _titleCardNode.TitleFinished += _onTitleFinished;
   }
 
   public void OnResolved() {
@@ -53,12 +72,23 @@ public partial class SceneOrchester : Node2D {
       MenuManager.GetCurrentLevelId(),
       metaData?.LevelId,
       metaData?.Progress ?? 0,
+      (metaData?.ClearedLevels.Count ?? 0) > 0,
       LevelDispatcher.LEVELS.First().Id
     );
 
-    _currentLevelId = decision.LevelId;
-    _currentLevel = _loadLevel(decision.LevelId);
-    if (_currentLevel != null && decision.ShouldRestoreSavedGame) {
+    _startLevel(decision.LevelId, decision.ShouldRestoreSavedGame);
+    // A level taken from its top gets the full entrance; a checkpoint resume drops
+    // the player exactly where they left, where a scripted walk could shove them
+    // off whatever they saved on.
+    if (!decision.ShouldRestoreSavedGame) {
+      _beginLevelIntro();
+    }
+  }
+
+  private void _startLevel(LevelId levelId, bool restoreSavedGame) {
+    _currentLevelId = levelId;
+    _currentLevel = _loadLevel(levelId);
+    if (_currentLevel != null && restoreSavedGame) {
       SaveManager.LoadGame(GetTree(), _currentLevel.PlayerNode, _currentLevel.CameraNode);
     }
   }
@@ -93,9 +123,13 @@ public partial class SceneOrchester : Node2D {
     SaveManager.RecordProgress(GetTree(), _currentLevelId.Value, _checkpointProgressPercent());
   }
 
-  // The share of the level's checkpoints the player has passed.
+  // The share of the current level's checkpoints the player has passed. Scoped to the
+  // level rather than the whole tree, so nothing outside it can dilute the count.
   private int _checkpointProgressPercent() {
-    var checkpoints = GetTree().GetNodesInGroup(IPersistent.PERSISTENT_GROUP_NAME).OfType<CheckpointArea>().ToList();
+    if (_currentLevel == null) {
+      return 0;
+    }
+    var checkpoints = _currentLevel.FindDescendants<CheckpointArea>().ToList();
     if (checkpoints.Count == 0) {
       return 0;
     }
@@ -112,6 +146,9 @@ public partial class SceneOrchester : Node2D {
     if (level != null) {
       AddChild(level);
       level.Owner = this;
+      // Input runs through later siblings first, and the title card must see - and
+      // swallow - the pause key before the level's own pause menu does.
+      MoveChild(_titleCardNode, GetChildCount() - 1);
     }
     else {
       GD.PrintErr($"Could not Instantiate level {levelId}");
@@ -120,10 +157,95 @@ public partial class SceneOrchester : Node2D {
   }
 
   private void OnLevelCleared() {
-    if (_currentLevel == null) {
-      GD.PushError("LevelCleared raised with no current level: the level clear screen cannot be shown.");
+    if (_currentLevel == null || _currentLevelId == null) {
+      GD.PushError("LevelCleared raised with no current level: there is nothing to advance from.");
       return;
     }
-    _currentLevel.PauseMenuNode.NavigateToScreen(GameMenus.LEVEL_CLEAR_MENU);
+
+    var next = LevelDispatcher.NextLevel(_currentLevelId.Value);
+    if (next == null) {
+      // End of the chain: the cleared screen takes over, and the slot parks on the
+      // finished level while the save still describes it.
+      SaveManager.RecordLevelCleared(GetTree(), _currentLevelId.Value, null);
+      _currentLevel.PauseMenuNode.NavigateToScreen(GameMenus.LEVEL_CLEAR_MENU);
+      return;
+    }
+
+    // Freeze play under the cover; the swap happens once it is opaque.
+    _pendingLevelId = next;
+    GetTree().Paused = true;
+    _titleCardNode.CoverForSwap();
+  }
+
+  private void _onTitleCardCovered() {
+    if (_pendingLevelId is not { } nextLevelId) {
+      return;
+    }
+    _pendingLevelId = null;
+    var clearedLevelId = _currentLevelId!.Value;
+
+    // Removal first: the old level's _ExitTree stops the music before the new one
+    // starts its own track, and the persist group must hold only the new level's
+    // nodes by the time the save below serializes it.
+    if (_currentLevel != null) {
+      RemoveChild(_currentLevel);
+      _currentLevel.QueueFree();
+    }
+    _startLevel(nextLevelId, restoreSavedGame: false);
+
+    // Saved after the swap, so the slot is a coherent "standing at the start of the
+    // next level" snapshot rather than a mix of two levels.
+    SaveManager.RecordLevelCleared(GetTree(), clearedLevelId, nextLevelId);
+
+    // Play resumes under the lifting cover, but inside the intro cutscene: the
+    // player is walked in while the title fades over the scene. If the window lost
+    // focus during the cover, the pause menu legitimately owns the pause now and
+    // keeps it.
+    if (_currentLevel?.PauseMenuNode.IsPaused != true) {
+      GetTree().Paused = false;
+    }
+    _beginLevelIntro();
+  }
+
+  private void _beginLevelIntro() {
+    if (_currentLevel == null || _currentLevelId == null) {
+      return;
+    }
+    var titleKey = LevelDispatcher.TitleKeyOf(_currentLevelId.Value);
+    if (titleKey == null) {
+      return;
+    }
+    _introActive = true;
+    _introWalkTimeLeft = _currentLevel.IntroWalkTime;
+    EventHandler.Instance.EmitCutsceneRequestStart(INTRO_CUTSCENE_ID);
+    SetProcess(true);
+    _titleCardNode.PresentTitle(titleKey.Value);
+  }
+
+  // Drives the intro walk, the same way the temple walks the player in: the input
+  // lock belongs to the cutscene, so someone has to push.
+  public override void _Process(double delta) {
+    base._Process(delta);
+    if (!_introActive) {
+      SetProcess(false);
+      return;
+    }
+    if (_introWalkTimeLeft <= 0f || _currentLevel == null) {
+      return;
+    }
+    _introWalkTimeLeft -= (float)delta;
+    var player = _currentLevel.PlayerNode;
+    if (player != null && IsInstanceValid(player)) {
+      player.SetMaxSpeed();
+    }
+  }
+
+  private void _onTitleFinished() {
+    if (!_introActive) {
+      return;
+    }
+    _introActive = false;
+    SetProcess(false);
+    EventHandler.Instance.EmitCutsceneRequestEnd(INTRO_CUTSCENE_ID);
   }
 }

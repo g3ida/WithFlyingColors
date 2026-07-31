@@ -20,6 +20,8 @@ public class MenuManager : IMenuManager {
 
   private LevelId? _levelId;
 
+  private SlotPickerMode _slotPickerMode = SlotPickerMode.Load;
+
   public MenuManager(Node rootNode) {
     _rootNode = rootNode;
   }
@@ -33,6 +35,10 @@ public class MenuManager : IMenuManager {
   public LevelId? GetCurrentLevelId() => _levelId;
 
   public void SetCurrentLevel(LevelId levelId) => _levelId = levelId;
+
+  public SlotPickerMode GetSlotPickerMode() => _slotPickerMode;
+
+  public void SetSlotPickerMode(SlotPickerMode mode) => _slotPickerMode = mode;
 
   // Pure: which scene stands for this screen. It used to clear the queued level as a
   // side effect, so merely asking where a screen lived changed what the game screen
@@ -67,6 +73,13 @@ public class MenuManager : IMenuManager {
     // returning to a menu can't leave a stale level queued up behind it.
     if (nextMenu != GameMenus.GAME) {
       _levelId = null;
+    }
+
+    // Same idea for the slot picker's mode: it only means something on the way into
+    // the select-slot screen, and a stale NewGame mode left behind would turn a later
+    // innocent visit into one that wipes slots.
+    if (nextMenu != GameMenus.SELECT_SLOT) {
+      _slotPickerMode = SlotPickerMode.Load;
     }
 
     _recordVisit(nextMenu);

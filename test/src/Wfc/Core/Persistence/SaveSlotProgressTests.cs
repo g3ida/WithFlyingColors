@@ -57,4 +57,39 @@ public class SaveSlotProgressTests(Node testScene) : TestClass(testScene) {
     other.RecordProgress(LevelId.Level1, -10);
     other.MetaData!.Progress.ShouldBe(0);
   }
+
+  [Test]
+  public void RecordsACompletionOnASlotThatHasNoneYet() {
+    var slot = new SaveSlot(1);
+
+    slot.RecordCompletion(LevelId.Tutorial);
+
+    slot.MetaData.ShouldNotBeNull();
+    slot.MetaData!.ClearedLevels.ShouldBe([LevelId.Tutorial]);
+  }
+
+  // The whole point of keeping completion apart from the resume pointer: moving on to
+  // the next level starts Progress over, but what was cleared stays cleared.
+  [Test]
+  public void AClearedLevelStaysClearedWhenProgressMovesOn() {
+    var slot = new SaveSlot(1);
+    slot.RecordProgress(LevelId.Tutorial, 100);
+    slot.RecordCompletion(LevelId.Tutorial);
+
+    slot.RecordProgress(LevelId.Level1, 10);
+
+    slot.MetaData!.LevelId.ShouldBe(LevelId.Level1);
+    slot.MetaData.Progress.ShouldBe(10);
+    slot.MetaData.ClearedLevels.ShouldContain(LevelId.Tutorial);
+  }
+
+  [Test]
+  public void ClearingTheSameLevelTwiceRecordsItOnce() {
+    var slot = new SaveSlot(1);
+
+    slot.RecordCompletion(LevelId.Tutorial);
+    slot.RecordCompletion(LevelId.Tutorial);
+
+    slot.MetaData!.ClearedLevels.Count.ShouldBe(1);
+  }
 }

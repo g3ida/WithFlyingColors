@@ -115,27 +115,35 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
     _provider.MenuManager.GetCurrentMenu().ShouldBe(GameMenus.MAIN_MENU);
   }
 
-  // Every button the play sub-menu offers, given a slot with progress: continue, and
-  // the slot the game is pointed at. The second used to be filtered out before it was
-  // built, because its "no condition" was read as "never".
+  // The roster grows with the save data: a fresh install offers only New Game, one
+  // played slot adds Continue, a second played slot adds Load Game.
   [Test]
-  public async Task PlaySubMenuOffersContinueAndTheSelectedSlot() {
+  public async Task PlaySubMenuOffersOnlyNewGameOnAFreshInstall() {
+    _provider.Save = new FakeSaveManager(selectedSlot: 0);
+
+    var items = await _buildPlaySubMenu();
+
+    items.Count.ShouldBe(1);
+  }
+
+  [Test]
+  public async Task PlaySubMenuAddsContinueOncePlayed() {
     _provider.Save = new FakeSaveManager(selectedSlot: 0).WithFilledSlot(0, progress: 40);
 
     var items = await _buildPlaySubMenu();
 
     items.Count.ShouldBe(2);
-    items.Any(item => item.ButtonInfo.Text.Contains('1')).ShouldBeTrue("no button naming the selected slot");
   }
 
-  // An untouched slot swaps continue for a new game, and still names the slot.
   [Test]
-  public async Task PlaySubMenuOffersNewGameOnAnUntouchedSlot() {
-    _provider.Save = new FakeSaveManager(selectedSlot: 0);
+  public async Task PlaySubMenuAddsLoadGameWithASecondPlayedSlot() {
+    _provider.Save = new FakeSaveManager(selectedSlot: 0)
+      .WithFilledSlot(0, progress: 40)
+      .WithFilledSlot(2, progress: 10);
 
     var items = await _buildPlaySubMenu();
 
-    items.Count.ShouldBe(2);
+    items.Count.ShouldBe(3);
   }
 
   private async Task<List<SubMenuItem>> _buildPlaySubMenu() {

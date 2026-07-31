@@ -1,6 +1,7 @@
 namespace Wfc.Core.Serialization;
 
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Wfc.Core.Persistence;
@@ -13,6 +14,7 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
     ulong? lastLoadDate = null;
     LevelId? levelId = null;
     int? progress = null;
+    HashSet<LevelId>? clearedLevels = null;
 
     if (reader.TokenType != JsonTokenType.StartObject) {
       throw new JsonException();
@@ -46,17 +48,23 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
         case nameof(SlotMetaData.Progress):
           progress = reader.GetInt32();
           break;
+        case nameof(SlotMetaData.ClearedLevels):
+          clearedLevels = JsonSerializer.Deserialize<HashSet<LevelId>>(ref reader, options);
+          break;
         default:
           reader.Skip();
           break;
       }
     }
 
+    // ClearedLevels is deliberately not in this check: saves written before completion
+    // tracking existed have no such property, and they must keep loading as slots with
+    // nothing cleared yet.
     if (slotId == null || saveTimestamp == null || levelId == null || progress == null || lastLoadDate == null) {
       throw new JsonException("Missing required property");
     }
 
-    return new SlotMetaData(slotId.Value, saveTimestamp.Value, levelId ?? LevelId.Tutorial, progress.Value, lastLoadDate.Value);
+    return new SlotMetaData(slotId.Value, saveTimestamp.Value, levelId ?? LevelId.Tutorial, progress.Value, lastLoadDate.Value, clearedLevels);
   }
 
   public override void Write(Utf8JsonWriter writer, SlotMetaData value, JsonSerializerOptions options) {
@@ -67,6 +75,8 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
     writer.WritePropertyName(nameof(SlotMetaData.LevelId));
     JsonSerializer.Serialize(writer, value.LevelId, options);
     writer.WriteNumber(nameof(SlotMetaData.Progress), value.Progress);
+    writer.WritePropertyName(nameof(SlotMetaData.ClearedLevels));
+    JsonSerializer.Serialize(writer, value.ClearedLevels, options);
     writer.WriteEndObject();
   }
 }

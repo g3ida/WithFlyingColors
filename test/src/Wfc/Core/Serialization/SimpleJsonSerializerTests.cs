@@ -50,6 +50,30 @@ public class SimpleJsonSerializerTests(Node testScene) : TestClass(testScene) {
     _serializer.Deserialize<SlotMetaData>(json)!.LevelId.ShouldBe(LevelId.Tutorial);
   }
 
+  // Saves written before completion tracking existed have no ClearedLevels property.
+  // They must load as slots with nothing cleared, not be rejected as corrupt.
+  [Test]
+  public void ReadsAMetaDataWrittenBeforeCompletionTrackingExisted() {
+    var json = "{\"SlotId\":1,\"SaveTimestamp\":1700000000,\"LastLoadDate\":1700000001," +
+      "\"LevelId\":\"Tutorial\",\"Progress\":7}";
+
+    var restored = _serializer.Deserialize<SlotMetaData>(json);
+
+    restored.ShouldNotBeNull();
+    restored.ClearedLevels.ShouldBeEmpty();
+  }
+
+  [Test]
+  public void RoundTripsTheClearedLevelsByName() {
+    var original = new SlotMetaData(0, 1_700_000_000UL, LevelId.Level1, 40, 1_700_000_001UL, [LevelId.Tutorial]);
+
+    var json = _serializer.Serialize(original);
+    var restored = _serializer.Deserialize<SlotMetaData>(json);
+
+    json.ShouldContain("\"ClearedLevels\":[\"Tutorial\"]");
+    restored!.ClearedLevels.ShouldBe([LevelId.Tutorial]);
+  }
+
   // SlotMetaDataJsonConverter's own guard, which had never executed.
   [Test]
   public void RejectsMetaDataMissingARequiredProperty() {

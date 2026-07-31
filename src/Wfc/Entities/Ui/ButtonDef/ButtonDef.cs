@@ -4,10 +4,12 @@ using Wfc.Core.Persistence;
 using Wfc.Screens.MenuManager;
 
 public class ButtonDef {
+  // Conditions look across every slot, not just the selected one: Continue must
+  // appear when any slot holds a game, whichever slot happens to be selected.
   public enum ButtonCondition {
     None,
-    IsDirtySlot, // a slot contains a game in progress not a won game
-    IsVirginSlot, // a new slot with progress 0%
+    HasAnyPlayedSlot,
+    HasMultiplePlayedSlots,
   }
 
   public required string Text;
@@ -31,8 +33,8 @@ public static class ButtonsConditionsExtensions {
 
   // The raw predicate: is this condition true of the current save state?
   public static bool Verify(this ButtonDef.ButtonCondition buttonDef, ISaveManager saveManager) => buttonDef switch {
-    ButtonDef.ButtonCondition.IsDirtySlot => (saveManager.GetSlotMetaData()?.Progress ?? 0) > 0,
-    ButtonDef.ButtonCondition.IsVirginSlot => (saveManager.GetSlotMetaData()?.Progress ?? 0) == 0,
+    ButtonDef.ButtonCondition.HasAnyPlayedSlot => saveManager.CountPlayedSlots() > 0,
+    ButtonDef.ButtonCondition.HasMultiplePlayedSlots => saveManager.CountPlayedSlots() >= 2,
     _ => false,
   };
 }

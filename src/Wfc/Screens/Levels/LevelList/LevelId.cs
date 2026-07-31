@@ -8,11 +8,14 @@ using Wfc.Utils.Attributes;
 public enum LevelId {
 
   // Exported on SceneCard, so the ordinals are serialized into .tscn files: only ever
-  // append members here, and only ever remove from the end.
+  // append members here, and only ever remove from the end. Play order is not defined
+  // here - it is the order of LevelDispatcher.LEVELS.
   [LevelPath("TutorialLevel")]
   Tutorial,
   [LevelPath]
   Level1,
+  [LevelPath("FourColorsLevel")]
+  FourColors,
 }
 
 

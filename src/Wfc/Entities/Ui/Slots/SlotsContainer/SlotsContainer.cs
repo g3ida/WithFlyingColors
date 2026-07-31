@@ -103,16 +103,24 @@ public partial class SlotsContainer : Control {
     }
   }
 
+  // Purely visual: draws the border on the panel standing for the selected slot.
+  // Selecting the slot is the caller's decision - doing it here as a side effect
+  // meant merely refreshing the border rewrote slots_info on disk.
   public void SetGameCurrentSelectedSlot(int index) {
     for (int i = 0; i < _saveSlots.Length; i++) {
       if (index == i) {
         _saveSlots[i].UpdateMetaData();
         _saveSlots[i].SetBorder(true);
-        SaveManager.SelectSlot(index);
       }
       else {
         _saveSlots[i].SetBorder(false);
       }
+    }
+  }
+
+  public void SetAllowSelectingEmptySlots(bool allow) {
+    foreach (var slot in _saveSlots) {
+      slot.SetAllowSelectingEmptySlots(allow);
     }
   }
 }

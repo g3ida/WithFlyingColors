@@ -16,6 +16,7 @@ public partial class SaveManager : ISaveManager {
   private const int NUM_SLOTS = 3;
   private readonly string LATEST_LOADED_SLOT_FIELD_NAME = "latest_loaded_slot";
   private readonly string SLOT_INFO_PATH = $"user://slots/slots_info.save";
+  public int SlotCount => NUM_SLOTS;
   public int LatestLoadedSlot { get; private set; }
   private readonly SaveSlot[] _saveSlots = [.. Enumerable.Range(1, NUM_SLOTS).Select(i => new SaveSlot(i))];
   private readonly ISerializer _serializer = new SimpleJsonSerializer();
@@ -52,6 +53,29 @@ public partial class SaveManager : ISaveManager {
     }
 
     slot.RecordProgress(levelId, progressPercent);
+    slot.Save(_serializer, tree);
+    _loadSlotsMetaData();
+  }
+
+  public void RecordLevelCleared(SceneTree tree, LevelId clearedLevelId, LevelId? nextLevelId, int slotIndex = ISaveManager.NO_SLOT) {
+    slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
+    if (slotIndex is < 0 or >= NUM_SLOTS) {
+      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
+      return;
+    }
+
+    var slot = _saveSlots[slotIndex];
+    if (!slot.IsFilled) {
+      // Same rule as RecordProgress: clearing a level without a picked slot must not
+      // invent a save the player never asked for.
+      return;
+    }
+
+    slot.RecordCompletion(clearedLevelId);
+    // The resume pointer either advances to the next level's start or, at the end of
+    // the chain, stays parked on the cleared level: RecordProgress takes the max
+    // within a level, so full progress there survives later checkpoint replays.
+    slot.RecordProgress(nextLevelId ?? clearedLevelId, nextLevelId == null ? 100 : 0);
     slot.Save(_serializer, tree);
     _loadSlotsMetaData();
   }

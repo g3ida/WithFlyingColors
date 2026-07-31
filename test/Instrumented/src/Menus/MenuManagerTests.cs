@@ -165,6 +165,34 @@ public class MenuManagerTests(Node testScene) : TestClass(testScene) {
     _menuManager.GetCurrentLevelId().ShouldBeNull();
   }
 
+  // The picker mode rides along exactly like the queued level: it survives into the
+  // select-slot screen and is dropped everywhere else, so a stale NewGame mode can
+  // never turn a later innocent visit into one that wipes slots.
+  [Test]
+  public void TheSlotPickerModeStartsAsLoad() {
+    _menuManager.GetSlotPickerMode().ShouldBe(SlotPickerMode.Load);
+  }
+
+  [Test]
+  public async Task GoingToTheSlotPickerKeepsItsMode() {
+    await _goTo(GameMenus.MAIN_MENU);
+    _menuManager.SetSlotPickerMode(SlotPickerMode.NewGame);
+
+    await _goTo(GameMenus.SELECT_SLOT);
+
+    _menuManager.GetSlotPickerMode().ShouldBe(SlotPickerMode.NewGame);
+  }
+
+  [Test]
+  public async Task GoingAnywhereElseResetsThePickerModeToLoad() {
+    await _goTo(GameMenus.MAIN_MENU);
+    _menuManager.SetSlotPickerMode(SlotPickerMode.NewGame);
+
+    await _goTo(GameMenus.STATS_MENU);
+
+    _menuManager.GetSlotPickerMode().ShouldBe(SlotPickerMode.Load);
+  }
+
   private async Task _goTo(GameMenus menu) {
     _menuManager.GoToMenu(menu);
     await _idle();

@@ -28,5 +28,12 @@ public interface IMenuManager {
 
   void SetCurrentLevel(LevelId levelId);
 
+  // Why the select-slot screen is being opened. Carried here like the queued level:
+  // set by the button that navigates, read by the screen once it is up, and reset
+  // when navigation goes anywhere else so a stale mode can't wipe a slot later.
+  SlotPickerMode GetSlotPickerMode();
+
+  void SetSlotPickerMode(SlotPickerMode mode);
+
   string? GetMenuScenePath(GameMenus menu);
 }
