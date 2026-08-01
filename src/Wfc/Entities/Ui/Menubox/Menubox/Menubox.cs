@@ -32,9 +32,14 @@ public partial class Menubox : Control {
 
   #region Constants
   private const float SUB_MENU_POPUP_DURATION = 0.2f;
+  private const float ROTATION_DURATION = 0.1f;
+  private const int TURN_CLOCKWISE = 1;
+  private const int TURN_COUNTER_CLOCKWISE = -1;
   #endregion Constants
 
   #region Fields
+  // The same quarter-turn the player's cube uses, stepped from _PhysicsProcess below.
+  private readonly PlayerRotationAction _boxRotation = new();
   private Tween _subMenuTweener = null!;
   private States _currentState = States.MENU;
   private int _activeIndex = 0;
@@ -57,7 +62,6 @@ public partial class Menubox : Control {
   private MenuBoxButton[] _buttons = [];
   [NodePath("MenuBox")]
   private CharacterBody2D _menuBoxNode = null!;
-  private PlayerRotation _boxRotationNode = null!;
   private Control? _playSubMenuNode;
 
   [NodePath("MenuBox/Spr")]
@@ -82,12 +86,15 @@ public partial class Menubox : Control {
         ActiveIndex = 0;
         break;
     }
+    // Turning the box here is a teleport rather than a rotation, so the angle the next
+    // press measures from has to be told about it.
+    _boxRotation.Reset(_menuBoxNode.Rotation);
   }
 
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
-    _boxRotationNode = new PlayerRotation(parent: _menuBoxNode);
+    _boxRotation.SetBody(_menuBoxNode);
 
     _spriteNode.Texture = MenuboxTextureGenerator.GenerateTexture();
     _buttons = [_playButtonNode, _settingsButtonNode, _statsButtonNode, _quitButtonNode];
@@ -113,6 +120,7 @@ public partial class Menubox : Control {
   // closing this sub-menu. Handling it here as well meant one key press got two
   // answers.
   public override void _PhysicsProcess(double delta) {
+    _boxRotation.Step((float)delta);
     _playSubMenuNode?.SetPosition(_playSubMenuPos);
 
     if (InputManager.IsJustPressed(IInputManager.Action.RotateLeft)
@@ -143,7 +151,7 @@ public partial class Menubox : Control {
       return;
     }
     HideSubMenuIfNeeded();
-    if (_boxRotationNode.Fire(MathUtils.PI2, 0.1f, forceRotationIfBusy: false)) {
+    if (_boxRotation.Execute(TURN_CLOCKWISE, MathUtils.PI2, ROTATION_DURATION, shouldForce: false)) {
       _setActiveButton((_activeIndex - 1 + _buttons.Length) % _buttons.Length);
       EventHandler.Instance.EmitMenuBoxRotated();
     }
@@ -154,7 +162,7 @@ public partial class Menubox : Control {
       return;
     }
     HideSubMenuIfNeeded();
-    if (_boxRotationNode.Fire(-MathUtils.PI2, 0.1f, forceRotationIfBusy: false)) {
+    if (_boxRotation.Execute(TURN_COUNTER_CLOCKWISE, MathUtils.PI2, ROTATION_DURATION, shouldForce: false)) {
       _setActiveButton((_activeIndex + 1) % _buttons.Length);
       EventHandler.Instance.EmitMenuBoxRotated();
     }

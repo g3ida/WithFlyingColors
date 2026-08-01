@@ -91,7 +91,7 @@ key_text = "jump"
 
 [node name="ToJump" parent="Tutorials/Tutorial1/HBoxContainer" index="2" instance=ExtResource("6")]
 layout_mode = 2
-text = " TOJUMP"
+text = " To jump"
 
 [node name="Tutorial2" type="Control" parent="Tutorials" index="1"]
 anchors_preset = 0
@@ -134,10 +134,9 @@ offset_bottom = 79.0
 
 [node name="ToRotate2" parent="Tutorials/Tutorial3" index="0" instance=ExtResource("6")]
 layout_mode = 0
-offset_left = -157.0
-offset_top = 124.0
-offset_right = 844.0
-offset_bottom = 229.0
+offset_top = 86.0
+offset_right = 1001.0
+offset_bottom = 191.0
 text = "by 90 degrees to the left or
 to the right respectively."
 

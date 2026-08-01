@@ -16,6 +16,10 @@ public enum LevelId {
   Level1,
   [LevelPath("FourColorsLevel")]
   FourColors,
+  // The walkable arena whose doors are the level select. Deliberately absent from
+  // LevelDispatcher.LEVELS: it is where levels are chosen from, not a level on offer.
+  [LevelPath("HubLevel")]
+  Hub,
 }
 
 

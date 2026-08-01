@@ -120,6 +120,14 @@ public partial class GemHUD : Node2D, IPersistent {
     _collectedAnimation?.Update((float)delta);
   }
 
+  // The slot already holds this gem for the level being played, so the HUD opens with
+  // it filled. Written into the saved state as well as the live one, or the first
+  // death would hand it back.
+  public void MarkAlreadyCollected() {
+    _saveData = new SaveData(State.Collected);
+    Reset();
+  }
+
   public void Reset() {
     currentState = _saveData.savedState;
     if (currentState == State.Empty) {

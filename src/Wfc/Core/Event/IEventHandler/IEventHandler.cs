@@ -77,5 +77,8 @@ public interface IEventHandler {
   public void EmitGemEngineStarted();
   public void EmitLevelCleared();
   public void EmitGemPutInTemple();
+  public void EmitDoorEntered(int levelId);
+  public void EmitLevelRestartRequested();
+  public void EmitSaveSlotUpdated();
 
 }

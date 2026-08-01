@@ -81,22 +81,12 @@ public partial class SlotsContainer : Control {
 
   private void _onSaveSlot3Pressed() => EmitSignal(SignalName.SlotPressed, 2);
 
-  // Re-applies everything derived from save data: card contents, which slots a
-  // press can act on, and where the last-played badge sits. The badge is purely
-  // informative - the border and side bar belong to focus, not to this.
+  // Re-applies everything derived from save data: card contents and which slots a
+  // press can act on.
   private void _refresh() {
     for (int i = 0; i < _saveSlots.Length; i++) {
       _saveSlots[i].UpdateMetaData();
       _saveSlots[i].SetIsDisabled(!_allowSelectingEmptySlots && !SaveManager.IsSLotFilled(i));
-    }
-    _setLastPlayedSlot(SaveManager.MostRecentlyPlayedSlotIndex());
-  }
-
-  // Purely visual: the badge and border mark the slot Continue would resume, not a
-  // selection - selecting a slot stays the caller's decision.
-  private void _setLastPlayedSlot(int? index) {
-    for (int i = 0; i < _saveSlots.Length; i++) {
-      _saveSlots[i].SetLastPlayed(index == i);
     }
   }
 

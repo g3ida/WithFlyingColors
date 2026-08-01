@@ -1,5 +1,6 @@
 namespace Wfc.Core.Persistence;
 
+using System.Collections.Generic;
 using Godot;
 using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Player;
@@ -18,11 +19,16 @@ public interface ISaveManager {
   public int SlotCount { get; }
 
   public void SaveGame(SceneTree tree, int slotIndex = NO_SLOT);
-  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, int slotIndex = NO_SLOT);
+  // collectedGems banks the gems the player is holding at this write, so hub doors can
+  // show them without loading the level. It rides along with the progress or clear
+  // write rather than being its own save: one write per event, so a quit in between
+  // cannot leave the two halves disagreeing, and the door only ever shows what a
+  // reload would actually give back.
+  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, IEnumerable<string>? collectedGems = null, int slotIndex = NO_SLOT);
   // Marks a level as cleared for good and moves the resume pointer to the next level
   // in the chain (or parks it at the cleared one when the chain is over), then writes
   // the slot out. One call so a quit between the two updates cannot split them.
-  public void RecordLevelCleared(SceneTree tree, LevelId clearedLevelId, LevelId? nextLevelId, int slotIndex = NO_SLOT);
+  public void RecordLevelCleared(SceneTree tree, LevelId clearedLevelId, LevelId? nextLevelId, IEnumerable<string>? collectedGems = null, int slotIndex = NO_SLOT);
   public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = NO_SLOT);
   public bool IsSLotFilled(int slotIndex = NO_SLOT);
   public int GetSelectedSlotIndex();

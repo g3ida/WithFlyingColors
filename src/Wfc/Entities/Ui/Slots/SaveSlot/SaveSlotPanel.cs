@@ -56,20 +56,18 @@ public partial class SaveSlotPanel : PanelContainer {
   #region Nodes
   [NodePath("HBoxContainer/VBoxContainer/Description")]
   private Label _descriptionNode = default!;
-  [NodePath("HBoxContainer/VBoxContainer/TimestampRow/Created")]
+  [NodePath("HBoxContainer/VBoxContainer/Created")]
   private Label _createdNode = default!;
-  [NodePath("HBoxContainer/VBoxContainer/TimestampRow/LastPlayed")]
+  [NodePath("HBoxContainer/VBoxContainer/LastPlayed")]
   private Label _lastPlayedNode = default!;
   [NodePath("HBoxContainer")]
   private HBoxContainer _containerNode = default!;
   [NodePath("HBoxContainer/SideBar")]
   private ColorRect _sideBarNode = default!;
-  [NodePath("HBoxContainer/VBoxContainer/TitleRow/SlotIndex")]
+  [NodePath("HBoxContainer/VBoxContainer/SlotIndex")]
   private Label _slotIndexNode = default!;
   [NodePath("HBoxContainer/VBoxContainer/LevelName")]
   private Label _levelNameNode = default!;
-  [NodePath("HBoxContainer/VBoxContainer/TitleRow/LastPlayedBadge")]
-  private Label _lastPlayedBadgeNode = default!;
   [NodePath("Button")]
   private Button _buttonNode = default!;
   [NodePath("AnimationPlayer")]
@@ -93,7 +91,6 @@ public partial class SaveSlotPanel : PanelContainer {
     }
     _slotIndexNode.Text = string.Format(
         LocalizationService.GetLocalizedString(TranslationKey.menu_label_slotIndex), _id + 1);
-    _lastPlayedBadgeNode.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_label_lastPlayed);
     UpdateMetaData();
   }
 
@@ -153,8 +150,11 @@ public partial class SaveSlotPanel : PanelContainer {
     if (value == -1) {
       return "----/--/-- --:--";
     }
+    // Read out as ints first: the dictionary hands back Variants, and a numeric format
+    // string applied to one is ignored, so midnight printed as "0:0".
     var time = Time.GetDatetimeDictFromUnixTime(value);
-    return $"{time["year"]}/{time["month"]:00}/{time["day"]:00} {time["hour"]:00}:{time["minute"]:00}";
+    return $"{time["year"].AsInt32()}/{time["month"].AsInt32():00}/{time["day"].AsInt32():00}"
+        + $" {time["hour"].AsInt32():00}:{time["minute"].AsInt32():00}";
   }
 
   // Single press, single meaning: the screen decides what selecting this slot does
@@ -258,6 +258,4 @@ public partial class SaveSlotPanel : PanelContainer {
       SetDescription(LocalizationService.GetLocalizedString(TranslationKey.menu_label_emptySlot));
     }
   }
-
-  public void SetLastPlayed(bool value) => _lastPlayedBadgeNode.Visible = value;
 }

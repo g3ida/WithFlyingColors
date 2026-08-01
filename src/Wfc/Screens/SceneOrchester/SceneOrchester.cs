@@ -13,6 +13,7 @@ using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
+using Wfc.Utils.Colors;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
@@ -38,9 +39,18 @@ public partial class SceneOrchester : Node2D {
 
   GameLevel? _currentLevel = null;
   LevelId? _currentLevelId = null;
-  // The level the swap will land on: set when a clear starts the cover, cleared once
-  // the swap has happened behind it.
+  // The level the swap will land on: set when a clear or a door entry starts the
+  // cover, cleared once the swap has happened behind it.
   private LevelId? _pendingLevelId = null;
+  // Set when the pending swap is a clear, so the cover callback knows to bank a
+  // completion rather than a doorstep save. The gems ride along because the HUD
+  // that knows them is freed with the cleared level before the write happens.
+  private LevelId? _pendingClearedLevelId = null;
+  private string[] _pendingClearedGems = [];
+  // Set when the pending swap is a restart, which writes nothing: the slot already
+  // describes this level, and a doorstep save here would push the resume point back
+  // to the start of a level the player has got further into.
+  private bool _pendingRestart;
 
   // The intro walks the player forward while the title fades over the scene; the
   // walk budget comes from the level itself.
@@ -97,12 +107,16 @@ public partial class SceneOrchester : Node2D {
     EventHandler.Instance.Events.PlayerDied += OnGameOver;
     EventHandler.Instance.Events.LevelCleared += OnLevelCleared;
     EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
+    EventHandler.Instance.Events.DoorEntered += _onDoorEntered;
+    EventHandler.Instance.Events.LevelRestartRequested += _onLevelRestartRequested;
   }
 
   private void DisconnectSignals() {
     EventHandler.Instance.Events.PlayerDied -= OnGameOver;
     EventHandler.Instance.Events.LevelCleared -= OnLevelCleared;
     EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
+    EventHandler.Instance.Events.DoorEntered -= _onDoorEntered;
+    EventHandler.Instance.Events.LevelRestartRequested -= _onLevelRestartRequested;
   }
 
   // A checkpoint is the game's own statement that the run so far is worth keeping, so it is where
@@ -120,8 +134,15 @@ public partial class SceneOrchester : Node2D {
     if (_currentLevel == null || _currentLevelId == null) {
       return;
     }
-    SaveManager.RecordProgress(GetTree(), _currentLevelId.Value, _checkpointProgressPercent());
+    SaveManager.RecordProgress(GetTree(), _currentLevelId.Value, _checkpointProgressPercent(), _collectedGemGroups());
   }
+
+  // What the HUD says the player is holding right now - the gems a reload of this
+  // write would give back, which is exactly what the hub doors may show.
+  private string[] _collectedGemGroups() =>
+    _currentLevel == null
+      ? []
+      : [.. ColorUtils.COLOR_GROUPS.Where(_currentLevel.GemsHUDContainerNode.IsGemCollected)];
 
   // The share of the current level's checkpoints the player has passed. Scoped to the
   // level rather than the whole tree, so nothing outside it can dilute the count.
@@ -166,13 +187,46 @@ public partial class SceneOrchester : Node2D {
     if (next == null) {
       // End of the chain: the cleared screen takes over, and the slot parks on the
       // finished level while the save still describes it.
-      SaveManager.RecordLevelCleared(GetTree(), _currentLevelId.Value, null);
+      SaveManager.RecordLevelCleared(GetTree(), _currentLevelId.Value, null, _collectedGemGroups());
       _currentLevel.PauseMenuNode.NavigateToScreen(GameMenus.LEVEL_CLEAR_MENU);
       return;
     }
 
+    // Any other clear walks back out to the hub: the next door is unlocked there
+    // rather than the next level starting on its own.
+    _pendingLevelId = LevelId.Hub;
+    _pendingClearedLevelId = _currentLevelId;
+    _pendingClearedGems = _collectedGemGroups();
     // Freeze play under the cover; the swap happens once it is opaque.
-    _pendingLevelId = next;
+    GetTree().Paused = true;
+    _titleCardNode.CoverForSwap();
+  }
+
+  // A door is a request to swap levels inside the game screen, exactly like the
+  // clear path minus the completion: same cover, same save-after-swap.
+  private void _onDoorEntered(int levelId) {
+    if (_pendingLevelId != null) {
+      return;
+    }
+    _pendingLevelId = (LevelId)levelId;
+    _pendingClearedLevelId = null;
+    _pendingClearedGems = [];
+    _pendingRestart = false;
+    GetTree().Paused = true;
+    _titleCardNode.CoverForSwap();
+  }
+
+  // Starting over is the same swap with the level it lands on being the one it left,
+  // so the level gets rebuilt from its scene rather than reset piece by piece: nothing
+  // the run touched - a broken brick, a spent power-up - can survive it.
+  private void _onLevelRestartRequested() {
+    if (_pendingLevelId != null || _currentLevelId == null) {
+      return;
+    }
+    _pendingLevelId = _currentLevelId;
+    _pendingClearedLevelId = null;
+    _pendingClearedGems = [];
+    _pendingRestart = true;
     GetTree().Paused = true;
     _titleCardNode.CoverForSwap();
   }
@@ -182,7 +236,12 @@ public partial class SceneOrchester : Node2D {
       return;
     }
     _pendingLevelId = null;
-    var clearedLevelId = _currentLevelId!.Value;
+    var clearedLevelId = _pendingClearedLevelId;
+    var clearedGems = _pendingClearedGems;
+    var isRestart = _pendingRestart;
+    _pendingClearedLevelId = null;
+    _pendingClearedGems = [];
+    _pendingRestart = false;
 
     // Removal first: the old level's _ExitTree stops the music before the new one
     // starts its own track, and the persist group must hold only the new level's
@@ -194,8 +253,15 @@ public partial class SceneOrchester : Node2D {
     _startLevel(nextLevelId, restoreSavedGame: false);
 
     // Saved after the swap, so the slot is a coherent "standing at the start of the
-    // next level" snapshot rather than a mix of two levels.
-    SaveManager.RecordLevelCleared(GetTree(), clearedLevelId, nextLevelId);
+    // next level" snapshot rather than a mix of two levels. A door entry is no
+    // completion, but the doorstep is still where the run now stands: quitting here
+    // must resume here.
+    if (clearedLevelId is { } cleared) {
+      SaveManager.RecordLevelCleared(GetTree(), cleared, nextLevelId, clearedGems);
+    }
+    else if (!isRestart) {
+      SaveManager.RecordProgress(GetTree(), nextLevelId, 0);
+    }
 
     // Play resumes under the lifting cover, but inside the intro cutscene: the
     // player is walked in while the title fades over the scene. If the window lost

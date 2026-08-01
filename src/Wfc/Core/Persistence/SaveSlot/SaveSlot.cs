@@ -83,6 +83,18 @@ public partial class SaveSlot {
     MetaData.SaveTimestamp = _getUnixTimestamp();
   }
 
+  // Banked gems are forever, like completions: the union only grows, so a replay that
+  // dies before an already-banked gem cannot take it back off the hub door.
+  public void RecordCollectedGems(LevelId levelId, IEnumerable<string> colorGroups) {
+    MetaData ??= new SlotMetaData(_slotIndex, _getUnixTimestamp(), levelId, 0, _getUnixTimestamp());
+    if (!MetaData.CollectedGems.TryGetValue(levelId, out var gems)) {
+      gems = [];
+      MetaData.CollectedGems[levelId] = gems;
+    }
+    gems.UnionWith(colorGroups);
+    MetaData.SaveTimestamp = _getUnixTimestamp();
+  }
+
   // Cleared is forever: the set only grows, unlike the resume pointer RecordProgress
   // moves around. Replays of a finished level therefore cannot re-lock anything.
   public void RecordCompletion(LevelId levelId) {

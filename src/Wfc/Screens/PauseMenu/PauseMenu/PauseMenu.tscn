@@ -36,10 +36,20 @@ visible = false
 layout_mode = 2
 text = "Resume Game"
 
-[node name="LevelSelectButton" parent="PauseMenuImpl/CenterContainer/VBoxContainer" instance=ExtResource("5")]
+[node name="RestartCheckpointButton" parent="PauseMenuImpl/CenterContainer/VBoxContainer" instance=ExtResource("5")]
 visible = false
 layout_mode = 2
-text = "Back To Level Selection"
+text = "Restart from Checkpoint"
+
+[node name="RestartLevelButton" parent="PauseMenuImpl/CenterContainer/VBoxContainer" instance=ExtResource("5")]
+visible = false
+layout_mode = 2
+text = "Restart Level"
+
+[node name="ReturnToHubButton" parent="PauseMenuImpl/CenterContainer/VBoxContainer" instance=ExtResource("5")]
+visible = false
+layout_mode = 2
+text = "Return to the Hub"
 
 [node name="BackButton" parent="PauseMenuImpl/CenterContainer/VBoxContainer" instance=ExtResource("5")]
 visible = false

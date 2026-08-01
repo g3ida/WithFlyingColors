@@ -10,6 +10,7 @@ using Wfc.Core.Serialization;
 using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class SaveManager : ISaveManager {
 
@@ -38,7 +39,7 @@ public partial class SaveManager : ISaveManager {
   // SaveGame had a single call site - creating a blank slot. Reaching a checkpoint wrote nothing
   // to disk at all, so the Continue button never appeared, the resume branch in SceneOrchester
   // was unreachable, the slot panel showed 0% for a finished run, and quitting lost everything.
-  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, int slotIndex = ISaveManager.NO_SLOT) {
+  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, IEnumerable<string>? collectedGems = null, int slotIndex = ISaveManager.NO_SLOT) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
@@ -53,11 +54,14 @@ public partial class SaveManager : ISaveManager {
     }
 
     slot.RecordProgress(levelId, progressPercent);
+    if (collectedGems != null) {
+      slot.RecordCollectedGems(levelId, collectedGems);
+    }
     slot.Save(_serializer, tree);
     _loadSlotsMetaData();
   }
 
-  public void RecordLevelCleared(SceneTree tree, LevelId clearedLevelId, LevelId? nextLevelId, int slotIndex = ISaveManager.NO_SLOT) {
+  public void RecordLevelCleared(SceneTree tree, LevelId clearedLevelId, LevelId? nextLevelId, IEnumerable<string>? collectedGems = null, int slotIndex = ISaveManager.NO_SLOT) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
@@ -72,6 +76,9 @@ public partial class SaveManager : ISaveManager {
     }
 
     slot.RecordCompletion(clearedLevelId);
+    if (collectedGems != null) {
+      slot.RecordCollectedGems(clearedLevelId, collectedGems);
+    }
     // The resume pointer either advances to the next level's start or, at the end of
     // the chain, stays parked on the cleared level: RecordProgress takes the max
     // within a level, so full progress there survives later checkpoint replays.
@@ -115,10 +122,13 @@ public partial class SaveManager : ISaveManager {
     return _saveSlots[slotIndex].MetaData;
   }
 
+  // Every path that rewrites a slot ends here, so this is where the rest of the game
+  // hears that what GetSlotMetaData hands out has moved.
   private void _loadSlotsMetaData() {
     foreach (var slot in _saveSlots) {
       slot.LoadMetaData(_serializer);
     }
+    EventHandler.Instance.EmitSaveSlotUpdated();
   }
 
   public int GetSelectedSlotIndex() => LatestLoadedSlot;

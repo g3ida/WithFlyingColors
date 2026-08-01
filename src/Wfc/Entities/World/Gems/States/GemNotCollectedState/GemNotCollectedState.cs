@@ -1,10 +1,12 @@
 namespace Wfc.Entities.World.Gems;
 
 using System;
+using System.Linq;
 using Godot;
 using Wfc.Autoload;
 using Wfc.State;
 using Wfc.Utils.Animation;
+using Wfc.Utils.Colors;
 using static Godot.Area2D;
 
 public partial class GemNotCollectedState : GemBaseState {
@@ -53,7 +55,8 @@ public partial class GemNotCollectedState : GemBaseState {
     gem.LightNode.Position = gem.AnimatedSpriteNode.Position;
     _oscillator?.Update(delta);
     var timer = _oscillator?.Timer ?? 0f;
-    gem.LightNode.Energy = 1 + SHINE_VARIANCE * (float)Math.Sin(2 * Mathf.Pi * timer / ANIMATION_DURATION);
+    gem.LightNode.Energy =
+      (1 + SHINE_VARIANCE * (float)Math.Sin(2 * Mathf.Pi * timer / ANIMATION_DURATION)) * gem.LightEnergyScale;
     gem.LightNode.Rotate(ROTATION_SPEED);
     return _requestedState;
   }
@@ -66,10 +69,17 @@ public partial class GemNotCollectedState : GemBaseState {
     // the check here
     if (Global.Instance().Player.IsDying())
       return null;
-    if (area.IsInGroup(gem.GroupName)) {
+    // A gem the level has already given up asks nothing of the player: whichever face
+    // reaches it takes it, and taking it is worth nothing.
+    if (area.IsInGroup(gem.GroupName) || (gem.IsAlreadyCollected && _isPlayerFace(area))) {
       gem.CollisionShapeNode.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
       return _statesStore.GetState<GemCollectingState>();
     }
     return null;
   }
+
+  // The cube's faces and corners are the only areas that carry a color group, so this
+  // keeps a ghost from being taken by whatever else happens to share their layer.
+  private static bool _isPlayerFace(Area2D area) =>
+    ColorUtils.COLOR_GROUPS.Any(colorGroup => area.IsInGroup(colorGroup));
 }

@@ -55,10 +55,15 @@ public partial class GemCollectingState : GemBaseState {
   public override IState<Gem>? PhysicsUpdate(Gem gem, float delta) => _requestedState;
 
   private GemCollectedState? _handleAnimationFinished(Gem gem) {
-    EventHandler.Instance.EmitGemCollected(
-        gem.GroupName,
-        gem.AnimatedSpriteNode.GetGlobalTransformWithCanvas().Origin,
-        gem.AnimatedSpriteNode.SpriteFrames);
+    // A ghost is taken the same way it is dropped into the world: it plays out and
+    // goes. Announcing it would fly a gem into a HUD slot that has been full since
+    // the level opened.
+    if (!gem.IsAlreadyCollected) {
+      EventHandler.Instance.EmitGemCollected(
+          gem.GroupName,
+          gem.AnimatedSpriteNode.GetGlobalTransformWithCanvas().Origin,
+          gem.AnimatedSpriteNode.SpriteFrames);
+    }
     return _statesStore.GetState<GemCollectedState>();
   }
 }

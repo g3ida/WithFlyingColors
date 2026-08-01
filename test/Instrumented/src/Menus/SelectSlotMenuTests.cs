@@ -150,10 +150,10 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
     }
   }
 
-  // The badge marks the slot Continue would resume - the most recently played one -
-  // and focus opens on it.
+  // Focus opens on the slot Continue would resume - the most recently played one - so
+  // the card the player almost certainly wants is the one a press already acts on.
   [Test]
-  public async Task TheMostRecentlyPlayedSlotWearsTheBadgeAndOpensFocused() {
+  public async Task TheMostRecentlyPlayedSlotOpensFocused() {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT)
       .WithFilledSlot(0, progress: 80, timestamp: 100UL)
       .WithFilledSlot(1, progress: 10, timestamp: 200UL);
@@ -161,9 +161,8 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
     var screen = await _openSlotPicker(SlotPickerMode.Load);
 
     var panels = _panels(screen);
-    _badgeOf(panels[0]).Visible.ShouldBeFalse();
-    _badgeOf(panels[1]).Visible.ShouldBeTrue("slot 2 was played last");
     panels[1].GetHasFocus().ShouldBeTrue("focus should open on the last played slot");
+    panels[0].GetHasFocus().ShouldBeFalse();
   }
 
   // The two modes share one title; the instruction line is what tells the player
@@ -205,9 +204,6 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
 
   private static string _instructionOf(GameMenu screen) =>
     screen.GetNode<Label>("InstructionLabel").Text.ToUpperInvariant();
-
-  private static Label _badgeOf(SaveSlotPanel panel) =>
-    panel.GetNode<Label>("HBoxContainer/VBoxContainer/TitleRow/LastPlayedBadge");
 
   private static System.Collections.Generic.List<SaveSlotPanel> _panels(GameMenu screen) =>
     screen.FindDescendants<SaveSlotPanel>().ToList();
