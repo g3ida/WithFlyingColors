@@ -154,9 +154,10 @@ public partial class SaveManager : ISaveManager {
 
   // Deserialized as JsonElement rather than object: System.Text.Json hands back the
   // raw element for an untyped value, so unboxing one straight to int threw. Any
-  // unreadable file falls back to the first slot rather than stranding the player.
+  // unreadable file leaves no slot selected; every real flow selects one explicitly
+  // before gameplay, so nothing should pretend a slot is active on a fresh install.
   private void _loadSlotsInfo() {
-    LatestLoadedSlot = 0;
+    LatestLoadedSlot = ISaveManager.NO_SLOT;
     if (!FileAccess.FileExists(SLOT_INFO_PATH)) {
       return;
     }

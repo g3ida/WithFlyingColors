@@ -104,8 +104,13 @@ public partial class GameMenu : Control {
 
   // Takes stock of the transitions again after a widget rebuilt itself, so the
   // exit isn't left waiting on elements that no longer exist. The screen state and
-  // the counts are left alone: this is not a second entrance, only a fresh list.
-  public void RefreshTransitionElements() => _parseTransitionElements();
+  // the counts are left alone - this is not a second entrance, only a fresh list -
+  // but a transition in flight is re-checked against it: the list may have shrunk
+  // below what already reported in, and no further signal would ever finish it.
+  public void RefreshTransitionElements() {
+    _parseTransitionElements();
+    _settleTransitionState();
+  }
 
   public virtual void OnReady() {
     // Override this method in derived classes.
@@ -172,6 +177,21 @@ public partial class GameMenu : Control {
     NavigateToScreen(GameMenus.GAME);
   }
 
+  // Starting a new game wherever the player pointed: the main menu takes the first
+  // slot when there is nothing to choose between, the slot picker takes the one that
+  // was pressed. Both mean the same thing, so both come through here.
+  protected void StartNewGameInSlot(int slotIndex) {
+    // Wiping the slot clears the selection when it was the selected one, so the
+    // reselect puts the new game exactly where the player pointed rather than
+    // letting the first save land in slot 0.
+    SaveManager.RemoveSaveSlot(slotIndex);
+    SaveManager.SelectSlot(slotIndex);
+    // A blank but real save: the meta file is what lets every later checkpoint write
+    // into this slot.
+    SaveManager.SaveGame(GetTree(), slotIndex);
+    NavigateToLevelScreen(LevelDispatcher.LEVELS[0].Id);
+  }
+
   private void _internalOnMenuButtonPressed(int menuButtonValue) {
     var menuButton = (MenuAction)menuButtonValue;
     if (_screenState != MenuScreenState.Entered) {
@@ -236,16 +256,23 @@ public partial class GameMenu : Control {
     _transitionElements.Clear();
   }
 
+  // Both walks prune elements that were freed since the last parse first: a freed
+  // element can neither be told to move nor ever report back, and one left in the
+  // list would leave the screen waiting on a signal that cannot come.
   private void _enterTransitionElements() {
+    _transitionElements.RemoveAll(element => !IsInstanceValid(element));
     foreach (var element in _transitionElements) {
       element.Enter();
     }
   }
 
   private void _exitTransitionElements() {
+    _transitionElements.RemoveAll(element => !IsInstanceValid(element));
     foreach (var element in _transitionElements) {
       element.Exit();
     }
+    // Everything just told to exit may have been pruned away.
+    _settleTransitionState();
   }
 
   public bool IsInTransitionState() {
@@ -258,14 +285,25 @@ public partial class GameMenu : Control {
 
   private void _onTransitionElementEntered() {
     _enteredTransitionElementsCount++;
-    if (_enteredTransitionElementsCount == _transitionElements.Count) {
-      _screenState = MenuScreenState.Entered;
-    }
+    _settleTransitionState();
   }
 
   private void _onTransitionElementExited() {
     _exitedTransitionElementsCount++;
-    if (_exitedTransitionElementsCount == _transitionElements.Count) {
+    _settleTransitionState();
+  }
+
+  // Completion is >= against the current list, never == : the list can shrink while
+  // a transition is in flight (a language change rebuilds the title, and rebuilt
+  // labels carry no transitions), and an exact match against the shrunken list may
+  // already have been overshot - a screen stranded that way swallows every input.
+  private void _settleTransitionState() {
+    if (_screenState == MenuScreenState.Entering
+        && _enteredTransitionElementsCount >= _transitionElements.Count) {
+      _screenState = MenuScreenState.Entered;
+    }
+    else if (_screenState == MenuScreenState.Exiting
+        && _exitedTransitionElementsCount >= _transitionElements.Count) {
       _screenState = MenuScreenState.Exited;
       MenuManager.GoToMenu(_destinationScreen);
     }

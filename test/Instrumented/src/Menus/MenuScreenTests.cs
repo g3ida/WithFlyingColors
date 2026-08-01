@@ -12,10 +12,12 @@ using Wfc.Core.Persistence;
 using Wfc.Entities.Ui.Menubox;
 using Wfc.Entities.Ui.Slots;
 using Wfc.Screens;
+using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
 using Wfc.test.Helpers.Fakes;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Builds each menu screen for real, under a provider that stands in for RootNode, and
 // checks it gets all the way through its entrance.
@@ -68,14 +70,17 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
   // rest of the method - metadata, focus, centering - never ran.
   [Test]
   public async Task SelectSlotScreenFillsItsPanelsFromSaveData() {
-    _provider.Save = new FakeSaveManager(selectedSlot: 1).WithFilledSlot(1, progress: 60);
+    _provider.Save = new FakeSaveManager(selectedSlot: 1)
+      .WithFilledSlot(1, progress: 60)
+      .WithClearedLevel(1, LevelId.Tutorial);
 
     var screen = await _open(GameMenus.SELECT_SLOT);
 
     var panels = screen.FindDescendants<SaveSlotPanel>().ToList();
     panels.Count.ShouldBe(FakeSaveManager.NUM_SLOTS);
-    // A filled slot describes its progress; an empty one says so.
-    panels[1].Description.ShouldContain("60");
+    // A filled slot describes its whole-game completion - one cleared level of the
+    // three in the chain - while an empty one says so.
+    panels[1].Description.ShouldContain("33");
     panels[0].Description.ShouldBe("<EMPTY>");
   }
 
@@ -115,19 +120,10 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
     _provider.MenuManager.GetCurrentMenu().ShouldBe(GameMenus.MAIN_MENU);
   }
 
-  // The roster grows with the save data: a fresh install offers only New Game, one
-  // played slot adds Continue, a second played slot adds Load Game.
+  // The sub-menu only ever opens with at least one occupied slot. Load Game needs a
+  // second save to be worth a row - with a single one it could only repeat Continue.
   [Test]
-  public async Task PlaySubMenuOffersOnlyNewGameOnAFreshInstall() {
-    _provider.Save = new FakeSaveManager(selectedSlot: 0);
-
-    var items = await _buildPlaySubMenu();
-
-    items.Count.ShouldBe(1);
-  }
-
-  [Test]
-  public async Task PlaySubMenuAddsContinueOncePlayed() {
+  public async Task PlaySubMenuHidesLoadGameWithASingleSave() {
     _provider.Save = new FakeSaveManager(selectedSlot: 0).WithFilledSlot(0, progress: 40);
 
     var items = await _buildPlaySubMenu();
@@ -136,7 +132,7 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
   }
 
   [Test]
-  public async Task PlaySubMenuAddsLoadGameWithASecondPlayedSlot() {
+  public async Task PlaySubMenuOffersLoadGameWithASecondSave() {
     _provider.Save = new FakeSaveManager(selectedSlot: 0)
       .WithFilledSlot(0, progress: 40)
       .WithFilledSlot(2, progress: 10);
@@ -144,6 +140,21 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
     var items = await _buildPlaySubMenu();
 
     items.Count.ShouldBe(3);
+  }
+
+  // A fresh install has nothing to continue or load, so Play skips the sub-menu
+  // and the slot picker entirely: it creates a save in the first slot and starts.
+  [Test]
+  public async Task PlayWithEverySlotEmptyStartsANewGameDirectly() {
+    _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT);
+
+    await _open(GameMenus.MAIN_MENU, from: GameMenus.STATS_MENU);
+    EventHandler.Instance.EmitMenuActionPressed(MenuAction.Play);
+
+    (await _waitUntil(() => _provider.MenuManager.GetCurrentMenu() == GameMenus.GAME))
+      .ShouldBeTrue("play with no saves should enter the game directly");
+    _provider.Save.SelectedSlot.ShouldBe(0);
+    _provider.Save.SaveGameCallCount.ShouldBe(1);
   }
 
   private async Task<List<SubMenuItem>> _buildPlaySubMenu() {

@@ -3,6 +3,7 @@ namespace Wfc.Entities.Ui.InputHint;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Input.Controllers;
+using Wfc.Core.Localization;
 using Wfc.Core.Settings;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -40,6 +41,20 @@ public partial class InputHintBar : Control {
   public void Enter() => _transition?.Enter();
 
   public void Exit() => _transition?.Exit();
+
+  // Rewords one card and re-lays the row out, so a screen can reuse the default
+  // cards across its modes instead of stacking near-identical bars.
+  public void RelabelCard(string cardName, TranslationKey captionKey) {
+    var card = _cards.Find(candidate => candidate.Name == cardName);
+    if (card == null) {
+      // Silence here would leave the screen advertising the wrong action with nothing
+      // to say why, so a renamed or misspelt card is loud instead.
+      GD.PushError($"{nameof(InputHintBar)} has no card named '{cardName}'.");
+      return;
+    }
+    card.SetCaption(captionKey);
+    _refreshAll();
+  }
 
   // Subscribed from _EnterTree rather than _Ready so it stays subscribed through
   // a reparent: _ExitTree fires every time the bar is moved, and _Ready only ever

@@ -65,6 +65,16 @@ public partial class InputHintCard : PanelContainer {
   private void _applyCaption() =>
       _caption.Text = TranslationServer.Translate(CaptionKey.ToTranslationKeyStringSafe());
 
+  // For screens that reword a card per mode (the slot picker's SELECT vs LOAD).
+  // The bar re-equalizes card widths on its next refresh, so callers go through
+  // InputHintBar.RelabelCard rather than this directly.
+  public void SetCaption(TranslationKey key) {
+    CaptionKey = key;
+    if (_wired) {
+      _applyCaption();
+    }
+  }
+
   // Rebuilds the glyphs to match the given controller type.
   public void Refresh(ControllerType type) {
     if (!_wired) {

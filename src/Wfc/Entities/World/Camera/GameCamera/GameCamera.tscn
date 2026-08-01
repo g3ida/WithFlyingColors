@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://sogrdmcp4bpc" path="res://src/Wfc/Entities/World/Camera/GameCamera/GameCamera.cs" id="1"]
 
 [node name="Camera2D" type="Camera2D" groups=["persist"]]
+process_callback = 0
 limit_left = 0
 limit_top = 0
 limit_right = 2000

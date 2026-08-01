@@ -8,6 +8,7 @@ using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
+using Wfc.Entities.Ui.Dialogs;
 using Wfc.Entities.Ui.SettingsUI;
 using Wfc.Entities.Ui.SettingsUI.Grid;
 using Wfc.Screens.MenuManager;

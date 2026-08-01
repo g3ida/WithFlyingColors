@@ -4,6 +4,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Input;
+using Wfc.Core.Persistence;
 using Wfc.Entities.World.Player;
 using Wfc.Screens;
 using Wfc.Screens.MenuManager;
@@ -20,6 +21,8 @@ public partial class Menubox : Control {
   public IMenuManager MenuManager => this.DependOn<IMenuManager>();
   [Dependency]
   public IInputManager InputManager => this.DependOn<IInputManager>();
+  [Dependency]
+  public ISaveManager SaveManager => this.DependOn<ISaveManager>();
   #endregion Dependencies
 
   #region Types
@@ -162,7 +165,15 @@ public partial class Menubox : Control {
       return;
     }
     if (_currentState is States.MENU or States.SUB_MENU_EXIT) {
-      _displayOrHidePlaySubMenu(true);
+      // With every slot empty there is nothing to continue or load, so Play can only
+      // mean one thing and the sub-menu would be a detour: the screen starts the
+      // game directly off the emitted action.
+      if (SaveManager.HasNoSaves()) {
+        _currentState = States.EXIT;
+      }
+      else {
+        _displayOrHidePlaySubMenu(true);
+      }
       EventHandler.Instance.EmitMenuActionPressed(MenuAction.Play);
     }
   }

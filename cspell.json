@@ -122,6 +122,7 @@
     "respawn",
     "tilemaps",
     "uncollectable",
+    "unfocusable",
     "unplaceable",
     "minigame",
     "minigames",

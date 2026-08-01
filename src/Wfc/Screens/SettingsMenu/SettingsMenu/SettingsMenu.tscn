@@ -8,8 +8,8 @@
 [ext_resource type="Script" uid="uid://bs3qantpxmo15" path="res://src/Wfc/Entities/Ui/BackButton/BackButton.cs" id="5"]
 [ext_resource type="StyleBox" path="res://Assets/Styles/MenuButtonPressedStyle.tres" id="6"]
 [ext_resource type="PackedScene" uid="uid://bo2x0ri6jenb3" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabManager.cs" id="7_yyple"]
-[ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://src/Wfc/Entities/Ui/Slots/Dialogs/DialogContainer/DialogContainer.tscn" id="11"]
-[ext_resource type="Theme" uid="uid://cd37bkdhivqji" path="res://Assets/Styles/Themes/Dialog.tres" id="12"]
+[ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://src/Wfc/Entities/Ui/Dialogs/DialogContainer/DialogContainer.tscn" id="11"]
+[ext_resource type="PackedScene" uid="uid://wfccnfdlgscn1" path="res://src/Wfc/Entities/Ui/Dialogs/ConfirmDialog/ConfirmDialog.tscn" id="12"]
 [ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://src/Wfc/Entities/Ui/UITransition/UITransition.tscn" id="13"]
 [ext_resource type="PackedScene" uid="uid://wj8mouy5wyl2" path="res://src/Wfc/Entities/Ui/MenuTitle/MenuTitle.tscn" id="15_2hp5u"]
 
@@ -65,10 +65,9 @@ DialogNodePath = NodePath("AcceptDialog")
 DialogTextKey = 61
 ConfirmTextKey = 62
 
-[node name="AcceptDialog" type="AcceptDialog" parent="DialogContainer"]
-theme = ExtResource("12")
-dialog_text = "Please make sure all input keys are bound correctly."
-dialog_autowrap = true
+[node name="AcceptDialog" parent="DialogContainer" instance=ExtResource("12")]
+layout_mode = 1
+ShowCancelButton = false
 
 [node name="MenuTitle" parent="." instance=ExtResource("15_2hp5u")]
 layout_mode = 0

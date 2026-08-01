@@ -1,11 +1,12 @@
 namespace Wfc.Entities.Ui.Slots;
 
-using System;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
+using Wfc.Screens.Levels;
+using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
@@ -29,37 +30,53 @@ public partial class SaveSlotPanel : PanelContainer {
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
 
   [Signal]
-  public delegate void PressedEventHandler(string action);
-
-  public enum State { Init, Default, Focus, ActionShown }
+  public delegate void PressedEventHandler();
 
   private const int MIN_WIDTH = 1160;
+  private const int FOCUS_BORDER_WIDTH = 6;
+  private const float SIDE_BAR_WIDTH = 24f;
+  private const float SIDE_BAR_FOCUSED_WIDTH = 60f;
+  private const float SIDE_BAR_TWEEN_DURATION = 0.15f;
+  private static readonly Color DISABLED_TINT = new(1, 1, 1, 0.5f);
+  private static readonly Color DISABLED_SIDE_BAR_COLOR = new(0.5f, 0.5f, 0.5f);
 
-  private int _timestamp = -1;
+  // Which face of the game's four-color skin each slot wears, in slot order.
+  private static readonly SkinColor[] ACCENT_COLOR_BAG = [
+    SkinColor.TopFace,
+    SkinColor.RightFace,
+    SkinColor.LeftFace,
+  ];
+
+  private int _createdTimestamp = -1;
+  private int _lastPlayedTimestamp = -1;
   private string _description = "";
-  private bool _hasFocus = false;
   private bool _isDisabled = false;
-  public int _id = 0;
-  private State _currentState = State.Init;
+  private int _id = 0;
 
   #region Nodes
   [NodePath("HBoxContainer/VBoxContainer/Description")]
   private Label _descriptionNode = default!;
-  [NodePath("HBoxContainer/VBoxContainer/Timestamp")]
-  private Label _timestampNode = default!;
+  [NodePath("HBoxContainer/VBoxContainer/TimestampRow/Created")]
+  private Label _createdNode = default!;
+  [NodePath("HBoxContainer/VBoxContainer/TimestampRow/LastPlayed")]
+  private Label _lastPlayedNode = default!;
   [NodePath("HBoxContainer")]
   private HBoxContainer _containerNode = default!;
-  [NodePath("HBoxContainer/VBoxContainer")]
-  private VBoxContainer _vBoxContainerNode = default!;
-  [NodePath("HBoxContainer/VBoxContainer/SlotIndex")]
+  [NodePath("HBoxContainer/SideBar")]
+  private ColorRect _sideBarNode = default!;
+  [NodePath("HBoxContainer/VBoxContainer/TitleRow/SlotIndex")]
   private Label _slotIndexNode = default!;
-  [NodePath("HBoxContainer/ActionButtons")]
-  private SlotActionButtons _actionButtonsNode = default!;
+  [NodePath("HBoxContainer/VBoxContainer/LevelName")]
+  private Label _levelNameNode = default!;
+  [NodePath("HBoxContainer/VBoxContainer/TitleRow/LastPlayedBadge")]
+  private Label _lastPlayedBadgeNode = default!;
   [NodePath("Button")]
   private Button _buttonNode = default!;
   [NodePath("AnimationPlayer")]
   private AnimationPlayer _animationPlayerNode = default!;
   #endregion Nodes
+
+  private Tween? _sideBarTweener;
 
   // Set once dependencies are up, which is also the guard for reading them: _Ready
   // runs first and writes the slot index before LocalizationService is available.
@@ -76,6 +93,7 @@ public partial class SaveSlotPanel : PanelContainer {
     }
     _slotIndexNode.Text = string.Format(
         LocalizationService.GetLocalizedString(TranslationKey.menu_label_slotIndex), _id + 1);
+    _lastPlayedBadgeNode.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_label_lastPlayed);
     UpdateMetaData();
   }
 
@@ -83,12 +101,11 @@ public partial class SaveSlotPanel : PanelContainer {
     base._Ready();
     this.WireNodes();
 
-    SetTimestamp(_timestamp);
     SetDescription(_description);
     SetSlotIndexLabel(_id);
-    SetState(State.Default);
     CustomMinimumSize = new Vector2(MIN_WIDTH, CustomMinimumSize.Y);
     _buttonNode.GrabFocusOnHover();
+    _refreshSideBarColor();
   }
 
   public string Description {
@@ -108,54 +125,88 @@ public partial class SaveSlotPanel : PanelContainer {
 
   public void SetSlotIndexLabel(int value) {
     _id = value;
-    _actionButtonsNode.SlotIndex = _id;
     if (_isResolved) {
       _slotIndexNode.Text = string.Format(
           LocalizationService.GetLocalizedString(TranslationKey.menu_label_slotIndex), _id + 1);
     }
+    _refreshSideBarColor();
   }
 
-  public void SetAllowSelectingEmptySlots(bool allow) =>
-    _actionButtonsNode.AllowSelectingEmptySlots = allow;
-
-  public int Timestamp {
-    get => _timestamp;
-    set => SetTimestamp(value);
+  // The dates always need their localized "Created"/"Last played" prefixes, so the
+  // labels are only written once LocalizationService is up; _refreshLocalizedText
+  // re-runs this through UpdateMetaData after a language change.
+  private void _setTimestamps(int created, int lastPlayed) {
+    _createdTimestamp = created;
+    _lastPlayedTimestamp = lastPlayed;
+    if (!_isResolved) {
+      return;
+    }
+    _createdNode.Text = string.Format(
+        LocalizationService.GetLocalizedString(TranslationKey.menu_label_slotCreated),
+        _formatTimestamp(_createdTimestamp));
+    _lastPlayedNode.Text = string.Format(
+        LocalizationService.GetLocalizedString(TranslationKey.menu_label_slotLastPlayed),
+        _formatTimestamp(_lastPlayedTimestamp));
   }
 
-  public void SetTimestamp(int value) {
-    _timestamp = value;
-    if (_timestamp == -1) {
-      _timestampNode.Text = "----/--/-- --:--";
+  private static string _formatTimestamp(int value) {
+    if (value == -1) {
+      return "----/--/-- --:--";
+    }
+    var time = Time.GetDatetimeDictFromUnixTime(value);
+    return $"{time["year"]}/{time["month"]:00}/{time["day"]:00} {time["hour"]:00}:{time["minute"]:00}";
+  }
+
+  // Single press, single meaning: the screen decides what selecting this slot does
+  // in its current mode.
+  private void _onButtonPressed() => EmitSignal(SignalName.Pressed);
+
+  // The focus feedback is threefold: the card blinks, its side bar widens and a
+  // border in the slot's own color surrounds it, so the focused card reads as
+  // focused from any distance.
+  private void _onButtonFocusEntered() {
+    _animationPlayerNode.Play("Blink");
+    _setFocusedLook(true);
+  }
+
+  private void _onButtonFocusExited() {
+    _animationPlayerNode.Play("RESET");
+    _setFocusedLook(false);
+  }
+
+  private void _setFocusedLook(bool focused) {
+    _animateSideBarWidth(focused ? SIDE_BAR_FOCUSED_WIDTH : SIDE_BAR_WIDTH);
+    if (focused) {
+      var style = (StyleBoxFlat)GetThemeStylebox("panel").Duplicate();
+      style.BorderWidthLeft = FOCUS_BORDER_WIDTH;
+      style.BorderWidthTop = FOCUS_BORDER_WIDTH;
+      style.BorderWidthRight = FOCUS_BORDER_WIDTH;
+      style.BorderWidthBottom = FOCUS_BORDER_WIDTH;
+      style.BorderColor = _accentColor();
+      AddThemeStyleboxOverride("panel", style);
     }
     else {
-      var time = Time.GetDatetimeDictFromUnixTime(_timestamp);
-      _timestampNode.Text = $"{time["year"]}/{time["month"]:00}/{time["day"]:00} {time["hour"]:00}:{time["minute"]:00}";
+      RemoveThemeStyleboxOverride("panel");
     }
   }
 
-  private void _onButtonPressed() {
-    if (_currentState == State.Focus) {
-      SetState(State.ActionShown);
-    }
-    else if (_currentState == State.ActionShown) {
-      SetState(State.Focus);
-      EmitSignal(SaveSlotPanel.SignalName.Pressed, "focus");
-    }
+  private void _animateSideBarWidth(float width) {
+    _sideBarTweener?.Kill();
+    _sideBarTweener = CreateTween();
+    _sideBarTweener.TweenProperty(_sideBarNode, "custom_minimum_size:x", width, SIDE_BAR_TWEEN_DURATION)
+        .SetTrans(Tween.TransitionType.Quad)
+        .SetEase(Tween.EaseType.Out);
   }
 
-  // Still polled, unlike the other slot widgets. Leaving the action buttons is a
-  // condition across three controls - this panel's button and both action buttons -
-  // and no single focus_exited says that all of them lost it. GetHasFocus is what
-  // drives the state machine; the Play calls keep the current clip running and are
-  // no-ops once it is.
-  public override void _Process(double delta) {
-    base._Process(delta);
-    _animationPlayerNode.Play(GetHasFocus() ? "Blink" : "RESET");
-  }
+  private Color _accentColor() =>
+      SkinManager.Instance.CurrentSkin.GetColor(
+          ACCENT_COLOR_BAG[_id % ACCENT_COLOR_BAG.Length], SkinColorIntensity.Basic);
+
+  private void _refreshSideBarColor() =>
+      _sideBarNode.Color = _isDisabled ? DISABLED_SIDE_BAR_COLOR : _accentColor();
 
   public new bool HasFocus {
-    get => _hasFocus;
+    get => GetHasFocus();
     set => SetHasFocus(value);
   }
 
@@ -165,20 +216,7 @@ public partial class SaveSlotPanel : PanelContainer {
     }
   }
 
-  public bool GetHasFocus() {
-    if (_buttonNode.HasFocus()) {
-      if (_currentState == State.Default) {
-        SetState(State.Focus);
-      }
-      return true;
-    }
-    else {
-      if (_currentState == State.ActionShown && !_actionButtonsNode.ButtonsHasFocus()) {
-        SetState(State.Default);
-      }
-      return false;
-    }
-  }
+  public bool GetHasFocus() => _buttonNode.HasFocus();
 
   public bool IsDisabled {
     get => _isDisabled;
@@ -188,72 +226,38 @@ public partial class SaveSlotPanel : PanelContainer {
   public void SetIsDisabled(bool value) {
     _isDisabled = value;
     _buttonNode.Disabled = value;
+    // Focus skips disabled slots entirely, so a controller can never land on a
+    // card that has nothing to answer a press with.
     _buttonNode.FocusMode = value ? Control.FocusModeEnum.None : Control.FocusModeEnum.All;
-  }
-
-  public void SetState(State newState) {
-    if (newState == _currentState)
-      return;
-
-    switch (newState) {
-      case State.Default:
-        _animationPlayerNode.Play("RESET");
-        _actionButtonsNode.HideButton();
-        HideButtonNode(false);
-        break;
-      case State.Focus:
-        _animationPlayerNode.Play("Blink");
-        HideButtonNode(false);
-        _actionButtonsNode.HideButton();
-        break;
-      case State.ActionShown:
-        if (_currentState == State.Default) {
-          SetState(State.Focus);
-        }
-        HideButtonNode(true);
-        _actionButtonsNode.ShowButton();
-        break;
-    }
-
-    _currentState = newState;
-  }
-
-  private void HideButtonNode(bool hide) {
-    _buttonNode.Visible = !hide;
-    _buttonNode.Disabled = hide;
-  }
-
-  private void _on_ActionButtons_clear_button_pressed(int slotIndex) {
-    EmitSignal(SaveSlotPanel.SignalName.Pressed, "delete");
-  }
-
-  private void _on_ActionButtons_select_button_pressed(int slotIndex) {
-    EmitSignal(SaveSlotPanel.SignalName.Pressed, "select");
-    HideActionButtons();
-  }
-
-  public void HideActionButtons() {
-    SetHasFocus(true);
-    SetState(State.Focus);
+    _containerNode.Modulate = value ? DISABLED_TINT : Colors.White;
+    _refreshSideBarColor();
   }
 
   public void UpdateMetaData() {
     var metaData = SaveManager.GetSlotMetaData(_id);
     if (metaData != null) {
-      SetTimestamp((int)metaData.SaveTimestamp);
+      // LastLoadDate is written once, when the slot first materializes, and never
+      // again - so it is the slot's creation date in all but name. SaveTimestamp
+      // moves on every load and checkpoint, which makes it "last played".
+      _setTimestamps((int)metaData.LastLoadDate, (int)metaData.SaveTimestamp);
+      var titleKey = LevelDispatcher.TitleKeyOf(metaData.LevelId);
+      _levelNameNode.Text = titleKey == null
+          ? ""
+          : LocalizationService.GetLocalizedString(titleKey.Value);
+      _levelNameNode.Visible = titleKey != null;
+      // Whole-game completion, not the in-level checkpoint Progress: two slots are
+      // only comparable on the card when the number means the same thing for both.
       SetDescription(string.Format(
-          LocalizationService.GetLocalizedString(TranslationKey.menu_label_slotProgress), metaData.Progress));
+          LocalizationService.GetLocalizedString(TranslationKey.menu_label_slotCompletion),
+          metaData.CompletionPercent(LevelDispatcher.LEVELS.Count)));
     }
     else {
-      SetTimestamp(-1);
+      _setTimestamps(-1, -1);
+      _levelNameNode.Text = "";
+      _levelNameNode.Visible = false;
       SetDescription(LocalizationService.GetLocalizedString(TranslationKey.menu_label_emptySlot));
     }
   }
 
-  public void SetBorder(bool state) {
-    var stylePath = state ? "res://Assets/Styles/greyPanelWithBorder.tres" : "res://Assets/Styles/greyPanelWithBorderTransparent.tres";
-    var style = (StyleBox)GD.Load(stylePath);
-    RemoveThemeStyleboxOverride("panel");
-    AddThemeStyleboxOverride("panel", style);
-  }
+  public void SetLastPlayed(bool value) => _lastPlayedBadgeNode.Visible = value;
 }
