@@ -62,14 +62,18 @@ menu.label.empty_slot,<EMPTY>,<VIDE>,<LEER>,<VACÍO>,<VUOTO>,<VAZIO>,<LEEG>
 menu.label.slot_index,Slot {0},Emplacement {0},Slot {0},Ranura {0},Slot {0},Slot {0},Slot {0}
 game.level.title.four_colors,4 Colors Is All You Need,4 couleurs suffisent,4 Farben genügen,Con 4 colores basta,Bastano 4 colori,4 cores bastam,4 kleuren zijn genoeg
 game.level.title.lets_play_with_colors,Let's Play with Colors,Jouons avec les couleurs,Spielen wir mit Farben,Juguemos con los colores,Giochiamo con i colori,Vamos brincar com as cores,Spelen met kleuren
+game.level.title.hub,The Arena,L'Arène,Die Arena,La Arena,L'Arena,A Arena,De Arena
 menu.button.load_game,Load Game,Charger une partie,Spiel laden,Cargar partida,Carica partita,Carregar jogo,Spel laden
 menu.dialog.overwrite_slot,Starting a new game here will erase this save. Continue?,Commencer une nouvelle partie ici effacera cette sauvegarde. Continuer ?,Ein neues Spiel hier löscht diesen Spielstand. Fortfahren?,Empezar una nueva partida aquí borrará esta partida guardada. ¿Continuar?,Iniziare una nuova partita qui cancellerà questo salvataggio. Continuare?,Começar um novo jogo aqui apagará este jogo guardado. Continuar?,Een nieuw spel starten wist deze opgeslagen game. Doorgaan?
 menu.header.load_game,Load Game,Charger une partie,Spiel laden,Cargar partida,Carica partita,Carregar jogo,Spel laden
 menu.header.new_game,New Game,Nouvelle partie,Neues Spiel,Nuevo juego,Nuova partita,Novo Jogo,Nieuw Spel
-menu.label.last_played,Last played,Dernière partie,Zuletzt gespielt,Última partida,Ultima partita,Jogado recentemente,Laatst gespeeld
 menu.label.slot_completion,Completed: {0}%,Terminé : {0} %,Abgeschlossen: {0} %,Completado: {0} %,Completato: {0}%,Concluído: {0}%,Voltooid: {0}%
 menu.label.select_slot_new_game,Please select a slot to start a new game,Veuillez choisir un emplacement pour commencer une nouvelle partie,Bitte wähle einen Slot für ein neues Spiel,Elige una ranura para empezar una nueva partida,Scegli uno slot per iniziare una nuova partita,Escolha um slot para começar um novo jogo,Kies een slot om een nieuw spel te starten
 menu.label.select_slot_load,Please select a slot to load,Veuillez choisir un emplacement à charger,Bitte wähle einen Slot zum Laden,Elige una ranura para cargar,Scegli uno slot da caricare,Escolha um slot para carregar,Kies een slot om te laden
 menu.hint.load,Load,Charger,Laden,Cargar,Carica,Carregar,Laden
 menu.label.slot_created,Created: {0},Création : {0},Erstellt: {0},Creación: {0},Creazione: {0},Criação: {0},Aangemaakt: {0}
 menu.label.slot_last_played,Last played: {0},Dernière partie : {0},Zuletzt gespielt: {0},Última partida: {0},Ultima partita: {0},Jogado recentemente: {0},Laatst gespeeld: {0}
+game.hint.enter_door,Press {0} to start,Appuyez sur {0} pour commencer,Drücke {0} zum Starten,Pulsa {0} para empezar,Premi {0} per iniziare,Pressione {0} para começar,Druk op {0} om te starten
+menu.button.return_to_hub,Return to the Hub,Retour à l'Arène,Zurück zur Arena,Volver a la Arena,Torna all'Arena,Voltar à Arena,Terug naar de Arena
+menu.button.restart_level,Restart Level,Recommencer le niveau,Level neu starten,Reiniciar nivel,Ricomincia livello,Reiniciar nível,Level herstarten
+menu.button.restart_checkpoint,Restart from Checkpoint,Reprendre au point de contrôle,Vom Checkpoint neu starten,Reiniciar desde el punto de control,Riparti dal checkpoint,Reiniciar do checkpoint,Herstart bij checkpoint

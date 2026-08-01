@@ -124,6 +124,19 @@ public partial class Events : RefCounted {
   public delegate void LevelClearedEventHandler();
   [Signal]
   public delegate void GemPutInTempleEventHandler();
+  // The LevelId ordinal of the level behind the door, as an int because that is what
+  // a Godot signal can carry.
+  [Signal]
+  public delegate void DoorEnteredEventHandler(int levelId);
+  // Start the current level over from its beginning. Nothing is banked: a restart is
+  // the player giving up on the run so far, not progress worth recording.
+  [Signal]
+  public delegate void LevelRestartRequestedEventHandler();
+  // The active slot's metadata was rewritten. The hub is built before the clear that
+  // sent the player back to it is banked, so anything showing save state has to be
+  // told rather than only reading it once on the way in.
+  [Signal]
+  public delegate void SaveSlotUpdatedEventHandler();
   // Both carry how hard they want it, so one move can ask for a nudge where it starts and a
   // jolt where it lands without either reading as the other.
   [Signal]

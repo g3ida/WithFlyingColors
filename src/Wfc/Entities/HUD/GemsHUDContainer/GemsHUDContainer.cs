@@ -32,6 +32,15 @@ public partial class GemsHUDContainer : Panel {
     };
   }
 
+  // Fills the slots of gems this level banked on an earlier run.
+  public void MarkAlreadyCollected(IEnumerable<string> colorGroups) {
+    foreach (var colorGroup in colorGroups) {
+      if (_gemsNodes.TryGetValue(colorGroup, out var gemNode)) {
+        gemNode.MarkAlreadyCollected();
+      }
+    }
+  }
+
   public bool IsGemCollected(string colorGroup) {
     if (_gemsNodes.TryGetValue(colorGroup, out var gemNode)) {
       if (gemNode.currentState == GemHUD.State.Collected) {

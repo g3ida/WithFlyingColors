@@ -76,13 +76,17 @@ public enum TranslationKey {
   menu_dialog_overwriteSlot = 69,
   menu_header_loadGame = 70,
   menu_header_newGame = 71,
-  menu_label_lastPlayed = 73,
   menu_label_slotCompletion = 74,
   menu_label_selectSlotNewGame = 75,
   menu_label_selectSlotLoad = 76,
   menu_hint_load = 77,
   menu_label_slotCreated = 78,
   menu_label_slotLastPlayed = 79,
+  game_level_title_hub = 80,
+  game_hint_enterDoor = 81,
+  menu_button_returnToHub = 82,
+  menu_button_restartLevel = 83,
+  menu_button_restartCheckpoint = 84,
 }
 
 public static partial class TranslationKeyExtensions {

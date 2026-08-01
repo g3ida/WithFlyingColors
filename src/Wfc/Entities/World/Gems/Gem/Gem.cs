@@ -15,8 +15,21 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class Gem : Area2D, IPersistent {
+  // How much of a ghost is left to see. Enough to read the shape and its color, not
+  // enough to be mistaken for something still worth crossing the room for.
+  private const float GHOST_ALPHA = 0.3f;
+  private const float GHOST_LIGHT_SCALE = 0.25f;
+
   [Export]
   public string GroupName = "blue";
+
+  // This gem's color was banked for this level on an earlier run, so the level owes
+  // the player nothing for it. It still stands there as a ghost of itself, and any
+  // face may walk through it.
+  public bool IsAlreadyCollected { get; private set; }
+
+  // What the shine is worth on this gem, for the state that animates it.
+  public float LightEnergyScale => IsAlreadyCollected ? GHOST_LIGHT_SCALE : 1f;
 
   [NodePath("PointLight2D")]
   public PointLight2D LightNode = null!;
@@ -50,16 +63,30 @@ public partial class Gem : Area2D, IPersistent {
       GameSkin.ColorGroupToSkinColor(GroupName),
       SkinColorIntensity.Basic
     );
-    var lightColor = SkinManager.Instance.CurrentSkin.GetColor(
-      GameSkin.ColorGroupToSkinColor(GroupName),
-      SkinColorIntensity.VeryLight
-    );
     LightNode.Color = color;
-    GetNode<AnimatedSprite2D>("AnimatedSprite2D").Modulate = lightColor;
+    _applyAppearance();
 
     _statesStore = new GemStatesStore(this);
     _currentState = _statesStore.GetState<GemNotCollectedState>();
     _currentState?.Enter(this);
+  }
+
+  // Called by the level once it knows what the slot has already banked. The gem is
+  // built long before that, so the appearance is applied rather than chosen once.
+  public void MarkAlreadyCollected() {
+    IsAlreadyCollected = true;
+    _applyAppearance();
+  }
+
+  private void _applyAppearance() {
+    var lightColor = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(GroupName),
+      SkinColorIntensity.VeryLight
+    );
+    AnimatedSpriteNode.Modulate = IsAlreadyCollected
+      ? new Color(lightColor, GHOST_ALPHA)
+      : lightColor;
+    LightNode.Energy = LightEnergyScale;
   }
 
   private void SwitchState(IState<Gem>? newState) {

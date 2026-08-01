@@ -12,7 +12,8 @@ public partial class PlayerRotationAction : GodotObject {
   private float _duration;
 
   // The cube's angle as this action understands it: accumulated across chained rotations,
-  // never folded, and the only value the interpolation reads.
+  // folded back down only once nothing is chaining onto it, and the only value the
+  // interpolation reads.
   //
   // Node2D.Rotation is derived from the transform, so it always comes back inside
   // (-pi, pi]. Reading it back mid-chain meant that once a chained target passed pi the
@@ -122,8 +123,12 @@ public partial class PlayerRotationAction : GodotObject {
   }
 
   // Nothing is chaining onto this turn any more, so take the same whole number of turns off
-  // every angle at once. They stay consistent with each other and with the body, and the
-  // accumulator stops growing for as long as the game is running.
+  // every angle at once, the body's own included. They stay consistent with each other, and
+  // none of them grows for as long as the game is running.
+  //
+  // The body needs saying explicitly: a Node2D only re-derives its angle from its transform
+  // once something else writes that transform, which a body that is only ever turned - the
+  // menu box - never does.
   private void _foldFullTurns() {
     var turns = Mathf.Floor((CurrentAngle + Mathf.Pi) / FULL_TURN) * FULL_TURN;
     if (turns == 0.0f) {
@@ -132,5 +137,7 @@ public partial class PlayerRotationAction : GodotObject {
     CurrentAngle -= turns;
     ThetaZero -= turns;
     _thetaTarget -= turns;
+    // Whole turns, so the body ends up facing exactly where it already was.
+    _body?.Rotate(-turns);
   }
 }

@@ -1,10 +1,12 @@
 namespace Wfc.test.Helpers.Fakes;
 
+using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Persistence;
 using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 // An ISaveManager backed by memory rather than user:// files, so a test can put the
 // game in a given save state without touching the player's own saves.
@@ -44,6 +46,13 @@ public sealed class FakeSaveManager : ISaveManager {
   public FakeSaveManager WithClearedLevel(int slotIndex, LevelId levelId) {
     _slots[slotIndex] ??= new SlotMetaData(slotIndex, 1_700_000_000UL, levelId, 0, 1_700_000_000UL);
     _slots[slotIndex]!.ClearedLevels.Add(levelId);
+    return this;
+  }
+
+  // Gems already banked for a level, which is what a hub door's pentagon reads.
+  public FakeSaveManager WithCollectedGems(int slotIndex, LevelId levelId, params string[] colorGroups) {
+    _slots[slotIndex] ??= new SlotMetaData(slotIndex, 1_700_000_000UL, levelId, 0, 1_700_000_000UL);
+    _bankGems(_slots[slotIndex]!, levelId, colorGroups);
     return this;
   }
 
@@ -96,7 +105,7 @@ public sealed class FakeSaveManager : ISaveManager {
     }
   }
 
-  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, int slotIndex = ISaveManager.NO_SLOT) {
+  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, IEnumerable<string>? collectedGems = null, int slotIndex = ISaveManager.NO_SLOT) {
     RecordProgressCallCount++;
     var index = _resolve(slotIndex);
     if (!_isValid(index) || _slots[index] is not { } slot) {
@@ -104,9 +113,11 @@ public sealed class FakeSaveManager : ISaveManager {
     }
     slot.LevelId = levelId;
     slot.Progress = progressPercent;
+    _bankGems(slot, levelId, collectedGems);
+    EventHandler.Instance.EmitSaveSlotUpdated();
   }
 
-  public void RecordLevelCleared(SceneTree tree, LevelId clearedLevelId, LevelId? nextLevelId, int slotIndex = ISaveManager.NO_SLOT) {
+  public void RecordLevelCleared(SceneTree tree, LevelId clearedLevelId, LevelId? nextLevelId, IEnumerable<string>? collectedGems = null, int slotIndex = ISaveManager.NO_SLOT) {
     RecordLevelClearedCallCount++;
     var index = _resolve(slotIndex);
     // Mirrors the real manager: clearing a level with no save slot records nothing.
@@ -116,6 +127,19 @@ public sealed class FakeSaveManager : ISaveManager {
     slot.ClearedLevels.Add(clearedLevelId);
     slot.LevelId = nextLevelId ?? clearedLevelId;
     slot.Progress = nextLevelId == null ? 100 : 0;
+    _bankGems(slot, clearedLevelId, collectedGems);
+    EventHandler.Instance.EmitSaveSlotUpdated();
+  }
+
+  private static void _bankGems(SlotMetaData slot, LevelId levelId, IEnumerable<string>? collectedGems) {
+    if (collectedGems == null) {
+      return;
+    }
+    if (!slot.CollectedGems.TryGetValue(levelId, out var gems)) {
+      gems = [];
+      slot.CollectedGems[levelId] = gems;
+    }
+    gems.UnionWith(collectedGems);
   }
 
   public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = ISaveManager.NO_SLOT) {

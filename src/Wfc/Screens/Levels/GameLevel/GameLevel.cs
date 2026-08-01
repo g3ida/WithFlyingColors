@@ -6,9 +6,11 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Autoload;
 using Wfc.Core.Audio;
+using Wfc.Core.Persistence;
 using Wfc.Entities.HUD;
 using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Cutscenes;
+using Wfc.Entities.World.Gems;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
@@ -45,10 +47,32 @@ public partial class GameLevel :
       MusicTrackManager.LoadTrack(Track);
       MusicTrackManager.PlayTrack(Track);
     }
+    _applyBankedGems();
+  }
+
+  // Gems this level has already given up stay given up: the HUD opens with their slots
+  // filled, and the ones still standing in the world are left as ghosts of themselves.
+  // Runs here rather than in the gems' own _Ready because only the level knows which
+  // level it is, and the slot is not readable until dependencies resolve.
+  private void _applyBankedGems() {
+    var bankedGems = SaveManager.GetSlotMetaData()?.GemsCollectedIn(LevelId);
+    if (bankedGems == null || bankedGems.Count == 0) {
+      return;
+    }
+
+    _gemsHUDContainerNode.MarkAlreadyCollected(bankedGems);
+    foreach (var gem in this.FindDescendants<Gem>()) {
+      if (bankedGems.Contains(gem.GroupName)) {
+        gem.MarkAlreadyCollected();
+      }
+    }
   }
 
   [Dependency]
   public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
+
+  [Dependency]
+  public ISaveManager SaveManager => this.DependOn<ISaveManager>();
 
   public Player PlayerNode => _playerNode;
 

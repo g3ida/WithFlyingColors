@@ -1,6 +1,8 @@
 namespace Wfc.Core.Persistence;
 
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Linq;
 using Wfc.Screens.Levels;
 
 public class SlotMetaData {
@@ -18,13 +20,25 @@ public class SlotMetaData {
   // revisiting an old level locks everything after it again.
   public HashSet<LevelId> ClearedLevels { get; }
 
+  // Color groups of the gems banked per level, so the hub doors can show what a level
+  // still hides without loading it. Like ClearedLevels this only ever grows: a replay
+  // that ends short of an already-banked gem must not take it off the door.
+  public Dictionary<LevelId, HashSet<string>> CollectedGems { get; }
+
+  private static readonly FrozenSet<string> _noGems = FrozenSet<string>.Empty;
+
   public SlotMetaData(int slotId, ulong saveTimestamp, LevelId levelId, int progress, ulong lastLoadDate,
-      IEnumerable<LevelId>? clearedLevels = null) {
+      IEnumerable<LevelId>? clearedLevels = null,
+      IReadOnlyDictionary<LevelId, HashSet<string>>? collectedGems = null) {
     SlotId = slotId;
     SaveTimestamp = saveTimestamp;
     LevelId = levelId;
     Progress = progress;
     LastLoadDate = lastLoadDate;
     ClearedLevels = [.. clearedLevels ?? []];
+    CollectedGems = collectedGems?.ToDictionary(e => e.Key, e => new HashSet<string>(e.Value)) ?? [];
   }
+
+  public IReadOnlySet<string> GemsCollectedIn(LevelId levelId) =>
+    CollectedGems.TryGetValue(levelId, out var gems) ? gems : _noGems;
 }

@@ -33,8 +33,12 @@ public partial class PauseMenu : CanvasLayer {
   private ScreenShaders _screenShaders = null!;
   [NodePath("PauseMenuImpl")]
   private PauseMenuImpl _pauseMenu = null!;
-  [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/LevelSelectButton")]
-  private Button _levelSelectButton = null!;
+  [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/ReturnToHubButton")]
+  private Button _returnToHubButton = null!;
+  [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/RestartLevelButton")]
+  private Button _restartLevelButton = null!;
+  [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/RestartCheckpointButton")]
+  private Button _restartCheckpointButton = null!;
   [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/ResumeButton")]
   private Button _resumeButton = null!;
   [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/BackButton")]
@@ -60,7 +64,9 @@ public partial class PauseMenu : CanvasLayer {
 
   public override void _Ready() {
     this.WireNodes();
-    _levelSelectButton.Pressed += _onLevelSelectButtonPressed;
+    _returnToHubButton.Pressed += _onReturnToHubButtonPressed;
+    _restartLevelButton.Pressed += _onRestartLevelButtonPressed;
+    _restartCheckpointButton.Pressed += _onRestartCheckpointButtonPressed;
     _resumeButton.Pressed += _onResumeButtonPressed;
     _backButtonButton.Pressed += _onBackButtonPressed;
   }
@@ -116,10 +122,25 @@ public partial class PauseMenu : CanvasLayer {
     }
   }
 
-  private void _onLevelSelectButtonPressed() {
+  private void _onReturnToHubButtonPressed() {
     SfxManager.StopAll();
     Resume();
-    _pauseMenu.GoToLevelSelectMenu();
+    _pauseMenu.ReturnToHub();
+  }
+
+  // Both restarts unpause first: the orchestrator takes the pause back for itself
+  // while the cover is down, and the checkpoint reset needs the level running again
+  // to play out.
+  private void _onRestartLevelButtonPressed() {
+    SfxManager.StopAll();
+    Resume();
+    _pauseMenu.RestartLevel();
+  }
+
+  private void _onRestartCheckpointButtonPressed() {
+    SfxManager.StopAll();
+    Resume();
+    _pauseMenu.RestartFromCheckpoint();
   }
 
   public void NavigateToScreen(GameMenus menuScreen) {

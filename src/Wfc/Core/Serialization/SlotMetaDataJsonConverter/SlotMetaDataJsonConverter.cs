@@ -15,6 +15,7 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
     LevelId? levelId = null;
     int? progress = null;
     HashSet<LevelId>? clearedLevels = null;
+    Dictionary<LevelId, HashSet<string>>? collectedGems = null;
 
     if (reader.TokenType != JsonTokenType.StartObject) {
       throw new JsonException();
@@ -51,20 +52,54 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
         case nameof(SlotMetaData.ClearedLevels):
           clearedLevels = JsonSerializer.Deserialize<HashSet<LevelId>>(ref reader, options);
           break;
+        case nameof(SlotMetaData.CollectedGems):
+          collectedGems = _readCollectedGems(ref reader, options);
+          break;
         default:
           reader.Skip();
           break;
       }
     }
 
-    // ClearedLevels is deliberately not in this check: saves written before completion
-    // tracking existed have no such property, and they must keep loading as slots with
-    // nothing cleared yet.
+    // ClearedLevels and CollectedGems are deliberately not in this check: saves written
+    // before completion or gem tracking existed have no such properties, and they must
+    // keep loading as slots with nothing cleared or collected yet.
     if (slotId == null || saveTimestamp == null || levelId == null || progress == null || lastLoadDate == null) {
       throw new JsonException("Missing required property");
     }
 
-    return new SlotMetaData(slotId.Value, saveTimestamp.Value, levelId ?? LevelId.Tutorial, progress.Value, lastLoadDate.Value, clearedLevels);
+    return new SlotMetaData(slotId.Value, saveTimestamp.Value, levelId ?? LevelId.Tutorial, progress.Value, lastLoadDate.Value, clearedLevels, collectedGems);
+  }
+
+  // Keys are level names, not ordinals, for the same reason LevelId itself is written
+  // by name: a member added to the middle of the enum must not remap every existing
+  // save. A key that no longer parses is dropped rather than rejected, so a save from
+  // a build with an extra level still loads.
+  private static Dictionary<LevelId, HashSet<string>> _readCollectedGems(ref Utf8JsonReader reader, JsonSerializerOptions options) {
+    if (reader.TokenType != JsonTokenType.StartObject) {
+      throw new JsonException();
+    }
+
+    var collectedGems = new Dictionary<LevelId, HashSet<string>>();
+    while (reader.Read()) {
+      if (reader.TokenType == JsonTokenType.EndObject) {
+        break;
+      }
+      if (reader.TokenType != JsonTokenType.PropertyName) {
+        throw new JsonException();
+      }
+
+      var levelName = reader.GetString();
+      reader.Read();
+      if (Enum.TryParse<LevelId>(levelName, out var level)) {
+        var gems = JsonSerializer.Deserialize<HashSet<string>>(ref reader, options);
+        collectedGems[level] = gems ?? [];
+      }
+      else {
+        reader.Skip();
+      }
+    }
+    return collectedGems;
   }
 
   public override void Write(Utf8JsonWriter writer, SlotMetaData value, JsonSerializerOptions options) {
@@ -77,6 +112,13 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
     writer.WriteNumber(nameof(SlotMetaData.Progress), value.Progress);
     writer.WritePropertyName(nameof(SlotMetaData.ClearedLevels));
     JsonSerializer.Serialize(writer, value.ClearedLevels, options);
+    writer.WritePropertyName(nameof(SlotMetaData.CollectedGems));
+    writer.WriteStartObject();
+    foreach (var (level, gems) in value.CollectedGems) {
+      writer.WritePropertyName(level.ToString());
+      JsonSerializer.Serialize(writer, gems, options);
+    }
+    writer.WriteEndObject();
     writer.WriteEndObject();
   }
 }

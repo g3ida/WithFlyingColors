@@ -92,4 +92,39 @@ public class SaveSlotProgressTests(Node testScene) : TestClass(testScene) {
 
     slot.MetaData!.ClearedLevels.Count.ShouldBe(1);
   }
+
+  [Test]
+  public void RecordsGemsOnASlotThatHasNoneYet() {
+    var slot = new SaveSlot(1);
+
+    slot.RecordCollectedGems(LevelId.Level1, ["blue", "pink"]);
+
+    slot.MetaData.ShouldNotBeNull();
+    slot.MetaData!.GemsCollectedIn(LevelId.Level1).ShouldBe(["blue", "pink"], ignoreOrder: true);
+  }
+
+  // A replay that ends short of an already-banked gem must not take it off the door:
+  // banked gems union in, they never reset.
+  [Test]
+  public void BankedGemsOnlyEverAccumulate() {
+    var slot = new SaveSlot(1);
+    slot.RecordCollectedGems(LevelId.Level1, ["blue", "pink"]);
+
+    slot.RecordCollectedGems(LevelId.Level1, ["yellow"]);
+    slot.RecordCollectedGems(LevelId.Level1, ["blue"]);
+
+    slot.MetaData!.GemsCollectedIn(LevelId.Level1).ShouldBe(["blue", "pink", "yellow"], ignoreOrder: true);
+  }
+
+  [Test]
+  public void GemsAreBankedPerLevel() {
+    var slot = new SaveSlot(1);
+
+    slot.RecordCollectedGems(LevelId.Tutorial, ["purple"]);
+    slot.RecordCollectedGems(LevelId.Level1, ["blue"]);
+
+    slot.MetaData!.GemsCollectedIn(LevelId.Tutorial).ShouldBe(["purple"]);
+    slot.MetaData.GemsCollectedIn(LevelId.Level1).ShouldBe(["blue"]);
+    slot.MetaData.GemsCollectedIn(LevelId.FourColors).ShouldBeEmpty();
+  }
 }

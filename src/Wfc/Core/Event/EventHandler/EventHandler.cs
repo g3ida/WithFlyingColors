@@ -160,6 +160,9 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitGemEngineStarted() => Events.EmitSignal(Events.SignalName.GemEngineStarted);
   public void EmitLevelCleared() => Events.EmitSignal(Events.SignalName.LevelCleared);
   public void EmitGemPutInTemple() => Events.EmitSignal(Events.SignalName.GemPutInTemple);
+  public void EmitDoorEntered(int levelId) => Events.EmitSignal(Events.SignalName.DoorEntered, levelId);
+  public void EmitLevelRestartRequested() => Events.EmitSignal(Events.SignalName.LevelRestartRequested);
+  public void EmitSaveSlotUpdated() => Events.EmitSignal(Events.SignalName.SaveSlotUpdated);
 
   public void EmitCameraShakeRequest(float amplitude) => Events.EmitSignal(Events.SignalName.CameraShakeRequest, amplitude);
   public void EmitCameraZoomPunchRequest(float strength) => Events.EmitSignal(Events.SignalName.CameraZoomPunchRequest, strength);

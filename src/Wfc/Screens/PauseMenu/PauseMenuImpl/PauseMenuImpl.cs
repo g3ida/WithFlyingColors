@@ -5,6 +5,7 @@ using Godot;
 using Wfc.Core.Localization;
 using Wfc.Entities.Ui;
 using Wfc.Screens;
+using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -14,8 +15,12 @@ public partial class PauseMenuImpl : GameMenu {
 
   [NodePath("CenterContainer/VBoxContainer/ResumeButton")]
   private PauseMenuBtn _resumeButton = null!;
-  [NodePath("CenterContainer/VBoxContainer/LevelSelectButton")]
-  private PauseMenuBtn _levelSelectButton = null!;
+  [NodePath("CenterContainer/VBoxContainer/RestartCheckpointButton")]
+  private PauseMenuBtn _restartCheckpointButton = null!;
+  [NodePath("CenterContainer/VBoxContainer/RestartLevelButton")]
+  private PauseMenuBtn _restartLevelButton = null!;
+  [NodePath("CenterContainer/VBoxContainer/ReturnToHubButton")]
+  private PauseMenuBtn _returnToHubButton = null!;
   [NodePath("CenterContainer/VBoxContainer/BackButton")]
   private PauseMenuBtn _backButton = null!;
 
@@ -24,7 +29,13 @@ public partial class PauseMenuImpl : GameMenu {
     base._Ready();
     this.WireNodes();
 
-    buttons = new List<PauseMenuBtn> { _resumeButton, _levelSelectButton, _backButton };
+    buttons = new List<PauseMenuBtn> {
+      _resumeButton,
+      _restartCheckpointButton,
+      _restartLevelButton,
+      _returnToHubButton,
+      _backButton,
+    };
     _refreshButtonTexts();
     HandleBackEvent = false;
   }
@@ -41,7 +52,9 @@ public partial class PauseMenuImpl : GameMenu {
 
   private void _refreshButtonTexts() {
     _resumeButton.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_resumeGame);
-    _levelSelectButton.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_levelSelection);
+    _restartCheckpointButton.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_restartCheckpoint);
+    _restartLevelButton.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_restartLevel);
+    _returnToHubButton.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_returnToHub);
     _backButton.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_mainMenu);
   }
 
@@ -62,7 +75,17 @@ public partial class PauseMenuImpl : GameMenu {
     NavigateToScreen(GameMenus.MAIN_MENU);
   }
 
-  public void GoToLevelSelectMenu() {
-    NavigateToScreen(GameMenus.LEVEL_SELECT_MENU);
+  public void ReturnToHub() {
+    // The hub is where levels are picked. It is another level under the same game
+    // screen, so this rides the door-swap rail instead of a menu navigation - the
+    // orchestrator covers the scene and swaps to the hub exactly as if a door had
+    // been walked through.
+    EventHandler.EmitDoorEntered((int)LevelId.Hub);
   }
+
+  public void RestartLevel() => EventHandler.EmitLevelRestartRequested();
+
+  // The same road back a death takes: every checkpoint-aware node listens for this
+  // and puts itself back where the last checkpoint found it.
+  public void RestartFromCheckpoint() => EventHandler.EmitCheckpointLoaded();
 }

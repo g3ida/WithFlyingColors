@@ -74,6 +74,52 @@ public class SimpleJsonSerializerTests(Node testScene) : TestClass(testScene) {
     restored!.ClearedLevels.ShouldBe([LevelId.Tutorial]);
   }
 
+  // Same tolerance as ClearedLevels: saves from before gem banking existed must load
+  // as slots with nothing banked, not be rejected.
+  [Test]
+  public void ReadsAMetaDataWrittenBeforeGemTrackingExisted() {
+    var json = "{\"SlotId\":1,\"SaveTimestamp\":1700000000,\"LastLoadDate\":1700000001," +
+      "\"LevelId\":\"Tutorial\",\"Progress\":7}";
+
+    var restored = _serializer.Deserialize<SlotMetaData>(json);
+
+    restored.ShouldNotBeNull();
+    restored.CollectedGems.ShouldBeEmpty();
+    restored.GemsCollectedIn(LevelId.Tutorial).ShouldBeEmpty();
+  }
+
+  // Levels are keyed by name for the same reason LevelId itself is: names survive
+  // members being added to the enum, ordinals do not.
+  [Test]
+  public void RoundTripsTheCollectedGemsByLevelName() {
+    var original = new SlotMetaData(0, 1_700_000_000UL, LevelId.Level1, 40, 1_700_000_001UL,
+      collectedGems: new Dictionary<LevelId, HashSet<string>> {
+        [LevelId.Tutorial] = ["blue", "pink"],
+      });
+
+    var json = _serializer.Serialize(original);
+    var restored = _serializer.Deserialize<SlotMetaData>(json);
+
+    json.ShouldContain("\"CollectedGems\":{\"Tutorial\":[");
+    restored!.GemsCollectedIn(LevelId.Tutorial).ShouldBe(["blue", "pink"], ignoreOrder: true);
+    restored.GemsCollectedIn(LevelId.Level1).ShouldBeEmpty();
+  }
+
+  // A save written by a build with extra levels still loads here: the unknown level's
+  // gems are dropped, not treated as corruption.
+  [Test]
+  public void DropsGemsOfALevelThisBuildDoesNotKnow() {
+    var json = "{\"SlotId\":1,\"SaveTimestamp\":1700000000,\"LastLoadDate\":1700000001," +
+      "\"LevelId\":\"Tutorial\",\"Progress\":7," +
+      "\"CollectedGems\":{\"SomeFutureLevel\":[\"blue\"],\"Tutorial\":[\"pink\"]}}";
+
+    var restored = _serializer.Deserialize<SlotMetaData>(json);
+
+    restored.ShouldNotBeNull();
+    restored.GemsCollectedIn(LevelId.Tutorial).ShouldBe(["pink"]);
+    restored.CollectedGems.Count.ShouldBe(1);
+  }
+
   // SlotMetaDataJsonConverter's own guard, which had never executed.
   [Test]
   public void RejectsMetaDataMissingARequiredProperty() {

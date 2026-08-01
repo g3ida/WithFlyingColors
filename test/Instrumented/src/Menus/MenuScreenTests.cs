@@ -39,6 +39,10 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
   // then slides for another. Generous so a slow CI machine doesn't turn it red.
   private const double ENTER_TIMEOUT_SECONDS = 6.0;
 
+  // Where the settings face sits in the box's own order, which runs the way the box
+  // turns rather than the way the faces are listed in the scene.
+  private const int SETTINGS_BUTTON_INDEX = 1;
+
   private FakeDependenciesProvider _provider = default!;
 
   [Setup]
@@ -118,6 +122,21 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
     await _idle();
 
     _provider.MenuManager.GetCurrentMenu().ShouldBe(GameMenus.MAIN_MENU);
+  }
+
+  // The box is built inside the navigation that brings it back, so it used to ask
+  // where the player had come from one transition too early: the answer was always the
+  // main menu itself, the box always came back facing Play, and the next press then
+  // turned it away from the button the player was aiming at.
+  [Test]
+  public async Task TheBoxComesBackFacingTheScreenThePlayerLeftFor() {
+    await _open(GameMenus.SETTINGS_MENU);
+
+    var screen = await _open(GameMenus.MAIN_MENU, from: GameMenus.SETTINGS_MENU);
+
+    var menubox = screen.FindDescendants<Menubox>().FirstOrDefault();
+    menubox.ShouldNotBeNull();
+    menubox!.ActiveIndex.ShouldBe(SETTINGS_BUTTON_INDEX, "the box came back facing something else");
   }
 
   // The sub-menu only ever opens with at least one occupied slot. Load Game needs a

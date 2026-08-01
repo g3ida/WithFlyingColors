@@ -33,24 +33,29 @@ public class LevelSceneContractTests(Node testScene) : TestClass(testScene) {
   }
 
   // LevelSelectMenu builds one card per entry and the orchestrator boots into the first,
-  // so an entry with no scene is a crash the moment the card is pressed.
+  // so an entry with no scene is a crash the moment the card is pressed. The hub is the
+  // one deliberate absentee: its doors offer the levels, it is never on offer itself.
   [Test]
   public void EveryOfferedLevelIsAKnownLevelListedOnce() {
     var offered = LevelDispatcher.LEVELS.Select(level => level.Id).ToList();
 
     offered.Distinct().Count().ShouldBe(offered.Count, "a level is offered more than once");
+    offered.ShouldNotContain(LevelId.Hub, "the hub is the level select, not a level on offer");
     foreach (var levelId in Enum.GetValues<LevelId>()) {
+      if (levelId == LevelId.Hub) {
+        continue;
+      }
       offered.ShouldContain(levelId, $"{levelId} exists but no card offers it");
     }
   }
 
   [Test]
-  public void EveryOfferedLevelInstantiates() {
-    foreach (var info in LevelDispatcher.LEVELS) {
-      var level = LevelDispatcher.InstantiateLevel(info.Id);
+  public void EveryHostedLevelInstantiates() {
+    foreach (var levelId in _hostedLevelIds()) {
+      var level = LevelDispatcher.InstantiateLevel(levelId);
 
-      level.ShouldNotBeNull($"level {info.Id} could not be instantiated");
-      level.LevelId.ShouldBe(info.Id);
+      level.ShouldNotBeNull($"level {levelId} could not be instantiated");
+      level.LevelId.ShouldBe(levelId);
       level.QueueFree();
     }
   }
@@ -60,21 +65,24 @@ public class LevelSceneContractTests(Node testScene) : TestClass(testScene) {
   // The node type is the tell: without the script it is a bare AnimatableBody2D.
   [Test]
   public void EveryPlatformInEveryLevelKeepsItsScriptAndDeclaresOneColorGroup() {
-    foreach (var info in LevelDispatcher.LEVELS) {
-      var level = LevelDispatcher.InstantiateLevel(info.Id);
+    foreach (var levelId in _hostedLevelIds()) {
+      var level = LevelDispatcher.InstantiateLevel(levelId);
       level.ShouldNotBeNull();
 
       foreach (var node in _descendantsOf(level)) {
         var group = node.SceneFilePath switch {
-          PLATFORM_SCENE_PATH => _groupOf<Platform>(node, info.Id, platform => platform.Group),
-          SIMPLE_PLATFORM_SCENE_PATH => _groupOf<SimplePlatform>(node, info.Id, platform => platform.Group),
+          PLATFORM_SCENE_PATH => _groupOf<Platform>(node, levelId, platform => platform.Group),
+          SIMPLE_PLATFORM_SCENE_PATH => _groupOf<SimplePlatform>(node, levelId, platform => platform.Group),
           _ => null,
         };
 
-        if (group != null) {
+        // An empty group is the deliberate neutral platform - SimplePlatform joins
+        // every color group and stays white. Only a non-empty group has to name a
+        // real color, or it is a typo that kills on contact.
+        if (!string.IsNullOrEmpty(group)) {
           ColorUtils.COLOR_GROUPS.ShouldContain(
             group,
-            $"{info.Id} / {node.Name} is in group '{group}', which is not a color group"
+            $"{levelId} / {node.Name} is in group '{group}', which is not a color group"
           );
         }
       }
@@ -91,14 +99,14 @@ public class LevelSceneContractTests(Node testScene) : TestClass(testScene) {
   [Test]
   public void EveryLevelsCubeKeepsCollidingWithEveryBodyLayerTheSceneMasks() {
     var bodyLayers = PhysicsLayers.Default.Mask | PhysicsLayers.Platform.Mask | PhysicsLayers.Tetris.Mask;
-    foreach (var info in LevelDispatcher.LEVELS) {
-      var level = LevelDispatcher.InstantiateLevel(info.Id);
+    foreach (var levelId in _hostedLevelIds()) {
+      var level = LevelDispatcher.InstantiateLevel(levelId);
       level.ShouldNotBeNull();
 
       if (level.GetNodeOrNull("Player") is CharacterBody2D player) {
         (player.CollisionMask & bodyLayers).ShouldBe(
           bodyLayers,
-          $"{info.Id} overrides the cube's collision mask and drops a body layer with it"
+          $"{levelId} overrides the cube's collision mask and drops a body layer with it"
         );
       }
 
@@ -113,21 +121,21 @@ public class LevelSceneContractTests(Node testScene) : TestClass(testScene) {
   // squash death parked it somewhere else for good.
   [Test]
   public void EveryCameraFreezingLocalizerFullyDeterminesItsFraming() {
-    foreach (var info in LevelDispatcher.LEVELS) {
-      var level = LevelDispatcher.InstantiateLevel(info.Id);
+    foreach (var levelId in _hostedLevelIds()) {
+      var level = LevelDispatcher.InstantiateLevel(levelId);
       level.ShouldNotBeNull();
 
       foreach (var node in _descendantsOf(level)) {
         if (node is CameraLocalizer localizer && localizer.FullViewportDragMargin) {
           localizer.PositionClippingMode.ShouldBe(
             CameraLimit.FullLimit,
-            $"{info.Id} / {node.Name} freezes the camera without full limits to decide the frame"
+            $"{levelId} / {node.Name} freezes the camera without full limits to decide the frame"
           );
           localizer.LimitXAxisToViewSize.ShouldBeTrue(
-            $"{info.Id} / {node.Name} freezes the camera but leaves the horizontal framing to history"
+            $"{levelId} / {node.Name} freezes the camera but leaves the horizontal framing to history"
           );
           localizer.LimitYAxisToViewSize.ShouldBeTrue(
-            $"{info.Id} / {node.Name} freezes the camera but leaves the vertical framing to history"
+            $"{levelId} / {node.Name} freezes the camera but leaves the vertical framing to history"
           );
         }
       }
@@ -135,6 +143,11 @@ public class LevelSceneContractTests(Node testScene) : TestClass(testScene) {
       level.QueueFree();
     }
   }
+
+  // Every scene the orchestrator can host: the offered chain plus the hub it walks
+  // back to between levels.
+  private static IEnumerable<LevelId> _hostedLevelIds() =>
+    LevelDispatcher.LEVELS.Select(info => info.Id).Append(LevelId.Hub);
 
   private static string _groupOf<T>(Node node, LevelId levelId, Func<T, string> group) where T : Node {
     node.ShouldBeAssignableTo<T>(

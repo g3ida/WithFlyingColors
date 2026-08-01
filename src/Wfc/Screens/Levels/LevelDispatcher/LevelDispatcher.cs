@@ -42,6 +42,11 @@ public static class LevelDispatcher {
   }
 
   public static TranslationKey? TitleKeyOf(LevelId levelId) {
+    // The hub is not in LEVELS, but it still fronts a title card and the save slot
+    // panel still names it when a run is parked there.
+    if (levelId == LevelId.Hub) {
+      return TranslationKey.game_level_title_hub;
+    }
     var index = LEVELS.FindIndex(level => level.Id == levelId);
     return index < 0 ? null : LEVELS[index].TranslationKey;
   }

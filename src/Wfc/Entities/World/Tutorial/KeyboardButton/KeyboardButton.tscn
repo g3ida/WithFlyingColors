@@ -6,22 +6,22 @@
 [ext_resource type="Texture2D" uid="uid://d2wrxtj85sdf6" path="res://Assets/Sprites/Buttons/btn_arrow.png" id="4"]
 
 [node name="KeyboardButton" type="Control"]
-custom_minimum_size = Vector2(106, 108)
+custom_minimum_size = Vector2(70, 70)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -1814.0
-offset_bottom = -972.0
+offset_right = -1850.0
+offset_bottom = -1010.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2")
 
 [node name="NinePatchRect" type="NinePatchRect" parent="."]
-custom_minimum_size = Vector2(106, 108)
 layout_mode = 0
-offset_right = 106.0
+offset_right = 108.0
 offset_bottom = 108.0
+scale = Vector2(0.648148, 0.648148)
 texture = ExtResource("1")
 region_rect = Rect2(2.55844, 0.0449333, 237.75, 159.599)
 patch_margin_left = 52
@@ -31,18 +31,29 @@ patch_margin_bottom = 54
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 0
-offset_left = 16.56
-offset_top = 28.0
-offset_right = 99.56
-offset_bottom = 91.0
+offset_top = 10.0
+offset_right = 20.0
+offset_bottom = 30.0
 theme_override_fonts/font = ExtResource("3")
 theme_override_font_sizes/font_size = 50
 text = "ALT"
-horizontal_alignment = 1
 
 [node name="Arrow" type="Sprite2D" parent="."]
 visible = false
-position = Vector2(54, 51)
+position = Vector2(39, 30)
+scale = Vector2(0.648148, 0.648148)
 texture = ExtResource("4")
+
+[node name="GamepadIcon" type="TextureRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
 
 [connection signal="resized" from="Label" to="." method="_onLabelResized"]

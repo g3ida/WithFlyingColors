@@ -65,7 +65,9 @@ public class MenuManager : IMenuManager {
       return false;
     }
 
-    if (!_switchScene(scenePath)) {
+    var packedScene = GD.Load<PackedScene>(scenePath);
+    if (packedScene == null) {
+      GD.PushError($"Could not load menu scene at {scenePath}");
       return false;
     }
 
@@ -82,7 +84,13 @@ public class MenuManager : IMenuManager {
       _slotPickerMode = SlotPickerMode.Load;
     }
 
+    // Before the screen is built, not after: a screen resolves its dependencies inside
+    // AddChild, and the main menu's box asks there which screen it was reached from.
+    // Recorded afterwards, that question was answered with the visit before last, so
+    // the box came back facing Play whichever face the player had left through - and
+    // the next press then turned it away from the button they were aiming at.
     _recordVisit(nextMenu);
+    _switchScene(packedScene);
     return true;
   }
 
@@ -102,13 +110,7 @@ public class MenuManager : IMenuManager {
     }
   }
 
-  private bool _switchScene(string scenePath) {
-    var packedScene = GD.Load<PackedScene>(scenePath);
-    if (packedScene == null) {
-      GD.PushError($"Could not load menu scene at {scenePath}");
-      return false;
-    }
-
+  private void _switchScene(PackedScene packedScene) {
     // The outgoing screen is freed first, but QueueFree is deferred, so both are alive
     // for the rest of this frame.
     _currentScene?.QueueFree();
@@ -116,7 +118,6 @@ public class MenuManager : IMenuManager {
     _rootNode.AddChild(newScene);
     newScene.Owner = _rootNode;
     _currentScene = newScene;
-    return true;
   }
 
   private static string? GetScenePath<T>() where T : class {

@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://c8elugdxs5gwv"]
+[gd_scene load_steps=7 format=3 uid="uid://c8elugdxs5gwv"]
 
 [ext_resource type="Script" uid="uid://dj38yuy0m8t1b" path="res://src/Wfc/Entities/Ui/Slots/SaveSlot/SaveSlotPanel.cs" id="1"]
 [ext_resource type="Theme" uid="uid://dsajhxb3mxvf0" path="res://Assets/Styles/Themes/SaveSlot.tres" id="2"]
-[ext_resource type="FontFile" path="res://Assets/Fonts/SaveSlotFont.tres" id="3"]
 [ext_resource type="Theme" uid="uid://dl05mrk646cas" path="res://Assets/Styles/Themes/SaveSlotBg.tres" id="4"]
 
 [sub_resource type="Animation" id="4"]
@@ -64,65 +63,46 @@ layout_mode = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 4
+theme_override_constants/separation = 3
 
 [node name="VmarginTop" type="Control" parent="HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 
-[node name="TitleRow" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 40
-
-[node name="SlotIndex" type="Label" parent="HBoxContainer/VBoxContainer/TitleRow"]
+[node name="SlotIndex" type="Label" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 48
 text = "SLOT"
-uppercase = true
-
-[node name="LastPlayedBadge" type="Label" parent="HBoxContainer/VBoxContainer/TitleRow"]
-visible = false
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0, 0.52, 1)
-theme_override_fonts/font = ExtResource("3")
-text = "LAST PLAYED"
 uppercase = true
 
 [node name="LevelName" type="Label" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 48
 text = "LEVEL NAME"
 uppercase = true
 
-[node name="TimestampRow" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="Created" type="Label" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 0
-
-[node name="Created" type="Label" parent="HBoxContainer/VBoxContainer/TimestampRow"]
-layout_mode = 2
-size_flags_horizontal = 3
 clip_text = true
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 48
 text = "CREATED"
 uppercase = true
 
-[node name="LastPlayed" type="Label" parent="HBoxContainer/VBoxContainer/TimestampRow"]
+[node name="LastPlayed" type="Label" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 3
 clip_text = true
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 48
 text = "LAST PLAYED"
 uppercase = true
 
 [node name="Description" type="Label" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 48
 text = "Level 10"
 uppercase = true
 

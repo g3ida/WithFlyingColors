@@ -1,0 +1,61 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" uid="uid://dmrllj22gpdev" path="res://src/Wfc/Screens/Levels/GameLevel/GameLevel.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Door/Door/Door.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://src/Wfc/Entities/World/Platforms/SimplePlatform/SimplePlatform.tscn" id="3"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(80, 2200)
+
+[node name="LevelHandler" instance=ExtResource("1")]
+IntroWalkTime = 0.0
+
+[node name="Camera2D" parent="." index="1"]
+limit_right = 3200
+limit_bottom = 1080
+
+[node name="GemContainerHUD" parent="HUD" index="0"]
+visible = false
+
+[node name="Background" type="ParallaxBackground" parent="." index="3"]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="Background" index="0"]
+motion_scale = Vector2(0, 0)
+
+[node name="ColorRect" type="ColorRect" parent="Background/ParallaxLayer" index="0"]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0.129412, 0.129412, 0.141176, 1)
+
+[node name="Doors" type="Node2D" parent="." index="4"]
+
+[node name="TutorialDoor" parent="Doors" index="0" instance=ExtResource("2")]
+position = Vector2(800, 607)
+
+[node name="FourColorsDoor" parent="Doors" index="1" instance=ExtResource("2")]
+position = Vector2(1700, 607)
+TargetLevel = 2
+
+[node name="Level1Door" parent="Doors" index="2" instance=ExtResource("2")]
+position = Vector2(2600, 607)
+TargetLevel = 1
+
+[node name="Floor" parent="." index="5" instance=ExtResource("3")]
+position = Vector2(1600, 1000)
+scale = Vector2(40, 3)
+Group = ""
+geared = false
+splash_darkness = 0.93
+
+[node name="Walls" type="StaticBody2D" parent="." index="6"]
+
+[node name="LeftWall" type="CollisionShape2D" parent="Walls" index="0"]
+position = Vector2(-40, 0)
+shape = SubResource("1")
+
+[node name="RightWall" type="CollisionShape2D" parent="Walls" index="1"]
+position = Vector2(3240, 0)
+shape = SubResource("1")
+
+[node name="Player" parent="." index="7"]
+position = Vector2(250, 830)
