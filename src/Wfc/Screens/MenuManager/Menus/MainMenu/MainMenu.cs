@@ -3,19 +3,14 @@ namespace Wfc.Screens.MenuManager.Menus.MainMenu;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
-using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
 using Wfc.Entities.Ui.Menubox;
-using Wfc.Entities.Ui.Slots;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [ScenePath]
 public partial class MainMenu : GameMenu {
-
-  [NodePath("CurrentSlotLabel")]
-  private Label _currentSlotLabelNode = null!;
 
   [NodePath("MenuBox")]
   private Menubox _menuBoxNode = null!;
@@ -26,30 +21,19 @@ public partial class MainMenu : GameMenu {
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
-    _refreshCurrentSlotLabel();
   }
-
-  // The label holds a string that was already translated when the screen was built,
-  // so the engine's own auto-translation has nothing left to redo once the player
-  // picks another language.
-  public override void _Notification(int what) {
-    base._Notification(what);
-    if (what == NotificationTranslationChanged && IsNodeReady()) {
-      _refreshCurrentSlotLabel();
-    }
-  }
-
-  private void _refreshCurrentSlotLabel() =>
-    _currentSlotLabelNode.Text = SaveManager.GetCurrentSlotLine(LocalizationService);
 
   public override bool OnMenuButtonPressed(MenuAction menuAction) {
     switch (menuAction) {
       case MenuAction.Quit:
-        if (_screenState == MenuScreenState.Entered) {
-          GetTree().Quit();
-        }
+        GetTree().Quit();
         return true;
       case MenuAction.Play:
+        // With every slot empty the box skipped its sub-menu, so Play is the whole
+        // request: start a fresh game in the first slot without asking which.
+        if (SaveManager.HasNoSaves()) {
+          StartNewGameInSlot(0);
+        }
         return true;
       case MenuAction.GoToStats:
         NavigateToScreen(GameMenus.STATS_MENU);

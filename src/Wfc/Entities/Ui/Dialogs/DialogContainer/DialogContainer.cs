@@ -1,4 +1,4 @@
-namespace Wfc.Entities.Ui;
+namespace Wfc.Entities.Ui.Dialogs;
 
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
@@ -10,18 +10,22 @@ using Wfc.Screens.MenuManager;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-// Slides an AcceptDialog (or ConfirmationDialog) down over the screen and holds
-// input while it is up.
+// Slides a ConfirmDialog down over the screen and holds input while it is up.
 //
 // The dialog registers with the modal stack rather than reaching into the screen
 // behind it, so the screen, its widgets and the settings focus manager all stand
 // down for as long as it is shown. That registration is also what pauses the tree,
 // which is why this node processes Always.
+//
+// The dialog itself is an ordinary Control that fills the screen and centres its
+// panel with anchors, so shown means position zero and hidden means one screen
+// above - there is no window position to measure and nothing to drift.
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class DialogContainer : Control {
   private const float TWEEN_DURATION = 0.2f;
-  private const int HIDDEN_OFFSET_Y = 1000;
+  // Far enough up that no corner of the centred panel peeks into the screen.
+  private const int HIDDEN_OFFSET_Y = 1500;
 
   private enum DialogStates {
     Showing,
@@ -55,16 +59,13 @@ public partial class DialogContainer : Control {
   // container that puts one on screen rather than to the scene it sits in. The first
   // two are required - a container added without them shows the first entry in the
   // table, which is loud enough to be caught on the first run - while the third is
-  // only read for a ConfirmationDialog, the one kind that has a second button.
+  // only read when the dialog has a cancel button to write it on.
   [Export] public TranslationKey DialogTextKey { get; set; }
   [Export] public TranslationKey ConfirmTextKey { get; set; }
   [Export] public TranslationKey CancelTextKey { get; set; }
 
   private ColorRect _colorRectNode = default!;
-  private AcceptDialog _dialogNode = default!;
-
-  private int _shownPosY;
-  private int _hiddenPosY;
+  private ConfirmDialog _dialogNode = default!;
 
   private DialogStates _currentState = DialogStates.Hidden;
   private Control? _lastFocusOwner;
@@ -85,16 +86,13 @@ public partial class DialogContainer : Control {
     base._Ready();
     ProcessMode = ProcessModeEnum.Always;
     _colorRectNode = GetNode<ColorRect>("ColorRect");
-    _dialogNode = GetNode<AcceptDialog>(DialogNodePath);
+    _dialogNode = GetNode<ConfirmDialog>(DialogNodePath);
     _isWired = true;
-
-    _shownPosY = _dialogNode.Position.Y;
-    _hiddenPosY = _shownPosY - HIDDEN_OFFSET_Y;
 
     _moveOffScreen();
 
-    _dialogNode.Connect(AcceptDialog.SignalName.CloseRequested, new Callable(this, nameof(Dismiss)));
-    _dialogNode.Connect(AcceptDialog.SignalName.Confirmed, new Callable(this, nameof(_onConfirmed)));
+    _dialogNode.Confirmed += _onConfirmed;
+    _dialogNode.Cancelled += Dismiss;
   }
 
   public override void _ExitTree() {
@@ -102,20 +100,20 @@ public partial class DialogContainer : Control {
     // A screen torn down with a dialog still up would otherwise leave the tree
     // paused for the rest of the run.
     _releaseModal();
-    _dialogNode.Disconnect(AcceptDialog.SignalName.CloseRequested, new Callable(this, nameof(Dismiss)));
-    _dialogNode.Disconnect(AcceptDialog.SignalName.Confirmed, new Callable(this, nameof(_onConfirmed)));
+    if (_isWired) {
+      _dialogNode.Confirmed -= _onConfirmed;
+      _dialogNode.Cancelled -= Dismiss;
+    }
   }
 
-  // A ConfirmationDialog has a cancel button; a plain AcceptDialog has only the one,
-  // and asking it for the other would build a second button nobody ever sees.
   private void _applyLocalizedText() {
     if (!_isWired) {
       return;
     }
-    _dialogNode.DialogText = LocalizationService.GetLocalizedString(DialogTextKey);
-    _dialogNode.OkButtonText = LocalizationService.GetLocalizedString(ConfirmTextKey);
-    if (_dialogNode is ConfirmationDialog confirmation) {
-      confirmation.CancelButtonText = LocalizationService.GetLocalizedString(CancelTextKey);
+    _dialogNode.SetText(LocalizationService.GetLocalizedString(DialogTextKey));
+    _dialogNode.SetConfirmCaption(LocalizationService.GetLocalizedString(ConfirmTextKey));
+    if (_dialogNode.ShowCancelButton) {
+      _dialogNode.SetCancelCaption(LocalizationService.GetLocalizedString(CancelTextKey));
     }
   }
 
@@ -129,17 +127,15 @@ public partial class DialogContainer : Control {
     _lastFocusOwner = GetViewport().GuiGetFocusOwner();
     _currentState = DialogStates.Showing;
     _showNodes();
-    _prepareTween(_shownPosY);
+    _prepareTween(0);
     _grabDialogFocus();
   }
 
-  // A confirmation opens on its cancel button: these dialogs guard a slot wipe, so
-  // the harmless answer is the one already under the player's thumb. Deferred
-  // because the dialog window has only just been shown.
-  private void _grabDialogFocus() {
-    var button = (_dialogNode as ConfirmationDialog)?.GetCancelButton() ?? _dialogNode.GetOkButton();
-    button?.CallDeferred(Control.MethodName.GrabFocus);
-  }
+  // A confirmation opens on its cancel button: these dialogs guard destructive
+  // answers, so the harmless one is what a hasty press should land on. Deferred
+  // because the dialog's buttons have only just been shown.
+  private void _grabDialogFocus() =>
+      Callable.From(_dialogNode.FocusDefaultButton).CallDeferred();
 
   public override void _Input(InputEvent @event) {
     if (!_isShownOrShowing() || ModalStack.IsBlockedFor(this)) {
@@ -156,7 +152,7 @@ public partial class DialogContainer : Control {
   }
 
   // The player accepted. The screen's own handler is wired to the dialog's
-  // confirmed signal in the scene and runs alongside this.
+  // Confirmed signal in the scene and runs alongside this.
   private void _onConfirmed() {
     if (_isHiddenOrHiding()) {
       return;
@@ -165,7 +161,7 @@ public partial class DialogContainer : Control {
     _startHiding();
   }
 
-  // The player backed out, through UICancel or the window's own close.
+  // The player backed out, through UICancel or the dialog's cancel button.
   public void Dismiss() {
     if (_isHiddenOrHiding()) {
       return;
@@ -176,7 +172,7 @@ public partial class DialogContainer : Control {
 
   private void _startHiding() {
     _currentState = DialogStates.Hiding;
-    _prepareTween(_hiddenPosY);
+    _prepareTween(-HIDDEN_OFFSET_Y);
   }
 
   private void _showNodes() {
@@ -192,7 +188,7 @@ public partial class DialogContainer : Control {
   }
 
   private void _moveOffScreen() {
-    _dialogNode.Position = new Vector2I(_dialogNode.Position.X, _hiddenPosY);
+    _dialogNode.Position = new Vector2(_dialogNode.Position.X, -HIDDEN_OFFSET_Y);
     _hideNodes();
     _currentState = DialogStates.Hidden;
   }
@@ -201,8 +197,11 @@ public partial class DialogContainer : Control {
     _moveOffScreen();
     _releaseModal();
     // Confirming can navigate away, which frees the control that had focus before the
-    // dialog opened well before this tween lands on it.
-    if (_lastFocusOwner != null && IsInstanceValid(_lastFocusOwner)) {
+    // dialog opened well before this tween lands on it. It can also leave that
+    // control unfocusable - an emptied slot's card - and grabbing focus for one of
+    // those silently strands controller navigation with no focus at all.
+    if (_lastFocusOwner != null && IsInstanceValid(_lastFocusOwner)
+        && _lastFocusOwner.FocusMode != FocusModeEnum.None) {
       _lastFocusOwner.GrabFocus();
     }
     _lastFocusOwner = null;

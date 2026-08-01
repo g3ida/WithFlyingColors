@@ -1,8 +1,8 @@
-[gd_scene load_steps=14 format=3 uid="uid://b8us5vgfv1cnh"]
-[ext_resource type="PackedScene" uid="uid://bhntbarscn01" path="res://src/Wfc/Entities/Ui/InputHint/InputHintBar/InputHintBar.tscn" id="hintbar_ext"]
+[gd_scene load_steps=13 format=3 uid="uid://b8us5vgfv1cnh"]
 
-[ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://src/Wfc/Entities/Ui/Slots/Dialogs/DialogContainer/DialogContainer.tscn" id="1"]
-[ext_resource type="PackedScene" uid="uid://c4hq2bn66yx0g" path="res://src/Wfc/Entities/Ui/Slots/Dialogs/ResetSlotDialog.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://bhntbarscn01" path="res://src/Wfc/Entities/Ui/InputHint/InputHintBar/InputHintBar.tscn" id="hintbar_ext"]
+[ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://src/Wfc/Entities/Ui/Dialogs/DialogContainer/DialogContainer.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://wfccnfdlgscn1" path="res://src/Wfc/Entities/Ui/Dialogs/ConfirmDialog/ConfirmDialog.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://wj8mouy5wyl2" path="res://src/Wfc/Entities/Ui/MenuTitle/MenuTitle.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://ca46a088ioysj" path="res://src/Wfc/Entities/Ui/Slots/SlotsContainer/SlotsContainer.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://ccjrqyrj01x5f" path="res://Assets/Sprites/MainMenu/ArrowBack.png" id="5"]
@@ -10,8 +10,8 @@
 [ext_resource type="StyleBox" path="res://Assets/Styles/MenuButtonPressedStyle.tres" id="7"]
 [ext_resource type="Script" uid="uid://c3t28rmstgq1o" path="res://src/Wfc/Screens/SelectSlotMenu/SelectSlotMenu.cs" id="8"]
 [ext_resource type="Script" uid="uid://bs3qantpxmo15" path="res://src/Wfc/Entities/Ui/BackButton/BackButton.cs" id="9"]
+[ext_resource type="FontFile" path="res://Assets/Fonts/SaveSlotFont.tres" id="10"]
 [ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://src/Wfc/Entities/Ui/UITransition/UITransition.tscn" id="11"]
-[ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="12"]
 
 [sub_resource type="StyleBoxEmpty" id="1"]
 
@@ -54,77 +54,42 @@ offset_left = 734.0
 offset_right = 734.0
 centered_on_screen_v = true
 
-[node name="UITransition" parent="SlotsContainer" instance=ExtResource("11")]
-anchors_preset = 0
-offset_left = 240.0
-offset_top = 417.0
-offset_right = 240.0
-offset_bottom = 417.0
-time = 0.5
-Delay = 0.5
-HiddenRelativePosition = Vector2(0, 1000)
-
 [node name="MenuTitle" parent="." instance=ExtResource("3")]
 layout_mode = 0
-DummyContent = "SELECT SLOT"
+DummyContent = "SLOT SELECT"
 Content = 51
 MaxLineWidth = 640.0
 
-[node name="ResetDialogContainer" parent="." instance=ExtResource("1")]
-layout_mode = 1
-DialogNodePath = NodePath("ResetSlotDialog")
-DialogTextKey = 59
-ConfirmTextKey = 57
-CancelTextKey = 58
+[node name="InstructionLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 440.0
+offset_right = 700.0
+offset_bottom = 700.0
+theme_override_colors/font_color = Color(0.176471, 0.176471, 0.176471, 1)
+theme_override_fonts/font = ExtResource("10")
+theme_override_font_sizes/font_size = 55
+text = "PLEASE SELECT A SLOT"
+uppercase = true
+autowrap_mode = 2
 
-[node name="ResetSlotDialog" parent="ResetDialogContainer" instance=ExtResource("2")]
-initial_position = 2
-size = Vector2i(1000, 209)
-borderless = true
-content_scale_mode = 2
-content_scale_aspect = 3
+[node name="UITransition" parent="InstructionLabel" instance=ExtResource("11")]
+anchors_preset = 0
+Delay = 0.5
+HiddenRelativePosition = Vector2(-1400, 0)
 
-[node name="NewGameDialogContainer" parent="." instance=ExtResource("1")]
+[node name="OverwriteDialogContainer" parent="." instance=ExtResource("1")]
 layout_mode = 1
-DialogNodePath = NodePath("NewGameOverwriteDialog")
+DialogNodePath = NodePath("OverwriteDialog")
 DialogTextKey = 69
 ConfirmTextKey = 57
 CancelTextKey = 58
 
-[node name="NewGameOverwriteDialog" parent="NewGameDialogContainer" instance=ExtResource("2")]
-initial_position = 2
-size = Vector2i(1000, 209)
-borderless = true
-content_scale_mode = 2
-content_scale_aspect = 3
-
-[node name="CurrentSlotLabel" type="Label" parent="."]
+[node name="OverwriteDialog" parent="OverwriteDialogContainer" instance=ExtResource("2")]
 layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -900.0
-offset_top = 31.0
-offset_right = -24.0
-offset_bottom = 91.0
-grow_horizontal = 0
-theme = ExtResource("12")
-text = "Current slot:"
-horizontal_alignment = 2
-
-[node name="UITransition" parent="CurrentSlotLabel" instance=ExtResource("11")]
-anchors_preset = 0
-offset_left = 240.0
-offset_top = 417.0
-offset_right = 240.0
-offset_bottom = 417.0
-time = 0.5
-Delay = 0.7
-HiddenRelativePosition = Vector2(2000, 0)
 
 [node name="InputHintBar" parent="." instance=ExtResource("hintbar_ext")]
 
 [connection signal="pressed" from="BackButton" to="." method="OnBackButtonPressed"]
 [connection signal="SlotPressed" from="SlotsContainer" to="." method="_on_SlotsContainer_SlotPressed"]
-[connection signal="confirmed" from="ResetDialogContainer/ResetSlotDialog" to="." method="OnResetSlotConfirmed"]
-[connection signal="confirmed" from="NewGameDialogContainer/NewGameOverwriteDialog" to="." method="_onNewGameOverwriteConfirmed"]
+[connection signal="Confirmed" from="OverwriteDialogContainer/OverwriteDialog" to="." method="_onNewGameOverwriteConfirmed"]

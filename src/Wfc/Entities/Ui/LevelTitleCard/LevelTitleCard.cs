@@ -13,6 +13,10 @@ using Wfc.Utils.Attributes;
 // levels are swapped, and a title that fades in and out over the intro cutscene
 // playing underneath. The cover runs while the tree is paused, so both layers
 // process Always.
+//
+// The title carries its own dimmed, softened backdrop as a child, so the whole
+// presentation rides on one modulate and the letters keep their contrast over
+// whatever the cutscene happens to be showing.
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class LevelTitleCard : CanvasLayer {

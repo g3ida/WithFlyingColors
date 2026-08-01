@@ -80,6 +80,18 @@ public partial class MenuTitle : Control {
     }
   }
 
+  // For screens that wear different titles per mode. Rebuilds through the same
+  // path as a language change when the title is already on screen.
+  public void SetContent(TranslationKey key) {
+    if (key == Content) {
+      return;
+    }
+    Content = key;
+    if (_labelNodes.Count > 0) {
+      _rebuild();
+    }
+  }
+
   private void _rebuild() {
     foreach (var label in _labelNodes) {
       RemoveChild(label);

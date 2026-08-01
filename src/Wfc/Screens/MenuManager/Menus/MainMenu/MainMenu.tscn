@@ -1,11 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://cy5vdq71nl27c"]
+[gd_scene load_steps=7 format=3 uid="uid://cy5vdq71nl27c"]
 [ext_resource type="PackedScene" uid="uid://bhntbarscn01" path="res://src/Wfc/Entities/Ui/InputHint/InputHintBar/InputHintBar.tscn" id="hintbar_ext"]
 
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="1"]
 [ext_resource type="PackedScene" uid="uid://e4osajb7jluk" path="res://src/Wfc/Entities/Ui/Menubox/Menubox/MenuBox.tscn" id="2"]
 [ext_resource type="Script" uid="uid://lgi18xjhl71v" path="res://src/Wfc/Screens/MenuManager/Menus/MainMenu/MainMenu.cs" id="4"]
 [ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://src/Wfc/Entities/Ui/UITransition/UITransition.tscn" id="5"]
-[ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="8"]
 [ext_resource type="PackedScene" uid="uid://wj8mouy5wyl2" path="res://src/Wfc/Entities/Ui/MenuTitle/MenuTitle.tscn" id="9_ymu6g"]
 
 [node name="MainMenu" type="Control"]
@@ -37,28 +36,6 @@ offset_right = 40.0
 offset_bottom = 40.0
 Delay = 0.5
 HiddenRelativePosition = Vector2(0, 950)
-
-[node name="CurrentSlotLabel" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -900.0
-offset_top = 31.0
-offset_right = -24.0
-offset_bottom = 91.0
-grow_horizontal = 0
-theme = ExtResource("8")
-text = "Current slot:"
-horizontal_alignment = 2
-
-[node name="UITransition" parent="CurrentSlotLabel" instance=ExtResource("5")]
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 40.0
-offset_bottom = 40.0
-Delay = 0.5
-HiddenRelativePosition = Vector2(0, -150)
 
 [node name="MenuTitle" parent="." instance=ExtResource("9_ymu6g")]
 DummyContent = "WITH FLYING COLORS"

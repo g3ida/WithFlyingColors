@@ -1,7 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://src/Wfc/Entities/Ui/LevelTitleCard/LevelTitleCard.cs" id="1"]
 [ext_resource type="FontFile" uid="uid://f5bvg4kq86ed" path="res://Assets/Fonts/TitleFontt.tres" id="2"]
+[ext_resource type="Shader" path="res://Assets/Shaders/DimBlur.gdshader" id="3"]
+
+[sub_resource type="ShaderMaterial" id="title_backdrop"]
+shader = ExtResource("3")
+shader_parameter/radius = 1.5
+shader_parameter/black_factor = 0.45
 
 [node name="LevelTitleCard" type="CanvasLayer"]
 process_mode = 3
@@ -22,6 +28,16 @@ color = Color(0.05, 0.05, 0.07, 1)
 visible = false
 modulate = Color(1, 1, 1, 0)
 layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Backdrop" type="ColorRect" parent="Title"]
+material = SubResource("title_backdrop")
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

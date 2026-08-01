@@ -21,29 +21,27 @@ public partial class PlaySubMenu : Control {
   public ISaveManager SaveManager => this.DependOn<ISaveManager>();
 
   public void OnResolved() {
-    // Continue resumes instantly, so it only appears once there is a game to resume;
-    // Load Game exists to choose between games, so one played slot is not enough for
-    // it to earn a row. New Game is always a valid thing to want.
+    // The box only opens this sub-menu when at least one slot is occupied, so
+    // Continue and New Game always have an answer. Load Game only earns a row
+    // once there is a second save to choose between - with a single one it
+    // could only ever repeat what Continue already does.
     List<ButtonDef> subMenuButtonsDef = [
-            new() {
+        new() {
             Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_continue),
             MenuAction = MenuAction.ContinueGame,
-            DisplayCondition = ButtonDef.ButtonCondition.HasAnyPlayedSlot
         },
-        new()
-        {
+        new() {
             Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_newGame),
             MenuAction = MenuAction.NewGame,
-            DisplayCondition = ButtonDef.ButtonCondition.None
-        },
-        new()
-        {
-            Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_loadGame),
-            MenuAction = MenuAction.LoadGame,
-            DisplayCondition = ButtonDef.ButtonCondition.HasMultiplePlayedSlots
         },
     ];
-    var subMenuNode = SubMenuSceneBuilder.Create(this, subMenuButtonsDef, ColorGroup.Blue, SaveManager);
+    if (SaveManager.CountFilledSlots() >= 2) {
+      subMenuButtonsDef.Add(new() {
+        Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_loadGame),
+        MenuAction = MenuAction.LoadGame,
+      });
+    }
+    var subMenuNode = SubMenuSceneBuilder.Create(this, subMenuButtonsDef, ColorGroup.Blue);
     CustomMinimumSize = subMenuNode.CustomMinimumSize;
     Size = subMenuNode.Size;
   }
