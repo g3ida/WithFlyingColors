@@ -250,7 +250,7 @@ public partial class CameraLocalizer : Node2D {
     _setFollowNode();
     SetCameraLimits();
     SetCameraDragMargins();
-    GameLevel.CameraNode.zoom_by(Zoom);
+    GameLevel.CameraNode.ZoomTo(Zoom);
   }
 
   private void _setFollowNode() {

@@ -1,49 +1,66 @@
 namespace Wfc.Entities.World.Camera;
 
-using System;
-using System.Collections.Generic;
 using Godot;
-using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
-using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
+// The camera has three layers of state and nothing outside it writes its properties directly.
+//
+//   baseline   what the level authored, read once and never changed afterwards
+//   checkpoint the framing the last checkpoint saw, seeded from the baseline
+//   override   the shot a cutscene has borrowed the camera for, revocable at any moment
+//
+// A respawn revokes the override and reinstates the checkpoint whole, so nothing can survive
+// a death by accident: work left in flight is dropped rather than eased out of, and the follow
+// target goes back to the one the level named rather than wherever the run had aimed it.
 [ScenePath]
 public partial class GameCamera : Camera2D, IPersistent {
+  #region Constants
+  // The room the camera is given while the player is off the ground, so a jump reads as the
+  // player leaving rather than the world sliding under them.
   public const float CAMERA_DRAG_JUMP = 0.45f;
 
   // A punch snaps out and eases back in over a longer beat, so what the player reads is the
   // leaving rather than the returning.
   private const float PUNCH_ATTACK = 0.06f;
   private const float PUNCH_RELEASE = 0.3f;
+  private const float ZOOM_TRAVEL = 1.0f;
+  #endregion Constants
 
+  #region Exports
+  // The node gameplay follows. A localizer or a cutscene may aim the camera elsewhere while
+  // the player is alive, but this is what every respawn comes back to.
   [Export] public NodePath FollowPath { get; set; } = default!;
+  #endregion Exports
 
-  public Node2D FollowNode = default!;
-  public float TargetZoom = 1.0f;
-  private Tween? ZoomTweener = null;
+  #region Fields
+  public Node2D? FollowNode { get; private set; }
+  public float TargetZoom { get; private set; } = 1.0f;
 
-  private sealed record SaveData(
-    float Zoom = 1f,
-    int BottomLimit = 10000,
-    int TopLimit = 0,
-    int LeftLimit = 0,
-    int RightLimit = 10000,
-    float DragBottomMargin = Constants.DEFAULT_DRAG_MARGIN_TB,
-    float DragLeftMargin = Constants.DEFAULT_DRAG_MARGIN_LR,
-    float DragRightMargin = Constants.DEFAULT_DRAG_MARGIN_LR,
-    float DragTopMargin = Constants.DEFAULT_DRAG_MARGIN_TB,
-    string FollowPath = ""
-    );
-  private SaveData _saveData = new SaveData();
+  private CameraFraming _baseline = new();
+  private CameraFraming _checkpoint = new();
+  private Tween? _zoomTweener;
 
-  // Used for tuning camera
-  private float _cachedDragMarginTop;
-  private float _cachedDragMarginBottom;
-  private float _cachedDragMarginLeft;
-  private float _cachedDragMarginRight;
+  // The margins the level asked for. What the camera runs with is these widened while the
+  // player is airborne, so a second jump before landing and a localizer taking effect
+  // mid-jump both compose instead of overwriting the value there is to come back to.
+  private float _authoredDragTop;
+  private float _authoredDragBottom;
+  private float _authoredDragLeft;
+  private float _authoredDragRight;
+  private bool _isAirborne;
+
+  private float _authoredSmoothingSpeed;
+  private bool _authoredSmoothingEnabled;
+
+  // Bumped by every borrow and every hand-back, so a shot that outlives the respawn which
+  // cancelled it finds its token stale and cannot write to a camera the reload has restored.
+  private int _focusGeneration;
+  private bool _hasFocusOverride;
+  private Node2D? _focusReturnNode;
+  #endregion Fields
 
   public override void _EnterTree() {
     base._EnterTree();
@@ -57,12 +74,191 @@ public partial class GameCamera : Camera2D, IPersistent {
 
   public override void _Ready() {
     base._Ready();
-    FollowNode = GetNode<Node2D>(FollowPath);
-    CacheDragMargins();
+    FollowNode = _resolveAuthoredFollowTarget();
+    TargetZoom = Zoom.X;
+    _authoredDragTop = DragTopMargin;
+    _authoredDragBottom = DragBottomMargin;
+    _authoredDragLeft = DragLeftMargin;
+    _authoredDragRight = DragRightMargin;
+    _authoredSmoothingSpeed = PositionSmoothingSpeed;
+    _authoredSmoothingEnabled = PositionSmoothingEnabled;
+    // The level as authored is what a death before the first checkpoint restores. Left at the
+    // record's own defaults it would restore limits no level ever asked for, and drop the view
+    // somewhere the player has never seen it.
+    _baseline = _captureFraming();
+    _checkpoint = _baseline;
   }
 
-  public void OnCameraShakeRequest(float amplitude) {
-    GetNode<CameraShake>("CameraShake").Start(amplitude: amplitude);
+  public override void _PhysicsProcess(double delta) {
+    base._PhysicsProcess(delta);
+    if (IsInstanceValid(FollowNode)) {
+      GlobalPosition = FollowNode!.GlobalPosition;
+    }
+  }
+
+  public void Reset() {
+    // Subscribed in _EnterTree, one step before the level as authored has been read: a reload
+    // arriving in between has no baseline to restore and would go on to make one out of the
+    // defaults it had just written over the scene.
+    if (!IsNodeReady()) {
+      return;
+    }
+
+    // A respawn is a cut, not a transition. A zoom punch mid-release, a cutscene still walking
+    // the camera somewhere, a drag margin a jump had widened: all dropped, none eased out of.
+    // The offset is CameraShake's to clear, on the same signal.
+    _revokeFocusOverride();
+    _zoomTweener?.Kill();
+    _zoomTweener = null;
+    PositionSmoothingEnabled = _authoredSmoothingEnabled;
+    _isAirborne = false;
+    _applyFraming(_checkpoint);
+    FollowNode = _resolveAuthoredFollowTarget();
+
+    // Snapped after every other CheckpointLoaded handler has run - the player's teleport among
+    // them - and clamped by the restored limits from there. A room that wants a particular
+    // framing expresses it in its limits (a localizer that freezes the camera collapses them to
+    // exactly one legal view), so aligning and clamping is the whole restore.
+    Callable.From(_snapToFollowTarget).CallDeferred();
+  }
+
+  // Opens the camera on a position instead of travelling to it, for a level entered from a save.
+  public void SnapTo(Vector2 position) {
+    GlobalPosition = position;
+    ResetSmoothing();
+    ResetPhysicsInterpolation();
+  }
+
+  #region Focus override
+  // A cutscene borrows the camera rather than assigning to it. There is one borrow at a time
+  // with one owner, and the returned token is what proves that ownership is still current.
+  public int BeginFocusOverride(Node2D target, float smoothingSpeed) {
+    if (!_hasFocusOverride) {
+      _focusReturnNode = FollowNode;
+      _hasFocusOverride = true;
+    }
+    FollowNode = target;
+    PositionSmoothingSpeed = smoothingSpeed;
+    return ++_focusGeneration;
+  }
+
+  // Aims back at what the camera was following before the borrow, still at the borrowed travel
+  // speed: the way back is part of the shot, so the camera is not handed over yet.
+  public void ReturnFocus(int token) {
+    if (_holdsFocus(token)) {
+      FollowNode = _focusReturnTarget();
+    }
+  }
+
+  public void EndFocusOverride(int token) {
+    if (_holdsFocus(token)) {
+      FollowNode = _focusReturnTarget();
+      _revokeFocusOverride();
+    }
+  }
+
+  private bool _holdsFocus(int token) => _hasFocusOverride && token == _focusGeneration;
+
+  // Whatever the shot took the camera from, or the level's own target if that node is gone by
+  // now: the camera is never handed back with nothing to follow.
+  private Node2D? _focusReturnTarget() =>
+    IsInstanceValid(_focusReturnNode) ? _focusReturnNode : _resolveAuthoredFollowTarget();
+
+  // Every token issued so far is stale from here on, so a shot that has been called off can
+  // neither aim the camera nor hand it back.
+  private void _revokeFocusOverride() {
+    _hasFocusOverride = false;
+    _focusReturnNode = null;
+    _focusGeneration++;
+    PositionSmoothingSpeed = _authoredSmoothingSpeed;
+  }
+  #endregion Focus override
+
+  #region Framing
+  private CameraFraming _captureFraming() => new(
+    Zoom: TargetZoom,
+    TopLimit: LimitTop,
+    BottomLimit: LimitBottom,
+    LeftLimit: LimitLeft,
+    RightLimit: LimitRight,
+    DragTopMargin: _authoredDragTop,
+    DragBottomMargin: _authoredDragBottom,
+    DragLeftMargin: _authoredDragLeft,
+    DragRightMargin: _authoredDragRight
+  );
+
+  private void _applyFraming(CameraFraming framing) {
+    TargetZoom = framing.Zoom;
+    Zoom = new Vector2(TargetZoom, TargetZoom);
+    LimitTop = framing.TopLimit;
+    LimitBottom = framing.BottomLimit;
+    LimitLeft = framing.LeftLimit;
+    LimitRight = framing.RightLimit;
+    _authoredDragTop = framing.DragTopMargin;
+    _authoredDragBottom = framing.DragBottomMargin;
+    _authoredDragLeft = framing.DragLeftMargin;
+    _authoredDragRight = framing.DragRightMargin;
+    _applyDragMargins();
+  }
+
+  private Node2D? _resolveAuthoredFollowTarget() {
+    if (FollowPath is null or { IsEmpty: true }) {
+      return FollowNode;
+    }
+    var target = GetNodeOrNull<Node2D>(FollowPath);
+    if (target == null) {
+      GD.PushError($"Camera follow target '{FollowPath}' resolves to no Node2D; the camera keeps following what it had.");
+      return FollowNode;
+    }
+    return target;
+  }
+
+  private void _snapToFollowTarget() {
+    if (!IsInsideTree() || !IsInstanceValid(FollowNode)) {
+      return;
+    }
+    GlobalPosition = FollowNode!.GlobalPosition;
+    Align();
+    ResetSmoothing();
+    ResetPhysicsInterpolation();
+  }
+  #endregion Framing
+
+  #region Drag margins
+  public void SetDragMarginTop(float value) {
+    _authoredDragTop = value;
+    _applyDragMargins();
+  }
+
+  public void SetDragMarginBottom(float value) {
+    _authoredDragBottom = value;
+    _applyDragMargins();
+  }
+
+  public void SetDragMarginLeft(float value) {
+    _authoredDragLeft = value;
+    _applyDragMargins();
+  }
+
+  public void SetDragMarginRight(float value) {
+    _authoredDragRight = value;
+    _applyDragMargins();
+  }
+
+  private void _applyDragMargins() {
+    DragTopMargin = _isAirborne ? Mathf.Max(_authoredDragTop, CAMERA_DRAG_JUMP) : _authoredDragTop;
+    DragBottomMargin = _isAirborne ? Mathf.Max(_authoredDragBottom, CAMERA_DRAG_JUMP) : _authoredDragBottom;
+    DragLeftMargin = _authoredDragLeft;
+    DragRightMargin = _authoredDragRight;
+  }
+  #endregion Drag margins
+
+  #region Zoom
+  public void ZoomTo(float zoom) {
+    TargetZoom = zoom;
+    _zoomTweener?.Kill();
+    _zoomTweener = CreateTween();
+    _zoomTweener.TweenProperty(this, "zoom", new Vector2(zoom, zoom), ZOOM_TRAVEL);
   }
 
   // A pulse around the zoom the camera is already meant to be at, and never a new zoom of its
@@ -70,119 +266,39 @@ public partial class GameCamera : Camera2D, IPersistent {
   // wins outright rather than being pulled back to where the punch started.
   public void OnCameraZoomPunchRequest(float strength) {
     var punched = TargetZoom * (1.0f - strength);
-    ZoomTweener?.Kill();
-    ZoomTweener = CreateTween();
-    ZoomTweener.TweenProperty(this, "zoom", new Vector2(punched, punched), PUNCH_ATTACK)
+    _zoomTweener?.Kill();
+    _zoomTweener = CreateTween();
+    _zoomTweener.TweenProperty(this, "zoom", new Vector2(punched, punched), PUNCH_ATTACK)
       .SetTrans(Tween.TransitionType.Quad)
       .SetEase(Tween.EaseType.Out);
-    ZoomTweener.TweenProperty(this, "zoom", new Vector2(TargetZoom, TargetZoom), PUNCH_RELEASE)
+    _zoomTweener.TweenProperty(this, "zoom", new Vector2(TargetZoom, TargetZoom), PUNCH_RELEASE)
       .SetTrans(Tween.TransitionType.Back)
       .SetEase(Tween.EaseType.Out);
   }
+  #endregion Zoom
 
-  public override void _Process(double delta) {
-    base._Process(delta);
+  #region Signals
+  public void SetFollowNode(Node2D followNode) => FollowNode = followNode;
+
+  public void OnCameraShakeRequest(float amplitude) {
+    GetNode<CameraShake>("CameraShake").Start(amplitude: amplitude);
   }
 
-  public override void _PhysicsProcess(double delta) {
-    base._PhysicsProcess(delta);
-    if (FollowNode != null) {
-      GlobalPosition = FollowNode.GlobalPosition;
-    }
-  }
-
-  private void _OnCheckpointHit(Vector2 _position, string _colorGroup) {
-    _saveData = new SaveData(
-      Zoom: TargetZoom,
-      BottomLimit: LimitBottom,
-      TopLimit: LimitTop,
-      LeftLimit: LimitLeft,
-      RightLimit: LimitRight,
-      DragBottomMargin: _cachedDragMarginBottom,
-      DragLeftMargin: _cachedDragMarginLeft,
-      DragRightMargin: _cachedDragMarginRight,
-      DragTopMargin: _cachedDragMarginTop,
-      FollowPath: FollowNode.GetPath().ToString()
-    );
-  }
-
-  public void Reset() {
-    // A respawn is a cut, not a transition. The death that led here may have left a zoom punch
-    // mid-release, and easing back from it would carry the death's camera into the next life.
-    // The checkpoint saved no such transient, so none is kept: the zoom snaps before the limits
-    // are trusted again. The offset is CameraShake's to clear, on the same signal.
-    ZoomTweener?.Kill();
-    TargetZoom = _saveData.Zoom;
-    Zoom = new Vector2(TargetZoom, TargetZoom);
-    LimitBottom = _saveData.BottomLimit;
-    LimitTop = _saveData.TopLimit;
-    LimitLeft = _saveData.LeftLimit;
-    LimitRight = _saveData.RightLimit;
-
-    DragBottomMargin = _saveData.DragBottomMargin;
-    DragLeftMargin = _saveData.DragLeftMargin;
-    DragRightMargin = _saveData.DragRightMargin;
-    DragTopMargin = _saveData.DragTopMargin;
-
-    FollowNode = FollowPath.IsEmpty ? FollowNode : GetNode<Node2D>(FollowPath);
-
-    // Snapped to the follow target after every other CheckpointLoaded handler has run - the
-    // player's teleport among them - and clamped by the restored limits from there. A room
-    // that wants a particular framing expresses it in its limits (a localizer that freezes
-    // the camera collapses them to exactly one legal view), so aligning and clamping is the
-    // whole restore: there is no hidden camera state worth carrying over a death.
-    Callable.From(_snapToFollowTarget).CallDeferred();
-  }
-
-  private void _snapToFollowTarget() {
-    if (FollowNode == null || !IsInsideTree()) {
-      return;
-    }
-    GlobalPosition = FollowNode.GlobalPosition;
-    Align();
-    ResetSmoothing();
-    ResetPhysicsInterpolation();
-  }
+  private void _OnCheckpointHit(Vector2 _position, string _colorGroup) => _checkpoint = _captureFraming();
 
   private void _OnPlayerJump() {
-    CacheDragMargins();
-    if (DragBottomMargin < CAMERA_DRAG_JUMP) {
-      DragBottomMargin = CAMERA_DRAG_JUMP;
-    }
-    if (DragTopMargin < CAMERA_DRAG_JUMP) {
-      DragTopMargin = CAMERA_DRAG_JUMP;
-    }
+    _isAirborne = true;
+    _applyDragMargins();
   }
 
   private void _OnPlayerLand() {
-    RestoreDragMargins();
+    _isAirborne = false;
+    _applyDragMargins();
   }
 
   private void _OnPlayerDying(Node? area, Vector2 position, int entityType) {
-    RestoreDragMargins();
-  }
-
-  private void CacheDragMargins() {
-    _cachedDragMarginBottom = DragBottomMargin;
-    _cachedDragMarginTop = DragTopMargin;
-    _cachedDragMarginLeft = DragLeftMargin;
-    _cachedDragMarginRight = DragRightMargin;
-  }
-
-  private void RestoreDragMargins() {
-    DragBottomMargin = _cachedDragMarginBottom;
-    DragTopMargin = _cachedDragMarginTop;
-    DragLeftMargin = _cachedDragMarginLeft;
-    DragRightMargin = _cachedDragMarginRight;
-  }
-
-  public void zoom_by(float factor) {
-    TargetZoom = factor;
-    if (ZoomTweener != null) {
-      ZoomTweener.Kill();
-    }
-    ZoomTweener = CreateTween();
-    ZoomTweener.TweenProperty(this, "zoom", new Vector2(factor, factor), 1.0f);
+    _isAirborne = false;
+    _applyDragMargins();
   }
 
   private void _connectSignals() {
@@ -204,45 +320,12 @@ public partial class GameCamera : Camera2D, IPersistent {
     EventHandler.Instance.Events.CameraShakeRequest -= OnCameraShakeRequest;
     EventHandler.Instance.Events.CameraZoomPunchRequest -= OnCameraZoomPunchRequest;
   }
+  #endregion Signals
 
-  public async void UpdatePosition(Vector2 pos) {
-    PositionSmoothingEnabled = false;
-    GlobalPosition = pos;
-    ResetPhysicsInterpolation();
-    await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-    SetDeferred(Camera2D.PropertyName.PositionSmoothingEnabled, true);
-  }
-
-  public void SetFollowNode(Node2D followNode) {
-    FollowNode = followNode;
-    FollowPath = followNode.GetPath();
-  }
-
-  public void SetDragMarginTop(float value) {
-    DragTopMargin = value;
-    _cachedDragMarginTop = value;
-  }
-
-  public void SetDragMarginBottom(float value) {
-    DragBottomMargin = value;
-    _cachedDragMarginBottom = value;
-  }
-
-  public void SetDragMarginLeft(float value) {
-    DragLeftMargin = value;
-    _cachedDragMarginLeft = value;
-  }
-
-  public void SetDragMarginRight(float value) {
-    DragRightMargin = value;
-    _cachedDragMarginRight = value;
-  }
-
-  public string GetSaveId() => this.GetPath();
-  public string Save(ISerializer serializer) => serializer.Serialize(_saveData);
+  public string GetSaveId() => GetPath();
+  public string Save(ISerializer serializer) => serializer.Serialize(_checkpoint);
   public void Load(ISerializer serializer, string data) {
-    var deserializedData = serializer.Deserialize<SaveData>(data);
-    this._saveData = deserializedData ?? new SaveData();
+    _checkpoint = serializer.Deserialize<CameraFraming>(data) ?? _baseline;
     Reset();
   }
 }
