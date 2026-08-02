@@ -66,6 +66,25 @@ public partial class GemsTemple : Node2D {
     BloomSpriteNode.Visible = false;
   }
 
+  public override void _EnterTree() {
+    base._EnterTree();
+    EventHandler.Instance.Events.CheckpointLoaded += _onCheckpointLoaded;
+  }
+
+  public override void _ExitTree() {
+    base._ExitTree();
+    EventHandler.Instance.Events.CheckpointLoaded -= _onCheckpointLoaded;
+  }
+
+  // A respawn puts the player back outside the temple, so the sequence goes back with them.
+  // Left where it was it would keep driving a player who is no longer walking in, and the
+  // trigger it has already been through could never start it again.
+  private void _onCheckpointLoaded() {
+    if (IsNodeReady() && _currentState != States.NotTriggered) {
+      _goToNotTriggeredPhase();
+    }
+  }
+
   private void _onTriggerAreaBodyEntered(Node body) {
     if (_currentState == States.NotTriggered && body is Player.Player player) {
       _goToWalkPhase(player);
@@ -159,6 +178,9 @@ public partial class GemsTemple : Node2D {
   // State transitions
   private void _goToNotTriggeredPhase() {
     _currentState = States.NotTriggered;
+    tweener?.Kill();
+    tweener = null;
+    RotationTimerNode.Stop();
     foreach (Node2D el in _templeGems) {
       el.QueueFree();
     }
@@ -166,6 +188,15 @@ public partial class GemsTemple : Node2D {
     _gemsAngularVelocity = 0;
     _numActiveGems = 0;
     _bloomSpriteScale = 1.0f;
+    // The slots spin and their contents spin back, so both sides of that have to be undone
+    // or the sockets come back standing at whatever angle the spin was interrupted at.
+    GemSlotsContainerNode.Rotation = 0;
+    foreach (Node child in GemSlotsContainerNode.GetChildren()) {
+      if (child is Node2D slot) {
+        slot.Rotation = 0;
+      }
+    }
+    BloomSpriteNode.Scale = Vector2.One;
     BloomSpriteNode.Visible = false;
   }
 

@@ -89,6 +89,137 @@ public class GameCameraTests(Node testScene) : TestClass(testScene) {
     await _frames(1);
   }
 
+  // Nothing has been saved yet before the first checkpoint, and a death there is the most
+  // likely death in any level. What comes back has to be the level as authored: a fallback
+  // built out of a record's own defaults describes no room in the game, and a player who
+  // falls in the opening seconds is handed a view of somewhere they have never been.
+  [Test]
+  public async Task ADeathBeforeAnyCheckpointRestoresTheLevelAsAuthored() {
+    var anchor = new Node2D { Position = new Vector2(600f, -200f) };
+    var camera = _cameraFollowing(anchor);
+    camera.LimitTop = -1000;
+    camera.LimitBottom = 620;
+    camera.LimitLeft = -350;
+    camera.LimitRight = 24800;
+    camera.SetDragMarginTop(0.05f);
+    TestScene.AddChild(anchor);
+    camera.MakeCurrent();
+    await _frames(120);
+
+    var framedAt = camera.GetScreenCenterPosition();
+
+    EventHandler.Instance.EmitCheckpointLoaded();
+    await _frames(120);
+
+    camera.LimitTop.ShouldBe(-1000, "the respawn replaced the level's own top limit");
+    camera.LimitBottom.ShouldBe(620, "the respawn replaced the level's own bottom limit");
+    camera.LimitLeft.ShouldBe(-350, "the respawn replaced the level's own left limit");
+    camera.LimitRight.ShouldBe(24800, "the respawn replaced the level's own right limit");
+    camera.DragTopMargin.ShouldBe(0.05f, 0.001f, "the respawn replaced the level's own drag margin");
+    camera.GetScreenCenterPosition().Y.ShouldBe(framedAt.Y, 3f,
+      "the respawn dropped the view to somewhere the player had never seen");
+
+    anchor.QueueFree();
+    await _frames(1);
+  }
+
+  // A room may aim the camera at something that is not the player - the temple frames itself
+  // while the player walks in - and that aim has no end trigger of its own. A respawn is that
+  // end: gameplay follows the player, so a death anywhere leaves the camera on the player,
+  // however the run had aimed it beforehand.
+  [Test]
+  public async Task ARespawnTakesTheCameraOffWhateverTheRoomHadAimedItAt() {
+    var player = new Node2D { Position = new Vector2(1000f, 0f) };
+    var landmark = new Node2D { Position = new Vector2(4000f, 0f) };
+    var camera = _cameraFollowing(player);
+    TestScene.AddChild(player);
+    TestScene.AddChild(landmark);
+    await _frames(1);
+
+    camera.SetFollowNode(landmark);
+    EventHandler.Instance.EmitCheckpointReached(player.Position, "blue");
+    await _frames(10);
+    camera.GlobalPosition.X.ShouldBe(landmark.Position.X, 1f, "the room never took the camera off the player");
+
+    EventHandler.Instance.EmitCheckpointLoaded();
+    await _frames(10);
+    camera.FollowNode.ShouldBe(player, "the respawn left the camera on the room's landmark");
+    camera.GlobalPosition.X.ShouldBe(player.Position.X, 1f, "the camera stopped following the player");
+
+    player.QueueFree();
+    landmark.QueueFree();
+    await _frames(1);
+  }
+
+  // A shot borrows the camera, and a respawn revokes the borrow. What the shot does afterwards
+  // - hand back a stale target, restore a travel speed the reload has already set - must reach
+  // nothing, or the restore is undone a beat after it happened.
+  [Test]
+  public async Task AShotThatOutlivesTheRespawnCannotWriteToTheCamera() {
+    var player = new Node2D { Position = new Vector2(1000f, 0f) };
+    var subject = new Node2D { Position = new Vector2(4000f, 0f) };
+    var camera = _cameraFollowing(player);
+    TestScene.AddChild(player);
+    TestScene.AddChild(subject);
+    await _frames(1);
+
+    var authoredSpeed = camera.PositionSmoothingSpeed;
+    var token = camera.BeginFocusOverride(subject, authoredSpeed * 0.5f);
+    await _frames(2);
+    camera.FollowNode.ShouldBe(subject, "the shot never got the camera");
+
+    EventHandler.Instance.EmitCheckpointLoaded();
+    await _frames(2);
+    camera.FollowNode.ShouldBe(player, "the respawn did not take the camera back off the shot");
+    camera.PositionSmoothingSpeed.ShouldBe(authoredSpeed, 0.001f,
+      "the respawn kept the shot's travel speed");
+
+    // The shot runs on unaware, exactly as an awaiting cutscene does.
+    camera.ReturnFocus(token);
+    camera.EndFocusOverride(token);
+    await _frames(2);
+    camera.FollowNode.ShouldBe(player, "the retired shot handed the camera to its own target");
+    camera.PositionSmoothingSpeed.ShouldBe(authoredSpeed, 0.001f,
+      "the retired shot restored a travel speed of its own");
+
+    player.QueueFree();
+    subject.QueueFree();
+    await _frames(1);
+  }
+
+  // The camera is given extra room while the player is off the ground and takes it back on
+  // landing. Jumping again before landing must not make the widened margin the one there is
+  // to come back to, or the camera keeps the jump's slack for the rest of the level.
+  [Test]
+  public async Task JumpingAgainBeforeLandingDoesNotKeepTheJumpsSlack() {
+    var anchor = new Node2D();
+    var camera = _cameraFollowing(anchor);
+    TestScene.AddChild(anchor);
+    await _frames(1);
+
+    camera.SetDragMarginTop(0.05f);
+    camera.SetDragMarginBottom(0.05f);
+
+    EventHandler.Instance.EmitPlayerJumped();
+    EventHandler.Instance.EmitPlayerJumped();
+    camera.DragTopMargin.ShouldBe(GameCamera.CAMERA_DRAG_JUMP, 0.001f,
+      "the jump never widened the margin");
+
+    EventHandler.Instance.EmitPlayerLand();
+    camera.DragTopMargin.ShouldBe(0.05f, 0.001f, "landing kept the jump's widened top margin");
+    camera.DragBottomMargin.ShouldBe(0.05f, 0.001f, "landing kept the jump's widened bottom margin");
+
+    anchor.QueueFree();
+    await _frames(1);
+  }
+
+  private static GameCamera _cameraFollowing(Node2D target) {
+    var camera = SceneHelpers.InstantiateNode<GameCamera>();
+    camera.FollowPath = new NodePath("..");
+    target.AddChild(camera);
+    return camera;
+  }
+
   private Task<bool> _waitFor(Func<bool> until) => PhysicsFrames.WaitFor(TestScene, until, PUNCH_TIMEOUT);
 
   private Task _frames(int count) => PhysicsFrames.Advance(TestScene, count);
