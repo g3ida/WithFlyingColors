@@ -178,6 +178,7 @@
     "finalizer",
     "lazers",
     "pressable",
-    "remappable"
+    "remappable",
+    "colour"
   ]
 }

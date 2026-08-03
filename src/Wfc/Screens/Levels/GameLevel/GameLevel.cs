@@ -99,6 +99,9 @@ public partial class GameLevel :
     base._Ready();
     SetProcess(false);
     Global.Instance().Player = _playerNode;
+    // The level knows which level it is; the menu inside it does not, and the
+    // entries it offers depend on that.
+    _pauseMenuNode.ConfigureForLevel(LevelId);
   }
 
   public IGameLevel Value() => this;

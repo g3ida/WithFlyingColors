@@ -7,6 +7,7 @@ using Wfc.Core;
 using Wfc.Core.Audio;
 using Wfc.Core.Input;
 using Wfc.Entities.Ui.InputHint;
+using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -141,6 +142,15 @@ public partial class PauseMenu : CanvasLayer {
     SfxManager.StopAll();
     Resume();
     _pauseMenu.RestartFromCheckpoint();
+  }
+
+  // Told by the level it belongs to which level that is, so the menu can leave out
+  // what that level has no use for. The hub is where levels are picked: there is
+  // nothing to restart there and nowhere to go back to.
+  public void ConfigureForLevel(LevelId levelId) {
+    if (levelId == LevelId.Hub) {
+      _pauseMenu.HideLevelOnlyActions();
+    }
   }
 
   public void NavigateToScreen(GameMenus menuScreen) {

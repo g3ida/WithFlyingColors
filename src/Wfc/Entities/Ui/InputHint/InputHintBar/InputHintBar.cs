@@ -27,7 +27,20 @@ public partial class InputHintBar : Control {
   // chip wide enough to survive a longer translation.
   private const float MIN_CARD_WIDTH = 200f;
 
+  // The surface the bar is drawn on. Menu screens lay it over a light panel; a
+  // bar drawn over the level itself (the pause overlay) sets this, and every
+  // card it holds swaps to the shades that read on a dark background.
+  [Export]
+  public bool OnDarkBackground {
+    get => _onDarkBackground;
+    set {
+      _onDarkBackground = value;
+      _applyBackgroundShade();
+    }
+  }
+
   private readonly List<InputHintCard> _cards = new();
+  private bool _onDarkBackground;
   private ControllerType _lastType = ControllerType.Keyboard;
 
   // Which house style the pad glyphs were last drawn in. Swapping a PlayStation
@@ -70,12 +83,21 @@ public partial class InputHintBar : Control {
     _cards.AddRange(this.FindDescendants<InputHintCard>());
     _lastType = InputUtils.GetEffectiveControllerType();
     _lastIconType = GamepadIconHelper.DetectControllerType();
-    _refreshAll();
+    // The exported flag arrives before the cards are collected, so the shade is
+    // handed down here rather than where it was set.
+    _applyBackgroundShade();
   }
 
   public override void _ExitTree() {
     base._ExitTree();
     _unsubscribe();
+  }
+
+  private void _applyBackgroundShade() {
+    foreach (var card in _cards) {
+      card.OnDarkBackground = _onDarkBackground;
+    }
+    _refreshAll();
   }
 
   private void _refreshAll() {
