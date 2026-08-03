@@ -62,11 +62,17 @@ public partial class SettingsTabManager : Control {
   public delegate void PanelChangedEventHandler(Button currentPanelButton, Godot.Collections.Array<UIGridRow> rows);
   #endregion Signals
 
+  public const int CONTROLLER_PANEL_INDEX = 2;
+
   private GameSkin _skin = SkinManager.Instance.CurrentSkin;
   private int _currentPanelIndex = 0;
   // The buttons are wired in _Ready and captioned once dependencies resolve, so
   // nothing may write to them before both have happened.
   private bool _areButtonsLocalized;
+
+  // Consulted with the panel about to be left before any switch. Returning false
+  // keeps the player where they are; whoever set the guard says why.
+  public Func<int, bool>? CanLeavePanel { get; set; }
 
   // Gets the current panel index (0=General, 1=Video, 2=Controller, 3=Audio)
   public int CurrentPanelIndex => _currentPanelIndex;
@@ -144,12 +150,15 @@ public partial class SettingsTabManager : Control {
     if (index < 0 || index >= _panels.Count)
       return;
 
-    _currentPanelIndex = index;
-
-    // Update button pressed state
-    for (int i = 0; i < _buttons.Count; i++) {
-      _buttons[i].ButtonPressed = i == index;
+    if (index != _currentPanelIndex && CanLeavePanel?.Invoke(_currentPanelIndex) == false) {
+      // Clicking another tab already toggled it; put the pressed look back on
+      // the tab that stays open.
+      _syncPressedTabButton();
+      return;
     }
+
+    _currentPanelIndex = index;
+    _syncPressedTabButton();
 
     // Show the panel
     _showPanel(_panels[index]);
@@ -158,6 +167,12 @@ public partial class SettingsTabManager : Control {
     var rows = GetFocusableRowsForPanel(_panels[index]);
     var currentPanelButton = _buttons[index];
     EmitSignal(SignalName.PanelChanged, currentPanelButton, rows);
+  }
+
+  private void _syncPressedTabButton() {
+    for (int i = 0; i < _buttons.Count; i++) {
+      _buttons[i].ButtonPressed = i == _currentPanelIndex;
+    }
   }
 
   // Navigates to the next or previous tab. Direction: 1=next, -1=previous

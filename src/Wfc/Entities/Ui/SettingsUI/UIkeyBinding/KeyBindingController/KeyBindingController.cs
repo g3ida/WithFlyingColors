@@ -27,9 +27,6 @@ public partial class KeyBindingController : PanelContainer {
 	[Signal]
 	public delegate void onActionBoundSignalEventHandler(string action, int key);
 
-	[Signal]
-	public delegate void OnGamepadActionBoundSignalEventHandler(string action, int buttonOrAxis, bool isAxis, float axisDirection);
-
 	private List<KeyBindingButton> _bindingButtons = new();
 	private ControllerType _currentControllerType = ControllerType.Keyboard;
 
@@ -83,7 +80,11 @@ public partial class KeyBindingController : PanelContainer {
 			else {
 				GameSettings.BindActionToGamepadButton(action, (JoyButton)buttonOrAxis);
 			}
-			EmitSignal(nameof(OnGamepadActionBoundSignal), action, buttonOrAxis, isAxis, axisDirection);
+			// Every other row holding this button or axis lets go of it, the way the
+			// scene wires the same hand-over for keyboard keys.
+			foreach (var bindingButton in _bindingButtons) {
+				bindingButton.HandleGamepadActionBound(action, buttonOrAxis, isAxis, axisDirection);
+			}
 			EventHandler.Instance.EmitOnGamepadActionBound(action, buttonOrAxis, isAxis, axisDirection);
 		}
 	}

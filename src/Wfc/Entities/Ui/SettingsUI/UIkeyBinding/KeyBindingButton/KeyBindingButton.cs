@@ -7,6 +7,7 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Input;
 using Wfc.Core.Localization;
+using Wfc.Core.Settings;
 using Wfc.Core.Ui;
 using Wfc.Entities.Ui.SettingsUI;
 using Wfc.Utils;
@@ -47,10 +48,16 @@ public partial class KeyBindingButton : Button, IEditableControl {
     set {
       if (_type != value) {
         _type = value;
+        // On the gamepad panel the direction rows only display their fixed
+        // D-Pad/stick mapping; editing them is a keyboard-panel affair.
+        Disabled = _isLockedGamepadDirection();
         _loadCurrentBinding();
       }
     }
   }
+
+  private bool _isLockedGamepadDirection() =>
+    _type == BindingType.Gamepad && GameSettings.IsGamepadFixedDirectionAction(key);
   // Stores either a Key, JoyButton or JoyAxis binding information.
   private Key? _value = null;
   private JoyButton? _buttonValue = null;
@@ -250,6 +257,11 @@ public partial class KeyBindingButton : Button, IEditableControl {
 
   private void _handleGamepadInput(InputEvent @event, ref bool handled) {
     if (@event is InputEventJoypadButton joypadButton && joypadButton.Pressed) {
+      // The D-Pad and the stick belong to the directional actions on every pad;
+      // a capture ignores them so they cannot be stolen onto anything else.
+      if (GameSettings.IsReservedGamepadInput(@event)) {
+        return;
+      }
       _buttonValue = joypadButton.ButtonIndex;
       _axisValue = null;
       _updateIconDisplay();
@@ -259,6 +271,9 @@ public partial class KeyBindingButton : Button, IEditableControl {
     else if (@event is InputEventJoypadMotion joypadMotion) {
       // Only register axis movement if it's significant (deadzone)
       if (Mathf.Abs(joypadMotion.AxisValue) > 0.5f) {
+        if (GameSettings.IsReservedGamepadInput(@event)) {
+          return;
+        }
         _axisValue = joypadMotion.Axis;
         _axisDirection = joypadMotion.AxisValue > 0 ? 1f : -1f;
         _buttonValue = null;
@@ -341,9 +356,11 @@ public partial class KeyBindingButton : Button, IEditableControl {
     EmitSignal(nameof(onkeyboardActionBound), action, -1);
   }
 
-  public void _onGamepadActionBoundSignal(string action, int buttonOrAxis, bool isAxis, float axisDirection) {
-    // If another action was bound with the same button/axis, clear our binding
-    if (action == this.key) {
+  // Another row took this button or axis: ours goes empty rather than letting one
+  // press drive two actions. Called by the KeyBindingController for every row; the
+  // keyboard equivalent above is wired row-to-row in the scene instead.
+  public void HandleGamepadActionBound(string action, int buttonOrAxis, bool isAxis, float axisDirection) {
+    if (action == key || _isLockedGamepadDirection()) {
       return;
     }
 
@@ -364,6 +381,12 @@ public partial class KeyBindingButton : Button, IEditableControl {
   }
 
   private void _onKeyBindingButtonPressed() {
+    // Disabled already swallows presses; this covers a press that arrived through
+    // code or a focus quirk while the row is locked.
+    if (_isLockedGamepadDirection()) {
+      ButtonPressed = false;
+      return;
+    }
     if (ButtonPressed) {
       setEditing(true);
     }
