@@ -37,18 +37,53 @@ public static class GameSettings {
   }
 
   /// <summary>
-  /// Default gamepad bindings for common game actions.
+  /// Default gamepad bindings for the remappable game actions.
   /// </summary>
-  public static readonly Dictionary<string, (JoyButton button, JoyAxis? axis, float axisValue)> DefaultGamepadBindings = new() {
-    { "jump", (JoyButton.A, null, 0f) },
-    { "move_left", (JoyButton.DpadLeft, JoyAxis.LeftX, -1f) },
-    { "move_right", (JoyButton.DpadRight, JoyAxis.LeftX, 1f) },
-    { "rotate_left", (JoyButton.LeftShoulder, null, 0f) },
-    { "rotate_right", (JoyButton.RightShoulder, null, 0f) },
-    { "dash", (JoyButton.X, null, 0f) },
-    { "down", (JoyButton.DpadDown, JoyAxis.LeftY, 1f) },
-    { "pause", (JoyButton.Start, null, 0f) },
+  public static readonly Dictionary<string, JoyButton> DefaultGamepadBindings = new() {
+    { "jump", JoyButton.A },
+    { "rotate_left", JoyButton.LeftShoulder },
+    { "rotate_right", JoyButton.RightShoulder },
+    { "dash", JoyButton.X },
+    { "pause", JoyButton.Start },
   };
+
+  // The directional actions are not gamepad-remappable: the D-Pad and the left
+  // stick both always drive them, so aiming a dash never depends on which of the
+  // two the player's thumb happens to be on. Kept out of the settings file for
+  // the same reason.
+  private static readonly (string action, JoyButton button, JoyAxis axis, float axisValue)[] _fixedGamepadDirections = {
+    ("move_left", JoyButton.DpadLeft, JoyAxis.LeftX, -1f),
+    ("move_right", JoyButton.DpadRight, JoyAxis.LeftX, 1f),
+    ("down", JoyButton.DpadDown, JoyAxis.LeftY, 1f),
+  };
+
+  public static bool IsGamepadFixedDirectionAction(string action) =>
+    _fixedGamepadDirections.Any(d => d.action == action);
+
+  /// <summary>
+  /// Whether this event belongs to the fixed direction set and so can never be
+  /// captured as a binding for anything else.
+  /// </summary>
+  public static bool IsReservedGamepadInput(InputEvent @event) => @event switch {
+    InputEventJoypadButton button => _fixedGamepadDirections.Any(d => d.button == button.ButtonIndex),
+    InputEventJoypadMotion motion => _fixedGamepadDirections.Any(
+      d => d.axis == motion.Axis && Mathf.Sign(d.axisValue) == Mathf.Sign(motion.AxisValue)),
+    _ => false,
+  };
+
+  /// <summary>
+  /// Rebinds the D-Pad and left stick to the directional actions, replacing
+  /// whatever a settings file from before the directions were fixed put there.
+  /// </summary>
+  public static void ApplyFixedGamepadDirectionBindings() {
+    foreach (var (action, button, axis, axisValue) in _fixedGamepadDirections) {
+      UnbindActionGamepad(action);
+      // Button first: everything that shows "the" binding for an action reads
+      // the first event of its kind, and the D-Pad glyph is the readable one.
+      InputMap.ActionAddEvent(action, new InputEventJoypadButton { ButtonIndex = button });
+      InputMap.ActionAddEvent(action, new InputEventJoypadMotion { Axis = axis, AxisValue = axisValue });
+    }
+  }
 
   private static Language? _cachedLanguage;
   public static Language Language {
@@ -285,6 +320,42 @@ public static class GameSettings {
     return true;
   }
 
+  /// <summary>
+  /// Checks that no key drives two game actions. A mapping can be fully bound and
+  /// still broken this way, so this is validated separately from the checks above.
+  /// </summary>
+  public static bool HasDuplicateKeyboardBindings() {
+    var seen = new HashSet<Key>();
+    foreach (var action in _getGameActions()) {
+      var actionList = InputMap.ActionGetEvents(action).Cast<InputEvent>();
+      var keyEvent = InputUtils.GetFirstKeyKeyboardEventFromActionList(actionList);
+      if (keyEvent != null && !seen.Add(keyEvent.Keycode)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// <summary>
+  /// Checks that no button or axis direction drives two game actions.
+  /// </summary>
+  public static bool HasDuplicateGamepadBindings() {
+    var seen = new HashSet<string>();
+    foreach (var action in _getGameActions()) {
+      foreach (var @event in InputMap.ActionGetEvents(action).Cast<InputEvent>()) {
+        var signature = @event switch {
+          InputEventJoypadButton button => $"button:{(int)button.ButtonIndex}",
+          InputEventJoypadMotion motion => $"axis:{(int)motion.Axis}:{Mathf.Sign(motion.AxisValue)}",
+          _ => null,
+        };
+        if (signature != null && !seen.Add(signature)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   public static void Save() {
     // Save game actions:
     var configFile = new ConfigFile();
@@ -301,6 +372,12 @@ public static class GameSettings {
       }
       else {
         configFile.SetValue("keyboard", key, "");
+      }
+
+      // The fixed directions never reach the file: what a stale entry would say
+      // is applied over anyway.
+      if (IsGamepadFixedDirectionAction(key)) {
+        continue;
       }
 
       // Save gamepad button bindings
@@ -340,14 +417,14 @@ public static class GameSettings {
   /// Applies default gamepad bindings for actions that don't have gamepad bindings yet.
   /// </summary>
   public static void ApplyDefaultGamepadBindings() {
-    foreach (var (action, binding) in DefaultGamepadBindings) {
+    foreach (var (action, button) in DefaultGamepadBindings) {
       var actionList = InputMap.ActionGetEvents(action).Cast<InputEvent>();
       var existingButton = InputUtils.GetFirstJoypadButtonEventFromActionList(actionList);
       var existingAxis = InputUtils.GetFirstJoypadAxisEventFromActionList(actionList);
 
       // Only apply default if no gamepad binding exists
       if (existingButton == null && existingAxis == null) {
-        BindActionToGamepadButton(action, binding.button);
+        BindActionToGamepadButton(action, button);
       }
     }
   }
@@ -367,6 +444,10 @@ public static class GameSettings {
       // Gamepad settings:
       if (configFile.HasSection("gamepad")) {
         foreach (string action in configFile.GetSectionKeys("gamepad")) {
+          // Files written before the directions were fixed carry entries for them.
+          if (IsGamepadFixedDirectionAction(action)) {
+            continue;
+          }
           var bindingValue = configFile.GetValue("gamepad", action).As<string>();
           if (!string.IsNullOrEmpty(bindingValue)) {
             if (bindingValue.StartsWith("button:")) {
@@ -429,6 +510,7 @@ public static class GameSettings {
 
       // Apply default gamepad bindings if not already set
       ApplyDefaultGamepadBindings();
+      ApplyFixedGamepadDirectionBindings();
     }
     else // Default settings if settings file does not exist:
     {
@@ -436,6 +518,7 @@ public static class GameSettings {
       Vsync = true;
       // Apply default gamepad bindings for new installations
       ApplyDefaultGamepadBindings();
+      ApplyFixedGamepadDirectionBindings();
     }
   }
 }

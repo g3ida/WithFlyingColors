@@ -40,6 +40,9 @@ public partial class SettingsMenu : GameMenu {
 
     // Connect tab manager signals
     _settingsTabManager.PanelChanged += OnPanelChanged;
+    // Walking away from a broken mapping is refused the same way whether it goes
+    // through another tab or out of the screen.
+    _settingsTabManager.CanLeavePanel = OnCanLeavePanel;
 
     // Initialize focus after a frame to ensure all nodes are ready
     CallDeferred(nameof(InitializeFocus));
@@ -89,7 +92,17 @@ public partial class SettingsMenu : GameMenu {
     }
   }
 
-  private static bool IsValidState() {
+  private bool OnCanLeavePanel(int panelIndex) {
+    if (panelIndex != SettingsTabManager.CONTROLLER_PANEL_INDEX || IsValidState()) {
+      return true;
+    }
+    EventHandler.EmitMenuActionPressed(MenuAction.ShowDialog);
+    return false;
+  }
+
+  private static bool IsValidState() => HasAllRequiredBindings() && HasNoDuplicateBindings();
+
+  private static bool HasAllRequiredBindings() {
     // Check keyboard bindings if keyboard is selected
     if (GameSettings.LastUsedController == Core.Input.Controllers.ControllerType.Keyboard) {
       return GameSettings.AreActionKeysValid();
@@ -100,6 +113,15 @@ public partial class SettingsMenu : GameMenu {
     }
     // Default to checking keyboard bindings
     return GameSettings.AreActionKeysValid();
+  }
+
+  // A key on two actions is broken on any device, but a pad can only be remapped
+  // while one is plugged in, so its duplicates only hold the player here then.
+  private static bool HasNoDuplicateBindings() {
+    if (GameSettings.HasDuplicateKeyboardBindings()) {
+      return false;
+    }
+    return !InputUtils.IsGamepadConnected() || !GameSettings.HasDuplicateGamepadBindings();
   }
 
   // Only reports the intent. Whether the bindings are valid is decided in one place,

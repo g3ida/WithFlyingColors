@@ -177,6 +177,7 @@
     "travelled",
     "finalizer",
     "lazers",
-    "pressable"
+    "pressable",
+    "remappable"
   ]
 }

@@ -179,8 +179,10 @@ public partial class PlayerDashingState : PlayerBaseState {
     else if (inputManager.IsPressed(IInputManager.Action.MoveRight)) {
       _direction.X = 1;
     }
-    else if (Mathf.Abs(player.Velocity.X) > 0.1f) {
-      _direction.X = 1 * Mathf.Sign(player.Velocity.X);
+    // Holding only down means straight down: leftover run speed must not bend an
+    // aimed slam into a diagonal the player never asked for.
+    else if (!inputManager.IsPressed(IInputManager.Action.Down) && Mathf.Abs(player.Velocity.X) > 0.1f) {
+      _direction.X = Mathf.Sign(player.Velocity.X);
     }
     else {
       _direction.X = 0;
