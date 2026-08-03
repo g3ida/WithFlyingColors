@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="PackedScene" uid="uid://dmrllj22gpdev" path="res://src/Wfc/Screens/Levels/GameLevel/GameLevel.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Door/Door/Door.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://src/Wfc/Entities/World/Platforms/SimplePlatform/SimplePlatform.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Backgrounds/SpaceBackground/SpaceBackground.tscn" id="4"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(80, 2200)
@@ -17,15 +18,7 @@ limit_bottom = 1080
 [node name="GemContainerHUD" parent="HUD" index="0"]
 visible = false
 
-[node name="Background" type="ParallaxBackground" parent="." index="3"]
-
-[node name="ParallaxLayer" type="ParallaxLayer" parent="Background" index="0"]
-motion_scale = Vector2(0, 0)
-
-[node name="ColorRect" type="ColorRect" parent="Background/ParallaxLayer" index="0"]
-offset_right = 1920.0
-offset_bottom = 1080.0
-color = Color(0.129412, 0.129412, 0.141176, 1)
+[node name="Background" parent="." index="3" instance=ExtResource("4")]
 
 [node name="Doors" type="Node2D" parent="." index="4"]
 

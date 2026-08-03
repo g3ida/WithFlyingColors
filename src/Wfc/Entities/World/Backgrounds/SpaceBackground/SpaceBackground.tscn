@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://cbma52jf70kwt"]
+
+[ext_resource type="Script" uid="uid://cwxy3ujv20sel" path="res://src/Wfc/Entities/World/Backgrounds/SpaceBackground/SpaceBackground.cs" id="1"]
+[ext_resource type="Script" uid="uid://dugcrh46oo8f2" path="res://src/Wfc/Entities/World/Backgrounds/StarField/StarField.cs" id="2"]
+[ext_resource type="Script" uid="uid://7gu4m7pbekcn" path="res://src/Wfc/Entities/World/Backgrounds/SpaceParticleField/SpaceParticleField.cs" id="3"]
+[ext_resource type="Texture2D" uid="uid://w7juyritjt5k" path="res://Assets/Sprites/Backgrounds/galaxy_large.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://cusfroj8t3f1e" path="res://Assets/Sprites/Backgrounds/galaxy_small.png" id="5"]
+
+[node name="SpaceBackground" type="CanvasLayer" unique_id=1209250636]
+layer = -100
+script = ExtResource("1")
+
+[node name="Fill" type="ColorRect" parent="." unique_id=1630278705]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0.129412, 0.129412, 0.141176, 1)
+
+[node name="Galaxies" type="Node2D" parent="." unique_id=449966418]
+
+[node name="GalaxyLarge" type="Sprite2D" parent="Galaxies" unique_id=1477770580]
+position = Vector2(219, 281)
+texture = ExtResource("4")
+
+[node name="GalaxySmall" type="Sprite2D" parent="Galaxies" unique_id=1073682067]
+modulate = Color(1, 1, 1, 0.75)
+position = Vector2(1595, 535)
+rotation = 0.6
+texture = ExtResource("5")
+
+[node name="StarField" type="Node2D" parent="." unique_id=1945980738]
+script = ExtResource("2")
+
+[node name="Particles" type="Node2D" parent="." unique_id=19394442]
+script = ExtResource("3")

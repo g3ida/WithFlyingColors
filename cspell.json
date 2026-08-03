@@ -179,6 +179,7 @@
     "lazers",
     "pressable",
     "remappable",
-    "colour"
+    "colour",
+    "greyscale"
   ]
 }
