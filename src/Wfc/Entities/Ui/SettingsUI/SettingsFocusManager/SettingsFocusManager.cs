@@ -38,6 +38,7 @@ public partial class SettingsFocusManager : Node {
     #endregion Signals
 
     private List<Control> _currentRows = new();
+    private UINavigationInput? _navigationInput;
     private int _currentRowIndex = 0;
     private bool _shouldFocusOnPanelTab = false;
     private KeyBindingButton? _activeKeyBinding = null;
@@ -50,6 +51,8 @@ public partial class SettingsFocusManager : Node {
     public int CurrentRowIndex => _currentRowIndex;
     public int RowCount => _currentRows.Count;
     private bool IsBindingActive => (_activeKeyBinding?.IsInEditMode() ?? false);
+    // Built on first use: the dependency it reads is not resolved yet in _Ready.
+    private UINavigationInput NavigationInput => _navigationInput ??= new UINavigationInput(InputManager);
 
     // Sets the list of focusable rows for the current panel. Called when switching tabs/panels.
     public void SetFocusableRows(Button currentPanelButton, List<UIGridRow> rows) {
@@ -68,6 +71,10 @@ public partial class SettingsFocusManager : Node {
     }
 
     public override void _Input(InputEvent @event) {
+        // Ahead of the guard below: a stick let go of while a dialog is up still has to
+        // count as let go of, or the push after the dialog closes moves nothing.
+        NavigationInput.ObserveMotion(@event);
+
         // This node processes Always so it survives the pause a key capture causes,
         // which also means it keeps receiving input under a dialog. Standing down for
         // whatever holds the screen is what stops it moving focus behind one.
@@ -76,13 +83,13 @@ public partial class SettingsFocusManager : Node {
         }
 
         // Tab navigation (always available)
-        if (InputManager.IsEventActionJustPressed(IInputManager.Action.UITabNext, @event)) {
+        if (NavigationInput.IsJustPressed(IInputManager.Action.UITabNext, @event)) {
             _shouldFocusOnPanelTab = false;
             EmitSignal(SignalName.TabNavigationRequested, 1);
             GetViewport().SetInputAsHandled();
             return;
         }
-        if (InputManager.IsEventActionJustPressed(IInputManager.Action.UITabPrevious, @event)) {
+        if (NavigationInput.IsJustPressed(IInputManager.Action.UITabPrevious, @event)) {
             _shouldFocusOnPanelTab = false;
             EmitSignal(SignalName.TabNavigationRequested, -1);
             GetViewport().SetInputAsHandled();
@@ -90,12 +97,12 @@ public partial class SettingsFocusManager : Node {
         }
 
         // Up/Down navigation
-        if (InputManager.IsEventActionJustPressed(IInputManager.Action.UIUp, @event)) {
+        if (NavigationInput.IsJustPressed(IInputManager.Action.UIUp, @event)) {
             _navigateUp();
             GetViewport().SetInputAsHandled();
             return;
         }
-        if (InputManager.IsEventActionJustPressed(IInputManager.Action.UIDown, @event)) {
+        if (NavigationInput.IsJustPressed(IInputManager.Action.UIDown, @event)) {
             _navigateDown();
             GetViewport().SetInputAsHandled();
             return;
@@ -104,8 +111,8 @@ public partial class SettingsFocusManager : Node {
         // Prevent left/right from changing focus between controls while on a row.
         // Left/Right should only change tabs when the panel tab is focused (index 0).
         if (_currentRowIndex != 0) {
-            if (InputManager.IsEventActionJustPressed(IInputManager.Action.UILeft, @event)
-             || InputManager.IsEventActionJustPressed(IInputManager.Action.UIRight, @event)) {
+            if (NavigationInput.IsJustPressed(IInputManager.Action.UILeft, @event)
+             || NavigationInput.IsJustPressed(IInputManager.Action.UIRight, @event)) {
                 GetViewport().SetInputAsHandled();
                 return;
             }
@@ -113,13 +120,13 @@ public partial class SettingsFocusManager : Node {
 
         // Left/Right for tab navigation (only when panel tab is focused at index 0)
         if (_currentRowIndex == 0) {
-            if (InputManager.IsEventActionJustPressed(IInputManager.Action.UILeft, @event)) {
+            if (NavigationInput.IsJustPressed(IInputManager.Action.UILeft, @event)) {
                 _shouldFocusOnPanelTab = true;
                 EmitSignal(SignalName.TabNavigationRequested, -1);
                 GetViewport().SetInputAsHandled();
                 return;
             }
-            if (InputManager.IsEventActionJustPressed(IInputManager.Action.UIRight, @event)) {
+            if (NavigationInput.IsJustPressed(IInputManager.Action.UIRight, @event)) {
                 _shouldFocusOnPanelTab = true;
                 EmitSignal(SignalName.TabNavigationRequested, 1);
                 GetViewport().SetInputAsHandled();
@@ -315,6 +322,7 @@ public partial class SettingsFocusManager : Node {
     public void ClearFocus() {
         _disconnectFromRows();
         _currentRows.Clear();
+        _navigationInput?.Reset();
         _currentRowIndex = 0;
         _activeKeyBinding?.setEditing(false);
         _activeKeyBinding = null;

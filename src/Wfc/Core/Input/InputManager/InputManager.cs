@@ -30,6 +30,9 @@ public class InputManager : IInputManager {
   public bool IsJustReleased(IInputManager.Action action) => Godot.Input.IsActionJustReleased(Actions[action]);
   public bool IsPressed(IInputManager.Action action) => Godot.Input.IsActionPressed(Actions[action]);
 
+  // IsActionPressed is per-event, so a release or a sub-deadzone stick blip bound to the
+  // same action cannot pass as a press; IsJustPressed then keeps a stick held past the
+  // deadzone from firing again for every motion event it emits.
   public bool IsEventActionJustPressed(IInputManager.Action action, InputEvent @event) =>
-    @event.IsAction(Actions[action]) && IsJustPressed(action) && !@event.IsEcho();
+    @event.IsActionPressed(Actions[action]) && IsJustPressed(action);
 }
