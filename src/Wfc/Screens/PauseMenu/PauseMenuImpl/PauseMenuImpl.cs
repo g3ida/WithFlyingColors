@@ -58,6 +58,16 @@ public partial class PauseMenuImpl : GameMenu {
     _backButton.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_mainMenu);
   }
 
+  // Drops the entries that only mean something inside a level being played, so the
+  // menu never offers an action the level it sits in cannot carry out. The buttons
+  // start hidden and are only ever shown from this list, so leaving them out of it
+  // keeps them off the screen and out of the focus chain.
+  public void HideLevelOnlyActions() =>
+      buttons.RemoveAll(button =>
+          button == _restartCheckpointButton
+          || button == _restartLevelButton
+          || button == _returnToHubButton);
+
   public void _Hide() {
     foreach (var button in buttons) {
       button.HideBtn();

@@ -36,20 +36,38 @@ public partial class InputHintCard : PanelContainer {
   [Export]
   public TranslationKey CaptionKey { get; set; } = TranslationKey.menu_hint_select;
 
+  // Which surface the card is drawn on, set by the bar it sits in. The caption
+  // goes white and the gamepad glyphs come from the inverted set; a key cap is
+  // its own light surface either way, so it is left alone.
+  public bool OnDarkBackground {
+    get => _onDarkBackground;
+    set {
+      _onDarkBackground = value;
+      _applyCaptionColor();
+    }
+  }
+
   private static readonly PackedScene _glyphViewScene =
       GD.Load<PackedScene>("res://src/Wfc/Entities/Ui/InputHint/InputGlyphView/InputGlyphView.tscn");
 
   private Label _caption = default!;
   private HBoxContainer _inputs = default!;
   private bool _wired;
+  private bool _onDarkBackground;
+
+  // The caption colour the scene ships, so the light shade can be put back after
+  // the card has been drawn dark.
+  private Color _captionColorOnLight;
 
   public override void _Ready() {
     base._Ready();
     _caption = GetNode<Label>("HBox/CaptionBox/Caption");
     _inputs = GetNode<HBoxContainer>("HBox/Inputs");
+    _captionColorOnLight = _caption.GetThemeColor("font_color");
     _wired = true;
 
     _applyCaption();
+    _applyCaptionColor();
     _centerCaption();
   }
 
@@ -64,6 +82,14 @@ public partial class InputHintCard : PanelContainer {
 
   private void _applyCaption() =>
       _caption.Text = TranslationServer.Translate(CaptionKey.ToTranslationKeyStringSafe());
+
+  private void _applyCaptionColor() {
+    if (!_wired) {
+      return;
+    }
+    _caption.AddThemeColorOverride(
+        "font_color", _onDarkBackground ? Colors.White : _captionColorOnLight);
+  }
 
   // For screens that reword a card per mode (the slot picker's SELECT vs LOAD).
   // The bar re-equalizes card widths on its next refresh, so callers go through
@@ -82,7 +108,7 @@ public partial class InputHintCard : PanelContainer {
     }
 
     _clearInputs();
-    var provider = InputIconProvider.For(type);
+    var provider = InputIconProvider.For(type, _onDarkBackground);
 
     if (Kind == HintKind.Navigation) {
       _addGlyph(provider.GetNavigationGlyph());
