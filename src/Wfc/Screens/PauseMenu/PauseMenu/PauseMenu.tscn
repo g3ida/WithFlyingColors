@@ -1,5 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://bijboehpv0gsh"]
+[gd_scene load_steps=8 format=3 uid="uid://bijboehpv0gsh"]
 [ext_resource type="PackedScene" uid="uid://bhntbarscn01" path="res://src/Wfc/Entities/Ui/InputHint/InputHintBar/InputHintBar.tscn" id="hintbar_ext"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Screens/PauseMenu/PauseSettingsMenu/PauseSettingsMenu.tscn" id="settings_ext"]
 
 [ext_resource type="PackedScene" uid="uid://bmemjogxagwn1" path="res://src/Wfc/Core/ScreenShaders/ScreenShaders.tscn" id="1"]
 [ext_resource type="Script" uid="uid://d20xxw2eye0x0" path="res://src/Wfc/Screens/PauseMenu/PauseMenuImpl/PauseMenuImpl.cs" id="2"]
@@ -51,12 +52,19 @@ visible = false
 layout_mode = 2
 text = "Return to the Hub"
 
+[node name="SettingsButton" parent="PauseMenuImpl/CenterContainer/VBoxContainer" instance=ExtResource("5")]
+visible = false
+layout_mode = 2
+text = "Settings"
+
 [node name="BackButton" parent="PauseMenuImpl/CenterContainer/VBoxContainer" instance=ExtResource("5")]
 visible = false
 layout_mode = 2
 text = "Back to main menu"
 
 [node name="ScreenShaders" parent="." instance=ExtResource("1")]
+
+[node name="PauseSettingsMenu" parent="." instance=ExtResource("settings_ext")]
 
 [node name="InputHintBar" parent="." instance=ExtResource("hintbar_ext")]
 OnDarkBackground = true

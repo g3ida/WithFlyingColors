@@ -1,6 +1,7 @@
-[gd_scene load_steps=18 format=3 uid="uid://bo2x0ri6jenb3"]
+[gd_scene load_steps=19 format=3 uid="uid://bo2x0ri6jenb3"]
 
 [ext_resource type="Theme" uid="uid://duyihjolb12bh" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabsTheme.tres" id="1_6eew3"]
+[ext_resource type="Theme" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabsDarkTheme.tres" id="1_dark"]
 [ext_resource type="Script" uid="uid://dv44qgy4plsou" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabManager.cs" id="2_4e54m"]
 [ext_resource type="ButtonGroup" uid="uid://dqiq3r6imuqff" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsButtonGroup.tres" id="2_kglrd"]
 [ext_resource type="Script" uid="uid://cvvkqqndmn8or" path="res://src/Wfc/Entities/Ui/SettingsUI/Grid/UIGridContainer/UIGridContainer.cs" id="3_q2836"]
@@ -27,6 +28,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_6eew3")
 script = ExtResource("2_4e54m")
+DarkTheme = ExtResource("1_dark")
 
 [node name="PanelManager" type="MarginContainer" parent="."]
 layout_mode = 1

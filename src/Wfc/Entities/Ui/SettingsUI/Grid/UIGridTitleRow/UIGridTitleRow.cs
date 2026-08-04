@@ -28,11 +28,23 @@ public partial class UIGridTitleRow : MarginContainer {
   [Export]
   public TranslationKey TranslationKey { get; set; } = TranslationKey.menu_header_mainMenu;
 
+  // The rules above and below the title are drawn black for a light panel; over
+  // the level (the pause overlay) they swap to white along with the text, which
+  // follows the host's theme on its own.
+  public bool OnDarkBackground {
+    get => _onDarkBackground;
+    set {
+      _onDarkBackground = value;
+      _setPanelStyle();
+    }
+  }
+
   [NodePath("PanelContainer")]
   public PanelContainer _panelContainerNode = default!;
   [NodePath("PanelContainer/Content")]
   public CenterContainer _contentNode = default!;
 
+  private bool _onDarkBackground;
   private Label? _labelNode = null;
 
   public void _setPanelStyle() {
@@ -43,7 +55,7 @@ public partial class UIGridTitleRow : MarginContainer {
     style.ContentMarginBottom = 5;
     // Fixme: this hack is to fix line spacing between items in the parent grid.
     style.ExpandMarginTop = 4;
-    style.BorderColor = Colors.Black;
+    style.BorderColor = _onDarkBackground ? Colors.White : Colors.Black;
     style.BorderWidthTop = 6;
     style.BorderWidthBottom = 6;
     _panelContainerNode.AddThemeStyleboxOverride("panel", style);

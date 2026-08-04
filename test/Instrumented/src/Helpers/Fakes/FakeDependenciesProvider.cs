@@ -10,6 +10,7 @@ using Wfc.Core.Input;
 using Wfc.Core.Localization;
 using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
+using Wfc.Core.Settings;
 using Wfc.Core.Ui;
 using Wfc.Screens.MenuManager;
 using Wfc.test.Helpers.Fakes;
@@ -58,6 +59,10 @@ public partial class FakeDependenciesProvider :
   IModalStack IProvide<IModalStack>.Value() => _modalStack.Value;
 
   public FakeDependenciesProvider() : base() {
+    // Anything a test drives into saving (closing a settings view does) writes
+    // through this path. Left on the default it overwrites the developer's real
+    // settings.ini - a headless run wrote the window's zero size into it once.
+    GameSettings.ConfigFilePath = "user://test-settings.ini";
     _menuManager = new Lazy<IMenuManager>(() => new MenuManager(this));
     _modalStack = new Lazy<IModalStack>(() => new ModalStack(GetTree()));
   }

@@ -33,6 +33,12 @@ public partial class UIGridRow : PanelContainer {
 
   private const string THEME_OVERRIDE_NAME = "panel";
 
+  // On a dark surface the focused row flips to ink-on-paper. Everything the row
+  // holds is white art over that surface, so one dark tint on the content turns
+  // the label, the value and their icons black together; the widgets' focus
+  // blinks only animate alpha, which multiplies under this untouched.
+  private static readonly Color FOCUSED_CONTENT_TINT = new(0.13f, 0.13f, 0.13f);
+
   // Keeps the label and the value clear of the panel's edges. Without it a value
   // that happened to fill its half of the row - the full name of a connected
   // gamepad, say - sat flush against the side of the settings panel.
@@ -44,15 +50,35 @@ public partial class UIGridRow : PanelContainer {
   [Export]
   public bool IsDark { get; set; }// alternate background
 
+  // The row's shades are black washes over a light panel. Drawn over the level
+  // instead (the pause overlay), they swap to white washes, and the row drops its
+  // own light theme so the host's dark one reaches the label and the value.
+  public bool OnDarkBackground {
+    get => _onDarkBackground;
+    set {
+      _onDarkBackground = value;
+      if (value) {
+        Theme = null;
+      }
+      _setStyle(hasFocus: _focusState > 0);
+    }
+  }
+
   [NodePath("Content")]
   public HBoxContainer _contentNode = default!;
 
+  private bool _onDarkBackground;
   private Control? _attachedNode = null;
   private Label? _labelNode = null;
   private int _focusState = 0;
   private void _setStyle(bool hasFocus) {
     var style = new StyleBoxFlat();
-    style.BgColor = hasFocus ? new Color(0f, 0f, 0f, 0.2f) : IsDark ? new Color(0f, 0f, 0f, 0.05f) : Colors.Transparent;
+    style.BgColor = _onDarkBackground
+        ? hasFocus ? Colors.White : IsDark ? new Color(1f, 1f, 1f, 0.07f) : Colors.Transparent
+        : hasFocus ? new Color(0f, 0f, 0f, 0.2f) : IsDark ? new Color(0f, 0f, 0f, 0.05f) : Colors.Transparent;
+    if (_onDarkBackground) {
+      _contentNode.Modulate = hasFocus ? FOCUSED_CONTENT_TINT : Colors.White;
+    }
     style.ContentMarginTop = 5;
     style.ContentMarginBottom = 5;
     style.ContentMarginLeft = SIDE_MARGIN;

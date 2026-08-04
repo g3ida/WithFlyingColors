@@ -62,6 +62,16 @@ public partial class SettingsTabManager : Control {
   public delegate void PanelChangedEventHandler(Button currentPanelButton, Godot.Collections.Array<UIGridRow> rows);
   #endregion Signals
 
+  #region Exports
+  // Set by a host that draws the tabs over the level (the pause overlay) instead
+  // of on the light menu backdrop: the dark theme replaces the light one, and
+  // every widget that keeps its own light-surface colours is told to swap them.
+  [Export]
+  public bool OnDarkBackground { get; set; }
+  [Export]
+  public Theme? DarkTheme { get; set; }
+  #endregion Exports
+
   public const int CONTROLLER_PANEL_INDEX = 2;
 
   private GameSkin _skin = SkinManager.Instance.CurrentSkin;
@@ -93,6 +103,9 @@ public partial class SettingsTabManager : Control {
     _buttons.Add(_controllerSettingsButton);
     _buttons.Add(_audioSettingsButton);
 
+    if (OnDarkBackground) {
+      _applyDarkBackground();
+    }
     _setButtonStyles();
 
     _generalSettingsButton.Pressed += () => SwitchToPanel(0);
@@ -116,18 +129,42 @@ public partial class SettingsTabManager : Control {
     _audioSettingsButton.Text = LocalizationService.GetLocalizedString(TranslationKey.game_settings_category_audio);
   }
 
+  private void _applyDarkBackground() {
+    if (DarkTheme != null) {
+      Theme = DarkTheme;
+    }
+    foreach (var row in this.FindDescendants<UIGridRow>()) {
+      row.OnDarkBackground = true;
+    }
+    foreach (var titleRow in this.FindDescendants<UIGridTitleRow>()) {
+      titleRow.OnDarkBackground = true;
+    }
+    foreach (var selectButton in this.FindDescendants<UISelect.UISelectButton>()) {
+      selectButton.SetDarkBackground();
+    }
+    foreach (var bindingButton in this.FindDescendants<KeyBindingButton>()) {
+      bindingButton.OnDarkBackground = true;
+    }
+  }
+
   private void _setButtonStyles() {
     List<SkinColor> skinColors = [SkinColor.TopFace, SkinColor.LeftFace, SkinColor.RightFace, SkinColor.BottomFace];
     _setPressedButtonStyles(skinColors);
     _setFocusAndHoverButtonStyles(skinColors);
   }
 
+  // The washes behind the tab captions lighten the pressed tab on a dark surface
+  // and darken it on a light one. The pressed wash matches the panel fill, so the
+  // selected tab reads as part of the panel it opens rather than a button on it.
+  private Color _tabWashColor(string lightWash, string darkWash) =>
+      Color.FromHtml(OnDarkBackground ? darkWash : lightWash);
+
   private void _setPressedButtonStyles(List<SkinColor> skinColors) {
     for (int i = 0; i < _buttons.Count; i++) {
       var style = new StyleBoxFlat();
       style.BorderWidthTop = 7;
       style.ExpandMarginBottom = 4;
-      style.BgColor = Color.FromHtml("#00000019");
+      style.BgColor = _tabWashColor("#00000019", "#FFFFFF26");
       style.BorderColor = _skin.GetColor(skinColors[i % skinColors.Count], SkinColorIntensity.Basic);
       _buttons[i].AddThemeStyleboxOverride("pressed", style);
     }
@@ -138,7 +175,7 @@ public partial class SettingsTabManager : Control {
       var style = new StyleBoxFlat();
       style.BorderWidthTop = 7;
       style.ExpandMarginBottom = 4;
-      style.BgColor = Color.FromHtml("#00000040");
+      style.BgColor = _tabWashColor("#00000040", "#FFFFFF40");
       style.BorderColor = _skin.GetColor(skinColors[i % skinColors.Count], SkinColorIntensity.Basic);
       _buttons[i].AddThemeStyleboxOverride("hover", style);
       _buttons[i].AddThemeStyleboxOverride("focus", style);

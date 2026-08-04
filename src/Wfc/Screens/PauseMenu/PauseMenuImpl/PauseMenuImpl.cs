@@ -21,6 +21,8 @@ public partial class PauseMenuImpl : GameMenu {
   private PauseMenuBtn _restartLevelButton = null!;
   [NodePath("CenterContainer/VBoxContainer/ReturnToHubButton")]
   private PauseMenuBtn _returnToHubButton = null!;
+  [NodePath("CenterContainer/VBoxContainer/SettingsButton")]
+  private PauseMenuBtn _settingsButton = null!;
   [NodePath("CenterContainer/VBoxContainer/BackButton")]
   private PauseMenuBtn _backButton = null!;
 
@@ -34,6 +36,7 @@ public partial class PauseMenuImpl : GameMenu {
       _restartCheckpointButton,
       _restartLevelButton,
       _returnToHubButton,
+      _settingsButton,
       _backButton,
     };
     _refreshButtonTexts();
@@ -55,6 +58,7 @@ public partial class PauseMenuImpl : GameMenu {
     _restartCheckpointButton.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_restartCheckpoint);
     _restartLevelButton.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_restartLevel);
     _returnToHubButton.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_returnToHub);
+    _settingsButton.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_settings);
     _backButton.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_button_mainMenu);
   }
 

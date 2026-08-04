@@ -6,6 +6,7 @@ using Godot;
 using Wfc.Core;
 using Wfc.Core.Audio;
 using Wfc.Core.Input;
+using Wfc.Core.Ui;
 using Wfc.Entities.Ui.InputHint;
 using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
@@ -42,8 +43,12 @@ public partial class PauseMenu : CanvasLayer {
   private Button _restartCheckpointButton = null!;
   [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/ResumeButton")]
   private Button _resumeButton = null!;
+  [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/SettingsButton")]
+  private Button _settingsButton = null!;
   [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/BackButton")]
   private Button _backButtonButton = null!;
+  [NodePath("PauseSettingsMenu")]
+  private PauseSettingsMenu _pauseSettingsMenu = null!;
   [NodePath("InputHintBar")]
   private InputHintBar _inputHintBar = null!;
 
@@ -60,6 +65,8 @@ public partial class PauseMenu : CanvasLayer {
   public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
   [Dependency]
   public IInputManager InputManager => this.DependOn<IInputManager>();
+  [Dependency]
+  public IModalStack ModalStack => this.DependOn<IModalStack>();
 
   public void OnResolved() { }
 
@@ -69,6 +76,7 @@ public partial class PauseMenu : CanvasLayer {
     _restartLevelButton.Pressed += _onRestartLevelButtonPressed;
     _restartCheckpointButton.Pressed += _onRestartCheckpointButtonPressed;
     _resumeButton.Pressed += _onResumeButtonPressed;
+    _settingsButton.Pressed += _onSettingsButtonPressed;
     _backButtonButton.Pressed += _onBackButtonPressed;
   }
 
@@ -76,6 +84,23 @@ public partial class PauseMenu : CanvasLayer {
   // action name every frame both bypassed the rebindable action table and repeated
   // for each event delivered in the frame the key went down.
   public override void _Input(InputEvent @event) {
+    // A key capture or a dialog inside the settings view holds the screen; the
+    // pause key belongs to it until it lets go.
+    if (ModalStack.IsAnyOpen) {
+      return;
+    }
+
+    // While the settings view is up, backing out returns to the pause buttons
+    // rather than to the game, and only if the view agrees to close.
+    if (_pauseSettingsMenu.IsOpen) {
+      if (InputManager.IsEventActionJustPressed(IInputManager.Action.Pause, @event)
+          || InputManager.IsEventActionJustPressed(IInputManager.Action.UICancel, @event)) {
+        _closeSettings();
+        GetViewport().SetInputAsHandled();
+      }
+      return;
+    }
+
     if (!InputManager.IsEventActionJustPressed(IInputManager.Action.Pause, @event)) {
       return;
     }
@@ -120,6 +145,21 @@ public partial class PauseMenu : CanvasLayer {
   private void _onResumeButtonPressed() {
     if (_isPaused) {
       Resume();
+    }
+  }
+
+  // The settings view replaces the buttons inside the same overlay: the game
+  // stays paused behind it and the pause hint bar hands over to the view's own.
+  private void _onSettingsButtonPressed() {
+    _pauseMenu._Hide();
+    _inputHintBar.Exit();
+    _pauseSettingsMenu.Open();
+  }
+
+  private void _closeSettings() {
+    if (_pauseSettingsMenu.TryClose()) {
+      _pauseMenu._Show();
+      _inputHintBar.Enter();
     }
   }
 

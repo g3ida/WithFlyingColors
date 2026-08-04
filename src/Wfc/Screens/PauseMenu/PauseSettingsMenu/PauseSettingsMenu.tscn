@@ -1,0 +1,43 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://src/Wfc/Screens/PauseMenu/PauseSettingsMenu/PauseSettingsMenu.cs" id="1"]
+[ext_resource type="PackedScene" uid="uid://bo2x0ri6jenb3" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabManager.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://src/Wfc/Entities/Ui/Dialogs/DialogContainer/DialogContainer.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://wfccnfdlgscn1" path="res://src/Wfc/Entities/Ui/Dialogs/ConfirmDialog/ConfirmDialog.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://bhntbarscn01" path="res://src/Wfc/Entities/Ui/InputHint/InputHintBar/InputHintBar.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://bhntcrdscn01" path="res://src/Wfc/Entities/Ui/InputHint/InputHintCard/InputHintCard.tscn" id="6"]
+
+[node name="PauseSettingsMenu" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="UiTabContainer" parent="." instance=ExtResource("2")]
+layout_mode = 1
+offset_left = 250.0
+offset_right = -250.0
+offset_bottom = -80.0
+OnDarkBackground = true
+
+[node name="DialogContainer" parent="." instance=ExtResource("3")]
+layout_mode = 1
+DialogNodePath = NodePath("AcceptDialog")
+DialogTextKey = 61
+ConfirmTextKey = 62
+
+[node name="AcceptDialog" parent="DialogContainer" instance=ExtResource("4")]
+layout_mode = 1
+ShowCancelButton = false
+
+[node name="InputHintBar" parent="." instance=ExtResource("5")]
+OnDarkBackground = true
+
+[node name="SwitchTabCard" parent="InputHintBar/HBox" index="0" instance=ExtResource("6")]
+layout_mode = 2
+Actions = PackedStringArray("ui_tab_prev", "ui_tab_next")
+CaptionKey = 49

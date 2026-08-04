@@ -180,6 +180,7 @@
     "pressable",
     "remappable",
     "colour",
+    "colours",
     "greyscale"
   ]
 }
