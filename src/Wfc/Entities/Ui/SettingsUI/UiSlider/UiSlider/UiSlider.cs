@@ -9,11 +9,36 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [Meta(typeof(IAutoNode))]
-public partial class UiSlider : HSlider {
+public partial class UiSlider : HSlider, IDarkBackgroundAware {
   #region Dependencies
   [Dependency]
   public IInputManager InputManager => this.DependOn<IInputManager>();
   #endregion Dependencies
+
+  #region Exports
+  // The grabber is drawn dark for a light surface and inverted for a dark one.
+  // The row underneath says which one is showing.
+  [Export]
+  public Texture2D? GrabberIcon { get; set; }
+  [Export]
+  public Texture2D? GrabberIconOnDark { get; set; }
+  #endregion Exports
+
+  // Every state of the grabber carries the same art, the way both settings
+  // themes hand it out.
+  private static readonly string[] GRABBER_ICON_NAMES = ["grabber", "grabber_highlight", "grabber_disabled"];
+
+  public bool OnDarkBackground {
+    set {
+      var icon = value ? GrabberIconOnDark : GrabberIcon;
+      if (icon == null) {
+        return;
+      }
+      foreach (var name in GRABBER_ICON_NAMES) {
+        AddThemeIconOverride(name, icon);
+      }
+    }
+  }
 
   #region  Nodes
   [NodePath("AnimationPlayer")]

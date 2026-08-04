@@ -10,7 +10,13 @@ using Wfc.Utils.Attributes;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
-public partial class UISelectButton : Button {
+public partial class UISelectButton : Button, IDarkBackgroundAware {
+
+  #region Constants
+  // What the arrows are tinted with at rest on a light surface, the shade the
+  // animations were authored around.
+  private static readonly Color ARROW_REST_TINT = new(0.18f, 0.18f, 0.18f);
+  #endregion Constants
 
   #region Dependencies
   public override void _Notification(int what) => this.Notify(what);
@@ -42,6 +48,7 @@ public partial class UISelectButton : Button {
   public Variant? SelectedValue = null;
   private bool _isReady = false;
   private bool _selectDriverSignalsSet = false;
+  private bool _onDarkBackground;
 
   [Signal]
   public delegate void ValueChangedEventHandler(Variant value);
@@ -67,6 +74,8 @@ public partial class UISelectButton : Button {
   public override void _Ready() {
     base._Ready();
 
+    _makeAnimationsLocal(LeftArrowAnimationNode);
+    _makeAnimationsLocal(RightArrowAnimationNode);
     _index = SelectDriver.GetDefaultSelectedIndex();
     UpdateSelectedItem();
     UpdateRectSize();
@@ -195,25 +204,38 @@ public partial class UISelectButton : Button {
   }
 
   // The arrows are authored for a light panel: tinted dark at rest, flashing to
-  // white when stepped. On a dark surface (the pause overlay) the same feedback
-  // runs the other way round, so every colour the animations write is swapped
-  // for its opposite, and the label goes plain white.
-  public void SetDarkBackground() {
-    LabelNode.SetFontColor(Colors.White);
-    _invertArrowColors(LeftArrowNode, LeftArrowAnimationNode);
-    _invertArrowColors(RightArrowNode, RightArrowAnimationNode);
+  // white when stepped. On a dark surface the same feedback runs the other way
+  // round, so every colour the animations write is swapped for its opposite,
+  // along with the tint they rest at.
+  public bool OnDarkBackground {
+    set {
+      if (_onDarkBackground == value) {
+        return;
+      }
+      _onDarkBackground = value;
+      _setArrowSurface(LeftArrowNode, LeftArrowAnimationNode);
+      _setArrowSurface(RightArrowNode, RightArrowAnimationNode);
+    }
   }
 
-  private static void _invertArrowColors(Button arrow, AnimationPlayer animationPlayer) {
-    arrow.AddThemeColorOverride("icon_normal_color", Colors.White);
+  private void _setArrowSurface(Button arrow, AnimationPlayer animationPlayer) {
+    arrow.AddThemeColorOverride("icon_normal_color", _onDarkBackground ? Colors.White : ARROW_REST_TINT);
+    // Inverting an inverted colour gives the original back, so the same pass
+    // carries the animations either way.
     foreach (var libraryName in animationPlayer.GetAnimationLibraryList()) {
-      // Duplicated before touching a key: the library is shared between every
-      // instance of the scene, and editing it in place would repaint the select
-      // buttons of the light settings screen too.
-      var library = (AnimationLibrary)animationPlayer.GetAnimationLibrary(libraryName).Duplicate(true);
+      var library = animationPlayer.GetAnimationLibrary(libraryName);
       foreach (var animationName in library.GetAnimationList()) {
         _invertAnimationColors(library.GetAnimation(animationName));
       }
+    }
+  }
+
+  // The libraries ship with the scene and are shared between every instance of
+  // it, so a button takes its own copy before it ever repaints a key: editing
+  // one in place would repaint the selects of every other screen too.
+  private static void _makeAnimationsLocal(AnimationPlayer animationPlayer) {
+    foreach (var libraryName in animationPlayer.GetAnimationLibraryList()) {
+      var library = (AnimationLibrary)animationPlayer.GetAnimationLibrary(libraryName).Duplicate(true);
       animationPlayer.RemoveAnimationLibrary(libraryName);
       animationPlayer.AddAnimationLibrary(libraryName, library);
     }

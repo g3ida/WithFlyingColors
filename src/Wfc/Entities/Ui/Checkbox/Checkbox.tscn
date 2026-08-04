@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://clj5gw6ykw55o"]
+[gd_scene load_steps=6 format=3 uid="uid://clj5gw6ykw55o"]
 
 [ext_resource type="Script" uid="uid://cqjg8utcm8iup" path="res://src/Wfc/Entities/Ui/Checkbox/Checkbox.cs" id="1"]
+[ext_resource type="Texture2D" uid="uid://ckjfrltgb6mvr" path="res://Assets/Sprites/UI/checkbox_checked.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://bcdofkgpgxc0s" path="res://Assets/Sprites/UI/checkbox_unchecked.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://dw4ud0g2bhu28" path="res://Assets/Sprites/UI/checkbox_checked_inverted.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://2n6uguedgbcd" path="res://Assets/Sprites/UI/checkbox_unchecked_inverted.png" id="5"]
 
 [node name="Checkbox" type="CheckBox"]
 offset_left = 534.0
@@ -11,4 +15,8 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/check_v_offset = -6
 script = ExtResource("1")
+CheckedIcon = ExtResource("2")
+UncheckedIcon = ExtResource("3")
+CheckedIconOnDark = ExtResource("4")
+UncheckedIconOnDark = ExtResource("5")
 

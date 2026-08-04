@@ -16,7 +16,7 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
-public partial class KeyBindingButton : Button, IEditableControl {
+public partial class KeyBindingButton : Button, IEditableControl, IDarkBackgroundAware {
 
   #region Dependencies
   // The "empty" caption is a translated string kept in a field, so it has to be
@@ -40,10 +40,14 @@ public partial class KeyBindingButton : Button, IEditableControl {
   #endregion Exports
 
   // The gamepad glyphs come in a light-surface and a dark-surface set; which one
-  // this button shows follows the surface it was told it sits on.
+  // this button shows follows the surface it was told it sits on, which the row
+  // flips under it whenever it takes focus.
   public bool OnDarkBackground {
     get => _onDarkBackground;
     set {
+      if (_onDarkBackground == value) {
+        return;
+      }
       _onDarkBackground = value;
       _reloadArt();
     }
