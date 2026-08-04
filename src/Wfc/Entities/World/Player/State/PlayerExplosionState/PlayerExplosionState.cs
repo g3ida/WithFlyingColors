@@ -18,11 +18,11 @@ public partial class PlayerExplosionState : PlayerDyingBaseState {
     // A cube that blows up stops where it was. The fall zone is the other way to die and the only
     // one that keeps its momentum, because the fall is the whole of what the player sees.
     player.Velocity = Vector2.Zero;
-    lightMask = player.LightOccluder.LightMask;
+    lightMask = player.LightOccluder.OccluderLightMask;
     // create the explosion
     CallDeferred(nameof(CreateExplosion), player);
     EventHandler.Instance.EmitPlayerExplode();
-    player.LightOccluder.LightMask = 0;
+    player.LightOccluder.OccluderLightMask = 0;
     player.AnimatedSpriteNode.Play("die");
   }
 
@@ -36,7 +36,7 @@ public partial class PlayerExplosionState : PlayerDyingBaseState {
 
   protected override void _Exit(Player player) {
     base._Exit(player);
-    player.LightOccluder.LightMask = lightMask;
+    player.LightOccluder.OccluderLightMask = lightMask;
   }
 
   private void CreateExplosion(Player player) {
