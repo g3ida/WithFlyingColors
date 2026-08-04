@@ -137,6 +137,11 @@ public partial class Events : RefCounted {
   // told rather than only reading it once on the way in.
   [Signal]
   public delegate void SaveSlotUpdatedEventHandler();
+  // A line for the corner of the screen, as a TranslationKey ordinal: what is worth saying is
+  // the raiser's business, and what it looks like and how long it stays is the notification
+  // system's.
+  [Signal]
+  public delegate void NotificationRaisedEventHandler(int translationKey);
   // Both carry how hard they want it, so one move can ask for a nudge where it starts and a
   // jolt where it lands without either reading as the other.
   [Signal]

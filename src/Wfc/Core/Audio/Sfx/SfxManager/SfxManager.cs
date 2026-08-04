@@ -88,6 +88,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.GemTempleTriggered += OnGemTempleTriggered;
     EventHandler.Instance.Events.GemEngineStarted += OnGemEngineStarted;
     EventHandler.Instance.Events.GemPutInTemple += OnGemPutInTemple;
+    EventHandler.Instance.Events.NotificationRaised += OnNotificationRaised;
   }
 
   private void DisconnectSignals() {
@@ -127,6 +128,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.GemTempleTriggered -= OnGemTempleTriggered;
     EventHandler.Instance.Events.GemEngineStarted -= OnGemEngineStarted;
     EventHandler.Instance.Events.GemPutInTemple -= OnGemPutInTemple;
+    EventHandler.Instance.Events.NotificationRaised -= OnNotificationRaised;
   }
 
   public override void _ExitTree() {
@@ -208,6 +210,7 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnGemTempleTriggered() => OnPlaySfx("shine");
   private void OnGemEngineStarted() => OnPlaySfx("GemEngine");
   private void OnGemPutInTemple() => OnPlaySfx("GemPut");
+  private void OnNotificationRaised(int translationKey) => OnPlaySfx("notification");
   private void OnPauseMenuEnter() => OnPlaySfx("menuSelect");
   private void OnPauseMenuExit() => OnPlaySfx("menuSelect");
 }

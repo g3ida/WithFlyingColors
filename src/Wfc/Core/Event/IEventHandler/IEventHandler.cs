@@ -80,5 +80,6 @@ public interface IEventHandler {
   public void EmitDoorEntered(int levelId);
   public void EmitLevelRestartRequested();
   public void EmitSaveSlotUpdated();
+  public void EmitNotificationRaised(TranslationKey key);
 
 }

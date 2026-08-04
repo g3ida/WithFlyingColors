@@ -163,6 +163,7 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitDoorEntered(int levelId) => Events.EmitSignal(Events.SignalName.DoorEntered, levelId);
   public void EmitLevelRestartRequested() => Events.EmitSignal(Events.SignalName.LevelRestartRequested);
   public void EmitSaveSlotUpdated() => Events.EmitSignal(Events.SignalName.SaveSlotUpdated);
+  public void EmitNotificationRaised(TranslationKey key) => Events.EmitSignal(Events.SignalName.NotificationRaised, (int)key);
 
   public void EmitCameraShakeRequest(float amplitude) => Events.EmitSignal(Events.SignalName.CameraShakeRequest, amplitude);
   public void EmitCameraZoomPunchRequest(float strength) => Events.EmitSignal(Events.SignalName.CameraZoomPunchRequest, strength);

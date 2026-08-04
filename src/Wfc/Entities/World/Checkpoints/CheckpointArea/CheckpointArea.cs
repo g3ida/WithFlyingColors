@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Checkpoints;
 
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils;
@@ -78,6 +79,7 @@ public partial class CheckpointArea : Area2D, IPersistent {
       _campfireNode.Snuff(body.GlobalPosition);
       EmitSignal(nameof(checkpoint_hit));
       EventHandler.Instance.EmitCheckpointReached(GlobalPosition, ColorGroup);
+      EventHandler.Instance.EmitNotificationRaised(TranslationKey.game_notification_checkpointReached);
     }
   }
 
