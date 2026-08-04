@@ -14,6 +14,8 @@ using Wfc.Utils;
 public class MissileTests(Node testScene) : TestClass(testScene) {
   private const int FLIGHT_FRAMES = 30;
   private const float SIDEWAYS = 600.0f;
+  private const float WALL_AHEAD = 250.0f;
+  private const double LONGER_THAN_THE_TRAIL_TAKES = 3.0;
 
   private FakeDependenciesProvider _provider = default!;
 
@@ -55,6 +57,36 @@ public class MissileTests(Node testScene) : TestClass(testScene) {
 
     straight.X.ShouldBeGreaterThan(0.0f);
     straight.Y.ShouldBe(0.0f, 0.01f);
+  }
+
+  // The exhaust is emitted into world space, so freeing the missile on contact would erase a
+  // trail that reaches well back behind it.
+  [Test]
+  public async Task AMissileOutlastsItsOwnImpact() {
+    var wall = new StaticBody2D { Position = new Vector2(WALL_AHEAD, 0.0f) };
+    wall.AddChild(new CollisionShape2D { Shape = new RectangleShape2D { Size = new Vector2(40.0f, 400.0f) } });
+    _provider.AddChild(wall);
+
+    var missile = SceneHelpers.InstantiateNode<Missile>();
+    _provider.AddChild(missile);
+    missile.GlobalPosition = Vector2.Zero;
+    missile.Shoot(Vector2.Right);
+    var sprite = missile.GetNode<Sprite2D>("CharacterBody2D/MissileSpr");
+    var exhaust = missile.GetNode<CpuParticles2D>("CharacterBody2D/Exhaust");
+
+    var struck = await PhysicsFrames.WaitFor(TestScene, () => !sprite.Visible, LONGER_THAN_THE_TRAIL_TAKES);
+
+    struck.ShouldBeTrue();
+    exhaust.Emitting.ShouldBeFalse();
+    GodotObject.IsInstanceValid(missile).ShouldBeTrue();
+
+    var gone = await PhysicsFrames.WaitFor(
+      TestScene,
+      () => !GodotObject.IsInstanceValid(missile),
+      LONGER_THAN_THE_TRAIL_TAKES
+    );
+
+    gone.ShouldBeTrue();
   }
 
   // Where the missile body ends up, relative to the muzzle it left, after a fixed flight.
