@@ -39,6 +39,17 @@ public partial class KeyBindingButton : Button, IEditableControl {
   public string key { get; set; } = String.Empty;
   #endregion Exports
 
+  // The gamepad glyphs come in a light-surface and a dark-surface set; which one
+  // this button shows follows the surface it was told it sits on.
+  public bool OnDarkBackground {
+    get => _onDarkBackground;
+    set {
+      _onDarkBackground = value;
+      _reloadArt();
+    }
+  }
+
+  private bool _onDarkBackground;
   private string _defaultText = "(EMPTY)";
 
   public enum BindingType { Keyboard, Gamepad }
@@ -205,11 +216,11 @@ public partial class KeyBindingButton : Button, IEditableControl {
     string fallbackText = _defaultText;
 
     if (_buttonValue != null) {
-      icon = GamepadIconHelper.GetButtonIcon(_buttonValue.Value);
+      icon = GamepadIconHelper.GetButtonIcon(_buttonValue.Value, onDarkBackground: _onDarkBackground);
       fallbackText = InputUtils.GetJoyButtonName(_buttonValue.Value);
     }
     else if (_axisValue != null) {
-      icon = GamepadIconHelper.GetAxisIcon(_axisValue.Value, _axisDirection);
+      icon = GamepadIconHelper.GetAxisIcon(_axisValue.Value, _axisDirection, onDarkBackground: _onDarkBackground);
       fallbackText = InputUtils.GetJoyAxisName(_axisValue.Value, _axisDirection);
     }
 

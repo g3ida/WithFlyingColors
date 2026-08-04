@@ -45,6 +45,7 @@ public class PauseMenuLevelActionsTests(Node testScene) : TestClass(testScene) {
       "RestartCheckpointButton",
       "RestartLevelButton",
       "ReturnToHubButton",
+      "SettingsButton",
       "BackButton",
     ]);
   }
@@ -53,7 +54,7 @@ public class PauseMenuLevelActionsTests(Node testScene) : TestClass(testScene) {
   public async Task TheHubLeavesOutTheLevelOnlyEntries() {
     var pauseMenu = await _pauseMenuIn(LevelId.Hub);
 
-    _shownButtons(pauseMenu).ShouldBe(["ResumeButton", "BackButton"]);
+    _shownButtons(pauseMenu).ShouldBe(["ResumeButton", "SettingsButton", "BackButton"]);
   }
 
   // Boots the game screen on the given level and pauses it, the way losing the

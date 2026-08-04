@@ -11,7 +11,9 @@ using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public static class GameSettings {
-  private const string ConfigFilePath = "settings.ini";
+  // Where the settings live. The instrumented tests point this at a scratch
+  // file so a suite that saves can never overwrite the developer's real one.
+  public static string ConfigFilePath { get; set; } = "settings.ini";
   private const float MaxVolume = 0f;
   private const float MinVolume = -50f;
 
@@ -477,8 +479,13 @@ public static class GameSettings {
           }
           else if (key == "resolution") {
             var values = keyValue.As<string>().Split('x');
-            if (values.Length == 2) {
-              WindowSize = new Vector2I(int.Parse(values[0]), int.Parse(values[1]));
+            // A degenerate size is a corrupt entry (a save made without a real
+            // window writes the window's zero size); applying it would leave
+            // the game with no window to see.
+            if (values.Length == 2
+                && int.TryParse(values[0], out var width) && width > 0
+                && int.TryParse(values[1], out var height) && height > 0) {
+              WindowSize = new Vector2I(width, height);
             }
           }
         }

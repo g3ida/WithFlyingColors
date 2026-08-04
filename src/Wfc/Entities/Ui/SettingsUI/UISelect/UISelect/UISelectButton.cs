@@ -193,4 +193,41 @@ public partial class UISelectButton : Button {
       UpdateRectSize();
     }
   }
+
+  // The arrows are authored for a light panel: tinted dark at rest, flashing to
+  // white when stepped. On a dark surface (the pause overlay) the same feedback
+  // runs the other way round, so every colour the animations write is swapped
+  // for its opposite, and the label goes plain white.
+  public void SetDarkBackground() {
+    LabelNode.SetFontColor(Colors.White);
+    _invertArrowColors(LeftArrowNode, LeftArrowAnimationNode);
+    _invertArrowColors(RightArrowNode, RightArrowAnimationNode);
+  }
+
+  private static void _invertArrowColors(Button arrow, AnimationPlayer animationPlayer) {
+    arrow.AddThemeColorOverride("icon_normal_color", Colors.White);
+    foreach (var libraryName in animationPlayer.GetAnimationLibraryList()) {
+      // Duplicated before touching a key: the library is shared between every
+      // instance of the scene, and editing it in place would repaint the select
+      // buttons of the light settings screen too.
+      var library = (AnimationLibrary)animationPlayer.GetAnimationLibrary(libraryName).Duplicate(true);
+      foreach (var animationName in library.GetAnimationList()) {
+        _invertAnimationColors(library.GetAnimation(animationName));
+      }
+      animationPlayer.RemoveAnimationLibrary(libraryName);
+      animationPlayer.AddAnimationLibrary(libraryName, library);
+    }
+  }
+
+  private static void _invertAnimationColors(Animation animation) {
+    for (var track = 0; track < animation.GetTrackCount(); track++) {
+      for (var key = 0; key < animation.TrackGetKeyCount(track); key++) {
+        var value = animation.TrackGetKeyValue(track, key);
+        if (value.VariantType == Variant.Type.Color) {
+          var color = value.AsColor();
+          animation.TrackSetKeyValue(track, key, new Color(1f - color.R, 1f - color.G, 1f - color.B, color.A));
+        }
+      }
+    }
+  }
 }

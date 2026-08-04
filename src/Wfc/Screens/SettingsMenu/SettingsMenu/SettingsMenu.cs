@@ -79,7 +79,7 @@ public partial class SettingsMenu : GameMenu {
         _dialogContainerNode.ShowDialog();
         return true;
       case MenuAction.GoBack:
-        if (IsValidState()) {
+        if (SettingsBindingsValidator.IsValidState()) {
           GameSettings.Save();
           return false; // We don't return true here because we want the default behavior to be called
         }
@@ -93,35 +93,11 @@ public partial class SettingsMenu : GameMenu {
   }
 
   private bool OnCanLeavePanel(int panelIndex) {
-    if (panelIndex != SettingsTabManager.CONTROLLER_PANEL_INDEX || IsValidState()) {
+    if (panelIndex != SettingsTabManager.CONTROLLER_PANEL_INDEX || SettingsBindingsValidator.IsValidState()) {
       return true;
     }
     EventHandler.EmitMenuActionPressed(MenuAction.ShowDialog);
     return false;
-  }
-
-  private static bool IsValidState() => HasAllRequiredBindings() && HasNoDuplicateBindings();
-
-  private static bool HasAllRequiredBindings() {
-    // Check keyboard bindings if keyboard is selected
-    if (GameSettings.LastUsedController == Core.Input.Controllers.ControllerType.Keyboard) {
-      return GameSettings.AreActionKeysValid();
-    }
-    // Check gamepad bindings if gamepad is selected and connected
-    if (GameSettings.LastUsedController == Core.Input.Controllers.ControllerType.Gamepad && InputUtils.IsGamepadConnected()) {
-      return GameSettings.AreGamepadBindingsValid();
-    }
-    // Default to checking keyboard bindings
-    return GameSettings.AreActionKeysValid();
-  }
-
-  // A key on two actions is broken on any device, but a pad can only be remapped
-  // while one is plugged in, so its duplicates only hold the player here then.
-  private static bool HasNoDuplicateBindings() {
-    if (GameSettings.HasDuplicateKeyboardBindings()) {
-      return false;
-    }
-    return !InputUtils.IsGamepadConnected() || !GameSettings.HasDuplicateGamepadBindings();
   }
 
   // Only reports the intent. Whether the bindings are valid is decided in one place,
