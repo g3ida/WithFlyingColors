@@ -136,15 +136,12 @@ position = Vector2(400, 200)
 
 [node name="StartCheckpoint" parent="." index="11" instance=ExtResource("7")]
 position = Vector2(600, 266)
-scale = Vector2(1, 8)
 ColorGroup = "purple"
 
 [node name="MidCheckpoint" parent="." index="12" instance=ExtResource("7")]
 position = Vector2(4400, 266)
-scale = Vector2(1, 8)
 ColorGroup = "yellow"
 
 [node name="EndCheckpoint" parent="." index="13" instance=ExtResource("7")]
 position = Vector2(6900, 266)
-scale = Vector2(1, 8)
 ColorGroup = "blue"
