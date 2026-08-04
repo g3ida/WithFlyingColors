@@ -129,6 +129,8 @@ public partial class SettingsTabManager : Control {
     _audioSettingsButton.Text = LocalizationService.GetLocalizedString(TranslationKey.game_settings_category_audio);
   }
 
+  // Only the rows are told: each one hands the surface on to the label and the
+  // widgets it holds, and hands it to them again every time it takes focus.
   private void _applyDarkBackground() {
     if (DarkTheme != null) {
       Theme = DarkTheme;
@@ -138,12 +140,6 @@ public partial class SettingsTabManager : Control {
     }
     foreach (var titleRow in this.FindDescendants<UIGridTitleRow>()) {
       titleRow.OnDarkBackground = true;
-    }
-    foreach (var selectButton in this.FindDescendants<UISelect.UISelectButton>()) {
-      selectButton.SetDarkBackground();
-    }
-    foreach (var bindingButton in this.FindDescendants<KeyBindingButton>()) {
-      bindingButton.OnDarkBackground = true;
     }
   }
 

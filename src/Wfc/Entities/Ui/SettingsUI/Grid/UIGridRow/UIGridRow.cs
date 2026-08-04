@@ -33,11 +33,16 @@ public partial class UIGridRow : PanelContainer {
 
   private const string THEME_OVERRIDE_NAME = "panel";
 
-  // On a dark surface the focused row flips to ink-on-paper. Everything the row
-  // holds is white art over that surface, so one dark tint on the content turns
-  // the label, the value and their icons black together; the widgets' focus
-  // blinks only animate alpha, which multiplies under this untouched.
-  private static readonly Color FOCUSED_CONTENT_TINT = new(0.13f, 0.13f, 0.13f);
+  // The shade text and art are drawn in on a light surface, matching what the
+  // settings themes write their labels in. On a dark one they turn white.
+  private static readonly Color CONTENT_INK = new(0.176471f, 0.176471f, 0.176471f);
+
+  // The wash that tells one row from the next, laid down in the shade the panel
+  // is not so it reads the same on either surface.
+  private static readonly Color ALTERNATE_WASH_ON_LIGHT = new(0f, 0f, 0f, 0.05f);
+  private static readonly Color ALTERNATE_WASH_ON_DARK = new(1f, 1f, 1f, 0.07f);
+
+  private static readonly Color ROW_HIGHLIGHT_INK = new(0x2d2d2dff);
 
   // Keeps the label and the value clear of the panel's edges. Without it a value
   // that happened to fill its half of the row - the full name of a connected
@@ -52,7 +57,8 @@ public partial class UIGridRow : PanelContainer {
 
   // The row's shades are black washes over a light panel. Drawn over the level
   // instead (the pause overlay), they swap to white washes, and the row drops its
-  // own light theme so the host's dark one reaches the label and the value.
+  // own light theme so the host's dark one reaches the chrome its widgets take
+  // from the theme rather than from here.
   public bool OnDarkBackground {
     get => _onDarkBackground;
     set {
@@ -72,23 +78,48 @@ public partial class UIGridRow : PanelContainer {
   private Label? _labelNode = null;
   private int _focusState = 0;
   private void _setStyle(bool hasFocus) {
-    var style = new StyleBoxFlat();
-    style.BgColor = _onDarkBackground
-        ? hasFocus ? Colors.White : IsDark ? new Color(1f, 1f, 1f, 0.07f) : Colors.Transparent
-        : hasFocus ? new Color(0f, 0f, 0f, 0.2f) : IsDark ? new Color(0f, 0f, 0f, 0.05f) : Colors.Transparent;
-    if (_onDarkBackground) {
-      _contentNode.Modulate = hasFocus ? FOCUSED_CONTENT_TINT : Colors.White;
-    }
-    style.ContentMarginTop = 5;
-    style.ContentMarginBottom = 5;
-    style.ContentMarginLeft = SIDE_MARGIN;
-    style.ContentMarginRight = SIDE_MARGIN;
-    // Fixme: this hack is to fix line spacing between items in the parent grid.
-    style.ExpandMarginTop = 4;
+    var style = new StyleBoxFlat {
+      BgColor = _surfaceColor(hasFocus),
+      ContentMarginTop = 5,
+      ContentMarginBottom = 5,
+      ContentMarginLeft = SIDE_MARGIN,
+      ContentMarginRight = SIDE_MARGIN,
+      // Fixme: this hack is to fix line spacing between items in the parent grid.
+      ExpandMarginTop = 4,
+    };
     if (HasThemeStyleboxOverride(THEME_OVERRIDE_NAME)) {
       RemoveThemeStyleboxOverride(THEME_OVERRIDE_NAME);
     }
     AddThemeStyleboxOverride(THEME_OVERRIDE_NAME, style);
+    // A focused row is filled solid, so what it holds is standing on the opposite
+    // surface for as long as it keeps the focus.
+    _setContentOnDarkBackground(_onDarkBackground != hasFocus);
+  }
+
+  // At rest the row is a wash the panel shows through. Focused it is filled with
+  // the shade the panel is not, which is what carries the row against it.
+  private Color _surfaceColor(bool hasFocus) {
+    if (hasFocus) {
+      return _onDarkBackground ? Colors.White : ROW_HIGHLIGHT_INK;
+    }
+    if (!IsDark) {
+      return Colors.Transparent;
+    }
+    return _onDarkBackground ? ALTERNATE_WASH_ON_DARK : ALTERNATE_WASH_ON_LIGHT;
+  }
+
+  // Text is ink on the surface underneath, wherever in the row it is written -
+  // the row's own caption, and the ones its widgets draw inside themselves. Art
+  // has no colour to be given, so every widget that ships a light and a dark set
+  // is told which of the two to show.
+  private void _setContentOnDarkBackground(bool onDarkBackground) {
+    var ink = onDarkBackground ? Colors.White : CONTENT_INK;
+    foreach (var label in _contentNode.FindDescendants<Label>()) {
+      label.AddThemeColorOverride("font_color", ink);
+    }
+    foreach (var control in _contentNode.FindDescendants<IDarkBackgroundAware>()) {
+      control.OnDarkBackground = onDarkBackground;
+    }
   }
 
   private void _addContentLabel() {
@@ -180,7 +211,6 @@ public partial class UIGridRow : PanelContainer {
     SizeFlagsVertical = SizeFlags.Fill;
     // Set minimum height to ensure all rows have consistent size
     CustomMinimumSize = new Vector2(0, 70);
-    _setStyle(hasFocus: false);
     // Make this row stretch across the parent
     _contentNode.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     _contentNode.SizeFlagsVertical = SizeFlags.ShrinkCenter;
@@ -188,5 +218,8 @@ public partial class UIGridRow : PanelContainer {
     _addContentLabel();
     _addContentSpacer();
     _addContentValue();
+    // Styled last: the surface is handed to the content, which is only there to
+    // receive it once the row has been built.
+    _setStyle(hasFocus: _focusState > 0);
   }
 }

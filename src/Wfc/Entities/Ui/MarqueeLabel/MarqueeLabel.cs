@@ -40,12 +40,6 @@ public partial class MarqueeLabel : Control {
   // it that a resize could reach first.
   private bool _isWired;
 
-  // The inner label normally reads its colour off the theme of the screen this
-  // control sits in. A control placed on a surface that theme wasn't made for
-  // (the pause overlay's dark panel) hands the colour in directly instead.
-  public void SetFontColor(Color color) =>
-      _labelNode.AddThemeColorOverride("font_color", color);
-
   public string Text {
     get => _labelNode.Text;
     set {
