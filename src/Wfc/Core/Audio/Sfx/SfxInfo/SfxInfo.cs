@@ -22,6 +22,7 @@ public static class GameSfx {
     ["menuMove"] = new SfxInfo(BASE_PATH + "menu_move.ogg"),
     ["menuSelect"] = new SfxInfo(BASE_PATH + "menu_select.ogg"),
     ["menuValueChange"] = new SfxInfo(BASE_PATH + "click.ogg"),
+    ["notification"] = new SfxInfo(BASE_PATH + "notification.ogg", -6),
     ["pageFlip"] = new SfxInfo(BASE_PATH + "piano/page-flip.ogg", 5),
     ["piano_0"] = new SfxInfo(BASE_PATH + "piano/do.ogg", -3),
     ["piano_1"] = new SfxInfo(BASE_PATH + "piano/re.ogg", -3),

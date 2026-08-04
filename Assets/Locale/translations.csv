@@ -77,3 +77,4 @@ game.hint.enter_door,Press {0} to start,Appuyez sur {0} pour commencer,Drücke {
 menu.button.return_to_hub,Return to the Hub,Retour à l'Arène,Zurück zur Arena,Volver a la Arena,Torna all'Arena,Voltar à Arena,Terug naar de Arena
 menu.button.restart_level,Restart Level,Recommencer le niveau,Level neu starten,Reiniciar nivel,Ricomincia livello,Reiniciar nível,Level herstarten
 menu.button.restart_checkpoint,Restart from Checkpoint,Reprendre au point de contrôle,Vom Checkpoint neu starten,Reiniciar desde el punto de control,Riparti dal checkpoint,Reiniciar do checkpoint,Herstart bij checkpoint
+game.notification.checkpoint_reached,Checkpoint reached,Point de contrôle atteint,Checkpoint erreicht,Punto de control alcanzado,Checkpoint raggiunto,Checkpoint alcançado,Checkpoint bereikt

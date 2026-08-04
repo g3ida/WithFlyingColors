@@ -87,6 +87,7 @@ public enum TranslationKey {
   menu_button_returnToHub = 82,
   menu_button_restartLevel = 83,
   menu_button_restartCheckpoint = 84,
+  game_notification_checkpointReached = 85,
 }
 
 public static partial class TranslationKeyExtensions {
