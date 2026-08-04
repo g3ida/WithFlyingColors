@@ -1,10 +1,10 @@
-[gd_resource type="Theme" load_steps=11 format=3]
+[gd_resource type="Theme" format=3 uid="uid://c03y8pyq6b31p"]
 
 [ext_resource type="FontFile" uid="uid://f5bvg4kq86ed" path="res://Assets/Fonts/TitleFontt.tres" id="1_u1nfn"]
-[ext_resource type="Texture2D" path="res://Assets/Sprites/UI/checkbox_checked_inverted.png" id="2"]
-[ext_resource type="Texture2D" path="res://Assets/Sprites/UI/checkbox_unchecked_inverted.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://dw4ud0g2bhu28" path="res://Assets/Sprites/UI/checkbox_checked_inverted.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://2n6uguedgbcd" path="res://Assets/Sprites/UI/checkbox_unchecked_inverted.png" id="3"]
 [ext_resource type="Texture2D" uid="uid://bixr4bvoq3pm2" path="res://Assets/Sprites/MainMenu/empty_close_button.png" id="5"]
-[ext_resource type="Texture2D" path="res://Assets/Sprites/MainMenu/slider-grabber-inverted.png" id="6"]
+[ext_resource type="Texture2D" uid="uid://be8slh6ia7jr" path="res://Assets/Sprites/MainMenu/slider-grabber-inverted.png" id="6"]
 
 [sub_resource type="StyleBoxEmpty" id="2"]
 
