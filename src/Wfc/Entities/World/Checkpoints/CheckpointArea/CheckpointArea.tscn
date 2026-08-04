@@ -1,16 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://cnidiafvkgcur"]
+[gd_scene format=3 uid="uid://cnidiafvkgcur"]
 
 [ext_resource type="Script" uid="uid://drc28t3y0n13e" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.cs" id="1"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Checkpoints/Campfire/Campfire.tscn" id="2"]
 
 [sub_resource type="RectangleShape2D" id="1"]
-size = Vector2(40, 40)
+resource_local_to_scene = true
+size = Vector2(320, 520)
 
-[node name="CheckpointArea" type="Area2D" groups=["persist"]]
+[node name="CheckpointArea" type="Area2D" unique_id=1175863929 groups=["persist"]]
 collision_mask = 2
 script = ExtResource("1")
-ColorGroup = "blue"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1966709967]
 shape = SubResource("1")
+
+[node name="Campfire" parent="." unique_id=507497594 instance=ExtResource("2")]
 
 [connection signal="body_entered" from="." to="." method="OnCheckpointAreaBodyEntered"]
