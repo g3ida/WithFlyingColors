@@ -17,6 +17,11 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 public partial class GemHUD : Node2D, IPersistent {
   private const string TEXTURE_COLLECTED_PATH = "res://Assets/Sprites/HUD/gem_hud_collected.png";
   private const string TEXTURE_EMPTY_PATH = "res://Assets/Sprites/HUD/gem_hud.png";
+  private const float FLIGHT_DURATION = 0.8f;
+  // The gem leaves the level bigger than the slot it is heading for and tightens down
+  // into it on the way.
+  private const float FLIGHT_START_SCALE = 1.15f;
+  private const float FLIGHT_END_SCALE = 0.55f;
 
   #region Exports
   [Export]
@@ -86,14 +91,32 @@ public partial class GemHUD : Node2D, IPersistent {
       _animation.Owner = this;
 
       _animation.GlobalPosition = position;
-      _collectedAnimation = new SlideAnimation("gem_slide", _animation, new Vector2(20, 20), 1);
+      _animation.Scale = Vector2.One * FLIGHT_START_SCALE;
+      _playFlightTween(_animation);
+      _collectedAnimation = new SlideAnimation("gem_slide", _animation, new Vector2(20, 20), FLIGHT_DURATION);
       _collectedAnimation.SetOnAnimationEndedCallback(this.OnSlideAnimEnded);
     }
+  }
+
+  // The gem tightens up as it homes in on its slot, so the flight ends on the pose the
+  // slot pops out of rather than on a jump in size. A single turn on the way in, landing
+  // upright.
+  private static void _playFlightTween(AnimatedSprite2D gem) {
+    var tween = gem.CreateTween();
+    tween.SetParallel(true);
+    tween.TweenProperty(gem, "scale", Vector2.One * FLIGHT_END_SCALE, FLIGHT_DURATION)
+      .SetTrans(Tween.TransitionType.Cubic)
+      .SetEase(Tween.EaseType.In);
+    tween.TweenProperty(gem, "rotation", Mathf.Tau, FLIGHT_DURATION)
+      .SetTrans(Tween.TransitionType.Sine)
+      .SetEase(Tween.EaseType.InOut);
   }
 
   private void OnSlideAnimEnded() {
     if (_animation != null) {
       RemoveChild(_animation);
+      _animation.QueueFree();
+      _animation = null;
     }
     if (currentState == State.Collecting) {
       _textureRectNode.Texture = _textureCollected;
