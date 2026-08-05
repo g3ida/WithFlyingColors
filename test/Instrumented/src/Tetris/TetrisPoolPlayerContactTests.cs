@@ -63,6 +63,7 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
   }
 
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task WalkingIntoAPoolLandedPieceWithTheMatchingFaceStopsAgainstIt() {
     var (pool, player) = await _admitAndParkPlayer();
     var blocks = await _waitForFirstLockedPiece(pool);
@@ -90,6 +91,7 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
   }
 
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task WalkingIntoAPoolLandedPieceWithTheWrongFaceKills() {
     var (pool, player) = await _admitAndParkPlayer();
     var blocks = await _waitForFirstLockedPiece(pool);
@@ -112,6 +114,7 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
   // top face is dressed in the piece's own color first, so the only honest outcome left to
   // the old code would be "nothing happens", and the death that does come is the crush.
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task APieceComingDownOnThePinnedCubeSquashesIt() {
     var (pool, player) = await _admitAndParkPlayer();
 
@@ -146,6 +149,7 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
   // the cube and read a kill off a side face; with room to yield the cube must be carried
   // down ahead of it instead, alive.
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task MeetingTheFallingPieceFromBelowInMidAirCarriesTheCubeDown() {
     var (pool, player) = await _admitAndParkPlayer();
 
@@ -176,6 +180,7 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
   // into the piece's side is: the carry only shields a face the piece cannot kill, and it
   // must not hold the cube clear of a color reading it has earned.
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task MeetingTheFallingPieceFromBelowWithTheWrongFaceKills() {
     var (pool, player) = await _admitAndParkPlayer();
 

@@ -13,6 +13,7 @@ using Wfc.Entities.Ui.Slots;
 using Wfc.Screens;
 using Wfc.Screens.MenuManager;
 using Wfc.test.Helpers.Fakes;
+using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
 
@@ -38,6 +39,7 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
   // press with nothing and swallowed controller focus with it. Now it is simply
   // not selectable.
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task LoadModeDisablesEmptySlots() {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT)
       .WithFilledSlot(0, progress: 40)
@@ -52,6 +54,7 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
   }
 
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task NewGameModeOffersEverySlot() {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT)
       .WithFilledSlot(0, progress: 40);
@@ -62,6 +65,7 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
   }
 
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task LoadModeSelectLoadsTheSlotAndEntersTheGame() {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT)
       .WithFilledSlot(0, progress: 40)
@@ -76,6 +80,7 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
   }
 
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task NewGameOnAnEmptySlotStartsImmediately() {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT);
 
@@ -91,6 +96,7 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
   // A filled slot is one confirm away from losing a save, so the press must ask
   // rather than act.
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task NewGameOnAFilledSlotAsksBeforeWiping() {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT)
       .WithFilledSlot(0, progress: 40);
@@ -107,6 +113,7 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
   // Confirming the overwrite wipes exactly the slot that was pressed and starts
   // the new game there.
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task ConfirmingTheOverwriteWipesTheSlotAndStarts() {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT)
       .WithFilledSlot(0, progress: 40);
@@ -128,6 +135,7 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
   // While the dialog is up, focus must not wander back to the slot cards behind it:
   // it opens on a dialog button and every arrow leads to a dialog button.
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task TheOverwriteDialogKeepsFocusOnItsOwnButtons() {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT)
       .WithFilledSlot(0, progress: 40);
@@ -153,6 +161,7 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
   // Focus opens on the slot Continue would resume - the most recently played one - so
   // the card the player almost certainly wants is the one a press already acts on.
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task TheMostRecentlyPlayedSlotOpensFocused() {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT)
       .WithFilledSlot(0, progress: 80, timestamp: 100UL)
@@ -168,6 +177,7 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
   // The two modes share one title; the instruction line is what tells the player
   // which question the screen is asking.
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task BothModesShareTheTitleAndWearTheirOwnInstruction() {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT)
       .WithFilledSlot(0, progress: 40)
@@ -187,6 +197,7 @@ public class SelectSlotMenuTests(Node testScene) : TestClass(testScene) {
   // A mode-specific title rebuild used to replace the labels after their
   // transitions were parsed, and rebuilt labels slide in no more.
   [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task TheTitleAndEverySlotCarryAnEntranceTransition() {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT);
 
