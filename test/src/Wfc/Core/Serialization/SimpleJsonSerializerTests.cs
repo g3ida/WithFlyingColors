@@ -105,6 +105,23 @@ public class SimpleJsonSerializerTests(Node testScene) : TestClass(testScene) {
     restored.GemsCollectedIn(LevelId.Level1).ShouldBeEmpty();
   }
 
+  // The one-off hub arrival is only ever worth anything if it survives a quit, and a save
+  // from before it existed has to read as a run that has not been shown the room yet.
+  [Test]
+  public void RoundTripsTheHubArrivalAndDefaultsItForOlderSaves() {
+    var original = new SlotMetaData(0, 1_700_000_000UL, LevelId.Hub, 0, 1_700_000_001UL) {
+      HasSeenHubArrival = true,
+    };
+
+    var restored = _serializer.Deserialize<SlotMetaData>(_serializer.Serialize(original));
+    var older = _serializer.Deserialize<SlotMetaData>(
+      "{\"SlotId\":1,\"SaveTimestamp\":1700000000,\"LastLoadDate\":1700000001," +
+      "\"LevelId\":\"Tutorial\",\"Progress\":7}");
+
+    restored!.HasSeenHubArrival.ShouldBeTrue();
+    older!.HasSeenHubArrival.ShouldBeFalse();
+  }
+
   // A save written by a build with extra levels still loads here: the unknown level's
   // gems are dropped, not treated as corruption.
   [Test]

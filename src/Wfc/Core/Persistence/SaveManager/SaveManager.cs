@@ -39,7 +39,10 @@ public partial class SaveManager : ISaveManager {
   // SaveGame had a single call site - creating a blank slot. Reaching a checkpoint wrote nothing
   // to disk at all, so the Continue button never appeared, the resume branch in SceneOrchester
   // was unreachable, the slot panel showed 0% for a finished run, and quitting lost everything.
-  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, IEnumerable<string>? collectedGems = null, int slotIndex = ISaveManager.NO_SLOT) {
+  // Gems are what finishing a level pays out, so they are not banked here. A mid-level write that
+  // carried them - a checkpoint, or the window closing - would light the level's hub door with
+  // them, and the clear that was supposed to hand them over would arrive with nothing to show.
+  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, int slotIndex = ISaveManager.NO_SLOT) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
       GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
@@ -54,9 +57,6 @@ public partial class SaveManager : ISaveManager {
     }
 
     slot.RecordProgress(levelId, progressPercent);
-    if (collectedGems != null) {
-      slot.RecordCollectedGems(levelId, collectedGems);
-    }
     slot.Save(_serializer, tree);
     _loadSlotsMetaData();
   }
@@ -84,6 +84,28 @@ public partial class SaveManager : ISaveManager {
     // within a level, so full progress there survives later checkpoint replays.
     slot.RecordProgress(nextLevelId ?? clearedLevelId, nextLevelId == null ? 100 : 0);
     slot.Save(_serializer, tree);
+    _loadSlotsMetaData();
+  }
+
+  public void RecordHubArrivalSeen(int slotIndex = ISaveManager.NO_SLOT) {
+    slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
+    if (slotIndex is < 0 or >= NUM_SLOTS) {
+      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
+      return;
+    }
+
+    var slot = _saveSlots[slotIndex];
+    // Same rule as the record calls above: with no slot picked there is nothing this run
+    // can be remembered in.
+    if (!slot.IsFilled || slot.MetaData == null) {
+      return;
+    }
+
+    slot.RecordHubArrivalSeen();
+    // Metadata on its own. A full Save republishes the persist group as well, which would push
+    // the level currently on screen into a save file whose metadata still names another one -
+    // and this record moves no resume pointer that would make the two agree again.
+    slot.SaveMetaData(_serializer);
     _loadSlotsMetaData();
   }
 

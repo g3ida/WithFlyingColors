@@ -30,12 +30,23 @@ public partial class LevelExit : Area2D {
   private const float WALK_TIMEOUT = 12.0f;
   #endregion Constants
 
+  #region Exports
+  // How far past the threshold still counts as having crossed it. The exit is a line, not a
+  // doorway: a strip only as wide as the arch can be cleared in one jump, and the player who
+  // comes down on the far side of it is left walking into the end wall with nothing to trigger
+  // and no way back up. Wider than the ground any level leaves beyond its exit.
+  [Export]
+  public float CrossingWidth { get; set; } = 4096.0f;
+  #endregion Exports
+
   #region Dependencies
   [Dependency]
   public IGameLevel GameLevel => this.DependOn<IGameLevel>();
   #endregion Dependencies
 
   #region Nodes
+  [NodePath("CollisionShape2D")]
+  private CollisionShape2D _collisionShapeNode = default!;
   [NodePath("CameraAnchor")]
   private Marker2D _cameraAnchorNode = default!;
   #endregion Nodes
@@ -48,7 +59,19 @@ public partial class LevelExit : Area2D {
     base._Ready();
     this.WireNodes();
     CollisionMask = PhysicsLayers.Player.Mask;
+    _extendPastTheThreshold();
     SetProcess(false);
+  }
+
+  // Grown to the right of the line the scene drew, never to the left of it: where the level ends
+  // is authored, while everything beyond it is run-off the player cannot come back from.
+  private void _extendPastTheThreshold() {
+    if (_collisionShapeNode.Shape is not RectangleShape2D box) {
+      return;
+    }
+    var leftEdge = _collisionShapeNode.Position.X - (box.Size.X * 0.5f);
+    box.Size = new Vector2(CrossingWidth, box.Size.Y);
+    _collisionShapeNode.Position = new Vector2(leftEdge + (CrossingWidth * 0.5f), _collisionShapeNode.Position.Y);
   }
 
   public override void _EnterTree() {

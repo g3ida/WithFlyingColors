@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://bwd2mkbkstvp8" path="res://src/Wfc/Entities/World/Tutorial/KeyboardButton/KeyboardButton.tscn" id="7"]
 [ext_resource type="TileSet" uid="uid://dsverl2jjlm71" path="res://Assets/Tilesets/TutorialLevel.tres" id="8"]
 [ext_resource type="PackedScene" uid="uid://cyq2n8rwlxk3d" path="res://src/Wfc/Entities/World/Exit/LevelExit/LevelExit.tscn" id="9"]
-[ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="10"]
+[ext_resource type="PackedScene" uid="uid://cbma52jf70kwt" path="res://src/Wfc/Entities/World/Backgrounds/SpaceBackground/SpaceBackground.tscn" id="10"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="11"]
 [ext_resource type="Script" uid="uid://saay1hdwowdk" path="res://src/Wfc/Entities/World/Platforms/PlatformTileMap/PlatformTileMap.cs" id="12"]
 [ext_resource type="PackedScene" uid="uid://dlpwg47je31y" path="res://src/Wfc/Entities/World/Platforms/FlatPlatform/FlatPlatform.tscn" id="14_oetry"]
@@ -366,15 +366,7 @@ shape = SubResource("33")
 [node name="Pos" type="Marker2D" parent="CutsceneTrigger" index="1" unique_id=1515547429]
 position = Vector2(1563, -264)
 
-[node name="ParallaxBackground" type="ParallaxBackground" parent="." index="14" unique_id=1018563469]
-
-[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground" index="0" unique_id=981112792]
-motion_mirroring = Vector2(2048, 2048)
-
-[node name="Spr" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer" index="0" unique_id=210043240]
-scale = Vector2(32, 32)
-texture = ExtResource("10")
-centered = false
+[node name="Background" parent="." index="14" instance=ExtResource("10")]
 
 [node name="Player" parent="." index="15"]
 position = Vector2(1287, -213)

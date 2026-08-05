@@ -24,11 +24,17 @@ public interface ISaveManager {
   // write rather than being its own save: one write per event, so a quit in between
   // cannot leave the two halves disagreeing, and the door only ever shows what a
   // reload would actually give back.
-  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, IEnumerable<string>? collectedGems = null, int slotIndex = NO_SLOT);
+  // Where the run has got to. Gems are deliberately not part of this: they are what finishing a
+  // level pays out, so RecordLevelCleared is the only thing that banks them.
+  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, int slotIndex = NO_SLOT);
   // Marks a level as cleared for good and moves the resume pointer to the next level
   // in the chain (or parks it at the cleared one when the chain is over), then writes
   // the slot out. One call so a quit between the two updates cannot split them.
   public void RecordLevelCleared(SceneTree tree, LevelId clearedLevelId, LevelId? nextLevelId, IEnumerable<string>? collectedGems = null, int slotIndex = NO_SLOT);
+  // Marks this run as having been walked into the hub, so the arrival it is shown the first
+  // time it steps in is never shown again. Metadata alone, so unlike the calls above it says
+  // nothing about where the player is standing and needs no scene tree.
+  public void RecordHubArrivalSeen(int slotIndex = NO_SLOT);
   public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = NO_SLOT);
   public bool IsSLotFilled(int slotIndex = NO_SLOT);
   public int GetSelectedSlotIndex();

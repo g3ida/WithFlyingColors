@@ -46,6 +46,16 @@ public class HubSpawnPolicyTests(Node testScene) : TestClass(testScene) {
       .ShouldBe(LevelId.Level1);
   }
 
+  // The intro has no door - it is played on the way in and never offered again - so coming out
+  // of it cannot stand the player anywhere, and the run falls through to its place in the chain.
+  [Test]
+  public void FallsThroughForALevelTheHubHasNoDoorFor() {
+    List<LevelId> doorChain = [LevelId.FourColors, LevelId.Level1];
+
+    HubSpawnPolicy.DoorToStandAt(LevelId.Tutorial, doorChain, new HashSet<LevelId> { LevelId.Tutorial })
+      .ShouldBe(LevelId.FourColors);
+  }
+
   // The hub is not a level anyone comes out of: leaving it for itself - the pause menu's own
   // way back - falls through to the run's place in the chain.
   [Test]

@@ -11,6 +11,8 @@ using Wfc.Core.Persistence;
 using Wfc.Entities.Ui;
 using Wfc.Entities.World.Checkpoints;
 using Wfc.Entities.World.Door;
+using Wfc.Entities.World.Hub;
+using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
@@ -44,6 +46,15 @@ public partial class SceneOrchester : Node2D {
   // the intro so it cannot collide with a cutscene the level itself is running.
   private const string INTRO_CUTSCENE_ID = "LevelIntro";
 
+  #region Hub arrival
+  // The arrival walk runs under its own id rather than the intro's, because it outlives the
+  // title fading over it: sharing one would let the title take the bars down mid-walk.
+  private const string HUB_ARRIVAL_CUTSCENE_ID = "HubArrival";
+  // A walk that cannot finish - something in the way, a player pinned against it - would
+  // otherwise hold the input lock for as long as the hub lives.
+  private const float HUB_ARRIVAL_TIMEOUT = 20.0f;
+  #endregion Hub arrival
+
   [NodePath("LevelTitleCard")]
   private LevelTitleCard _titleCardNode = default!;
 
@@ -66,6 +77,10 @@ public partial class SceneOrchester : Node2D {
   // walk budget comes from the level itself.
   private bool _introActive;
   private float _introWalkTimeLeft;
+  // The hub's one-off arrival walk: where it hands back, and how long it may take about it.
+  private bool _arrivalActive;
+  private float _arrivalStopX;
+  private float _arrivalTimeLeft;
   // The level whose door owes the player a ceremony, held from the moment its clear is
   // banked until the hub's own title has faded and there is something to watch.
   private LevelId? _celebrationLevelId;
@@ -109,6 +124,9 @@ public partial class SceneOrchester : Node2D {
   }
 
   private void _startLevel(LevelId levelId, bool restoreSavedGame, LevelId? levelJustLeft = null) {
+    // Any walk in flight belonged to the level being replaced, whose cutscene leaves the
+    // tree with it: nothing here may go on pushing the player of the level that follows.
+    _arrivalActive = false;
     _currentLevelId = levelId;
     _currentLevel = _loadLevel(levelId);
     if (_currentLevel != null && restoreSavedGame) {
@@ -121,26 +139,56 @@ public partial class SceneOrchester : Node2D {
 
   // The hub is a room rather than a menu, so where the player is standing when it opens is
   // the whole of what it says to them: they step out of the door of the level they have just
-  // left, and a run picked up from a save opens on the door that run is on.
+  // left, and a run picked up from a save opens on the door that run is on. A run that has
+  // never been here is walked in from the far end of the room instead.
   private void _standAtHubDoor(LevelId? levelJustLeft) {
     if (_currentLevel is not { } hub) {
       return;
     }
+    var doors = hub.FindDescendants<Door>().ToList();
     IReadOnlySet<LevelId> clearedLevels = SaveManager.GetSlotMetaData()?.ClearedLevels ?? new HashSet<LevelId>();
-    var doorLevelId = HubSpawnPolicy.DoorToStandAt(
-      levelJustLeft,
-      [.. LevelDispatcher.LEVELS.Select(level => level.Id)],
-      clearedLevels
-    );
-    var door = hub.FindDescendants<Door>().FirstOrDefault(door => door.TargetLevel == doorLevelId);
-    if (door == null) {
+    var doorLevelId = HubSpawnPolicy.DoorToStandAt(levelJustLeft, _doorChainOf(doors), clearedLevels);
+    if (doors.FirstOrDefault(door => door.TargetLevel == doorLevelId) is not { } door) {
       return;
     }
-    // Only the doorway is taken from the door: its own height is wherever the arch happens to
-    // be drawn, while the level authored a spawn that is standing on the floor.
+
+    if (_isHubArrivalOwed() && hub.FindDescendants<HubArrivalMark>().FirstOrDefault() is { } mark) {
+      _beginHubArrival(hub, mark, door);
+      return;
+    }
+    _standAt(hub, door.GlobalPosition.X);
+  }
+
+  // Play order, narrowed to the levels the hub actually offers: the intro is cleared on the
+  // way in and never given a door, so it is neither somewhere to stand nor somewhere to
+  // resume from.
+  private static List<LevelId> _doorChainOf(List<Door> doors) =>
+    [.. LevelDispatcher.LEVELS
+      .Select(level => level.Id)
+      .Where(levelId => doors.Any(door => door.TargetLevel == levelId))];
+
+  // Only the X of the target is used: a door's own height is wherever the arch happens to be
+  // drawn, while the level authored a spawn that is standing on the floor.
+  private static void _standAt(GameLevel hub, float x) {
     var player = hub.PlayerNode;
-    player.GlobalPosition = new Vector2(door.GlobalPosition.X, player.GlobalPosition.Y);
+    player.GlobalPosition = new Vector2(x, player.GlobalPosition.Y);
     hub.CameraNode.SnapTo(player.GlobalPosition);
+  }
+
+  // Owed to a run, not to a session: with no slot to remember it in there is nothing the walk
+  // could be played once out of, and it would introduce the room on every single entry.
+  private bool _isHubArrivalOwed() => SaveManager.GetSlotMetaData() is { HasSeenHubArrival: false };
+
+  private void _beginHubArrival(GameLevel hub, HubArrivalMark mark, Door door) {
+    _standAt(hub, mark.GlobalPosition.X);
+    _arrivalStopX = door.GlobalPosition.X - mark.StopDistance;
+    _arrivalTimeLeft = HUB_ARRIVAL_TIMEOUT;
+    _arrivalActive = true;
+    SetProcess(true);
+    EventHandler.Instance.EmitCutsceneRequestStart(HUB_ARRIVAL_CUTSCENE_ID);
+    // Banked as the walk starts rather than when it ends: the introduction is owed to the
+    // run, and a quit halfway across the room has still been shown the place.
+    SaveManager.RecordHubArrivalSeen();
   }
 
   private void ConnectSignals() {
@@ -174,11 +222,12 @@ public partial class SceneOrchester : Node2D {
     if (_currentLevel == null || _currentLevelId == null) {
       return;
     }
-    SaveManager.RecordProgress(GetTree(), _currentLevelId.Value, _checkpointProgressPercent(), _collectedGemGroups());
+    SaveManager.RecordProgress(GetTree(), _currentLevelId.Value, _checkpointProgressPercent());
   }
 
-  // What the HUD says the player is holding right now - the gems a reload of this
-  // write would give back, which is exactly what the hub doors may show.
+  // What the HUD says the player is holding right now, for the clear to hand over: gems reach
+  // the slot by finishing a level, and the level state a checkpoint writes is what gives them
+  // back to a run that is resumed rather than finished.
   private string[] _collectedGemGroups() =>
     _currentLevel == null
       ? []
@@ -186,16 +235,17 @@ public partial class SceneOrchester : Node2D {
 
   // The share of the current level's checkpoints the player has passed. Scoped to the
   // level rather than the whole tree, so nothing outside it can dilute the count.
+  //
+  // Reaching the end counts as a step of its own, so the last checkpoint is not the whole level:
+  // finishing is the only thing that reports a level complete, and a level with a single
+  // checkpoint no longer called itself done from its middle.
   private int _checkpointProgressPercent() {
     if (_currentLevel == null) {
       return 0;
     }
     var checkpoints = _currentLevel.FindDescendants<CheckpointArea>().ToList();
-    if (checkpoints.Count == 0) {
-      return 0;
-    }
     var reached = checkpoints.Count(checkpoint => checkpoint.IsChecked);
-    return (int)Mathf.Round(100f * reached / checkpoints.Count);
+    return (int)Mathf.Round(100f * reached / (checkpoints.Count + 1));
   }
 
   private static void OnGameOver() {
@@ -337,22 +387,51 @@ public partial class SceneOrchester : Node2D {
     _titleCardNode.PresentTitle(titleKey.Value);
   }
 
-  // Drives the intro walk, the same way the exit walks the player out: the input
-  // lock belongs to the cutscene, so someone has to push.
+  // Drives whatever walk is running - into a level, or across the hub - the same way the exit
+  // walks the player out: the input lock belongs to the cutscene, so someone has to push.
   public override void _Process(double delta) {
     base._Process(delta);
-    if (!_introActive) {
+    _driveIntroWalk((float)delta);
+    _driveHubArrival((float)delta);
+    if (!_introActive && !_arrivalActive) {
       SetProcess(false);
+    }
+  }
+
+  private void _driveIntroWalk(float delta) {
+    if (!_introActive || _introWalkTimeLeft <= 0f || _currentLevel == null) {
       return;
     }
-    if (_introWalkTimeLeft <= 0f || _currentLevel == null) {
+    _introWalkTimeLeft -= delta;
+    _walkForward(_currentLevel.PlayerNode);
+  }
+
+  // The hub shows itself off while the player crosses it, and the walk is over once the door
+  // they are heading for stands in front of them.
+  private void _driveHubArrival(float delta) {
+    if (!_arrivalActive || _currentLevel == null) {
       return;
     }
-    _introWalkTimeLeft -= (float)delta;
+    _arrivalTimeLeft -= delta;
     var player = _currentLevel.PlayerNode;
-    if (player != null && IsInstanceValid(player)) {
-      player.SetMaxSpeed();
+    var arrived = !_walkForward(player) || player.GlobalPosition.X >= _arrivalStopX;
+    if (_arrivalTimeLeft > 0f && !arrived) {
+      return;
     }
+    _arrivalActive = false;
+    EventHandler.Instance.EmitCutsceneRequestEnd(HUB_ARRIVAL_CUTSCENE_ID);
+    // The walk is the last thing the player was waiting on, so anything held back for them to
+    // watch is due now rather than whenever the next event happens to come round.
+    _celebrateClearedDoor();
+  }
+
+  // False once there is no player left to push, which is a walk that can only be over.
+  private static bool _walkForward(Player? player) {
+    if (player == null || !IsInstanceValid(player)) {
+      return false;
+    }
+    player.SetMaxSpeed();
+    return true;
   }
 
   private void _onTitleFinished() {
@@ -360,15 +439,20 @@ public partial class SceneOrchester : Node2D {
       return;
     }
     _introActive = false;
-    SetProcess(false);
-    EventHandler.Instance.EmitCutsceneRequestEnd(INTRO_CUTSCENE_ID);
+    // A title fading over the arrival walk is not what ends it: the walk raised the bars
+    // under its own id and is the only thing that can take them down.
+    if (!_arrivalActive) {
+      EventHandler.Instance.EmitCutsceneRequestEnd(INTRO_CUTSCENE_ID);
+    }
     _celebrateClearedDoor();
   }
 
-  // Held back until the title is gone and nothing is over the scene: the clear was banked
-  // while the cover was still down, and the door's whole point is being watched.
+  // Held back until the title is gone, nothing is over the scene, and the player is standing
+  // where they can see the door: the clear was banked while the cover was still down, and the
+  // door's whole point is being watched. Whichever of the two finishes last calls this, so the
+  // order they finish in does not matter.
   private void _celebrateClearedDoor() {
-    if (_celebrationLevelId is not { } celebrated) {
+    if (_introActive || _arrivalActive || _celebrationLevelId is not { } celebrated) {
       return;
     }
     _celebrationLevelId = null;
