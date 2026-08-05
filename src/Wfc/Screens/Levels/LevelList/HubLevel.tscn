@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="PackedScene" uid="uid://dmrllj22gpdev" path="res://src/Wfc/Screens/Levels/GameLevel/GameLevel.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Door/Door/Door.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://src/Wfc/Entities/World/Platforms/SimplePlatform/SimplePlatform.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Backgrounds/SpaceBackground/SpaceBackground.tscn" id="4"]
+[ext_resource type="Script" uid="uid://bvt25guemv0s0" path="res://src/Wfc/Entities/World/Hub/HubArrivalMark/HubArrivalMark.cs" id="5"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(80, 2200)
@@ -12,6 +13,7 @@ size = Vector2(80, 2200)
 IntroWalkTime = 0.0
 
 [node name="Camera2D" parent="." index="1"]
+limit_left = -1200
 limit_right = 3200
 limit_bottom = 1080
 
@@ -22,20 +24,17 @@ visible = false
 
 [node name="Doors" type="Node2D" parent="." index="4"]
 
-[node name="TutorialDoor" parent="Doors" index="0" instance=ExtResource("2")]
+[node name="FourColorsDoor" parent="Doors" index="0" instance=ExtResource("2")]
 position = Vector2(800, 607)
-
-[node name="FourColorsDoor" parent="Doors" index="1" instance=ExtResource("2")]
-position = Vector2(1700, 607)
 TargetLevel = 2
 
-[node name="Level1Door" parent="Doors" index="2" instance=ExtResource("2")]
-position = Vector2(2600, 607)
+[node name="Level1Door" parent="Doors" index="1" instance=ExtResource("2")]
+position = Vector2(1700, 607)
 TargetLevel = 1
 
 [node name="Floor" parent="." index="5" instance=ExtResource("3")]
-position = Vector2(1600, 1000)
-scale = Vector2(40, 3)
+position = Vector2(1000, 1000)
+scale = Vector2(55, 3)
 Group = ""
 geared = false
 splash_darkness = 0.93
@@ -43,12 +42,16 @@ splash_darkness = 0.93
 [node name="Walls" type="StaticBody2D" parent="." index="6"]
 
 [node name="LeftWall" type="CollisionShape2D" parent="Walls" index="0"]
-position = Vector2(-40, 0)
+position = Vector2(-1240, 0)
 shape = SubResource("1")
 
 [node name="RightWall" type="CollisionShape2D" parent="Walls" index="1"]
 position = Vector2(3240, 0)
 shape = SubResource("1")
 
-[node name="Player" parent="." index="7"]
+[node name="ArrivalMark" type="Marker2D" parent="." index="7"]
+position = Vector2(-900, 830)
+script = ExtResource("5")
+
+[node name="Player" parent="." index="8"]
 position = Vector2(250, 830)

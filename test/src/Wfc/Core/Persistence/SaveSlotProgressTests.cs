@@ -133,6 +133,32 @@ public class SaveSlotProgressTests(Node testScene) : TestClass(testScene) {
     slot.MetaData.GemsCollectedIn(LevelId.FourColors).ShouldBeEmpty();
   }
 
+  // The one record that materializes nothing: its siblings are handed the level they are
+  // recording, while a slot invented here would have to guess a resume pointer - and a run with
+  // nowhere to be remembered is simply shown the room again.
+  [Test]
+  public void RecordingTheHubArrivalOnASlotThatHasNoRecordWritesNothing() {
+    var slot = new SaveSlot(1);
+
+    slot.RecordHubArrivalSeen();
+
+    slot.MetaData.ShouldBeNull("the hub arrival invented a save the player never asked for");
+  }
+
+  // The arrival says where the room has been shown, not where the player is: it must leave the
+  // resume pointer exactly where the run left it.
+  [Test]
+  public void RecordingTheHubArrivalMovesNothingElse() {
+    var slot = new SaveSlot(1);
+    slot.RecordProgress(LevelId.Level1, 40);
+
+    slot.RecordHubArrivalSeen();
+
+    slot.MetaData!.HasSeenHubArrival.ShouldBeTrue();
+    slot.MetaData.LevelId.ShouldBe(LevelId.Level1, "the arrival moved the level the run resumes into");
+    slot.MetaData.Progress.ShouldBe(40, "the arrival moved how far the run had got");
+  }
+
   // Starting a new game over an old one deletes the slot and writes a blank one in its place.
   // Deleting only ever took the files: the record stayed in memory, the blank write found it
   // and kept it, and the fresh run opened with the finished one's cleared levels and gems -

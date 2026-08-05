@@ -28,6 +28,7 @@ public sealed class FakeSaveManager : ISaveManager {
   public int SaveGameCallCount { get; private set; }
   public int RecordProgressCallCount { get; private set; }
   public int RecordLevelClearedCallCount { get; private set; }
+  public int RecordHubArrivalSeenCallCount { get; private set; }
   public int RemoveSaveSlotCallCount { get; private set; }
 
   public FakeSaveManager(int selectedSlot = 0) {
@@ -46,6 +47,14 @@ public sealed class FakeSaveManager : ISaveManager {
   public FakeSaveManager WithClearedLevel(int slotIndex, LevelId levelId) {
     _slots[slotIndex] ??= new SlotMetaData(slotIndex, 1_700_000_000UL, levelId, 0, 1_700_000_000UL);
     _slots[slotIndex]!.ClearedLevels.Add(levelId);
+    return this;
+  }
+
+  // A run that has already been walked into the hub, so it opens at a door instead of
+  // playing the arrival cutscene over whatever the test is trying to watch.
+  public FakeSaveManager WithHubArrivalSeen(int slotIndex) {
+    _slots[slotIndex] ??= new SlotMetaData(slotIndex, 1_700_000_000UL, LevelId.Hub, 0, 1_700_000_000UL);
+    _slots[slotIndex]!.HasSeenHubArrival = true;
     return this;
   }
 
@@ -105,7 +114,8 @@ public sealed class FakeSaveManager : ISaveManager {
     }
   }
 
-  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, IEnumerable<string>? collectedGems = null, int slotIndex = ISaveManager.NO_SLOT) {
+  // Mirrors the real manager: gems are what a clear pays out, so a progress write never banks any.
+  public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, int slotIndex = ISaveManager.NO_SLOT) {
     RecordProgressCallCount++;
     var index = _resolve(slotIndex);
     if (!_isValid(index) || _slots[index] is not { } slot) {
@@ -113,7 +123,6 @@ public sealed class FakeSaveManager : ISaveManager {
     }
     slot.LevelId = levelId;
     slot.Progress = progressPercent;
-    _bankGems(slot, levelId, collectedGems);
     EventHandler.Instance.EmitSaveSlotUpdated();
   }
 
@@ -140,6 +149,17 @@ public sealed class FakeSaveManager : ISaveManager {
       slot.CollectedGems[levelId] = gems;
     }
     gems.UnionWith(collectedGems);
+  }
+
+  public void RecordHubArrivalSeen(int slotIndex = ISaveManager.NO_SLOT) {
+    RecordHubArrivalSeenCallCount++;
+    var index = _resolve(slotIndex);
+    // Mirrors the real manager: with no slot there is nothing to remember it in.
+    if (!_isValid(index) || _slots[index] is not { } slot) {
+      return;
+    }
+    slot.HasSeenHubArrival = true;
+    EventHandler.Instance.EmitSaveSlotUpdated();
   }
 
   public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = ISaveManager.NO_SLOT) {

@@ -38,12 +38,12 @@ public class DoorCeremonyTests(Node testScene) : TestClass(testScene) {
   [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task TheKeystoneStaysCarvedUntilEveryGemIsHome() {
     _provider.Save = new FakeSaveManager(selectedSlot: 0).WithFilledSlot(0, progress: 0);
-    _provider.Save.RecordProgress(TestScene.GetTree(), LevelId.Tutorial, 10, _allGemsButOne());
+    _provider.Save.RecordLevelCleared(TestScene.GetTree(), LevelId.Tutorial, LevelId.Hub, _allGemsButOne());
     await _frames(1);
 
     _keystone().IsComplete.ShouldBeFalse("three gems lit the comet that only four can make");
 
-    _provider.Save.RecordProgress(TestScene.GetTree(), LevelId.Tutorial, 10, ColorUtils.COLOR_GROUPS);
+    _provider.Save.RecordLevelCleared(TestScene.GetTree(), LevelId.Tutorial, LevelId.Hub, ColorUtils.COLOR_GROUPS);
     await _frames(1);
 
     _keystone().IsComplete.ShouldBeTrue("every gem is home and the comet is still carved stone");
@@ -58,7 +58,7 @@ public class DoorCeremonyTests(Node testScene) : TestClass(testScene) {
     await _frames(1);
 
     _door.ExpectCelebration();
-    _provider.Save.RecordProgress(TestScene.GetTree(), LevelId.Tutorial, 100, ColorUtils.COLOR_GROUPS);
+    _provider.Save.RecordLevelCleared(TestScene.GetTree(), LevelId.Tutorial, LevelId.Hub, ColorUtils.COLOR_GROUPS);
     await _frames(2);
 
     _archGems().Any(gem => gem.IsCollected)
@@ -78,7 +78,7 @@ public class DoorCeremonyTests(Node testScene) : TestClass(testScene) {
   [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task AnUnwarnedDoorShowsWhatTheSlotSaysAtOnce() {
     _provider.Save = new FakeSaveManager(selectedSlot: 0).WithFilledSlot(0, progress: 0);
-    _provider.Save.RecordProgress(TestScene.GetTree(), LevelId.Tutorial, 100, ColorUtils.COLOR_GROUPS);
+    _provider.Save.RecordLevelCleared(TestScene.GetTree(), LevelId.Tutorial, LevelId.Hub, ColorUtils.COLOR_GROUPS);
     await _frames(2);
 
     _archGems().All(gem => gem.IsCollected).ShouldBeTrue("the door held gems nobody was going to celebrate");

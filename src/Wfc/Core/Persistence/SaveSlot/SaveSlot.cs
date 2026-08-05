@@ -68,7 +68,7 @@ public partial class SaveSlot {
     // quit that only banks where the player is standing - showed the slot as untouched since
     // the last checkpoint.
     MetaData.SaveTimestamp = _getUnixTimestamp();
-    _saveMetaData(serializer);
+    SaveMetaData(serializer);
     _saveLevelState(serializer, sceneTree);
   }
 
@@ -97,6 +97,20 @@ public partial class SaveSlot {
       MetaData.CollectedGems[levelId] = gems;
     }
     gems.UnionWith(colorGroups);
+    MetaData.SaveTimestamp = _getUnixTimestamp();
+  }
+
+  // The hub only introduces itself once, so the run remembers having been led in rather
+  // than the walk working out for itself whether it has run before.
+  //
+  // The only record here that materializes nothing: its siblings are handed the level they
+  // are recording, while an invented slot would have to guess a resume pointer - and a run
+  // with nowhere to be remembered is simply shown the room again.
+  public void RecordHubArrivalSeen() {
+    if (MetaData == null) {
+      return;
+    }
+    MetaData.HasSeenHubArrival = true;
     MetaData.SaveTimestamp = _getUnixTimestamp();
   }
 
@@ -189,7 +203,9 @@ public partial class SaveSlot {
     }
   }
 
-  private void _saveMetaData(ISerializer serializer) {
+  // Public for the records that describe the slot rather than the run inside it: what a level
+  // state written beside them would say has nothing to do with what they changed.
+  public void SaveMetaData(ISerializer serializer) {
     if (MetaData == null) {
       GD.PushError($"Slot {_slotIndex} has no metadata to write.");
       return;

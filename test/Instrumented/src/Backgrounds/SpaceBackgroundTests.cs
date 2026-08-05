@@ -36,15 +36,19 @@ public class SpaceBackgroundTests(Node testScene) : TestClass(testScene) {
   [Cleanup]
   public void Cleanup() => _background.QueueFree();
 
+  // The hub and the intro share the backdrop, so the run opens in the same place it is
+  // walked out into.
   [Test]
-  public void TheHubDeclaresTheSpaceBackground() {
-    var hub = LevelDispatcher.InstantiateLevel(LevelId.Hub);
+  public void TheHubAndTheIntroDeclareTheSpaceBackground() {
+    foreach (var levelId in new[] { LevelId.Hub, LevelId.Tutorial }) {
+      var level = LevelDispatcher.InstantiateLevel(levelId);
 
-    hub.ShouldNotBeNull();
-    hub.GetNodeOrNull("Background").ShouldBeAssignableTo<LevelBackground>(
-      "the hub lost its background, or it is no longer a LevelBackground");
-    hub.GetNodeOrNull("Background").ShouldBeOfType<SpaceBackground>();
-    hub.QueueFree();
+      level.ShouldNotBeNull();
+      level.GetNodeOrNull("Background").ShouldBeAssignableTo<LevelBackground>(
+        $"{levelId} lost its background, or it is no longer a LevelBackground");
+      level.GetNodeOrNull("Background").ShouldBeOfType<SpaceBackground>();
+      level.QueueFree();
+    }
   }
 
   // Behind the world and pinned to the screen: a background on a positive layer

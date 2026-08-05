@@ -25,6 +25,9 @@ public class LevelExitTests(Node testScene) : TestClass(testScene) {
   // Clear of the edge by enough that no drag margin or rounding can leave the player inside
   // the view, and well short of the wall that closes the level off.
   private const float PAST_THE_EDGE = 300.0f;
+  // Further beyond the exit than the arch it is drawn under is wide, and short of the ground any
+  // level leaves past its exit: where a long last jump puts the player down.
+  private const float PAST_THE_ARCH = 400.0f;
 
   private FakeDependenciesProvider _provider = default!;
   private GameLevel? _level;
@@ -79,8 +82,13 @@ public class LevelExitTests(Node testScene) : TestClass(testScene) {
     (await _waitUntil(() => !player.HandleInputIsDisabled))
       .ShouldBeTrue("the respawn left the player without their input");
 
-    player.GlobalPosition = new Vector2(_edgeOfView() + PAST_THE_EDGE, player.GlobalPosition.Y);
+    // Nothing may still be shoving the cube the respawn has just put back: the walk is the only
+    // thing that pushes, so a player who has not been asked to move and does not move is a walk
+    // that went back with them.
+    var putBackAt = player.GlobalPosition.X;
     await _frames(30);
+    player.GlobalPosition.X.ShouldBe(putBackAt, 1.0f,
+      "the walk-out was still pushing the player after the respawn");
     _isCleared.ShouldBeFalse("the walk-out kept running after the respawn and cleared the level");
 
     player.GlobalPosition = _exit().GlobalPosition;
@@ -105,6 +113,24 @@ public class LevelExitTests(Node testScene) : TestClass(testScene) {
 
       player.GlobalPosition = new Vector2(_edgeOfView() + PAST_THE_EDGE, player.GlobalPosition.Y);
       (await _waitUntil(() => _isCleared)).ShouldBeTrue($"{levelId} never cleared");
+    }
+  }
+
+  // The exit is a line and not a doorway, so coming down on the far side of it counts as having
+  // crossed it. The last drop in a level can carry the player clear over a strip no wider than
+  // the arch, and what they land on is run-off: they walk into the end wall, nothing is left to
+  // trigger, and there is no way back up to try the jump again.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task LandingPastTheExitCountsAsCrossingIt() {
+    foreach (var levelId in LevelDispatcher.LEVELS.Select(info => info.Id)) {
+      _isCleared = false;
+      var player = (await _load(levelId)).PlayerNode;
+      var exitPosition = _exit().GlobalPosition;
+      player.GlobalPosition = new Vector2(exitPosition.X + PAST_THE_ARCH, exitPosition.Y);
+
+      (await _waitUntil(() => player.HandleInputIsDisabled))
+        .ShouldBeTrue($"{levelId}'s exit ignored a player who came down past it");
     }
   }
 

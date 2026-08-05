@@ -39,6 +39,10 @@ public class SlotMetaData {
     CollectedGems = collectedGems?.ToDictionary(e => e.Key, e => new HashSet<string>(e.Value)) ?? [];
   }
 
+  // The hub introduces itself by walking the player in from the far end of the room, once
+  // per run. This is what remembers that it has: every arrival after it opens at a door.
+  public bool HasSeenHubArrival { get; set; }
+
   public IReadOnlySet<string> GemsCollectedIn(LevelId levelId) =>
     CollectedGems.TryGetValue(levelId, out var gems) ? gems : _noGems;
 }

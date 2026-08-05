@@ -16,6 +16,7 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
     int? progress = null;
     HashSet<LevelId>? clearedLevels = null;
     Dictionary<LevelId, HashSet<string>>? collectedGems = null;
+    var hasSeenHubArrival = false;
 
     if (reader.TokenType != JsonTokenType.StartObject) {
       throw new JsonException();
@@ -55,20 +56,25 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
         case nameof(SlotMetaData.CollectedGems):
           collectedGems = _readCollectedGems(ref reader, options);
           break;
+        case nameof(SlotMetaData.HasSeenHubArrival):
+          hasSeenHubArrival = reader.GetBoolean();
+          break;
         default:
           reader.Skip();
           break;
       }
     }
 
-    // ClearedLevels and CollectedGems are deliberately not in this check: saves written
-    // before completion or gem tracking existed have no such properties, and they must
-    // keep loading as slots with nothing cleared or collected yet.
+    // ClearedLevels, CollectedGems and HasSeenHubArrival are deliberately not in this check:
+    // saves written before completion, gem tracking or the hub existed have no such
+    // properties, and they must keep loading as slots with nothing cleared or collected yet.
     if (slotId == null || saveTimestamp == null || levelId == null || progress == null || lastLoadDate == null) {
       throw new JsonException("Missing required property");
     }
 
-    return new SlotMetaData(slotId.Value, saveTimestamp.Value, levelId ?? LevelId.Tutorial, progress.Value, lastLoadDate.Value, clearedLevels, collectedGems);
+    return new SlotMetaData(slotId.Value, saveTimestamp.Value, levelId ?? LevelId.Tutorial, progress.Value, lastLoadDate.Value, clearedLevels, collectedGems) {
+      HasSeenHubArrival = hasSeenHubArrival,
+    };
   }
 
   // Keys are level names, not ordinals, for the same reason LevelId itself is written
@@ -119,6 +125,7 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
       JsonSerializer.Serialize(writer, gems, options);
     }
     writer.WriteEndObject();
+    writer.WriteBoolean(nameof(SlotMetaData.HasSeenHubArrival), value.HasSeenHubArrival);
     writer.WriteEndObject();
   }
 }
