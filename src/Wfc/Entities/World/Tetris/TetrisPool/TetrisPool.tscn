@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bir8vihuohasj" path="res://src/Wfc/Entities/World/Tetris/ScoreBoard/ScoreBoard.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://d2j7an1dv0j8h" path="res://src/Wfc/Entities/World/Tetris/NextPiece/NextPiece.tscn" id="6"]
-[ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="8"]
+[ext_resource type="PackedScene" uid="uid://n6iaorhximfn" path="res://src/Wfc/Entities/World/Platforms/PlatformSlider/PlatformSlider.tscn" id="8"]
 [ext_resource type="PackedScene" uid="uid://byyce56nk7v2h" path="res://src/Wfc/Entities/World/Tetris/SlidingFloor/SlidingFloor.tscn" id="9"]
 
 [sub_resource type="RectangleShape2D" id="2"]
@@ -64,11 +64,10 @@ scale = Vector2(10, 3)
 [node name="SlidingFloor" parent="." instance=ExtResource("9")]
 position = Vector2(36, 36)
 
-[node name="SlidingPlatform" parent="SlidingFloor" instance=ExtResource("8")]
-wait_time = 3.0
-
-[node name="Pos" type="Marker2D" parent="SlidingFloor/SlidingPlatform"]
-position = Vector2(0, 1008)
+[node name="Slider" parent="SlidingFloor" instance=ExtResource("8")]
+Axis = 1
+Distance = 1008.0
+WaitTime = 3.0
 
 [node name="TriggerEnterArea" type="Area2D" parent="."]
 collision_mask = 2

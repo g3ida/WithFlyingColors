@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="4"]
 [ext_resource type="Script" uid="uid://buts64t08ub7n" path="res://src/Wfc/Entities/World/BrickBreaker/BrickBreaker/BrickBreaker.cs" id="5"]
 [ext_resource type="PackedScene" uid="uid://byyce56nk7v2h" path="res://src/Wfc/Entities/World/Tetris/SlidingFloor/SlidingFloor.tscn" id="6"]
-[ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://n6iaorhximfn" path="res://src/Wfc/Entities/World/Platforms/PlatformSlider/PlatformSlider.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://cld6ulwmybvf1" path="res://src/Wfc/Entities/World/BrickBreaker/DeathZone/DeathZone.tscn" id="8"]
 [ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="9"]
 
@@ -78,11 +78,10 @@ wait_time = 60.0
 [node name="SlidingFloor" parent="." instance=ExtResource("6")]
 position = Vector2(1188, 1188)
 
-[node name="SlidingPlatform" parent="SlidingFloor" instance=ExtResource("7")]
-wait_time = 3.0
-
-[node name="Pos" type="Marker2D" parent="SlidingFloor/SlidingPlatform"]
-position = Vector2(0, 1224)
+[node name="Slider" parent="SlidingFloor" instance=ExtResource("7")]
+Axis = 1
+Distance = 1224.0
+WaitTime = 3.0
 
 [node name="TriggerEnterArea" type="Area2D" parent="."]
 position = Vector2(1188, 1116)
@@ -97,14 +96,12 @@ position = Vector2(1188, 1148)
 [node name="SlidingDoor" parent="." instance=ExtResource("2")]
 position = Vector2(1188, 36)
 
-[node name="SlidingPlatform" parent="SlidingDoor" instance=ExtResource("7")]
-speed = 4.0
-is_stopped = true
-one_shot = true
-one_shot_state = 1
-
-[node name="Pos" type="Marker2D" parent="SlidingDoor/SlidingPlatform"]
-position = Vector2(216, 0)
+[node name="Slider" parent="SlidingDoor" instance=ExtResource("7")]
+Distance = 216.0
+Speed = 4.0
+StartsStopped = true
+OneShot = true
+OneShotPhase = 1
 
 [node name="ExitCameraLocalizer" parent="." instance=ExtResource("9")]
 position = Vector2(1188, -36)

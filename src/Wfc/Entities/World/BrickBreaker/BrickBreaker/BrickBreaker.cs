@@ -55,12 +55,12 @@ public partial class BrickBreaker : Node2D, IPersistent {
   private Area2D? _triggerEnterAreaNode = default!;
   [NodePath("SlidingFloor")]
   private Node2D _slidingFloorNode = default!;
-  [NodePath("SlidingFloor/SlidingPlatform")]
-  private SlidingPlatform _slidingFloorSliderNode = default!;
+  [NodePath("SlidingFloor/Slider")]
+  private PlatformSlider _slidingFloorSliderNode = default!;
   [NodePath("ProtectionAreaSpawnerPosition")]
   public Node2D ProtectionAreaSpawnerPositionNode = default!;
-  [NodePath("SlidingDoor/SlidingPlatform")]
-  private SlidingPlatform _slidingDoorNode = default!;
+  [NodePath("SlidingDoor/Slider")]
+  private PlatformSlider _slidingDoorNode = default!;
   [NodePath("CameraLocalizer")]
   private CameraLocalizer _cameraLocalizerNode = default!;
   #endregion Nodes
@@ -225,7 +225,6 @@ public partial class BrickBreaker : Node2D, IPersistent {
     if (isStarting) {
       _currentState = BrickBreakerState.INIT_PLAYING;
       CallDeferred(nameof(Play));
-      _slidingFloorSliderNode.SetLooping(false);
       _slidingFloorSliderNode.StopSlider(false);
       MusicTrackManager.LoadTrack("brickBreaker");
       MusicTrackManager.PlayTrack("brickBreaker");

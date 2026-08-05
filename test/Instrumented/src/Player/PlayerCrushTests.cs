@@ -7,6 +7,7 @@ using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
 using Wfc.Core.Event;
+using Wfc.Entities.World.Platforms;
 using Wfc.Entities.World.Player;
 using Wfc.test;
 using Wfc.test.instrumented.Helpers;
@@ -24,7 +25,7 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 public class PlayerCrushTests(Node testScene) : TestClass(testScene) {
   private const string PLAYER_SCENE = "res://src/Wfc/Entities/World/Player/Player/Player.tscn";
   private const string FLOOR_SCENE = "res://src/Wfc/Entities/World/Tetris/SlidingFloor/SlidingFloor.tscn";
-  private const string SLIDER_SCENE = "res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn";
+  private const string SLIDER_SCENE = "res://src/Wfc/Entities/World/Platforms/PlatformSlider/PlatformSlider.tscn";
 
   private const float GROUND_TOP = 760f;
   private const float LANE_X = 700f;
@@ -178,11 +179,12 @@ public class PlayerCrushTests(Node testScene) : TestClass(testScene) {
   // A one-shot slider, so the platform arrives and stays rather than turning round and lifting the
   // paint back out of frame mid-assertion.
   private static void _driveFloor(AnimatableBody2D floor, float travel) {
-    var slider = GD.Load<PackedScene>(SLIDER_SCENE).Instantiate<Node2D>();
-    slider.Set("wait_time", 0.1f);
-    slider.Set("one_shot", true);
-    slider.Set("one_shot_state", (int)Wfc.Entities.World.Platforms.SlidingPlatform.State.SlidingForth);
-    slider.AddChild(new Marker2D { Position = new Vector2(0f, travel) });
+    var slider = GD.Load<PackedScene>(SLIDER_SCENE).Instantiate<PlatformSlider>();
+    slider.Axis = PlatformSlide.SlideAxis.Vertical;
+    slider.Distance = travel;
+    slider.WaitTime = 0.1f;
+    slider.OneShot = true;
+    slider.OneShotPhase = PlatformSlide.SlidePhase.SlidingForth;
     floor.AddChild(slider);
   }
 

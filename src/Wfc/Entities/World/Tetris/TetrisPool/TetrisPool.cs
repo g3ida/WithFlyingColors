@@ -72,8 +72,8 @@ public partial class TetrisPool : Node2D {
   private NextPiece _nextPieceNode = default!;
   [NodePath("LevelUpPosition")]
   private Marker2D _levelUpPositionNode = default!;
-  [NodePath("SlidingFloor/SlidingPlatform")]
-  private SlidingPlatform _slidingFloorSliderNode = default!;
+  [NodePath("SlidingFloor/Slider")]
+  private PlatformSlider _slidingFloorSliderNode = default!;
   [NodePath("TriggerEnterArea")]
   private Area2D _triggerEnterAreaNode = default!;
   #endregion Nodes
@@ -418,7 +418,6 @@ public partial class TetrisPool : Node2D {
     }
 
     _isPaused = false;
-    _slidingFloorSliderNode.SetLooping(false);
     _slidingFloorSliderNode.StopSlider(false);
     _isVirgin = false;
 
