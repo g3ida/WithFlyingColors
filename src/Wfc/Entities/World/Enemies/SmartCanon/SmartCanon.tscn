@@ -1,0 +1,113 @@
+[gd_scene format=3 uid="uid://cv2xhp6nqf4jr"]
+
+[ext_resource type="Texture2D" uid="uid://c7bcxe1q7gjvb" path="res://Assets/Sprites/Canons/big-canon-stand.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://bch7f56t6ur8" path="res://Assets/Sprites/Canons/big-canon.png" id="2"]
+[ext_resource type="Script" uid="uid://dqgxhcyrcroj6" path="res://src/Wfc/Entities/World/Enemies/SmartCanon/SmartCanon.cs" id="3"]
+[ext_resource type="AudioStream" uid="uid://bpom2wb1y45g2" path="res://Assets/sfx/shooting.ogg" id="4"]
+
+[sub_resource type="RectangleShape2D" id="4"]
+size = Vector2(16, 23)
+
+[sub_resource type="RectangleShape2D" id="5"]
+size = Vector2(18, 25)
+
+[sub_resource type="Animation" id="1"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanonSpr:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="2"]
+resource_name = "Shoot"
+length = 0.35
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanonSpr:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.35),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.15, 0.85), Vector2(1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="3"]
+_data = {
+&"RESET": SubResource("1"),
+&"Shoot": SubResource("2")
+}
+
+[sub_resource type="RectangleShape2D" id="6"]
+size = Vector2(38, 58)
+
+[sub_resource type="RectangleShape2D" id="7"]
+size = Vector2(40, 60)
+
+[node name="SmartCanon" type="Node2D" unique_id=358918564]
+script = ExtResource("3")
+
+[node name="Stand" type="Sprite2D" parent="." unique_id=1507092058]
+position = Vector2(0, 10)
+texture = ExtResource("1")
+
+[node name="Body" type="CharacterBody2D" parent="." unique_id=973080190]
+position = Vector2(0, -10)
+
+[node name="StandShape" type="CollisionShape2D" parent="Body" unique_id=1168754054]
+position = Vector2(0, 20)
+shape = SubResource("4")
+
+[node name="StandColorArea" type="Area2D" parent="Body" unique_id=916659880]
+collision_layer = 4
+collision_mask = 86
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/StandColorArea" unique_id=2041416268]
+position = Vector2(0, 20)
+shape = SubResource("5")
+
+[node name="Canon" type="Node2D" parent="." unique_id=2106710092]
+
+[node name="CanonSpr" type="Sprite2D" parent="Canon" unique_id=1535407121]
+texture = ExtResource("2")
+offset = Vector2(0, -25)
+flip_v = true
+
+[node name="Muzzle" type="Marker2D" parent="Canon" unique_id=977336373]
+position = Vector2(0, -66)
+
+[node name="ShootAnimation" type="AnimationPlayer" parent="Canon" unique_id=471064016]
+libraries/ = SubResource("3")
+
+[node name="BarrelBody" type="CharacterBody2D" parent="Canon" unique_id=1130846380]
+
+[node name="BarrelShape" type="CollisionShape2D" parent="Canon/BarrelBody" unique_id=259727994]
+position = Vector2(0, -22)
+shape = SubResource("6")
+
+[node name="CanonColorArea" type="Area2D" parent="Canon/BarrelBody" unique_id=1910995762]
+collision_layer = 4
+collision_mask = 86
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Canon/BarrelBody/CanonColorArea" unique_id=1729990936]
+position = Vector2(0, -22)
+shape = SubResource("7")
+
+[node name="ShootSound" type="AudioStreamPlayer2D" parent="." unique_id=1574803493]
+stream = ExtResource("4")
+bus = &"sfx2d"
+
+[node name="CooldownTimer" type="Timer" parent="." unique_id=1169648481]
+wait_time = 2.5
+one_shot = true
