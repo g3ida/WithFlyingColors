@@ -31,6 +31,10 @@ public partial class Gem : Area2D, IPersistent {
   // What the shine is worth on this gem, for the state that animates it.
   public float LightEnergyScale => IsAlreadyCollected ? GHOST_LIGHT_SCALE : 1f;
 
+  // The pale core the sprite is tinted with, and the deeper shade its light casts.
+  public Color CoreColor => _skinColor(SkinColorIntensity.VeryLight);
+  public Color ShineColor => _skinColor(SkinColorIntensity.Basic);
+
   [NodePath("PointLight2D")]
   public PointLight2D LightNode = null!;
 
@@ -59,11 +63,7 @@ public partial class Gem : Area2D, IPersistent {
     AnimationPlayerNode = GetNode<AnimationPlayer>("AnimatedSprite2D/AnimationPlayer");
 
     AddToGroup(GroupName);
-    var color = SkinManager.Instance.CurrentSkin.GetColor(
-      GameSkin.ColorGroupToSkinColor(GroupName),
-      SkinColorIntensity.Basic
-    );
-    LightNode.Color = color;
+    LightNode.Color = ShineColor;
     _applyAppearance();
 
     _statesStore = new GemStatesStore(this);
@@ -79,15 +79,14 @@ public partial class Gem : Area2D, IPersistent {
   }
 
   private void _applyAppearance() {
-    var lightColor = SkinManager.Instance.CurrentSkin.GetColor(
-      GameSkin.ColorGroupToSkinColor(GroupName),
-      SkinColorIntensity.VeryLight
-    );
     AnimatedSpriteNode.Modulate = IsAlreadyCollected
-      ? new Color(lightColor, GHOST_ALPHA)
-      : lightColor;
+      ? new Color(CoreColor, GHOST_ALPHA)
+      : CoreColor;
     LightNode.Energy = LightEnergyScale;
   }
+
+  private Color _skinColor(SkinColorIntensity intensity) =>
+    SkinManager.Instance.CurrentSkin.GetColor(GameSkin.ColorGroupToSkinColor(GroupName), intensity);
 
   private void SwitchState(IState<Gem>? newState) {
     if (newState != null) {

@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Gems;
 
 using Godot;
 using Wfc.State;
+using Wfc.Utils;
 using static Godot.AnimationMixer;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -31,6 +32,7 @@ public partial class GemCollectingState : GemBaseState {
     o.CollisionLayer = 0;
     o.AnimationPlayerNode.Play(_gemCollectedAnimationStringName);
     o.ShineSfxNode.Stop();
+    _spawnBurst(o);
 
     _animationFinishedEventHandler = (StringName animName) => {
       if (animName == _gemCollectedAnimationStringName) {
@@ -52,7 +54,24 @@ public partial class GemCollectingState : GemBaseState {
     }
   }
 
-  public override IState<Gem>? PhysicsUpdate(Gem gem, float delta) => _requestedState;
+  public override IState<Gem>? PhysicsUpdate(Gem gem, float delta) {
+    // The shine rides up with the gem instead of staying behind at the pickup point.
+    gem.LightNode.Position = gem.AnimatedSpriteNode.Position;
+    return _requestedState;
+  }
+
+  // The burst is left standing in the level beside the gem, since anything hanging off the
+  // gem itself would be hidden along with it the moment the animation ends. A gem the level
+  // has already given up flares as faintly as it shines.
+  private static void _spawnBurst(Gem gem) {
+    if (gem.GetParent() is not Node level) {
+      return;
+    }
+    var burst = SceneHelpers.InstantiateNode<GemCollectBurst>();
+    burst.Setup(gem.CoreColor, gem.LightEnergyScale);
+    burst.Position = gem.Position;
+    level.AddChild(burst);
+  }
 
   private GemCollectedState? _handleAnimationFinished(Gem gem) {
     // A ghost is taken the same way it is dropped into the world: it plays out and
