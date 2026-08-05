@@ -63,6 +63,11 @@ public partial class SaveSlot {
       0,
       _getUnixTimestamp()
     );
+    // Every write is a moment the slot was being played, and the panel reads this as when it
+    // last was. Left to the record calls alone, a write that moves nothing they track - the
+    // quit that only banks where the player is standing - showed the slot as untouched since
+    // the last checkpoint.
+    MetaData.SaveTimestamp = _getUnixTimestamp();
     _saveMetaData(serializer);
     _saveLevelState(serializer, sceneTree);
   }
@@ -108,7 +113,10 @@ public partial class SaveSlot {
 
   public void LoadMetaData(ISerializer serializer) {
     if (!IsFilled) {
-      return; // We don't have a save slot to load.
+      // Nothing on disk is the answer, not "keep whatever was here": a re-read that leaves
+      // a deleted slot's record in place hands it to the next run started in that slot.
+      MetaData = null;
+      return;
     }
 
     var line = _readLine(MetaPath);
@@ -135,6 +143,11 @@ public partial class SaveSlot {
     if (FileAccess.FileExists(MetaPath)) {
       DirAccess.RemoveAbsolute(MetaPath);
     }
+    // The files are only half of the slot; this is the other half, and it outlived them.
+    // A new game started over an old one wipes the files, keeps writing into the record
+    // still standing here, and inherits its cleared levels and banked gems - the fresh run
+    // opened with the last one's gems already on its doors and in its HUD.
+    MetaData = null;
   }
 
   private void _loadLevelState(ISerializer serializer, SceneTree sceneTree) {

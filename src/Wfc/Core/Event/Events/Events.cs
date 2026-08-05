@@ -117,13 +117,14 @@ public partial class Events : RefCounted {
   [Signal]
   public delegate void CutSceneRequestEndEventHandler(string id);
   [Signal]
-  public delegate void GemTempleTriggeredEventHandler();
-  [Signal]
-  public delegate void GemEngineStartedEventHandler();
-  [Signal]
   public delegate void LevelClearedEventHandler();
+  // A gem the player brought back settling into the arch of its door, and the four of them
+  // merging into the keystone comet. Raised for the ceremony rather than for the banking,
+  // which happened while the screen was still covered.
   [Signal]
-  public delegate void GemPutInTempleEventHandler();
+  public delegate void DoorGemFilledEventHandler();
+  [Signal]
+  public delegate void DoorCometFormedEventHandler();
   // The LevelId ordinal of the level behind the door, as an int because that is what
   // a Godot signal can carry.
   [Signal]

@@ -54,6 +54,17 @@ public class LevelStartPolicyTests(Node testScene) : TestClass(testScene) {
     decision.ShouldRestoreSavedGame.ShouldBeFalse();
   }
 
+  // Clearing a level parks the slot in the hub, and a run picked up from there belongs in
+  // the hub: walking straight into a level would take the choice the hub exists to offer,
+  // and there is no checkpoint in a hub worth restoring.
+  [Test]
+  public void OpensTheHubForARunParkedThere() {
+    var decision = LevelStartPolicy.Choose(null, LevelId.Hub, 0, true, LevelId.Tutorial);
+
+    decision.LevelId.ShouldBe(LevelId.Hub);
+    decision.ShouldRestoreSavedGame.ShouldBeFalse();
+  }
+
   // Clearing a level parks the slot at the start of the next one with no progress yet.
   // Quitting there must resume that level from its top - not restart the whole game,
   // and not try to restore a checkpoint save that does not exist yet.

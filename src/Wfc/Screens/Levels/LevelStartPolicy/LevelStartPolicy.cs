@@ -17,6 +17,13 @@ public static class LevelStartPolicy {
       return new LevelStartDecision(queuedLevelId.Value, false);
     }
 
+    // A run parked in the hub is a run between levels: it opens the hub again rather than
+    // walking into whatever level the pointer happens to name, and there is no checkpoint
+    // in a hub to restore.
+    if (savedLevelId == LevelId.Hub) {
+      return new LevelStartDecision(LevelId.Hub, false);
+    }
+
     if (savedLevelId != null && savedProgress > 0) {
       return new LevelStartDecision(savedLevelId.Value, true);
     }

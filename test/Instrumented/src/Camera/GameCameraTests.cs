@@ -123,8 +123,8 @@ public class GameCameraTests(Node testScene) : TestClass(testScene) {
     await _frames(1);
   }
 
-  // A room may aim the camera at something that is not the player - the temple frames itself
-  // while the player walks in - and that aim has no end trigger of its own. A respawn is that
+  // A room may aim the camera at something that is not the player - the level exit pins the
+  // frame the player walks out of - and that aim has no end trigger of its own. A respawn is that
   // end: gameplay follows the player, so a death anywhere leaves the camera on the player,
   // however the run had aimed it beforehand.
   [Test]

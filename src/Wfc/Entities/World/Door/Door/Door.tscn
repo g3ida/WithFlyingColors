@@ -7,6 +7,7 @@
 [ext_resource type="FontFile" path="res://Assets/Fonts/KeyboardButton.tres" id="5"]
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Door/DoorArchGem/DoorArchGem.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Door/DoorPrompt/DoorPrompt.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Door/DoorCeremony/DoorCeremony.tscn" id="8"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(140, 540)
@@ -39,8 +40,13 @@ position = Vector2(137, -142)
 scale = Vector2(0.7, 0.7)
 ColorGroup = "blue"
 
+[node name="DoorCeremony" parent="." instance=ExtResource("8")]
+
+[node name="CometFormingPoint" type="Marker2D" parent="."]
+position = Vector2(0, -368)
+
 [node name="DoorGem" parent="." instance=ExtResource("3")]
-position = Vector2(0, -198)
+position = Vector2(0, -227)
 
 [node name="LockSprite" type="Sprite2D" parent="."]
 position = Vector2(0, 60)

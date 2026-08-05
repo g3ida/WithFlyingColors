@@ -24,17 +24,17 @@
 [ext_resource type="PackedScene" uid="uid://dxdpkyrs224cf" path="res://src/Wfc/Entities/World/Piano/PianoScene/PianoScene.tscn" id="37"]
 [ext_resource type="PackedScene" uid="uid://pgbyoi7k30vg" path="res://src/Wfc/Entities/World/Enemies/SlidingLazer/SlidingLazer.tscn" id="38"]
 [ext_resource type="PackedScene" uid="uid://d31u6w1k00q6g" path="res://src/Wfc/Entities/World/Enemies/TimingLazer/TimingLazer.tscn" id="39"]
-[ext_resource type="PackedScene" uid="uid://blkbqb8j6rnda" path="res://src/Wfc/Entities/World/Temple/GemsTemple/GemsTemple.tscn" id="40"]
+[ext_resource type="PackedScene" uid="uid://cyq2n8rwlxk3d" path="res://src/Wfc/Entities/World/Exit/LevelExit/LevelExit.tscn" id="40"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(29, 92)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q82u4"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_temple_floor"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_exit_floor"]
 size = Vector2(1000, 200)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_temple_floor_area"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_exit_floor_area"]
 size = Vector2(1000, 212)
 
 [node name="Level1" type="Node2D" unique_id=268401375]
@@ -229,25 +229,25 @@ position = Vector2(-468, -295)
 scale = Vector2(20, 5)
 shape = SubResource("RectangleShape2D_q82u4")
 
-[node name="TempleGround" type="StaticBody2D" parent="." unique_id=716771637]
+[node name="ExitGround" type="StaticBody2D" parent="." unique_id=716771637]
 position = Vector2(9500, 516)
 
-[node name="Visual" type="Polygon2D" parent="TempleGround" unique_id=1062434694]
+[node name="Visual" type="Polygon2D" parent="ExitGround" unique_id=1062434694]
 color = Color(0.235, 0.243, 0.29, 1)
 polygon = PackedVector2Array(-500, -100, 500, -100, 500, 100, -500, 100)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TempleGround" unique_id=1555970742]
-shape = SubResource("RectangleShape2D_temple_floor")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitGround" unique_id=1555970742]
+shape = SubResource("RectangleShape2D_exit_floor")
 
-[node name="ColorArea" type="Area2D" parent="TempleGround" unique_id=671109085 groups=["blue", "pink", "purple", "yellow"]]
+[node name="ColorArea" type="Area2D" parent="ExitGround" unique_id=671109085 groups=["blue", "pink", "purple", "yellow"]]
 collision_layer = 4
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TempleGround/ColorArea" unique_id=1763778870]
-shape = SubResource("RectangleShape2D_temple_floor_area")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitGround/ColorArea" unique_id=1763778870]
+shape = SubResource("RectangleShape2D_exit_floor_area")
 
-[node name="GemsTemple" parent="." unique_id=1818503899 instance=ExtResource("40")]
-position = Vector2(9500, 128)
+[node name="LevelExit" parent="." unique_id=1818503899 instance=ExtResource("40")]
+position = Vector2(8604, 166)
 
 [node name="SmartCanon" parent="." unique_id=2105579144 instance=ExtResource("25_5fip5")]
 position = Vector2(5268, 222)

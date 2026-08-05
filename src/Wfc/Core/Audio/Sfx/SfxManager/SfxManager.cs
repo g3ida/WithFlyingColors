@@ -85,10 +85,9 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PageFlipped += OnPageFlipped;
     EventHandler.Instance.Events.WrongPianoNotePlayed += OnWrongPianoNotePlayed;
     EventHandler.Instance.Events.PianoPuzzleWon += OnPianoPuzzleWon;
-    EventHandler.Instance.Events.GemTempleTriggered += OnGemTempleTriggered;
-    EventHandler.Instance.Events.GemEngineStarted += OnGemEngineStarted;
-    EventHandler.Instance.Events.GemPutInTemple += OnGemPutInTemple;
     EventHandler.Instance.Events.NotificationRaised += OnNotificationRaised;
+    EventHandler.Instance.Events.DoorGemFilled += OnDoorGemFilled;
+    EventHandler.Instance.Events.DoorCometFormed += OnDoorCometFormed;
   }
 
   private void DisconnectSignals() {
@@ -125,10 +124,9 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PageFlipped -= OnPageFlipped;
     EventHandler.Instance.Events.WrongPianoNotePlayed -= OnWrongPianoNotePlayed;
     EventHandler.Instance.Events.PianoPuzzleWon -= OnPianoPuzzleWon;
-    EventHandler.Instance.Events.GemTempleTriggered -= OnGemTempleTriggered;
-    EventHandler.Instance.Events.GemEngineStarted -= OnGemEngineStarted;
-    EventHandler.Instance.Events.GemPutInTemple -= OnGemPutInTemple;
     EventHandler.Instance.Events.NotificationRaised -= OnNotificationRaised;
+    EventHandler.Instance.Events.DoorGemFilled -= OnDoorGemFilled;
+    EventHandler.Instance.Events.DoorCometFormed -= OnDoorCometFormed;
   }
 
   public override void _ExitTree() {
@@ -207,10 +205,9 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnPageFlipped() => OnPlaySfx("pageFlip");
   private void OnWrongPianoNotePlayed() => OnPlaySfx("wrongAnswer");
   private void OnPianoPuzzleWon() => OnPlaySfx("success");
-  private void OnGemTempleTriggered() => OnPlaySfx("shine");
-  private void OnGemEngineStarted() => OnPlaySfx("GemEngine");
-  private void OnGemPutInTemple() => OnPlaySfx("GemPut");
   private void OnNotificationRaised(int translationKey) => OnPlaySfx("notification");
+  private void OnDoorGemFilled() => OnPlaySfx("doorGemFill");
+  private void OnDoorCometFormed() => OnPlaySfx("doorCometFormed");
   private void OnPauseMenuEnter() => OnPlaySfx("menuSelect");
   private void OnPauseMenuExit() => OnPlaySfx("menuSelect");
 }

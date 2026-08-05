@@ -156,10 +156,9 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitPianoPuzzleWon() => Events.EmitSignal(Events.SignalName.PianoPuzzleWon);
   public void EmitCutsceneRequestStart(string id) => Events.EmitSignal(Events.SignalName.CutSceneRequestStart, id);
   public void EmitCutsceneRequestEnd(string id) => Events.EmitSignal(Events.SignalName.CutSceneRequestEnd, id);
-  public void EmitGemTempleTriggered() => Events.EmitSignal(Events.SignalName.GemTempleTriggered);
-  public void EmitGemEngineStarted() => Events.EmitSignal(Events.SignalName.GemEngineStarted);
   public void EmitLevelCleared() => Events.EmitSignal(Events.SignalName.LevelCleared);
-  public void EmitGemPutInTemple() => Events.EmitSignal(Events.SignalName.GemPutInTemple);
+  public void EmitDoorGemFilled() => Events.EmitSignal(Events.SignalName.DoorGemFilled);
+  public void EmitDoorCometFormed() => Events.EmitSignal(Events.SignalName.DoorCometFormed);
   public void EmitDoorEntered(int levelId) => Events.EmitSignal(Events.SignalName.DoorEntered, levelId);
   public void EmitLevelRestartRequested() => Events.EmitSignal(Events.SignalName.LevelRestartRequested);
   public void EmitSaveSlotUpdated() => Events.EmitSignal(Events.SignalName.SaveSlotUpdated);

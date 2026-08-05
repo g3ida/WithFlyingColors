@@ -4,12 +4,17 @@ using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
 using Wfc.Core.Persistence;
+using Wfc.Core.Serialization;
 using Wfc.Screens.Levels;
 
 // Nothing in the game used to write Progress or LevelId anywhere outside the SlotMetaData
 // constructor, so the Continue button never appeared and quitting lost the run. These are the rules
 // the new write path follows; none of them need a scene tree or a file on disk.
 public class SaveSlotProgressTests(Node testScene) : TestClass(testScene) {
+  // Well past the slots the game offers, so a test that writes files cannot land on a slot
+  // somebody is actually playing.
+  private const int SCRATCH_SLOT = 99;
+
   [Test]
   public void RecordsTheLevelAndProgressOnASlotThatHasNoneYet() {
     var slot = new SaveSlot(1);
@@ -126,5 +131,40 @@ public class SaveSlotProgressTests(Node testScene) : TestClass(testScene) {
     slot.MetaData!.GemsCollectedIn(LevelId.Tutorial).ShouldBe(["purple"]);
     slot.MetaData.GemsCollectedIn(LevelId.Level1).ShouldBe(["blue"]);
     slot.MetaData.GemsCollectedIn(LevelId.FourColors).ShouldBeEmpty();
+  }
+
+  // Starting a new game over an old one deletes the slot and writes a blank one in its place.
+  // Deleting only ever took the files: the record stayed in memory, the blank write found it
+  // and kept it, and the fresh run opened with the finished one's cleared levels and gems -
+  // the tutorial's four already on its door before it had been played.
+  [Test]
+  public void DeletingASlotForgetsWhatItWasHolding() {
+    var serializer = new SimpleJsonSerializer();
+    var slot = new SaveSlot(SCRATCH_SLOT);
+    slot.RecordCompletion(LevelId.Tutorial);
+    slot.RecordCollectedGems(LevelId.Tutorial, ["blue", "pink", "purple", "yellow"]);
+    slot.Save(serializer, TestScene.GetTree());
+
+    slot.Delete();
+    slot.MetaData.ShouldBeNull("the deleted slot is still holding its own record");
+
+    // What starting a new game in this slot does next.
+    slot.Save(serializer, TestScene.GetTree());
+
+    slot.MetaData!.ClearedLevels.ShouldBeEmpty("the new game inherited the old one's cleared levels");
+    slot.MetaData.GemsCollectedIn(LevelId.Tutorial).ShouldBeEmpty("the new game inherited the old one's gems");
+    slot.Delete();
+  }
+
+  // Re-read after every write, so a slot whose files have gone must come back empty rather
+  // than keeping the record it was last handed.
+  [Test]
+  public void RereadingASlotWithNoFilesEmptiesIt() {
+    var slot = new SaveSlot(SCRATCH_SLOT);
+    slot.RecordCompletion(LevelId.Tutorial);
+
+    slot.LoadMetaData(new SimpleJsonSerializer());
+
+    slot.MetaData.ShouldBeNull("a slot with nothing on disk still claims a record");
   }
 }

@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://src/Wfc/Entities/World/Fallzone/Fallzone.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://src/Wfc/Entities/World/Platforms/SimplePlatform/SimplePlatform.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://src/Wfc/Entities/World/Gems/Gem/Gem.tscn" id="4"]
-[ext_resource type="PackedScene" uid="uid://blkbqb8j6rnda" path="res://src/Wfc/Entities/World/Temple/GemsTemple/GemsTemple.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://cyq2n8rwlxk3d" path="res://src/Wfc/Entities/World/Exit/LevelExit/LevelExit.tscn" id="5"]
 [ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="6"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="7"]
 
@@ -118,8 +118,8 @@ GroupName = "purple"
 position = Vector2(4300, 100)
 GroupName = "yellow"
 
-[node name="GemsTemple" parent="." index="8" instance=ExtResource("5")]
-position = Vector2(7600, 128)
+[node name="LevelExit" parent="." index="8" instance=ExtResource("5")]
+position = Vector2(6704, 166)
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="." index="9"]
 

@@ -7,6 +7,7 @@ using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
 using Wfc.Entities.World.Camera;
+using Wfc.Entities.World.Exit;
 using Wfc.Entities.World.Platforms;
 using Wfc.Screens.Levels;
 using Wfc.Utils.Colors;
@@ -139,6 +140,24 @@ public class LevelSceneContractTests(Node testScene) : TestClass(testScene) {
           );
         }
       }
+
+      level.QueueFree();
+    }
+  }
+
+  // The exit is the only thing in a level that raises the clear, so a level without one can
+  // be played to the end and never finished. The hub is excluded on purpose: it is left
+  // through its doors, not by walking out of frame.
+  [Test]
+  public void EveryOfferedLevelCarriesExactlyOneExit() {
+    foreach (var levelId in LevelDispatcher.LEVELS.Select(info => info.Id)) {
+      var level = LevelDispatcher.InstantiateLevel(levelId);
+      level.ShouldNotBeNull();
+
+      _descendantsOf(level).OfType<LevelExit>().Count().ShouldBe(
+        1,
+        $"{levelId} does not carry exactly one level exit, so it cannot be cleared"
+      );
 
       level.QueueFree();
     }

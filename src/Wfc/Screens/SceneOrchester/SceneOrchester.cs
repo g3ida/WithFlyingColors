@@ -1,5 +1,6 @@
 namespace Wfc.Screens;
 
+using System.Collections.Generic;
 using System.Linq;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
@@ -9,6 +10,7 @@ using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Entities.Ui;
 using Wfc.Entities.World.Checkpoints;
+using Wfc.Entities.World.Door;
 using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
@@ -19,7 +21,15 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class SceneOrchester : Node2D {
-  public override void _Notification(int what) => this.Notify(what);
+  public override void _Notification(int what) {
+    this.Notify(what);
+    // Closing the window does not pass through a menu, so this is the run's only chance to be
+    // written down: checkpoints bank progress, and everything since the last one - the gems in
+    // the HUD, the door the player is standing at - would otherwise go with the process.
+    if (what is (int)NotificationWMCloseRequest or (int)NotificationWMGoBackRequest) {
+      _writeProgressToSlot();
+    }
+  }
 
   [Dependency]
   public IMenuManager MenuManager => this.DependOn<IMenuManager>();
@@ -56,6 +66,9 @@ public partial class SceneOrchester : Node2D {
   // walk budget comes from the level itself.
   private bool _introActive;
   private float _introWalkTimeLeft;
+  // The level whose door owes the player a ceremony, held from the moment its clear is
+  // banked until the hub's own title has faded and there is something to watch.
+  private LevelId? _celebrationLevelId;
 
   public override void _EnterTree() {
     base._EnterTree();
@@ -95,12 +108,39 @@ public partial class SceneOrchester : Node2D {
     }
   }
 
-  private void _startLevel(LevelId levelId, bool restoreSavedGame) {
+  private void _startLevel(LevelId levelId, bool restoreSavedGame, LevelId? levelJustLeft = null) {
     _currentLevelId = levelId;
     _currentLevel = _loadLevel(levelId);
     if (_currentLevel != null && restoreSavedGame) {
       SaveManager.LoadGame(GetTree(), _currentLevel.PlayerNode, _currentLevel.CameraNode);
     }
+    if (levelId == LevelId.Hub) {
+      _standAtHubDoor(levelJustLeft);
+    }
+  }
+
+  // The hub is a room rather than a menu, so where the player is standing when it opens is
+  // the whole of what it says to them: they step out of the door of the level they have just
+  // left, and a run picked up from a save opens on the door that run is on.
+  private void _standAtHubDoor(LevelId? levelJustLeft) {
+    if (_currentLevel is not { } hub) {
+      return;
+    }
+    IReadOnlySet<LevelId> clearedLevels = SaveManager.GetSlotMetaData()?.ClearedLevels ?? new HashSet<LevelId>();
+    var doorLevelId = HubSpawnPolicy.DoorToStandAt(
+      levelJustLeft,
+      [.. LevelDispatcher.LEVELS.Select(level => level.Id)],
+      clearedLevels
+    );
+    var door = hub.FindDescendants<Door>().FirstOrDefault(door => door.TargetLevel == doorLevelId);
+    if (door == null) {
+      return;
+    }
+    // Only the doorway is taken from the door: its own height is wherever the arch happens to
+    // be drawn, while the level authored a spawn that is standing on the floor.
+    var player = hub.PlayerNode;
+    player.GlobalPosition = new Vector2(door.GlobalPosition.X, player.GlobalPosition.Y);
+    hub.CameraNode.SnapTo(player.GlobalPosition);
   }
 
   private void ConnectSignals() {
@@ -246,11 +286,20 @@ public partial class SceneOrchester : Node2D {
     // Removal first: the old level's _ExitTree stops the music before the new one
     // starts its own track, and the persist group must hold only the new level's
     // nodes by the time the save below serializes it.
+    var levelJustLeft = _currentLevelId;
     if (_currentLevel != null) {
       RemoveChild(_currentLevel);
       _currentLevel.QueueFree();
     }
-    _startLevel(nextLevelId, restoreSavedGame: false);
+    _startLevel(nextLevelId, restoreSavedGame: false, levelJustLeft);
+
+    // Before the write, not after: the door hears the clear the moment it is banked, and a
+    // door that has not been warned shows the gems there and then - under the cover, where
+    // nobody sees them arrive.
+    if (clearedLevelId is { } toCelebrate && nextLevelId == LevelId.Hub) {
+      _celebrationLevelId = toCelebrate;
+      _doorFor(toCelebrate)?.ExpectCelebration();
+    }
 
     // Saved after the swap, so the slot is a coherent "standing at the start of the
     // next level" snapshot rather than a mix of two levels. A door entry is no
@@ -288,7 +337,7 @@ public partial class SceneOrchester : Node2D {
     _titleCardNode.PresentTitle(titleKey.Value);
   }
 
-  // Drives the intro walk, the same way the temple walks the player in: the input
+  // Drives the intro walk, the same way the exit walks the player out: the input
   // lock belongs to the cutscene, so someone has to push.
   public override void _Process(double delta) {
     base._Process(delta);
@@ -313,5 +362,19 @@ public partial class SceneOrchester : Node2D {
     _introActive = false;
     SetProcess(false);
     EventHandler.Instance.EmitCutsceneRequestEnd(INTRO_CUTSCENE_ID);
+    _celebrateClearedDoor();
   }
+
+  // Held back until the title is gone and nothing is over the scene: the clear was banked
+  // while the cover was still down, and the door's whole point is being watched.
+  private void _celebrateClearedDoor() {
+    if (_celebrationLevelId is not { } celebrated) {
+      return;
+    }
+    _celebrationLevelId = null;
+    _doorFor(celebrated)?.Celebrate();
+  }
+
+  private Door? _doorFor(LevelId levelId) =>
+    _currentLevel?.FindDescendants<Door>().FirstOrDefault(door => door.TargetLevel == levelId);
 }
