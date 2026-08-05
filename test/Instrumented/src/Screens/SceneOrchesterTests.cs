@@ -11,6 +11,7 @@ using Wfc.Screens;
 using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
 using Wfc.test.Helpers.Fakes;
+using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
@@ -23,6 +24,9 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
   // Cover fade + hold + reveal fade, with slack for a slow CI machine.
   private const double SEQUENCE_TIMEOUT_SECONDS = 10.0;
+  // The gems land one at a time and the comet takes its time forming, on top of the swap the
+  // whole thing waits behind.
+  private const double CEREMONY_TIMEOUT_SECONDS = 25.0;
 
   private FakeDependenciesProvider _provider = default!;
 
@@ -189,6 +193,114 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
     _archGemOf(door!, ColorUtils.BLUE)?.IsCollected
       .ShouldBe(true, "the gem was banked but its door never lit up");
   }
+
+  // Walking out of a level puts the player at that level's door, so the hub reads as the room
+  // they came back into rather than as a menu that reopens at its own beginning.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task ClearingALevelStandsThePlayerAtItsOwnDoor() {
+    _provider.Save = new FakeSaveManager(selectedSlot: 0).WithFilledSlot(0, progress: 0);
+    _provider.MenuManager.GoToMenu(GameMenus.GAME);
+    await _idle();
+
+    var orchestrator = _orchestrator();
+    orchestrator.ShouldNotBeNull();
+    (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Tutorial))
+      .ShouldBeTrue("the game screen never loaded the first level");
+
+    EventHandler.Instance.EmitLevelCleared();
+
+    (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Hub))
+      .ShouldBeTrue("the cleared level never walked back out to the hub");
+    var door = _doorFor(orchestrator!, LevelId.Tutorial);
+    door.ShouldNotBeNull();
+    _hubPlayerX(orchestrator!).ShouldBe(door!.GlobalPosition.X, 1.0f,
+      "the player came back to the hub somewhere other than the door they walked out of");
+  }
+
+  // A run opened from a save parked in the hub has no door it just came out of, so it opens
+  // on the one it is on: the first level it has not finished.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task AHubOpenedFromASaveStandsAtTheNextUnfinishedDoor() {
+    _provider.Save = new FakeSaveManager(selectedSlot: 0).WithFilledSlot(0, progress: 0);
+    _provider.Save.RecordLevelCleared(TestScene.GetTree(), LevelId.Tutorial, LevelId.Hub);
+    _provider.MenuManager.SetCurrentLevel(LevelId.Hub);
+    _provider.MenuManager.GoToMenu(GameMenus.GAME);
+    await _idle();
+
+    var orchestrator = _orchestrator();
+    orchestrator.ShouldNotBeNull();
+    (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Hub))
+      .ShouldBeTrue("the game screen never loaded the hub");
+
+    var door = _doorFor(orchestrator!, LevelId.FourColors);
+    door.ShouldNotBeNull();
+    _hubPlayerX(orchestrator!).ShouldBe(door!.GlobalPosition.X, 1.0f,
+      "the hub opened somewhere other than the door the run is on");
+  }
+
+  // The clear is banked under the swap cover, and the door it belongs to is built before that
+  // write lands. What has to hold end to end is that the gems still arrive on the arch - after
+  // the hub's own title is gone, so there is someone watching.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task TheDoorOfAClearedLevelCelebratesTheGemsItGaveUp() {
+    _provider.Save = new FakeSaveManager(selectedSlot: 0).WithFilledSlot(0, progress: 0);
+    _provider.MenuManager.GoToMenu(GameMenus.GAME);
+    await _idle();
+
+    var orchestrator = _orchestrator();
+    orchestrator.ShouldNotBeNull();
+    (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Tutorial))
+      .ShouldBeTrue("the game screen never loaded the first level");
+    orchestrator!.GetChildren().OfType<GameLevel>().First()
+      .GemsHUDContainerNode.MarkAlreadyCollected(ColorUtils.COLOR_GROUPS);
+
+    EventHandler.Instance.EmitLevelCleared();
+
+    (await _waitUntil(() => _currentLevelIdOf(orchestrator) == LevelId.Hub))
+      .ShouldBeTrue("the cleared level never walked back out to the hub");
+    var door = _doorFor(orchestrator, LevelId.Tutorial);
+    door.ShouldNotBeNull();
+
+    (await _waitUntil(
+      () => door!.FindDescendants<DoorArchGem>().All(gem => gem.IsCollected),
+      CEREMONY_TIMEOUT_SECONDS))
+      .ShouldBeTrue("the gems the level gave up never reached its door");
+    (await _waitUntil(
+      () => door!.FindDescendants<DoorGem>().First().IsComplete,
+      CEREMONY_TIMEOUT_SECONDS))
+      .ShouldBeTrue("every gem is on the arch but the comet never formed");
+  }
+
+  // Closing the window is not a menu action and gets no chance to become one: whatever the run
+  // is holding when it arrives - the gems in the HUD, the level being played - is written then
+  // or not at all.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task ClosingTheWindowBanksTheRun() {
+    _provider.Save = new FakeSaveManager(selectedSlot: 0).WithFilledSlot(0, progress: 0);
+    _provider.MenuManager.GoToMenu(GameMenus.GAME);
+    await _idle();
+
+    var orchestrator = _orchestrator();
+    orchestrator.ShouldNotBeNull();
+    (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Tutorial))
+      .ShouldBeTrue("the game screen never loaded the first level");
+    var writesBefore = _provider.Save.RecordProgressCallCount;
+
+    orchestrator!.Notification((int)Node.NotificationWMCloseRequest);
+    await _idle();
+
+    _provider.Save.RecordProgressCallCount.ShouldBeGreaterThan(writesBefore,
+      "the window closed on the run without writing it down");
+    _provider.Save.GetSlotMetaData(0)!.LevelId.ShouldBe(LevelId.Tutorial,
+      "the quit banked a level other than the one being played");
+  }
+
+  private static float _hubPlayerX(SceneOrchester orchestrator) =>
+    orchestrator.GetChildren().OfType<GameLevel>().First().PlayerNode.GlobalPosition.X;
 
   private static Door? _doorFor(SceneOrchester orchestrator, LevelId targetLevel) =>
     orchestrator.FindDescendants<Door>().FirstOrDefault(door => door.TargetLevel == targetLevel);

@@ -13,9 +13,11 @@ public static class GameSfx {
     ["brick"] = new SfxInfo(BASE_PATH + "brick.ogg", -4),
     ["bricksSlide"] = new SfxInfo(BASE_PATH + "bricks_slide.ogg"),
     ["dash"] = new SfxInfo(BASE_PATH + "dash.ogg", -6),
+    // Placeholders: the door ceremony wants sounds of its own, and until they exist it borrows
+    // two that are close enough to read. Only the paths here need replacing.
+    ["doorCometFormed"] = new SfxInfo(BASE_PATH + "shine.ogg", -2),
+    ["doorGemFill"] = new SfxInfo(BASE_PATH + "pickup.ogg", -6),
     ["gemCollect"] = new SfxInfo(BASE_PATH + "gem.ogg", -15),
-    ["GemEngine"] = new SfxInfo(BASE_PATH + "gems/gem-engine.ogg", 8),
-    ["GemPut"] = new SfxInfo(BASE_PATH + "gems/temple_put_gem.ogg", -5),
     ["jump"] = new SfxInfo(BASE_PATH + "jumping.ogg", -5),
     ["land"] = new SfxInfo(BASE_PATH + "stand.ogg", -8),
     ["menuFocus"] = new SfxInfo(BASE_PATH + "click2.ogg"),

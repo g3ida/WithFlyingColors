@@ -73,10 +73,9 @@ public interface IEventHandler {
   public void EmitPianoPuzzleWon();
   public void EmitCutsceneRequestStart(string id);
   public void EmitCutsceneRequestEnd(string id);
-  public void EmitGemTempleTriggered();
-  public void EmitGemEngineStarted();
   public void EmitLevelCleared();
-  public void EmitGemPutInTemple();
+  public void EmitDoorGemFilled();
+  public void EmitDoorCometFormed();
   public void EmitDoorEntered(int levelId);
   public void EmitLevelRestartRequested();
   public void EmitSaveSlotUpdated();

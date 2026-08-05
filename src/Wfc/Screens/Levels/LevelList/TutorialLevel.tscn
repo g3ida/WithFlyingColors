@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://c38xg23elqtpo" path="res://src/Wfc/Entities/World/Tutorial/TutorialText/TutorialText.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://bwd2mkbkstvp8" path="res://src/Wfc/Entities/World/Tutorial/KeyboardButton/KeyboardButton.tscn" id="7"]
 [ext_resource type="TileSet" uid="uid://dsverl2jjlm71" path="res://Assets/Tilesets/TutorialLevel.tres" id="8"]
-[ext_resource type="PackedScene" uid="uid://blkbqb8j6rnda" path="res://src/Wfc/Entities/World/Temple/GemsTemple/GemsTemple.tscn" id="9"]
+[ext_resource type="PackedScene" uid="uid://cyq2n8rwlxk3d" path="res://src/Wfc/Entities/World/Exit/LevelExit/LevelExit.tscn" id="9"]
 [ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="10"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="11"]
 [ext_resource type="Script" uid="uid://saay1hdwowdk" path="res://src/Wfc/Entities/World/Platforms/PlatformTileMap/PlatformTileMap.cs" id="12"]
@@ -46,7 +46,7 @@ size = Vector2(40, 150)
 [node name="Camera2D" parent="." index="1"]
 limit_left = -350
 limit_top = -1000
-limit_right = 24800
+limit_right = 26816
 limit_bottom = 620
 
 [node name="GemContainerHUD" parent="HUD" index="0"]
@@ -286,8 +286,8 @@ key_text = "dash"
 layout_mode = 2
 text = " To dash"
 
-[node name="GemsTemple" parent="." index="10" unique_id=1588115170 instance=ExtResource("9")]
-position = Vector2(34725, 128)
+[node name="LevelExit" parent="." index="10" unique_id=1588115170 instance=ExtResource("9")]
+position = Vector2(25600, 166)
 
 [node name="Platforms" type="Node2D" parent="." index="11" unique_id=140674420]
 
