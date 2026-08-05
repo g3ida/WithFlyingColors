@@ -39,6 +39,10 @@ public partial class SaveSlotPanel : PanelContainer {
   private const float SIDE_BAR_TWEEN_DURATION = 0.15f;
   private static readonly Color DISABLED_TINT = new(1, 1, 1, 0.5f);
   private static readonly Color DISABLED_SIDE_BAR_COLOR = new(0.5f, 0.5f, 0.5f);
+  // The focused card inverts: light text on a near-black panel.
+  private static readonly Color FOCUSED_BACKGROUND_COLOR = Color.FromHtml("2d2d2d");
+  private static readonly Color FOCUSED_FONT_COLOR = Colors.White;
+  private static readonly Color FONT_COLOR = Colors.Black;
 
   // Which face of the game's four-color skin each slot wears, in slot order.
   private static readonly SkinColor[] ACCENT_COLOR_BAG = [
@@ -70,8 +74,6 @@ public partial class SaveSlotPanel : PanelContainer {
   private Label _levelNameNode = default!;
   [NodePath("Button")]
   private Button _buttonNode = default!;
-  [NodePath("AnimationPlayer")]
-  private AnimationPlayer _animationPlayerNode = default!;
   #endregion Nodes
 
   private Tween? _sideBarTweener;
@@ -161,21 +163,16 @@ public partial class SaveSlotPanel : PanelContainer {
   // in its current mode.
   private void _onButtonPressed() => EmitSignal(SignalName.Pressed);
 
-  // The focus feedback is threefold: the card blinks, its side bar widens and a
-  // border in the slot's own color surrounds it, so the focused card reads as
-  // focused from any distance.
-  private void _onButtonFocusEntered() {
-    _animationPlayerNode.Play("Blink");
-    _setFocusedLook(true);
-  }
+  // The focus feedback is threefold: the card inverts its colors, its side bar
+  // widens and a border in the slot's own color surrounds it, so the focused card
+  // reads as focused from any distance.
+  private void _onButtonFocusEntered() => _setFocusedLook(true);
 
-  private void _onButtonFocusExited() {
-    _animationPlayerNode.Play("RESET");
-    _setFocusedLook(false);
-  }
+  private void _onButtonFocusExited() => _setFocusedLook(false);
 
   private void _setFocusedLook(bool focused) {
     _animateSideBarWidth(focused ? SIDE_BAR_FOCUSED_WIDTH : SIDE_BAR_WIDTH);
+    _setFontColor(focused ? FOCUSED_FONT_COLOR : FONT_COLOR);
     if (focused) {
       var style = (StyleBoxFlat)GetThemeStylebox("panel").Duplicate();
       style.BorderWidthLeft = FOCUS_BORDER_WIDTH;
@@ -183,10 +180,17 @@ public partial class SaveSlotPanel : PanelContainer {
       style.BorderWidthRight = FOCUS_BORDER_WIDTH;
       style.BorderWidthBottom = FOCUS_BORDER_WIDTH;
       style.BorderColor = _accentColor();
+      style.BgColor = FOCUSED_BACKGROUND_COLOR;
       AddThemeStyleboxOverride("panel", style);
     }
     else {
       RemoveThemeStyleboxOverride("panel");
+    }
+  }
+
+  private void _setFontColor(Color color) {
+    foreach (var label in new[] { _slotIndexNode, _levelNameNode, _createdNode, _lastPlayedNode, _descriptionNode }) {
+      label.AddThemeColorOverride("font_color", color);
     }
   }
 
