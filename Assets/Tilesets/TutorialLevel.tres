@@ -8,6 +8,12 @@
 [ext_resource type="Texture2D" uid="uid://bmn6u7gjxkus3" path="res://Assets/Sprites/Platforms/platform-tiles/5.png" id="6"]
 [ext_resource type="Texture2D" uid="uid://3j0an677kgqf" path="res://Assets/Sprites/Platforms/platform-tiles/2.png" id="7"]
 
+[sub_resource type="TileMapPattern" id="TileMapPattern_dthvi"]
+tile_data = PackedInt32Array(0, 5, 0, 65536, 3, 0, 131072, 3, 0, 196608, 3, 0, 262144, 3, 0, 327680, 3, 0, 393216, 3, 0, 458752, 3, 0, 524288, 3, 0, 589824, 3, 0, 655360, 3, 0, 720896, 3, 0, 786432, 3, 0, 851968, 3, 0, 917504, 3, 0, 983040, 3, 0, 1048576, 3, 0, 1114112, 3, 0, 1179648, 3, 0, 1245184, 0, 0)
+
+[sub_resource type="TileMapPattern" id="TileMapPattern_7bm5i"]
+tile_data = PackedInt32Array(0, 4, 0, 65536, 4, 0, 131072, 4, 0, 196608, 4, 0, 262144, 4, 0, 327680, 4, 0, 393216, 4, 0, 458752, 4, 0, 524288, 4, 0, 589824, 4, 0, 655360, 4, 0, 720896, 4, 0, 786432, 4, 0, 851968, 4, 0, 917504, 4, 0, 983040, 4, 0, 1048576, 4, 0, 1114112, 4, 0, 1179648, 4, 0, 1245184, 1, 0)
+
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_kh2xb"]
 polygon = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 
@@ -474,3 +480,5 @@ sources/3 = SubResource("TileSetAtlasSource_ft1ae")
 sources/4 = SubResource("TileSetAtlasSource_3ek57")
 sources/5 = SubResource("TileSetAtlasSource_kekmt")
 sources/6 = SubResource("TileSetAtlasSource_w0htk")
+pattern_0 = SubResource("TileMapPattern_dthvi")
+pattern_1 = SubResource("TileMapPattern_7bm5i")

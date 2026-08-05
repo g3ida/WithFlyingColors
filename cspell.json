@@ -181,6 +181,10 @@
     "remappable",
     "colour",
     "colours",
-    "greyscale"
+    "greyscale",
+    "tileset",
+    "neighbour",
+    "fwidth",
+    "rasterizer"
   ]
 }
