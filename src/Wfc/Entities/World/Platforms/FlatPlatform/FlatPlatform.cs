@@ -69,7 +69,10 @@ public partial class FlatPlatform : StaticBody2D {
   #region Dependencies
   public override void _Notification(int what) {
     this.Notify(what);
-    if (what == CanvasItem.NotificationTransformChanged) {
+    // Only while the platform is being authored. A platform that moves under its own power is told
+    // about its own transform on every tick of its run, and snapping it back to the grid there
+    // fights whatever is carrying it - the platform judders on the spot instead of travelling.
+    if (what == CanvasItem.NotificationTransformChanged && Engine.IsEditorHint()) {
       _alignToGrid();
     }
   }
@@ -174,8 +177,10 @@ public partial class FlatPlatform : StaticBody2D {
     _applyColorGroups();
     _applyColor();
 
-    // Only the editor drags a platform around, and the snap is the only thing listening.
-    SetNotifyTransform(Engine.IsEditorHint());
+    // The snap has to hear about a platform being dragged. Left to Godot's own setting for a
+    // collision object rather than turned off outside the editor: a body that moves needs the same
+    // notification to keep its shapes with it.
+    SetNotifyTransform(true);
 
     // Nothing to feed the shader until something lands; OnPlayerLanded turns this back on.
     SetProcess(false);
@@ -221,7 +226,9 @@ public partial class FlatPlatform : StaticBody2D {
       return;
     }
     _animationTimer = 0f;
-    _contactPosition = position;
+    // Kept in the platform's own frame rather than the world's, so a platform that is moving
+    // carries the splash with it instead of leaving the paint behind where the cube touched down.
+    _contactPosition = ToLocal(position);
     SetProcess(true);
   }
 
@@ -237,7 +244,7 @@ public partial class FlatPlatform : StaticBody2D {
     if (camera != null && _surfaceNode.Material is ShaderMaterial material) {
       var resolution = GetViewport().GetVisibleRect().Size;
       var cameraPosition = camera.GetScreenCenterPosition();
-      var onScreen = _contactPosition + (resolution / 2f) - cameraPosition;
+      var onScreen = ToGlobal(_contactPosition) + (resolution / 2f) - cameraPosition;
 
       material.SetShaderParameter(PlatformSplash.ContactPosParam, onScreen / resolution);
       material.SetShaderParameter(PlatformSplash.TimerParam, _animationTimer);
@@ -250,7 +257,9 @@ public partial class FlatPlatform : StaticBody2D {
     }
   }
 
-  private void _applyShape() {
+  // The one hook a platform built on this one gets: everything sized off the platform is sized here,
+  // and Size is set from the inspector rather than announced by a notification anything can hear.
+  protected virtual void _applyShape() {
     if (!_isWired) {
       return;
     }
@@ -302,13 +311,16 @@ public partial class FlatPlatform : StaticBody2D {
     }
   }
 
+  // What the surface is painted, so anything drawn alongside a platform can be drawn in it.
+  protected Color SurfaceColor => _isNeutral()
+    ? new Color(1f, 1f, 1f)
+    : SkinManager.Instance.CurrentSkin.GetColor(GameSkin.ColorGroupToSkinColor(Group), SkinColorIntensity.Basic);
+
   private void _applyColor() {
     if (!_isWired) {
       return;
     }
-    _surfaceNode.Color = _isNeutral()
-      ? new Color(1f, 1f, 1f)
-      : SkinManager.Instance.CurrentSkin.GetColor(GameSkin.ColorGroupToSkinColor(Group), SkinColorIntensity.Basic);
+    _surfaceNode.Color = SurfaceColor;
   }
 
   // Anything the four colour groups do not name is neutral, so a platform left blank can be landed

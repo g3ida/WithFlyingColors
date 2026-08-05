@@ -1,31 +1,19 @@
 namespace Wfc.Entities.World.Platforms;
 
 using System.Collections.Generic;
-using Chickensoft.AutoInject;
-using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
+using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
-// A flat platform that runs back and forth on its own: everything a level author has to set is on
-// this one node, and the dashed track between its two ends says where it goes without playing the
-// level to find out.
-//
-// It is a flat platform in every other respect - the same sliced corners, the same shade band, the
-// same colour group deciding which face may land on it - so a run of static platforms and a moving
-// one read as the same surface.
+// Puts a body the level already has on a run: the brick breaker's door, the tetris pool's floor,
+// anything whose own sprites and shape are its own business. Parent one to the body and it drives
+// it; for a platform that carries a surface of its own there is SlidingPlatform.
 [Tool]
 [ScenePath]
-[Meta(typeof(IAutoNode))]
-public partial class SlidingPlatform : FlatPlatform, IPersistent {
-  #region Constants
-  // How much of the platform's own depth the cog takes up, so it sits inside the surface rather than
-  // hanging off a thin ledge.
-  private const float GEAR_SHARE = 0.7f;
-  #endregion Constants
-
+public partial class PlatformSlider : Node2D, IPersistent {
   #region Exports
   // Each of these is the run itself, and PlatformSlide is where they are described.
   [Export]
@@ -103,14 +91,14 @@ public partial class SlidingPlatform : FlatPlatform, IPersistent {
   }
   private PlatformSlide.TrackDisplay _track = PlatformSlide.TrackDisplay.EditorOnly;
 
-  // The cog the older platforms carry, kept as the one thing that tells the player this surface is
-  // going somewhere: a sliding platform is drawn exactly like a static one otherwise.
   [Export]
   public bool ShowGear {
     get => _showGear;
     set {
       _showGear = value;
-      _applyGear();
+      if (_isWired) {
+        _gearNode.Visible = _showGear;
+      }
     }
   }
   private bool _showGear = true;
@@ -118,45 +106,66 @@ public partial class SlidingPlatform : FlatPlatform, IPersistent {
 
   #region Fields
   private readonly PlatformSlide _slide = new PlatformSlide();
-  private bool _isSlideSubscribed;
-  private bool _isSlideWired;
+  private PhysicsBody2D? _body;
+  private bool _isSubscribed;
+  // The exported setters fire while the scene is still loading, before there are any nodes to push
+  // the new value into.
+  private bool _isWired;
   #endregion Fields
 
   #region Nodes
-  [NodePath("Track")]
-  private SlideTrack _trackNode = default!;
   [NodePath("Gear")]
   private SlidingPlatformGear _gearNode = default!;
+  [NodePath("Track")]
+  private SlideTrack _trackNode = default!;
   #endregion Nodes
 
   public override void _Ready() {
     base._Ready();
-    _isSlideWired = true;
+    this.WireNodes();
+    _isWired = true;
+    _body = GetParent() as PhysicsBody2D;
+    _gearNode.Visible = _showGear;
 
     if (Engine.IsEditorHint()) {
       SetPhysicsProcess(false);
+      // Only the editor drags a platform around, and the track is the only thing listening.
+      SetNotifyTransform(true);
       _reread();
       return;
     }
-    _slide.Begin(this);
+
+    if (_body is null) {
+      GD.PushError($"{Name} has no physics body to move: a slider drives the body it is parented to.");
+      SetPhysicsProcess(false);
+      return;
+    }
+    _slide.Begin(_body);
     _showTrack();
   }
 
   public override string[] _GetConfigurationWarnings() {
     var warnings = new List<string>();
+    if (GetParent() is not AnimatableBody2D) {
+      warnings.Add(
+        "A slider moves the body it is parented to, and only an AnimatableBody2D carries the player "
+        + "while it moves. Parent this to one, or use SlidingPlatform for a platform that brings its "
+        + "own surface."
+      );
+    }
     if (Mathf.IsZeroApprox(Distance)) {
-      warnings.Add("Distance is zero, so the platform stays where it is. Use a plain FlatPlatform for a surface that does not move.");
+      warnings.Add("Distance is zero, so the platform stays where it is.");
     }
     if (Speed <= 0.0f) {
       warnings.Add("Speed is zero, so the platform never reaches the far end of its run.");
     }
-    return [.. base._GetConfigurationWarnings(), .. warnings];
+    return [.. warnings];
   }
 
   public override void _Notification(int what) {
     base._Notification(what);
-    // Only while the platform is being authored: once it is running, its own transform changes are
-    // the run itself, and the track is not measured from where it has got to.
+    // Only while the platform is being authored: once it is running, the body's transform changes
+    // are the run itself, and the track is not measured from where it has got to.
     if (what == CanvasItem.NotificationTransformChanged && Engine.IsEditorHint()) {
       _reread();
     }
@@ -182,22 +191,22 @@ public partial class SlidingPlatform : FlatPlatform, IPersistent {
   #region Checkpoints
   public override void _EnterTree() {
     base._EnterTree();
-    if (Engine.IsEditorHint() || _isSlideSubscribed) {
+    if (Engine.IsEditorHint() || _isSubscribed) {
       return;
     }
     EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
     EventHandler.Instance.Events.CheckpointLoaded += _onRespawn;
-    _isSlideSubscribed = true;
+    _isSubscribed = true;
   }
 
   public override void _ExitTree() {
     base._ExitTree();
-    if (!_isSlideSubscribed) {
+    if (!_isSubscribed) {
       return;
     }
     EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
     EventHandler.Instance.Events.CheckpointLoaded -= _onRespawn;
-    _isSlideSubscribed = false;
+    _isSubscribed = false;
   }
 
   private void _onCheckpointReached(Vector2 _position, string _colorGroup) => _slide.OnCheckpointReached();
@@ -217,30 +226,16 @@ public partial class SlidingPlatform : FlatPlatform, IPersistent {
   }
   #endregion Checkpoints
 
-  // Sized along with everything else the platform's own size decides.
-  protected override void _applyShape() {
-    base._applyShape();
-    _applyGear();
-  }
-
-  private void _applyGear() {
-    // Reached through the base class's own size handling, which runs before this class has anything
-    // wired.
-    if (_gearNode is null) {
-      return;
-    }
-    _gearNode.Visible = _showGear;
-    _gearNode.FitTo(Mathf.Min(Size.X, Size.Y) * GEAR_SHARE);
-  }
-
   // The run is fixed once the level is playing, so the track is only ever re-read while it is being
   // authored.
   private void _reread() {
-    if (!_isSlideWired) {
+    if (!_isWired) {
       return;
     }
     if (Engine.IsEditorHint()) {
-      _slide.Remeasure(this);
+      if (_body is not null) {
+        _slide.Remeasure(_body);
+      }
       UpdateConfigurationWarnings();
     }
     _showTrack();
@@ -253,7 +248,6 @@ public partial class SlidingPlatform : FlatPlatform, IPersistent {
       _ => false,
     };
     if (_trackNode.Visible) {
-      _trackNode.Modulate = SurfaceColor;
       _trackNode.Trace(_slide.Start, _slide.End);
     }
   }

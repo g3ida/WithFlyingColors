@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="11"]
 [ext_resource type="PackedScene" uid="uid://lycx13j354o3" path="res://src/Wfc/Entities/HUD/GemsHUDContainer/GemsHUDContainer.tscn" id="16"]
 [ext_resource type="PackedScene" uid="uid://bijboehpv0gsh" path="res://src/Wfc/Screens/PauseMenu/PauseMenu/PauseMenu.tscn" id="19"]
-[ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="20"]
+[ext_resource type="PackedScene" uid="uid://n6iaorhximfn" path="res://src/Wfc/Entities/World/Platforms/PlatformSlider/PlatformSlider.tscn" id="20"]
 [ext_resource type="PackedScene" uid="uid://dhoxs1h5dhijp" path="res://src/Wfc/Entities/World/Platforms/Platform/Platform.tscn" id="21"]
 [ext_resource type="PackedScene" uid="uid://cgut5po1y8ibm" path="res://src/Wfc/Entities/World/Enemies/LazerBeam/LazerBeam.tscn" id="22"]
 [ext_resource type="PackedScene" uid="uid://dgx873koyipf1" path="res://src/Wfc/Entities/World/Enemies/Canon/Canon.tscn" id="24"]
@@ -131,25 +131,19 @@ position = Vector2(2747, -269)
 scale = Vector2(3, 2)
 Group = "pink"
 
-[node name="Node2D" parent="MovingPlatform" unique_id=1308267780 instance=ExtResource("20")]
-
 [node name="MovingPlatform2" parent="." unique_id=1300349072 instance=ExtResource("21")]
 position = Vector2(1374, 365)
 scale = Vector2(3, 2)
 
-[node name="Node2D" parent="MovingPlatform2" unique_id=2055590024 instance=ExtResource("20")]
-
-[node name="Pos" type="Marker2D" parent="MovingPlatform2/Node2D" unique_id=2144248899]
-position = Vector2(450, 0)
+[node name="Slider" parent="MovingPlatform2" unique_id=2055590024 instance=ExtResource("20")]
+Distance = 450.0
 
 [node name="MovingPlatform3" parent="." unique_id=482809522 instance=ExtResource("21")]
 position = Vector2(3086, 457)
 scale = Vector2(3, 2)
 
-[node name="Node2D" parent="MovingPlatform3" unique_id=2100047408 instance=ExtResource("20")]
-
-[node name="Pos" type="Marker2D" parent="MovingPlatform3/Node2D" unique_id=538186465]
-position = Vector2(300, 0)
+[node name="Slider" parent="MovingPlatform3" unique_id=2100047408 instance=ExtResource("20")]
+Distance = 300.0
 
 [node name="LazerBeam" parent="." unique_id=419211562 instance=ExtResource("22")]
 position = Vector2(2648, 94)
