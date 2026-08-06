@@ -70,6 +70,32 @@ public class SlidingPlatformTests(Node testScene) : TestClass(testScene) {
       .ShouldBeTrue("a negative distance never took the platform back down its own axis");
   }
 
+  // The far end is a place a level wants a platform to be found at as readily as the near one - a
+  // lift that is up when the player arrives and comes down for them. Where it is placed is where it
+  // stands on the first frame either way, so the run is measured back out of that spot instead.
+  [Test]
+  public async Task APlatformPlacedOnTheFarEndOfItsRunStartsThereAndComesBackToIt() {
+    var platform = await _add(p => p.StartAt = PlatformSlide.SlideOrigin.End);
+    var start = platform.GlobalPosition;
+
+    (await _waitFor(() => platform.GlobalPosition.X <= start.X - DISTANCE + CLOSE))
+      .ShouldBeTrue("the platform never ran out to the other end of its run");
+
+    (await _waitFor(() => platform.GlobalPosition.X >= start.X - CLOSE))
+      .ShouldBeTrue("the platform never came back to where the level placed it");
+  }
+
+  [Test]
+  public async Task ARespawnPutsAPlatformPlacedOnTheFarEndBackOnThatEnd() {
+    var platform = await _add(p => p.StartAt = PlatformSlide.SlideOrigin.End);
+    var start = platform.GlobalPosition;
+    await _waitFor(() => platform.GlobalPosition.X < start.X - (DISTANCE / 2.0f));
+
+    await _respawn(platform);
+
+    platform.GlobalPosition.X.ShouldBe(start.X, CLOSE, "the platform came back to the wrong end of its run");
+  }
+
   // The bug this guards: nothing had recorded where a platform belonged until the player reached a
   // checkpoint, so the first death in a level moved every sliding platform in it to the origin -
   // out of the level, taking the floor the player was about to land on with it.
@@ -170,6 +196,19 @@ public class SlidingPlatformTests(Node testScene) : TestClass(testScene) {
     track.Visible.ShouldBeTrue("a platform asked to show its track drew nothing");
     track.From.ShouldBe(new Vector2(START_X, START_Y));
     track.To.ShouldBe(new Vector2(START_X + DISTANCE, START_Y));
+  }
+
+  // What tells an author which way a platform they have just placed is going to go.
+  [Test]
+  public async Task TheTrackOfAPlatformPlacedOnTheFarEndIsDrawnBehindIt() {
+    var platform = await _add(p => {
+      p.StartAt = PlatformSlide.SlideOrigin.End;
+      p.Track = PlatformSlide.TrackDisplay.Always;
+    });
+    var track = platform.GetNode<SlideTrack>("Track");
+
+    track.From.ShouldBe(new Vector2(START_X - DISTANCE, START_Y));
+    track.To.ShouldBe(new Vector2(START_X, START_Y));
   }
 
   // Drawn top level, or the track rides along with the platform it is supposed to be measuring.

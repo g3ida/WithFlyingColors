@@ -31,6 +31,15 @@ public sealed class PlatformSlide {
     SlidingBack,
   }
 
+  // Which end of its run the platform is standing on when the level starts. The level places the
+  // platform where it is meant to be found, and the run is measured from there - away from that
+  // spot for a platform that starts at the near end, back towards it for one that starts at the far
+  // end. So what an author sees is where the platform stands on the level's first frame either way.
+  public enum SlideOrigin {
+    Start,
+    End,
+  }
+
   // Whether the dashed track a platform runs along is drawn. Authoring always wants it; a level
   // that means the track as a hint to the player turns it on for that platform.
   public enum TrackDisplay {
@@ -61,6 +70,9 @@ public sealed class PlatformSlide {
 
   // How far the platform runs, in the units the body is placed in. Negative runs left or up.
   public float Distance = 256.0f;
+
+  // Which end of that run the level placed the platform on.
+  public SlideOrigin StartAt = SlideOrigin.Start;
 
   // World units per second, the same measure the rest of the game moves things by.
   public float Speed = 3.0f;
@@ -120,9 +132,9 @@ public sealed class PlatformSlide {
     _bodyShape = _findBodyShape(body);
     Remeasure(body);
 
-    Phase = SlidePhase.WaitAtStart;
+    Phase = StartAt == SlideOrigin.Start ? SlidePhase.WaitAtStart : SlidePhase.WaitAtEnd;
     _elapsed = 0.0f;
-    _placed = _start;
+    _placed = _target();
     Travelled = 0.0f;
     IsStopped = StartsStopped;
     _delayedStop = false;
@@ -133,13 +145,15 @@ public sealed class PlatformSlide {
   // inspector.
   public void Remeasure(PhysicsBody2D body) {
     _body = body;
-    _start = body.GlobalPosition;
     var offset = Axis == SlideAxis.Horizontal
       ? new Vector2(Distance, 0.0f)
       : new Vector2(0.0f, Distance);
     // Scaled the way the body is: a slider inside a scene that was sized as a whole is authored in
     // that scene's units, not the screen's.
     _travel = offset * body.GlobalScale;
+    // The body sits on the end it starts from, so a run that starts at the far end is measured
+    // backwards out of where the level put the platform.
+    _start = StartAt == SlideOrigin.Start ? body.GlobalPosition : body.GlobalPosition - _travel;
     _heading = _travel.Normalized();
     var speed = Mathf.Abs(Speed) * Constants.WORLD_TO_SCREEN;
     _legDuration = speed > 0.0f ? _travel.Length() / speed : 0.0f;
