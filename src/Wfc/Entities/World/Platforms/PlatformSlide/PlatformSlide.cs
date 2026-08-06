@@ -80,6 +80,11 @@ public sealed class PlatformSlide {
   // How long the platform stands still at each end.
   public float WaitTime = 4.0f;
 
+  // Held for this long before the first wait of all, and never again. What staggers a run of
+  // platforms that would otherwise set off together: give each one a different delay and they
+  // cross rather than moving as a wall.
+  public float StartDelay;
+
   // A platform the level starts with parked, for something else to set going.
   public bool StartsStopped;
 
@@ -133,12 +138,15 @@ public sealed class PlatformSlide {
     Remeasure(body);
 
     Phase = StartAt == SlideOrigin.Start ? SlidePhase.WaitAtStart : SlidePhase.WaitAtEnd;
-    _elapsed = 0.0f;
+    // Time owed before the first wait even starts, so the clock begins short of zero rather than at
+    // it. Nothing downstream has to know: a platform standing at either end stands where it stands
+    // whatever its clock says, and the elapsed a checkpoint saves carries the debt with it.
+    _elapsed = -StartDelay;
     _placed = _target();
     Travelled = 0.0f;
     IsStopped = StartsStopped;
     _delayedStop = false;
-    _checkpoint = new SaveData(Phase, 0.0f, IsStopped, false);
+    _checkpoint = new SaveData(Phase, _elapsed, IsStopped, false);
   }
 
   // Re-reads a run whose body has been moved, or whose distance or axis has been changed from the

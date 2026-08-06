@@ -17,8 +17,8 @@ using Wfc.Screens.Levels;
 public partial class FakeGameLevelProvider : Node, IProvide<IGameLevel>, IGameLevel {
   public override void _Notification(int what) => this.Notify(what);
 
-  public Player PlayerNode => null!;
-  public GameCamera CameraNode => null!;
+  public Player PlayerNode { get; set; } = null!;
+  public GameCamera CameraNode { get; set; } = null!;
   public Cutscene CutsceneNode => null!;
   public PauseMenu PauseMenuNode => null!;
   public GemsHUDContainer GemsHUDContainerNode => null!;

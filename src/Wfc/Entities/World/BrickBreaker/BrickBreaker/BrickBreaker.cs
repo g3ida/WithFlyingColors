@@ -234,7 +234,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
       ChangeCameraViewAfterWin();
     }
 
-    _cameraLocalizerNode.SetCameraLimits();
+    _cameraLocalizerNode.ApplyLimitsToCamera();
     if (_triggerEnterAreaNode != null) {
       _triggerEnterAreaNode.QueueFree();
       _triggerEnterAreaNode = null;
@@ -312,11 +312,12 @@ public partial class BrickBreaker : Node2D, IPersistent {
     _bricksPowerUpHandler.RemoveFallingPowerups();
   }
 
+  // The arena is done with, and the way on is up: the camera is handed back to the player and the
+  // ceiling taken off the room they leave through.
   private void ChangeCameraViewAfterWin() {
-    _cameraLocalizerNode.PositionClippingMode = CameraLimit.LimitAllButTop;
-    _cameraLocalizerNode.FullViewportDragMargin = false;
-    _cameraLocalizerNode.SetCameraLimits();
-    _cameraLocalizerNode.ApplyCameraChanges();
+    _cameraLocalizerNode.LimitedEdges = CameraEdges.Left | CameraEdges.Right | CameraEdges.Bottom;
+    _cameraLocalizerNode.FreezeCamera = false;
+    _cameraLocalizerNode.ApplyToCamera();
   }
 
   private void _OnLevelCleared(int level) {

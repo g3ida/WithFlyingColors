@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://n6iaorhximfn"]
+[gd_scene load_steps=6 format=3 uid="uid://n6iaorhximfn"]
 
 [ext_resource type="Texture2D" uid="uid://7cisdwkrrxri" path="res://Assets/Sprites/Platforms/gear.png" id="1"]
 [ext_resource type="Script" uid="uid://cm62quxtx1tmi" path="res://src/Wfc/Entities/World/Platforms/PlatformSlider/PlatformSlider.cs" id="2"]
 [ext_resource type="Script" uid="uid://babnj1bb86gwv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatformGear/SlidingPlatformGear.cs" id="3"]
 [ext_resource type="Script" uid="uid://bdem1voghe4kr" path="res://src/Wfc/Entities/World/Platforms/SlideTrack/SlideTrack.cs" id="4"]
+[ext_resource type="AudioStream" uid="uid://dpc3wp4koii7n" path="res://Assets/sfx/bricks_slide.ogg" id="5"]
 
 [node name="PlatformSlider" type="Node2D" groups=["persist"]]
 script = ExtResource("2")
@@ -16,3 +17,11 @@ script = ExtResource("3")
 top_level = true
 z_index = -1
 script = ExtResource("4")
+
+[node name="Slide" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5")
+volume_db = -26.0
+max_distance = 900.0
+attenuation = 1.6
+bus = &"sfx2d"
+parameters/looping = true

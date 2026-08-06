@@ -185,6 +185,8 @@
     "tileset",
     "neighbour",
     "fwidth",
-    "rasterizer"
+    "rasterizer",
+    "screenful",
+    "playthrough"
   ]
 }
