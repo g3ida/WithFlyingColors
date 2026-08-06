@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://bxr7f2qk1nvca"]
+
+[ext_resource type="Script" uid="uid://c1nbl3l2pki4i" path="res://src/Wfc/Entities/World/Platforms/RotatingPlatform/RotatingPlatform.cs" id="1"]
+[ext_resource type="Shader" uid="uid://b4uwsdtssr6sv" path="res://Assets/Shaders/PlatformSurface.gdshader" id="2"]
+[ext_resource type="Texture2D" uid="uid://tl2572rfbvxj" path="res://Assets/Sprites/Platforms/rotate-arrow.png" id="3"]
+[ext_resource type="Script" uid="uid://2gyr0t52hf1a" path="res://src/Wfc/Entities/World/Platforms/RotatingPlatformArrow/RotatingPlatformArrow.cs" id="4"]
+[ext_resource type="AudioStream" uid="uid://dpc3wp4koii7n" path="res://Assets/sfx/bricks_slide.ogg" id="5"]
+
+[sub_resource type="ShaderMaterial" id="1"]
+resource_local_to_scene = true
+shader = ExtResource("2")
+shader_parameter/u_size = Vector2(256, 32)
+shader_parameter/u_chamfer = Vector4(4, 4, 4, 4)
+shader_parameter/u_shaded_edges = Vector2(1, 1)
+shader_parameter/u_shade_width = 3.0
+shader_parameter/u_aspect_ratio = 1.0
+shader_parameter/u_timer = -10.0
+shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
+shader_parameter/propagation_speed = 1.0
+shader_parameter/darkness = 0.78
+
+[sub_resource type="RectangleShape2D" id="2"]
+resource_local_to_scene = true
+size = Vector2(256, 32)
+
+[sub_resource type="RectangleShape2D" id="3"]
+resource_local_to_scene = true
+size = Vector2(256, 32)
+
+[node name="RotatingPlatform" type="AnimatableBody2D" groups=["persist"]]
+collision_layer = 5
+collision_mask = 255
+script = ExtResource("1")
+
+[node name="Surface" type="ColorRect" parent="."]
+material = SubResource("1")
+offset_left = -128.0
+offset_top = -16.0
+offset_right = 128.0
+offset_bottom = 16.0
+mouse_filter = 2
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+shape = SubResource("2")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 16
+
+[node name="ColorAreaShape" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("3")
+
+[node name="Arrow" type="Sprite2D" parent="."]
+texture = ExtResource("3")
+script = ExtResource("4")
+
+[node name="Spin" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5")
+volume_db = -2.0
+max_distance = 900.0
+attenuation = 1.6
+bus = &"sfx2d"
+parameters/looping = true
