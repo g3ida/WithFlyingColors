@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://dgak5j6mp4yuv"]
+[gd_scene load_steps=10 format=3 uid="uid://dgak5j6mp4yuv"]
 
 [ext_resource type="Script" uid="uid://df042cjh0n3ln" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.cs" id="1"]
 [ext_resource type="Shader" uid="uid://b4uwsdtssr6sv" path="res://Assets/Shaders/PlatformSurface.gdshader" id="2"]
 [ext_resource type="Script" uid="uid://bdem1voghe4kr" path="res://src/Wfc/Entities/World/Platforms/SlideTrack/SlideTrack.cs" id="3"]
 [ext_resource type="Texture2D" uid="uid://7cisdwkrrxri" path="res://Assets/Sprites/Platforms/gear.png" id="4"]
 [ext_resource type="Script" uid="uid://babnj1bb86gwv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatformGear/SlidingPlatformGear.cs" id="5"]
+[ext_resource type="AudioStream" uid="uid://dpc3wp4koii7n" path="res://Assets/sfx/bricks_slide.ogg" id="6"]
 
 [sub_resource type="ShaderMaterial" id="1"]
 resource_local_to_scene = true
@@ -58,3 +59,11 @@ script = ExtResource("3")
 [node name="Gear" type="Sprite2D" parent="."]
 texture = ExtResource("4")
 script = ExtResource("5")
+
+[node name="Slide" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6")
+volume_db = -2.0
+max_distance = 900.0
+attenuation = 1.6
+bus = &"sfx2d"
+parameters/looping = true

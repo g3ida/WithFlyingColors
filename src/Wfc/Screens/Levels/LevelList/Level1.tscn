@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="11"]
 [ext_resource type="PackedScene" uid="uid://lycx13j354o3" path="res://src/Wfc/Entities/HUD/GemsHUDContainer/GemsHUDContainer.tscn" id="16"]
 [ext_resource type="PackedScene" uid="uid://bijboehpv0gsh" path="res://src/Wfc/Screens/PauseMenu/PauseMenu/PauseMenu.tscn" id="19"]
-[ext_resource type="PackedScene" uid="uid://n6iaorhximfn" path="res://src/Wfc/Entities/World/Platforms/PlatformSlider/PlatformSlider.tscn" id="20"]
+[ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/PlatformSlider/PlatformSlider.tscn" id="20"]
 [ext_resource type="PackedScene" uid="uid://dhoxs1h5dhijp" path="res://src/Wfc/Entities/World/Platforms/Platform/Platform.tscn" id="21"]
 [ext_resource type="PackedScene" uid="uid://cgut5po1y8ibm" path="res://src/Wfc/Entities/World/Enemies/LazerBeam/LazerBeam.tscn" id="22"]
 [ext_resource type="PackedScene" uid="uid://dgx873koyipf1" path="res://src/Wfc/Entities/World/Enemies/Canon/Canon.tscn" id="24"]
@@ -137,6 +137,9 @@ scale = Vector2(3, 2)
 
 [node name="Slider" parent="MovingPlatform2" unique_id=2055590024 instance=ExtResource("20")]
 Distance = 450.0
+Speed = 3.0
+WaitTime = 4.0
+OneShotPhase = 3
 
 [node name="MovingPlatform3" parent="." unique_id=482809522 instance=ExtResource("21")]
 position = Vector2(3086, 457)
@@ -144,6 +147,9 @@ scale = Vector2(3, 2)
 
 [node name="Slider" parent="MovingPlatform3" unique_id=2100047408 instance=ExtResource("20")]
 Distance = 300.0
+Speed = 3.0
+WaitTime = 4.0
+OneShotPhase = 3
 
 [node name="LazerBeam" parent="." unique_id=419211562 instance=ExtResource("22")]
 position = Vector2(2648, 94)
@@ -175,16 +181,13 @@ position = Vector2(5950, -987)
 
 [node name="CameraLocalizer" parent="." unique_id=1759705266 instance=ExtResource("32")]
 position = Vector2(4358, 559)
-PositionClippingMode = 15
+LimitRect = Rect2(-5358, -3059, 11000, 3245)
 
 [node name="Area2D" type="Area2D" parent="CameraLocalizer" unique_id=429092637]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizer/Area2D" unique_id=782699677]
 position = Vector2(279, 13)
 shape = SubResource("1")
-
-[node name="Pos" type="Marker2D" parent="CameraLocalizer" unique_id=123115370]
-position = Vector2(-56, 186)
 
 [node name="BrickBreaker" parent="." unique_id=1246815319 instance=ExtResource("34")]
 position = Vector2(397, -2866)

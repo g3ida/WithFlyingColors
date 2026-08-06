@@ -175,6 +175,16 @@ public partial class GameCamera : Camera2D, IPersistent {
   #endregion Focus override
 
   #region Framing
+  // Gives the camera back to the level for a player who has walked out of every room that had an
+  // opinion about it. Not the same as no limits at all: what the level was authored with is a
+  // framing of its own, and opening the limits right up would let the camera travel off the end of
+  // it. The zoom is eased like any other room's; the rest has nothing to travel from.
+  public void RestoreAuthoredFraming() {
+    _applyFraming(_baseline with { Zoom = TargetZoom });
+    FollowNode = _resolveAuthoredFollowTarget();
+    ZoomTo(_baseline.Zoom);
+  }
+
   private CameraFraming _captureFraming() => new(
     Zoom: TargetZoom,
     TopLimit: LimitTop,

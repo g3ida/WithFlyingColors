@@ -75,6 +75,14 @@ public partial class SlidingPlatform : FlatPlatform, IPersistent {
   }
 
   [Export]
+  public float StartDelay {
+    get => _slide.StartDelay;
+    // Never negative: a platform owed time before it sets off is what this is for, and a debt the
+    // other way would have it start partway through a cycle it has not run yet.
+    set => _slide.StartDelay = Mathf.Max(value, 0.0f);
+  }
+
+  [Export]
   public bool StartsStopped {
     get => _slide.StartsStopped;
     set => _slide.StartsStopped = value;
@@ -125,6 +133,11 @@ public partial class SlidingPlatform : FlatPlatform, IPersistent {
     }
   }
   private bool _showGear = true;
+
+  // The rumble a platform makes while it is actually travelling. Off for one that is meant to move
+  // unheard, and for a level that already has a cue of its own for the same movement.
+  [Export]
+  public bool PlaySound { get; set; } = true;
   #endregion Exports
 
   #region Fields
@@ -134,6 +147,8 @@ public partial class SlidingPlatform : FlatPlatform, IPersistent {
   #endregion Fields
 
   #region Nodes
+  [NodePath("Slide")]
+  private AudioStreamPlayer2D _soundNode = default!;
   [NodePath("Track")]
   private SlideTrack _trackNode = default!;
   [NodePath("Gear")]
@@ -175,13 +190,28 @@ public partial class SlidingPlatform : FlatPlatform, IPersistent {
 
   public override void _PhysicsProcess(double delta) {
     _slide.Step(delta);
-    if (_showGear && !Mathf.IsZeroApprox(_slide.Travelled)) {
+    var moving = !Mathf.IsZeroApprox(_slide.Travelled);
+    if (_showGear && moving) {
       _gearNode.Spin(_slide.Travelled);
     }
+    _hum(moving);
     if (_slide.IsResting) {
       SetPhysicsProcess(false);
     }
   }
+  // Only while the platform is actually travelling: one waiting out its stop, or parked for good, is
+  // silent. Started and stopped rather than left looping under a volume, so a level with several of
+  // these is quiet until something moves.
+  private void _hum(bool moving) {
+    var wanted = moving && PlaySound;
+    if (wanted && !_soundNode.Playing) {
+      _soundNode.Play();
+    }
+    else if (!wanted && _soundNode.Playing) {
+      _soundNode.Stop();
+    }
+  }
+
 
   public void StopSlider(bool immediately) => _slide.Stop(immediately);
 

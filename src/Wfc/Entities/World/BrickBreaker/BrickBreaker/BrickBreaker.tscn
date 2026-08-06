@@ -34,17 +34,10 @@ rendering_quadrant_size = 72
 
 [node name="CameraLocalizer" parent="." instance=ExtResource("9")]
 position = Vector2(1198, 1044)
-FullViewportDragMargin = true
-LimitXAxisToViewSize = true
-LimitYAxisToViewSize = true
-
-[node name="TopRight" type="Marker2D" parent="CameraLocalizer"]
-position = Vector2(960, -968.001)
-scale = Vector2(10, 3)
-
-[node name="BottomLeft" type="Marker2D" parent="CameraLocalizer"]
-position = Vector2(-979, 114)
-scale = Vector2(10, 3)
+LimitRect = Rect2(-979, -968.001, 1939, 1082.001)
+FitWidthToView = true
+FitHeightToView = true
+FreezeCamera = true
 
 [node name="EnterArea" type="Area2D" parent="CameraLocalizer"]
 position = Vector2(0, 80)
@@ -105,7 +98,9 @@ OneShotPhase = 1
 
 [node name="ExitCameraLocalizer" parent="." instance=ExtResource("9")]
 position = Vector2(1188, -36)
-PositionClippingMode = 15
+LimitRect = Rect2(-969, -1009, 1939, 1080)
+LimitedEdges = 11
+FitWidthToView = true
 
 [node name="Area2D" type="Area2D" parent="ExitCameraLocalizer"]
 position = Vector2(216, 0)
@@ -120,9 +115,6 @@ position = Vector2(-216, 0)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ExitCameraLocalizer/Area2D2"]
 position = Vector2(-81, -209)
 shape = SubResource("3")
-
-[node name="Pos" type="Marker2D" parent="ExitCameraLocalizer"]
-position = Vector2(-630, 71)
 
 [connection signal="timeout" from="BricksContainer/LevelUpTimer" to="." method="_on_LevelUpTimer_timeout"]
 [connection signal="body_entered" from="TriggerEnterArea" to="." method="_onTriggerEnterAreaBodyEntered"]

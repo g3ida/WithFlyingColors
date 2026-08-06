@@ -40,16 +40,11 @@ position = Vector2(683.333, -860.667)
 [node name="CameraLocalizer" parent="." instance=ExtResource("3")]
 position = Vector2(34.667, -21)
 scale = Vector2(9, 3)
-FullViewportDragMargin = true
+LimitRect = Rect2(-103.778, -343.556, 211.185, 360)
+FitWidthToView = true
+FitHeightToView = true
 Zoom = 0.6667
-LimitXAxisToViewSize = true
-LimitYAxisToViewSize = true
-
-[node name="TopRight" type="Marker2D" parent="CameraLocalizer"]
-position = Vector2(107.407, -343.556)
-
-[node name="BottomLeft" type="Marker2D" parent="CameraLocalizer"]
-position = Vector2(-103.778, 16.4444)
+FreezeCamera = true
 
 [node name="Area2D" type="Area2D" parent="CameraLocalizer"]
 

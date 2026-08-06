@@ -127,15 +127,15 @@ public class LevelSceneContractTests(Node testScene) : TestClass(testScene) {
       level.ShouldNotBeNull();
 
       foreach (var node in _descendantsOf(level)) {
-        if (node is CameraLocalizer localizer && localizer.FullViewportDragMargin) {
-          localizer.PositionClippingMode.ShouldBe(
-            CameraLimit.FullLimit,
-            $"{levelId} / {node.Name} freezes the camera without full limits to decide the frame"
+        if (node is CameraLocalizer localizer && localizer.FreezeCamera) {
+          localizer.LimitedEdges.ShouldBe(
+            CameraLocalizer.ALL_EDGES,
+            $"{levelId} / {node.Name} freezes the camera with an open edge left to decide the frame"
           );
-          localizer.LimitXAxisToViewSize.ShouldBeTrue(
+          localizer.FitWidthToView.ShouldBeTrue(
             $"{levelId} / {node.Name} freezes the camera but leaves the horizontal framing to history"
           );
-          localizer.LimitYAxisToViewSize.ShouldBeTrue(
+          localizer.FitHeightToView.ShouldBeTrue(
             $"{levelId} / {node.Name} freezes the camera but leaves the vertical framing to history"
           );
         }

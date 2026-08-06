@@ -18,6 +18,9 @@ public class SlidingPlatformTests(Node testScene) : TestClass(testScene) {
   private const float SPEED = 6.0f;
   private const float DISTANCE = 240.0f;
   private const float WAIT = 0.05f;
+
+  // Long enough that half of it is many physics ticks, so "has not set off yet" is a real check.
+  private const float DELAY = 0.4f;
   private const float START_X = 700.0f;
   private const float START_Y = 400.0f;
 
@@ -94,6 +97,36 @@ public class SlidingPlatformTests(Node testScene) : TestClass(testScene) {
     await _respawn(platform);
 
     platform.GlobalPosition.X.ShouldBe(start.X, CLOSE, "the platform came back to the wrong end of its run");
+  }
+
+  // What staggers platforms that cross: without it a row of them set off together and read as one
+  // moving wall rather than as a pattern to be timed.
+  [Test]
+  public async Task AStartDelayHoldsThePlatformBackBeforeItsFirstRun() {
+    var platform = await _add(p => p.StartDelay = DELAY);
+    var start = platform.GlobalPosition;
+
+    // Past the wait a platform with no delay has, and halfway into the delay on top of it.
+    await PhysicsFrames.Advance(TestScene, (int)((WAIT + (DELAY / 2.0f)) * Engine.PhysicsTicksPerSecond));
+    platform.GlobalPosition.X.ShouldBe(start.X, CLOSE, "the platform set off before its delay was up");
+
+    (await _waitFor(() => platform.GlobalPosition.X > start.X + CLOSE))
+      .ShouldBeTrue("the platform never set off once its delay was up");
+  }
+
+  // The delay is what holds a set of crossing platforms apart, so a death has to hand it back with
+  // them: one that came back without it would run in step with the platform it was staggered
+  // against for the rest of the level.
+  [Test]
+  public async Task ARespawnBeforeAnyCheckpointOwesTheStartDelayAgain() {
+    var platform = await _add(p => p.StartDelay = DELAY);
+    var start = platform.GlobalPosition;
+    await _waitFor(() => platform.GlobalPosition.X > start.X + (DISTANCE / 2.0f));
+
+    EventHandler.Instance.EmitCheckpointLoaded();
+    await PhysicsFrames.Advance(TestScene, (int)((WAIT + (DELAY / 2.0f)) * Engine.PhysicsTicksPerSecond));
+
+    platform.GlobalPosition.X.ShouldBe(start.X, CLOSE, "the respawn dropped the delay and set the platform off early");
   }
 
   // The bug this guards: nothing had recorded where a platform belonged until the player reached a
@@ -272,6 +305,33 @@ public class SlidingPlatformTests(Node testScene) : TestClass(testScene) {
     await _waitFor(() => platform.GlobalPosition.X < start.X + (DISTANCE / 2.0f));
 
     gear.Rotation.ShouldBeLessThan(turned, "the cog kept turning the same way on the return leg");
+  }
+
+  // The rumble belongs to the travel, not to the platform: a level with a row of these standing
+  // through their waits would otherwise hum continuously from the moment it loaded.
+  [Test]
+  public async Task ItRumblesOnlyWhileItIsActuallyTravelling() {
+    var platform = await _add();
+    var sound = platform.GetNode<AudioStreamPlayer2D>("Slide");
+    var start = platform.GlobalPosition;
+    sound.Playing.ShouldBeFalse("the platform was already sounding off while it stood waiting");
+
+    await _waitFor(() => platform.GlobalPosition.X > start.X + (DISTANCE / 2.0f));
+    sound.Playing.ShouldBeTrue("the platform ran its whole leg in silence");
+
+    (await _waitFor(() => !sound.Playing))
+      .ShouldBeTrue("the platform kept rumbling after it had stopped moving");
+    platform.GlobalPosition.X.ShouldBe(start.X + DISTANCE, CLOSE, "the rumble stopped somewhere mid-run");
+  }
+
+  [Test]
+  public async Task ASilencedPlatformNeverSoundsOff() {
+    var platform = await _add(p => p.PlaySound = false);
+    var start = platform.GlobalPosition;
+
+    await _waitFor(() => platform.GlobalPosition.X > start.X + (DISTANCE / 2.0f));
+
+    platform.GetNode<AudioStreamPlayer2D>("Slide").Playing.ShouldBeFalse();
   }
 
   [Test]

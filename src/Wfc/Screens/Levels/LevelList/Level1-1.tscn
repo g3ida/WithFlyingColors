@@ -1,0 +1,257 @@
+[gd_scene format=3 uid="uid://gys18bmpmydm"]
+
+[ext_resource type="PackedScene" uid="uid://dmrllj22gpdev" path="res://src/Wfc/Screens/Levels/GameLevel/GameLevel.tscn" id="1_rivrh"]
+[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://src/Wfc/Entities/World/Fallzone/Fallzone.tscn" id="2_0dcb7"]
+[ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://src/Wfc/Entities/World/Platforms/SimplePlatform/SimplePlatform.tscn" id="3_prclt"]
+[ext_resource type="PackedScene" uid="uid://dlpwg47je31y" path="res://src/Wfc/Entities/World/Platforms/FlatPlatform/FlatPlatform.tscn" id="4_0dcb7"]
+[ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://src/Wfc/Entities/World/Gems/Gem/Gem.tscn" id="4_4uxlv"]
+[ext_resource type="PackedScene" uid="uid://cyq2n8rwlxk3d" path="res://src/Wfc/Entities/World/Exit/LevelExit/LevelExit.tscn" id="5_fxs1j"]
+[ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="6_pyeig"]
+[ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="7_grsqt"]
+[ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="9_prclt"]
+[ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="10_4uxlv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fghih"]
+size = Vector2(90, 536.25)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_45sie"]
+size = Vector2(85, 536)
+
+[node name="LevelHandler" unique_id=1092341980 instance=ExtResource("1_rivrh")]
+Track = "fight"
+
+[node name="Camera2D" parent="." index="1"]
+limit_left = -2000
+limit_top = -1000
+limit_right = 18600
+limit_bottom = 620
+
+[node name="FallZone" parent="." index="3" unique_id=1790929520 instance=ExtResource("2_0dcb7")]
+position = Vector2(4000, 1122)
+scale = Vector2(250, 4.788)
+
+[node name="StartGround" type="StaticBody2D" parent="." index="4" unique_id=1459732368]
+position = Vector2(-1481, 0)
+
+[node name="Visual" type="Polygon2D" parent="StartGround" index="0" unique_id=1651608765]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(-600, -900, -200, -900, -200, 414, 3081, 414, 3081, 960, -600, 960)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StartGround" index="1" unique_id=1670161306]
+polygon = PackedVector2Array(-600, -900, -200, -900, -200, 414, 3081, 414, 3081, 968, -600, 960)
+
+[node name="ColorArea" type="Area2D" parent="StartGround" index="2" unique_id=929363552 groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StartGround/ColorArea" index="0" unique_id=660166942]
+polygon = PackedVector2Array(-600, -900, -200, -900, -200, 414, 3081, 414, 3081, 958, -600, 960)
+
+[node name="EndGround" type="StaticBody2D" parent="." index="5" unique_id=1014677095]
+
+[node name="Visual" type="Polygon2D" parent="EndGround" index="0" unique_id=889763734]
+position = Vector2(8920, 105.400024)
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(6600, 414, 8200, 414, 8200, 958, 6600, 958)
+
+[node name="WallVisual" type="Polygon2D" parent="EndGround" index="1" unique_id=60248102]
+position = Vector2(8920, 105.400024)
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(8200, -900, 8600, -900, 8600, 958, 8200, 958)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround" index="2" unique_id=671216360]
+position = Vector2(8920, 105.400024)
+polygon = PackedVector2Array(6600, 414, 8200, 414, 8200, 958, 6600, 958)
+
+[node name="WallCollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround" index="3" unique_id=831770320]
+position = Vector2(8919, 105.400024)
+polygon = PackedVector2Array(8200, -900, 8600, -900, 8600, 958, 8200, 958)
+
+[node name="ColorArea" type="Area2D" parent="EndGround" index="4" unique_id=733295829 groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround/ColorArea" index="0" unique_id=547285713]
+position = Vector2(8920, 105.400024)
+polygon = PackedVector2Array(6600, 414, 8200, 414, 8200, 958, 6600, 958)
+
+[node name="WallCollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround/ColorArea" index="1" unique_id=1937537410]
+position = Vector2(8919, 105.400024)
+polygon = PackedVector2Array(8200, -900, 8600, -900, 8600, 958, 8200, 958)
+
+[node name="Platforms" type="Node2D" parent="." index="6" unique_id=123364574]
+
+[node name="YellowStep" parent="Platforms" index="0" unique_id=752143927 instance=ExtResource("3_prclt")]
+position = Vector2(15328, -622.6)
+scale = Vector2(4, 4)
+Group = "yellow"
+
+[node name="PinkStep" parent="Platforms" index="1" unique_id=1277681785 instance=ExtResource("3_prclt")]
+position = Vector2(14832, -790.6)
+scale = Vector2(4, 4)
+Group = "pink"
+
+[node name="BluePlatform" parent="Platforms" index="2" unique_id=1037849240 instance=ExtResource("4_0dcb7")]
+position = Vector2(1728, 724)
+Size = Vector2(256, 1000)
+SlicedCorners = 9
+ShadedEdges = 2
+
+[node name="PinkPlatform" parent="Platforms" index="3" unique_id=1341494313 instance=ExtResource("4_0dcb7")]
+position = Vector2(1984, 532)
+Size = Vector2(256, 1000)
+Group = "pink"
+SlicedCorners = 9
+ShadedEdges = 2
+
+[node name="PurplePlatform" parent="Platforms" index="4" unique_id=1903771610 instance=ExtResource("4_0dcb7")]
+position = Vector2(2240, 490)
+Size = Vector2(256, 1300)
+Group = "purple"
+SlicedCorners = 9
+ShadedEdges = 2
+
+[node name="YellowPlatform" parent="Platforms" index="5" unique_id=1555357172 instance=ExtResource("4_0dcb7")]
+position = Vector2(2752, 398)
+Size = Vector2(768, 1500)
+Group = "yellow"
+
+[node name="YellowPlatform2" parent="Platforms" index="6" unique_id=260094219 instance=ExtResource("4_0dcb7")]
+position = Vector2(6496, 1070)
+Size = Vector2(1024, 1500)
+Group = "white"
+
+[node name="SlidingPlatform" parent="Platforms" index="7" unique_id=1950131993 instance=ExtResource("9_prclt")]
+position = Vector2(3584, -224)
+Axis = 1
+Distance = 600.0
+Speed = 3.0
+WaitTime = 4.0
+OneShotPhase = 3
+SmoothLanding = true
+Track = 2
+Size = Vector2(384, 64)
+
+[node name="SlidingPlatform2" parent="Platforms" index="8" unique_id=315199356 instance=ExtResource("9_prclt")]
+position = Vector2(4224, 480)
+Axis = 1
+Distance = 600.0
+StartAt = 1
+Speed = 3.0
+WaitTime = 4.0
+OneShotPhase = 3
+SmoothLanding = true
+Track = 2
+Size = Vector2(384, 64)
+Group = "pink"
+
+[node name="SlidingPlatform3" parent="Platforms" index="9" unique_id=2016051831 instance=ExtResource("9_prclt")]
+position = Vector2(4864, -224)
+Axis = 1
+Distance = 600.0
+Speed = 3.0
+WaitTime = 4.0
+OneShotPhase = 3
+SmoothLanding = true
+Track = 2
+Size = Vector2(384, 64)
+Group = "purple"
+
+[node name="SlidingPlatform6" parent="Platforms" index="10" unique_id=1244767661 instance=ExtResource("9_prclt")]
+position = Vector2(7936, -224)
+Axis = 1
+Distance = 600.0
+Speed = 3.0
+WaitTime = 4.0
+StartDelay = 2.0
+OneShotPhase = 3
+SmoothLanding = true
+Track = 2
+Size = Vector2(384, 64)
+Group = "purple"
+
+[node name="SlidingPlatform4" parent="Platforms" index="11" unique_id=106888261 instance=ExtResource("9_prclt")]
+position = Vector2(5504, 480)
+Axis = 1
+Distance = 600.0
+StartAt = 1
+Speed = 3.0
+WaitTime = 4.0
+OneShotPhase = 3
+SmoothLanding = true
+Track = 2
+Size = Vector2(384, 64)
+Group = "yellow"
+
+[node name="SlidingPlatform5" parent="Platforms" index="12" unique_id=232735946 instance=ExtResource("9_prclt")]
+position = Vector2(8544, 128)
+Distance = 1200.0
+StartAt = 1
+Speed = 3.0
+WaitTime = 2.0
+OneShotPhase = 3
+SmoothLanding = true
+Track = 2
+Size = Vector2(384, 64)
+Group = "yellow"
+
+[node name="Gems" type="Node2D" parent="." index="7" unique_id=233669701]
+
+[node name="BlueGem" parent="Gems" index="0" unique_id=1183457114 instance=ExtResource("4_4uxlv")]
+position = Vector2(2200, -812)
+
+[node name="PinkGem" parent="Gems" index="1" unique_id=375473338 instance=ExtResource("4_4uxlv")]
+position = Vector2(7424, -384)
+GroupName = "pink"
+
+[node name="PurpleGem" parent="Gems" index="2" unique_id=2096831046 instance=ExtResource("4_4uxlv")]
+position = Vector2(5912, -680)
+GroupName = "purple"
+
+[node name="YellowGem" parent="Gems" index="3" unique_id=1479958867 instance=ExtResource("4_4uxlv")]
+position = Vector2(14552, -142.59998)
+GroupName = "yellow"
+
+[node name="LevelExit" parent="." index="8" unique_id=2083526537 instance=ExtResource("5_fxs1j")]
+position = Vector2(15624, 271.40002)
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="." index="9" unique_id=1744980491]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground" index="0" unique_id=1120383132]
+motion_mirroring = Vector2(2048, 2048)
+
+[node name="Spr" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer" index="0" unique_id=715985570]
+scale = Vector2(32, 32)
+texture = ExtResource("6_pyeig")
+centered = false
+
+[node name="Player" parent="." index="10"]
+position = Vector2(6168, 216)
+
+[node name="MidCheckpoint" parent="." index="11" unique_id=572080245 instance=ExtResource("7_grsqt")]
+position = Vector2(6504, 272)
+
+[node name="CameraLocalizers" type="Node2D" parent="." index="12" unique_id=757715892]
+
+[node name="CameraLocalizer" parent="CameraLocalizers" index="0" unique_id=1280488030 instance=ExtResource("10_4uxlv")]
+position = Vector2(7720, -143)
+LimitRect = Rect2(-960, -400, 2560, 1080)
+FollowPath = NodePath("")
+
+[node name="Area2D" type="Area2D" parent="CameraLocalizers/CameraLocalizer" index="0" unique_id=2073272786]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizers/CameraLocalizer/Area2D" index="0" unique_id=547137377]
+position = Vector2(-811, 195.125)
+shape = SubResource("RectangleShape2D_fghih")
+
+[node name="CameraLocalizer2" parent="CameraLocalizers" index="1" unique_id=1485624620 instance=ExtResource("10_4uxlv")]
+position = Vector2(6712, 51)
+RestoreLevelFraming = true
+LimitedEdges = 0
+FollowPath = NodePath("")
+
+[node name="Area2D" type="Area2D" parent="CameraLocalizers/CameraLocalizer2" index="0" unique_id=1622090767]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizers/CameraLocalizer2/Area2D" index="0" unique_id=1823537616]
+position = Vector2(5.5, 5)
+shape = SubResource("RectangleShape2D_45sie")
