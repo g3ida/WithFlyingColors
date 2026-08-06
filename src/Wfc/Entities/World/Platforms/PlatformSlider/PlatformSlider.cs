@@ -36,6 +36,17 @@ public partial class PlatformSlider : Node2D, IPersistent {
     }
   }
 
+  // Where the body is placed is where it stands when the level starts, and this says which end of
+  // its run that is: the track is drawn ahead of it or behind it accordingly.
+  [Export]
+  public PlatformSlide.SlideOrigin StartAt {
+    get => _slide.StartAt;
+    set {
+      _slide.StartAt = value;
+      _reread();
+    }
+  }
+
   [Export]
   public float Speed {
     get => _slide.Speed;
