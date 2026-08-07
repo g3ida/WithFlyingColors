@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dlpwg47je31y" path="res://src/Wfc/Entities/World/Platforms/FlatPlatform/FlatPlatform.tscn" id="4_0dcb7"]
 [ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://src/Wfc/Entities/World/Gems/Gem/Gem.tscn" id="4_4uxlv"]
 [ext_resource type="PackedScene" uid="uid://cyq2n8rwlxk3d" path="res://src/Wfc/Entities/World/Exit/LevelExit/LevelExit.tscn" id="5_fxs1j"]
-[ext_resource type="Texture2D" uid="uid://dyijnyyplv21w" path="res://Assets/Sprites/Backgrounds/bg_grey.png" id="6_pyeig"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Backgrounds/CityBackground/CityBackground.tscn" id="6_pyeig"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="7_grsqt"]
 [ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="9_prclt"]
 [ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="10_4uxlv"]
@@ -222,15 +222,7 @@ GroupName = "yellow"
 [node name="LevelExit" parent="." index="8" unique_id=2083526537 instance=ExtResource("5_fxs1j")]
 position = Vector2(15624, 271.40002)
 
-[node name="ParallaxBackground" type="ParallaxBackground" parent="." index="9" unique_id=1744980491]
-
-[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground" index="0" unique_id=1120383132]
-motion_mirroring = Vector2(2048, 2048)
-
-[node name="Spr" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer" index="0" unique_id=715985570]
-scale = Vector2(32, 32)
-texture = ExtResource("6_pyeig")
-centered = false
+[node name="Background" parent="." index="9" unique_id=1744980491 instance=ExtResource("6_pyeig")]
 
 [node name="Player" parent="." index="10"]
 position = Vector2(-56, 336)
