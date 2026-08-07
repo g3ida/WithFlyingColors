@@ -27,6 +27,7 @@ public partial class PlayerDashingState : PlayerBaseState {
   private float _committedAt = 0.0f;
   private float _lastDelta = 0.0f;
   private Vector2 _lastPosition = Vector2.Zero;
+  private Vector2 _visualDirection = Vector2.Zero;
   private bool _impacted = false;
 
   public PlayerDashingState(IPlayerStatesStore statesStore, IInputManager inputManager)
@@ -65,6 +66,7 @@ public partial class PlayerDashingState : PlayerBaseState {
     _dashTimer.Stop();
     _permissivenessTimer.Stop();
     _direction = Vector2.Zero;
+    _visualDirection = Vector2.Zero;
   }
 
   // The last frame of the dash is moved after this state has stopped being asked anything, so
@@ -138,7 +140,7 @@ public partial class PlayerDashingState : PlayerBaseState {
     }
 
     _impacted = true;
-    DashVisuals.Impact(player, _direction);
+    DashVisuals.Impact(player, _visualDirection);
   }
 
   // A horizontal dash pins the cube at its current height by zeroing gravity every frame.
@@ -154,11 +156,21 @@ public partial class PlayerDashingState : PlayerBaseState {
   private void _commit(Player player) {
     _committedAt = _elapsed;
     _lastPosition = player.GlobalPosition;
+    _visualDirection = _visibleDirection(player, _direction);
     EventHandler.Instance.EmitPlayerDash(_direction);
     // Each axis of a dash runs at DASH_SPEED of its own, so a diagonal one covers more ground
     // than a flat one and the trail has to be laid out over the distance actually covered.
-    DashVisuals.Begin(player, _direction, DASH_SPEED * _travelWindow() * _direction.Length());
+    DashVisuals.Begin(player, _visualDirection, DASH_SPEED * _travelWindow() * _visualDirection.Length());
   }
+
+  // Where the dash can be seen to go, which is not always where it was aimed: the floor takes a
+  // down-diagonal's vertical half whole, and a trail laid along the aim fans down into the ground
+  // while the cube slides flat along the top of it. One the floor leaves nothing of keeps its
+  // aim - that one really is the slam it was asked for.
+  private static Vector2 _visibleDirection(Player player, Vector2 direction) =>
+    player.IsOnFloor() && Mathf.Abs(direction.X) > 0.01f
+      ? new Vector2(direction.X, 0.0f)
+      : direction;
 
   // The dash clock starts on entry but the cube does not move until a direction is settled, so
   // this is the part of DASH_DURATION that actually goes anywhere - and the only part the trail
@@ -166,7 +178,7 @@ public partial class PlayerDashingState : PlayerBaseState {
   private float _travelWindow() => Mathf.Max(DASH_DURATION - _committedAt, MathUtils.EPSILON);
 
   private void _stepVisuals(Player player) =>
-    DashVisuals.Step(player, _direction, _elapsed - _committedAt, _travelWindow());
+    DashVisuals.Step(player, _visualDirection, _elapsed - _committedAt, _travelWindow());
 
   private void _setDashDirection(Player player) {
     _direction = Vector2.Zero;

@@ -10,12 +10,19 @@
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="7_grsqt"]
 [ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="9_prclt"]
 [ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="10_4uxlv"]
+[ext_resource type="PackedScene" uid="uid://bxr7f2qk1nvca" path="res://src/Wfc/Entities/World/Platforms/RotatingPlatform/RotatingPlatform.tscn" id="11_fxs1j"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_fghih"]
-size = Vector2(90, 536.25)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v7wth"]
+size = Vector2(96, 750)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_45sie"]
 size = Vector2(85, 536)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v0p06"]
+size = Vector2(58, 468.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fghih"]
+size = Vector2(90, 536.25)
 
 [node name="LevelHandler" unique_id=1092341980 instance=ExtResource("1_rivrh")]
 Track = "fight"
@@ -122,7 +129,7 @@ Size = Vector2(1024, 1500)
 Group = "white"
 
 [node name="SlidingPlatform" parent="Platforms" index="7" unique_id=1950131993 instance=ExtResource("9_prclt")]
-position = Vector2(3584, -224)
+position = Vector2(3584, -320)
 Axis = 1
 Distance = 600.0
 Speed = 3.0
@@ -133,7 +140,7 @@ Track = 2
 Size = Vector2(384, 64)
 
 [node name="SlidingPlatform2" parent="Platforms" index="8" unique_id=315199356 instance=ExtResource("9_prclt")]
-position = Vector2(4224, 480)
+position = Vector2(4224, 384)
 Axis = 1
 Distance = 600.0
 StartAt = 1
@@ -146,7 +153,7 @@ Size = Vector2(384, 64)
 Group = "pink"
 
 [node name="SlidingPlatform3" parent="Platforms" index="9" unique_id=2016051831 instance=ExtResource("9_prclt")]
-position = Vector2(4864, -224)
+position = Vector2(4864, -320)
 Axis = 1
 Distance = 600.0
 Speed = 3.0
@@ -171,7 +178,7 @@ Size = Vector2(384, 64)
 Group = "purple"
 
 [node name="SlidingPlatform4" parent="Platforms" index="11" unique_id=106888261 instance=ExtResource("9_prclt")]
-position = Vector2(5504, 480)
+position = Vector2(5504, 384)
 Axis = 1
 Distance = 600.0
 StartAt = 1
@@ -226,32 +233,78 @@ texture = ExtResource("6_pyeig")
 centered = false
 
 [node name="Player" parent="." index="10"]
-position = Vector2(6168, 216)
+position = Vector2(-56, 336)
 
 [node name="MidCheckpoint" parent="." index="11" unique_id=572080245 instance=ExtResource("7_grsqt")]
 position = Vector2(6504, 272)
 
 [node name="CameraLocalizers" type="Node2D" parent="." index="12" unique_id=757715892]
 
-[node name="CameraLocalizer" parent="CameraLocalizers" index="0" unique_id=1280488030 instance=ExtResource("10_4uxlv")]
+[node name="Localizer-1" parent="CameraLocalizers" index="0" unique_id=814120356 instance=ExtResource("10_4uxlv")]
+position = Vector2(2256, -152)
+LimitRect = Rect2(-960, -540, 1920, 1300)
+FollowPath = NodePath("")
+
+[node name="Area2D" type="Area2D" parent="CameraLocalizers/Localizer-1" index="0" unique_id=518549375]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizers/Localizer-1/Area2D" index="0" unique_id=2118423633]
+position = Vector2(-827, 183)
+shape = SubResource("RectangleShape2D_v7wth")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="CameraLocalizers/Localizer-1/Area2D" index="1" unique_id=2005192521]
+position = Vector2(584, -584)
+shape = SubResource("RectangleShape2D_v7wth")
+
+[node name="resetter-1" parent="CameraLocalizers" index="1" unique_id=502498510 instance=ExtResource("10_4uxlv")]
+position = Vector2(6232, 51)
+RestoreLevelFraming = true
+LimitedEdges = 0
+FollowPath = NodePath("")
+
+[node name="Area2D" type="Area2D" parent="CameraLocalizers/resetter-1" index="0" unique_id=1282994046]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizers/resetter-1/Area2D" index="0" unique_id=105172894]
+position = Vector2(-5052, 97)
+shape = SubResource("RectangleShape2D_45sie")
+
+[node name="Localizer-2" parent="CameraLocalizers" index="2" unique_id=893587899 instance=ExtResource("10_4uxlv")]
+position = Vector2(3886, -63)
+LimitedEdges = 13
+FollowPath = NodePath("")
+
+[node name="Area2D" type="Area2D" parent="CameraLocalizers/Localizer-2" index="0" unique_id=805106168]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizers/Localizer-2/Area2D" index="0" unique_id=1884731846]
+position = Vector2(-870, -521)
+shape = SubResource("RectangleShape2D_v0p06")
+
+[node name="Localizer-4" parent="CameraLocalizers" index="3" unique_id=1280488030 instance=ExtResource("10_4uxlv")]
 position = Vector2(7720, -143)
 LimitRect = Rect2(-960, -400, 2560, 1080)
 FollowPath = NodePath("")
 
-[node name="Area2D" type="Area2D" parent="CameraLocalizers/CameraLocalizer" index="0" unique_id=2073272786]
+[node name="Area2D" type="Area2D" parent="CameraLocalizers/Localizer-4" index="0" unique_id=2073272786]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizers/CameraLocalizer/Area2D" index="0" unique_id=547137377]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizers/Localizer-4/Area2D" index="0" unique_id=547137377]
 position = Vector2(-811, 195.125)
 shape = SubResource("RectangleShape2D_fghih")
 
-[node name="CameraLocalizer2" parent="CameraLocalizers" index="1" unique_id=1485624620 instance=ExtResource("10_4uxlv")]
+[node name="resetter-4" parent="CameraLocalizers" index="4" unique_id=1485624620 instance=ExtResource("10_4uxlv")]
 position = Vector2(6712, 51)
 RestoreLevelFraming = true
 LimitedEdges = 0
 FollowPath = NodePath("")
 
-[node name="Area2D" type="Area2D" parent="CameraLocalizers/CameraLocalizer2" index="0" unique_id=1622090767]
+[node name="Area2D" type="Area2D" parent="CameraLocalizers/resetter-4" index="0" unique_id=1622090767]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizers/CameraLocalizer2/Area2D" index="0" unique_id=1823537616]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizers/resetter-4/Area2D" index="0" unique_id=1823537616]
 position = Vector2(5.5, 5)
 shape = SubResource("RectangleShape2D_45sie")
+
+[node name="RotatingPlatform" parent="." index="13" unique_id=177360995 instance=ExtResource("11_fxs1j")]
+position = Vector2(7296, 384)
+Speed = 300.0
+Sweep = 90.0
+WaitTime = 2.0
+OneShotPhase = 3
+Size = Vector2(256, 256)
