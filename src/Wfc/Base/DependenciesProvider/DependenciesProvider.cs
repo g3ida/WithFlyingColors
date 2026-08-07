@@ -72,9 +72,13 @@ public partial class DependenciesProvider :
     // unwinds. It only succeeds from an empty history, so nothing else may navigate
     // before this runs.
     //
-    // A settings file that names no language is a first launch: the language is asked
-    // for before the main menu, since it is what every screen after it is drawn in.
-    var firstScreen = GameSettings.HasStoredLanguage ? GameMenus.MAIN_MENU : GameMenus.LANGUAGE_SELECT;
+    // Anything the settings file does not answer is asked before the main menu, in the
+    // order the screens chain: the language every later screen is written in, then the
+    // palette the game is played in. A file that answers both goes straight through.
+    var firstScreen =
+      !GameSettings.HasStoredLanguage ? GameMenus.LANGUAGE_SELECT
+      : !GameSettings.HasStoredSkin ? GameMenus.SKIN_SELECT
+      : GameMenus.MAIN_MENU;
     if (!_menuManager.Value.GoToMenu(firstScreen)) {
       throw new GameExceptions.InvalidArgumentException($"{firstScreen} scene could not be shown");
     }

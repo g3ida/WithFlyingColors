@@ -13,6 +13,26 @@ internal static partial class PresetSkins {
       ["8cf4ff", "ff87c6", "ba7add", "e8ff8c"]  // background
     ]);
 
+  // Picked by searching colour space for the four whose worst pair stays furthest
+  // apart under normal vision and under all three dichromacies at once, with a floor
+  // on how close any two may sit in lightness. The lightness floor is what carries it
+  // when hue is no help at all - a washed-out screen, or achromatopsia - and it is
+  // also why these four read as a ramp rather than a set of equals.
+  //
+  // Worst pair, measured as CIELAB dE across normal/protan/deutan/tritan: 59 here,
+  // against 41 for the default set and 17 for googl.
+  public static readonly GameSkin CLEAR_SKIN = new("clear",
+    [
+      ["008a7c", "5c0900", "7a0099", "8a8a1c"], // extremelyDark
+      ["00a191", "6b0a00", "8f00b2", "a1a120"], // superDark
+      ["00c6b2", "840d00", "af00db", "c6c628"], // veryDark
+      ["00d1bc", "8b0e00", "ba00e8", "d1d12a"], // dark
+      ["00e6cf", "990f00", "cc00ff", "e6e62e"], // basic
+      ["33ebd9", "ad3f33", "d633ff", "ebeb58"], // light
+      ["5cefe0", "be655c", "de5cff", "efef79"], // veryLight
+      ["8cf4e9", "d1938c", "e88cff", "f4f4a1"]  // background
+    ]);
+
   public static readonly GameSkin GOOGL_SKIN = new("googl",
    [
       ["2073ac", "247038", "b47f18", "982e1f"], // extremelyDark

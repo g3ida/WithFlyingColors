@@ -142,15 +142,25 @@ public partial class UIGridRow : PanelContainer {
   }
 
   private void _addContentValue() {
-    _attachedNode = _getAttachedNode();
+    var attached = _getAttachedNodes();
+    _attachedNode = attached[0];
     if (_attachedNode is Label label) {
       label.HorizontalAlignment = HorizontalAlignment.Left;
     }
     _attachedNode.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     _attachedNode.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-    _attachedNode.Reparent(_contentNode);
     _attachedNode.FocusEntered += _onAttachedNodeFocusEntered;
     _attachedNode.FocusExited += _onAttachedNodeFocusExited;
+
+    foreach (var node in attached) {
+      if (node != _attachedNode) {
+        // Trailing decoration keeps its own width and rides at the end of the row, out
+        // of the way of the value, which is the part that takes the slack.
+        node.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
+        node.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+      }
+      node.Reparent(_contentNode);
+    }
   }
 
   private void _onAttachedNodeFocusEntered() {
@@ -187,12 +197,19 @@ public partial class UIGridRow : PanelContainer {
     _contentNode.AddChild(spacer);
   }
 
-  private Control _getAttachedNode() {
-    var children = GetChildren();
-    Debug.Assert(children?.Count == 2, "UIGridRow should have 1 attached children");
-    var valueNode = children[0] == _contentNode ? children[1] : children[0];
-    Debug.Assert(valueNode is Control, "UIGridRow should have 1 attached children");
-    return (valueNode as Control)!;
+  // Everything the scene hung on the row besides its content box, in the order it hung
+  // them. The first is the value the row exists for, and the one focus lands on;
+  // anything after it rides along beside it - the swatches that show what a palette
+  // looks like rather than only what it is called.
+  private List<Control> _getAttachedNodes() {
+    var attached = new List<Control>();
+    foreach (var child in GetChildren()) {
+      if (child != _contentNode && child is Control control) {
+        attached.Add(control);
+      }
+    }
+    Debug.Assert(attached.Count > 0, "UIGridRow should have at least one attached child");
+    return attached;
   }
 
   // Gets the focusable control within this row.

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0uqeinohsdos"]
+
+[ext_resource type="Script" uid="uid://ce6fptnkt8xwq" path="res://src/Wfc/Entities/Ui/SkinSwatches/SkinSwatches.cs" id="1_swtch"]
+
+[node name="SkinSwatches" type="HBoxContainer"]
+script = ExtResource("1_swtch")

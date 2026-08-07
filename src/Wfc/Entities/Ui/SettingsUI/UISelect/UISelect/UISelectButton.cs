@@ -98,9 +98,11 @@ public partial class UISelectButton : Button, IDarkBackgroundAware {
     if (FontSize > 0) {
       _growValueTo(FontSize);
     }
+    _sizeArrowsToValue();
     if (ArrowsFlankValue) {
       _flankValueWithArrows();
     }
+    LabelNode.ReserveWidthFor(SelectDriver.Items);
     _index = SelectDriver.GetDefaultSelectedIndex();
     UpdateSelectedItem();
     UpdateRectSize();
@@ -110,10 +112,8 @@ public partial class UISelectButton : Button, IDarkBackgroundAware {
     _isReady = true;
   }
 
-  // Redraws the value at the given size, and grows everything else the picker is made
-  // of by however much taller a line of it got, so the picker keeps its proportions at
-  // any size. The arrows are art rather than text and can only be stretched, but they
-  // are plain chevrons and carry it.
+  // Redraws the value at the given size, and grows the room around it by however much
+  // taller a line of it got, so the picker keeps its proportions at any size.
   private void _growValueTo(int fontSize) {
     var lineHeightBefore = LabelNode.GetMinimumSize().Y;
     LabelNode.FontSize = fontSize;
@@ -123,13 +123,21 @@ public partial class UISelectButton : Button, IDarkBackgroundAware {
     LabelNode.MaxWidth *= growth;
     LeftSpacerNode.CustomMinimumSize *= growth;
     RightSpacerNode.CustomMinimumSize *= growth;
-    _growArrow(LeftArrowNode, growth);
-    _growArrow(RightArrowNode, growth);
   }
 
-  private static void _growArrow(Button arrow, float growth) {
+  // An arrow is drawn as tall as a line of the value, whatever size that is drawn at,
+  // so the art it is cut from can be any resolution and the picker holds together at
+  // any font size.
+  private void _sizeArrowsToValue() {
+    var lineHeight = LabelNode.GetMinimumSize().Y;
+    _sizeArrow(LeftArrowNode, lineHeight);
+    _sizeArrow(RightArrowNode, lineHeight);
+  }
+
+  private static void _sizeArrow(Button arrow, float lineHeight) {
     arrow.ExpandIcon = true;
-    arrow.CustomMinimumSize = arrow.Icon.GetSize() * growth;
+    var icon = arrow.Icon.GetSize();
+    arrow.CustomMinimumSize = new Vector2(lineHeight * icon.X / icon.Y, lineHeight);
   }
 
   // Sends the right arrow past the value to the far end of the row. The two spacers
@@ -152,6 +160,8 @@ public partial class UISelectButton : Button, IDarkBackgroundAware {
   }
 
   private void _onSelectDriverItemListChanged() {
+    // A different set of options is a different longest one to keep room for.
+    LabelNode.ReserveWidthFor(SelectDriver.Items);
     _index = this.SelectDriver.GetDefaultSelectedIndex();
     UpdateSelectedItem();
   }

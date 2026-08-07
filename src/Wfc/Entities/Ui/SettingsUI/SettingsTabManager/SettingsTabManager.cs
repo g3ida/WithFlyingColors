@@ -11,6 +11,7 @@ using Wfc.Entities.Ui.SettingsUI.Grid;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
@@ -36,6 +37,9 @@ public partial class SettingsTabManager : Control {
   [NodePath("PanelManager/VBoxContainer/HBoxContainer/AudioSettingsButton")]
   private Button _audioSettingsButton = default!;
   private List<Button> _buttons = new List<Button>();
+
+  [NodePath("PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/SkinGridRow")]
+  private UIGridRow _skinGridRow = default!;
   #endregion Nodes
 
   #region Dependencies
@@ -70,11 +74,19 @@ public partial class SettingsTabManager : Control {
   public bool OnDarkBackground { get; set; }
   [Export]
   public Theme? DarkTheme { get; set; }
+
+  // Set by a host that is up while a level is (the pause overlay). The palette is
+  // baked into every sprite as the level builds itself, so changing it under a level
+  // already on screen changes nothing the player can see. The row is taken away there
+  // rather than left sitting there apparently doing nothing.
+  [Export]
+  public bool HideSettingsNeedingAFreshLevel { get; set; }
   #endregion Exports
 
   public const int CONTROLLER_PANEL_INDEX = 2;
 
   private GameSkin _skin = SkinManager.Instance.CurrentSkin;
+  private bool _isSubscribed;
   private int _currentPanelIndex = 0;
   // The buttons are wired in _Ready and captioned once dependencies resolve, so
   // nothing may write to them before both have happened.
@@ -89,6 +101,30 @@ public partial class SettingsTabManager : Control {
 
   // Gets the total number of panels/tabs
   public int PanelCount => _panels.Count;
+
+  public override void _EnterTree() {
+    base._EnterTree();
+    if (!_isSubscribed) {
+      EventHandler.Instance.Events.SkinChanged += _onSkinChanged;
+      _isSubscribed = true;
+    }
+  }
+
+  public override void _ExitTree() {
+    base._ExitTree();
+    if (_isSubscribed) {
+      EventHandler.Instance.Events.SkinChanged -= _onSkinChanged;
+      _isSubscribed = false;
+    }
+  }
+
+  // The tab washes are cut from the palette when the screen is built, so picking
+  // another palette on the general tab has to cut them again - otherwise the one
+  // screen still showing the old colours is the screen they were changed on.
+  private void _onSkinChanged(string skin) {
+    _skin = SkinManager.Instance.CurrentSkin;
+    _setButtonStyles();
+  }
 
   public override void _Ready() {
     base._Ready();
@@ -106,6 +142,9 @@ public partial class SettingsTabManager : Control {
     if (OnDarkBackground) {
       _applyDarkBackground();
     }
+    // Before the first panel is opened, so the row is already gone when the focus
+    // order is worked out and nothing can land on it.
+    _skinGridRow.Visible = !HideSettingsNeedingAFreshLevel;
     _setButtonStyles();
 
     _generalSettingsButton.Pressed += () => SwitchToPanel(0);

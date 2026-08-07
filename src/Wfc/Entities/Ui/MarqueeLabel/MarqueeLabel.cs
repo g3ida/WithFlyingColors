@@ -1,5 +1,6 @@
 namespace Wfc.Entities.Ui;
 
+using System.Collections.Generic;
 using Godot;
 
 // A one-line label that never asks its parent for more than MaxWidth. Text that
@@ -43,11 +44,14 @@ public partial class MarqueeLabel : Control {
   };
   #endregion Nodes
 
+  private static readonly StringName FONT = "font";
   private static readonly StringName FONT_SIZE = "font_size";
 
   private Tween? _scroller;
   private bool _isSubscribed;
   private int _fontSize;
+  private IReadOnlyList<string> _reservedTexts = [];
+  private float _reservedWidth;
 
   // The inner label is only there from _Ready onwards, so this guards every read of
   // it that a resize could reach first.
@@ -85,8 +89,9 @@ public partial class MarqueeLabel : Control {
     MouseFilter = MouseFilterEnum.Ignore;
     AddChild(_labelNode);
     _isWired = true;
-    // The exported size arrives before the label it belongs to exists.
+    // Both arrive before the label they describe exists.
     _applyFontSize();
+    _applyReservation();
     _scheduleLayout();
   }
 
@@ -100,6 +105,8 @@ public partial class MarqueeLabel : Control {
     else {
       _labelNode.RemoveThemeFontSizeOverride(FONT_SIZE);
     }
+    // The reservation is a width in pixels, so it means something different now.
+    _applyReservation();
     UpdateMinimumSize();
     _scheduleLayout();
   }
@@ -113,10 +120,38 @@ public partial class MarqueeLabel : Control {
     _stopScrolling();
   }
 
-  // As wide as its text, up to the cap. Past that the text moves instead of the row.
+  /// <summary>
+  /// Keeps room for the longest of these however short the text currently is, so a
+  /// control that cycles through them keeps one width throughout. Whatever is beside
+  /// it - a picker's arrows - then stays where it is instead of walking in and out as
+  /// the value changes under it.
+  /// </summary>
+  public void ReserveWidthFor(IReadOnlyList<string> texts) {
+    _reservedTexts = texts;
+    _applyReservation();
+  }
+
+  // Measured against the label's own font, so it has to be measured again whenever the
+  // size that font is drawn at changes.
+  private void _applyReservation() {
+    if (!_isWired) {
+      return;
+    }
+    var font = _labelNode.GetThemeFont(FONT);
+    var fontSize = _labelNode.GetThemeFontSize(FONT_SIZE);
+    _reservedWidth = 0f;
+    foreach (var text in _reservedTexts) {
+      _reservedWidth = Mathf.Max(_reservedWidth, font.GetStringSize(text, fontSize: fontSize).X);
+    }
+    UpdateMinimumSize();
+    _scheduleLayout();
+  }
+
+  // As wide as its text or its reservation, whichever is wider, up to the cap. Past
+  // the cap the text moves instead of the row.
   public override Vector2 _GetMinimumSize() {
     var text = _labelNode.GetMinimumSize();
-    return new Vector2(Mathf.Min(text.X, MaxWidth), text.Y);
+    return new Vector2(Mathf.Min(Mathf.Max(text.X, _reservedWidth), MaxWidth), text.Y);
   }
 
   // Deferred because both triggers - a new string, and the parent handing this

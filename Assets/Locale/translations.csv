@@ -79,3 +79,5 @@ menu.button.restart_level,Restart Level,Recommencer le niveau,Level neu starten,
 menu.button.restart_checkpoint,Restart from Checkpoint,Reprendre au point de contrôle,Vom Checkpoint neu starten,Reiniciar desde el punto de control,Riparti dal checkpoint,Reiniciar do checkpoint,Herstart bij checkpoint
 game.notification.checkpoint_reached,Checkpoint reached,Point de contrôle atteint,Checkpoint erreicht,Punto de control alcanzado,Checkpoint raggiunto,Checkpoint alcançado,Checkpoint bereikt
 game.notification.level_cleared,Level cleared,Niveau terminé,Level geschafft,Nivel superado,Livello superato,Nível concluído,Level voltooid
+menu.header.pick_colors,Which colours can you tell apart most easily?,Quelles couleurs distinguez-vous le plus facilement ?,Welche Farben kannst du am besten unterscheiden?,¿Qué colores distingues con más facilidad?,Quali colori distingui più facilmente?,Que cores distingues mais facilmente?,Welke kleuren kun je het makkelijkst onderscheiden?
+game.settings.general.colors,Colours,Couleurs,Farben,Colores,Colori,Cores,Kleuren

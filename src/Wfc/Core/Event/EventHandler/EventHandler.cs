@@ -127,6 +127,7 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitVsyncToggled(bool vsync) => Events.EmitSignal(Events.SignalName.VsyncToggled, vsync);
   public void EmitScreenSizeChanged(Vector2 size) => Events.EmitSignal(Events.SignalName.ScreenSizeChanged, size);
   public void EmitLanguageChanged(Language language) => Events.EmitSignal(Events.SignalName.LanguageChanged, (int)language);
+  public void EmitSkinChanged(string skin) => Events.EmitSignal(Events.SignalName.SkinChanged, skin);
   public void EmitSfxVolumeChanged(float volume) => Events.EmitSignal(Events.SignalName.SfxVolumeChanged, volume);
   public void EmitMusicVolumeChanged(float volume) => Events.EmitSignal(Events.SignalName.MusicVolumeChanged, volume);
   public void EmitOnActionBound(string action, int key) => Events.EmitSignal(Events.SignalName.OnActionBound, action, key);

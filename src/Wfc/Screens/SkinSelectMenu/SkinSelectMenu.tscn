@@ -1,0 +1,72 @@
+[gd_scene load_steps=7 format=3 uid="uid://cjib3wkj62ghn"]
+
+[ext_resource type="Script" uid="uid://b5ne888kb6ujp" path="res://src/Wfc/Screens/SkinSelectMenu/SkinSelectMenu.cs" id="1_sknsl"]
+[ext_resource type="PackedScene" uid="uid://hsu5s7km4rsn" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/UISelect/UISelectButton.tscn" id="2_uisel"]
+[ext_resource type="PackedScene" uid="uid://vpeledf8aw7b" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/SkinSelectDriver/SkinSelectDriver.tscn" id="3_skndr"]
+[ext_resource type="PackedScene" uid="uid://bhntbarscn01" path="res://src/Wfc/Entities/Ui/InputHint/InputHintBar/InputHintBar.tscn" id="4_hintb"]
+[ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="5_theme"]
+[ext_resource type="PackedScene" uid="uid://c0uqeinohsdos" path="res://src/Wfc/Entities/Ui/SkinSwatches/SkinSwatches.tscn" id="6_swtch"]
+
+[node name="SkinSelectMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_sknsl")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Picker" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Picker"]
+layout_mode = 2
+theme_override_constants/separation = 60
+
+[node name="Caption" type="Label" parent="Picker/VBox"]
+custom_minimum_size = Vector2(1200, 0)
+layout_mode = 2
+theme = ExtResource("5_theme")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "Which colours can you tell apart most easily?"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="UISelectButton" parent="Picker/VBox" instance=ExtResource("2_uisel")]
+layout_mode = 2
+size_flags_horizontal = 4
+ArrowsFlankValue = true
+FontSize = 80
+
+[node name="SkinSelectDriver" parent="Picker/VBox/UISelectButton" instance=ExtResource("3_skndr")]
+
+[node name="Swatches" parent="Picker/VBox" instance=ExtResource("6_swtch")]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 28
+SwatchSize = Vector2(150, 150)
+
+[node name="Player" type="TextureRect" parent="Picker/VBox"]
+texture_filter = 1
+custom_minimum_size = Vector2(192, 192)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="InputHintBar" parent="." instance=ExtResource("4_hintb")]
+OnDarkBackground = true
