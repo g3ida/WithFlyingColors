@@ -164,6 +164,10 @@ public static class DashVisuals {
       streak.GlobalPosition = player.GlobalPosition
         + (forward * travel * shape.TailFraction)
         + (side * width * shape.Offset);
+      // The line is laid out after it is in the tree, so the transform it is interpolated from
+      // is still the one it entered on, at the level's own origin. Without this it is drawn
+      // sweeping in from there over every frame the dash's own hitstop stretches this tick into.
+      streak.ResetPhysicsInterpolation();
       streak.Follow(player, forward);
     }
   }

@@ -58,14 +58,20 @@ public class LevelExitTests(Node testScene) : TestClass(testScene) {
       .ShouldBeTrue("crossing the exit never took the player's input away");
     _isCleared.ShouldBeFalse("the level cleared on contact instead of waiting for the walk");
 
-    var heldAt = await _whereTheCameraComesToRest();
     player.GlobalPosition = new Vector2(_edgeOfView() + PAST_THE_EDGE, player.GlobalPosition.Y);
 
     (await _waitUntil(() => _isCleared))
       .ShouldBeTrue("the level never cleared once the player was past the edge");
 
+    // The pin is behind the camera that was chasing the player into it, so what is left to
+    // move is the pin settling back into the frame it took. Travel the other way is the
+    // camera going after the player, whatever the exit had told it.
+    var clearedOn = _level!.CameraNode.GetScreenCenterPosition().X;
     await _frames(20);
-    _level!.CameraNode.GetScreenCenterPosition().X.ShouldBe(heldAt, 5.0f,
+    var heldAt = _level!.CameraNode.GetScreenCenterPosition().X;
+    heldAt.ShouldBeLessThan(clearedOn + 1.0f,
+      "the camera set off after the player instead of holding the frame they left");
+    heldAt.ShouldBeLessThan(player.GlobalPosition.X - _halfView(),
       "the camera followed the player out of the level");
   }
 
@@ -149,30 +155,11 @@ public class LevelExitTests(Node testScene) : TestClass(testScene) {
   private LevelExit _exit() =>
     _level!.FindDescendants<LevelExit>().First();
 
-  // The camera is travelling to wherever the player was put down when the exit pins it, so it
-  // eases back to the pin and stops. That resting place, not the reading taken mid-travel, is
-  // the framing the walk out has to leave alone.
-  private async Task<float> _whereTheCameraComesToRest() {
-    var previousX = float.MaxValue;
-    var isStill = false;
-    var settled = await PhysicsFrames.WaitFor(
-      TestScene,
-      () => {
-        var currentX = _level!.CameraNode.GetScreenCenterPosition().X;
-        isStill = Math.Abs(currentX - previousX) < 0.5f;
-        previousX = currentX;
-        return isStill;
-      },
-      5.0
-    );
-    settled.ShouldBeTrue("the camera never came to rest after the exit pinned it");
-    return previousX;
-  }
+  private float _edgeOfView() => _level!.CameraNode.GetScreenCenterPosition().X + _halfView();
 
-  private float _edgeOfView() {
+  private float _halfView() {
     var cameraNode = _level!.CameraNode;
-    return cameraNode.GetScreenCenterPosition().X
-      + (cameraNode.GetViewportRect().Size.X * 0.5f / cameraNode.Zoom.X);
+    return cameraNode.GetViewportRect().Size.X * 0.5f / cameraNode.Zoom.X;
   }
 
   private void _onLevelCleared() => _isCleared = true;

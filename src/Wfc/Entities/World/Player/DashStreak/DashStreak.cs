@@ -43,8 +43,10 @@ public partial class DashStreak : Sprite2D {
   }
 
   // Drawn from the cube's own position rather than played out over the time the dash was expected
-  // to take, which is the only way a line can stop where the cube stopped.
-  public override void _Process(double delta) {
+  // to take, which is the only way a line can stop where the cube stopped. On the physics clock
+  // because the cube is on it: the renderer interpolates both between ticks, so a head written on
+  // the render clock would be lerped against a tick-old tail and drift off the cube it came from.
+  public override void _PhysicsProcess(double delta) {
     if (_spent) {
       return;
     }
@@ -85,7 +87,8 @@ public partial class DashStreak : Sprite2D {
     }
 
     _fadeIn?.Kill();
-    var tween = CreateTween();
+    // The thinning is a transform, so it belongs on the clock the stretch was written on.
+    var tween = CreateTween().SetProcessMode(Tween.TweenProcessMode.Physics);
     tween.TweenProperty(this, "modulate:a", 0.0f, FADE_DURATION)
          .SetTrans(Tween.TransitionType.Sine)
          .SetEase(Tween.EaseType.In);

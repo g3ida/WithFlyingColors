@@ -187,6 +187,7 @@
     "fwidth",
     "rasterizer",
     "screenful",
-    "playthrough"
+    "playthrough",
+    "lerped"
   ]
 }

@@ -64,6 +64,32 @@ public class DashStreakTests(Node testScene) : TestClass(testScene) {
     }
   }
 
+  // A down-diagonal aimed from the floor is a flat dash: the ground takes the vertical half of it
+  // and the cube slides along the top. The lines have to go where the cube went.
+  [Test]
+  public async Task SpeedLinesOfAGroundedDiagonalDashStayLevel() {
+    var player = await _addPlayerOnGround();
+
+    _provider.Input.Press(IInputManager.Action.MoveRight);
+    _provider.Input.Press(IInputManager.Action.Down);
+    _provider.Input.Press(IInputManager.Action.Dash);
+    await _physicsFrame();
+    _provider.Input.Release(IInputManager.Action.Dash);
+    for (var frame = 0; frame < MID_DASH; frame++) {
+      await _physicsFrame();
+    }
+
+    var drawn = _streaks().FindAll(streak => streak.Modulate.A > 0f);
+    drawn.ShouldNotBeEmpty("the dash never drew a speed line to check");
+    foreach (var streak in drawn) {
+      _headOf(streak).Y.ShouldBe(
+        streak.GlobalPosition.Y,
+        A_HAIR,
+        "a speed line dived into the floor the cube was sliding along"
+      );
+    }
+  }
+
   // The head of a line, in the world: its origin is its tail, and it reaches forward from there by
   // whatever it has been stretched to.
   private static Vector2 _headOf(DashStreak streak) =>
