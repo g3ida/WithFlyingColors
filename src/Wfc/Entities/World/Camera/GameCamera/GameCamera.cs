@@ -139,7 +139,19 @@ public partial class GameCamera : Camera2D, IPersistent {
     }
     FollowNode = target;
     PositionSmoothingSpeed = smoothingSpeed;
+    _takeUpTheDragSlack();
     return ++_focusGeneration;
+  }
+
+  // The drag box is left wherever the chase dragged it, a margin off the node the camera was
+  // following, and the shot would ease that margin before it showed anything. Taken up as the
+  // borrow begins, so a shot aimed at the frame the camera is already on holds it still.
+  private void _takeUpTheDragSlack() {
+    if (!IsInsideTree() || !IsInstanceValid(FollowNode)) {
+      return;
+    }
+    GlobalPosition = FollowNode!.GlobalPosition;
+    Align();
   }
 
   // Aims back at what the camera was following before the borrow, still at the borrowed travel

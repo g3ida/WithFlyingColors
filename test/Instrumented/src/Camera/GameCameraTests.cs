@@ -151,6 +151,38 @@ public class GameCameraTests(Node testScene) : TestClass(testScene) {
     await _frames(1);
   }
 
+  // Following the player leaves the camera's drag box a margin off them, and a shot that
+  // inherits that slack comes to rest that far off its own subject. The level exit aims at
+  // the frame the player is walking out of, so a shot that lands beside what it was given
+  // is a pinned frame sliding out from under them.
+  [Test]
+  public async Task AShotComesToRestOnWhatItWasAimedAt() {
+    var player = new Node2D();
+    var landmark = new Node2D { Position = new Vector2(1200f, 0f) };
+    var camera = _cameraFollowing(player);
+    camera.LimitTop = -10000;
+    camera.LimitBottom = 10000;
+    camera.LimitLeft = -10000;
+    camera.LimitRight = 24800;
+    TestScene.AddChild(player);
+    TestScene.AddChild(landmark);
+    camera.MakeCurrent();
+    await _frames(1);
+
+    // Away from the landmark and far enough that the chase drags the box out to its margin.
+    player.Position = new Vector2(4000f, 0f);
+    await _frames(60);
+
+    camera.BeginFocusOverride(landmark, camera.PositionSmoothingSpeed);
+    await _frames(120);
+    camera.GetScreenCenterPosition().X.ShouldBe(landmark.Position.X, 1f,
+      "the shot came to rest beside the node it was aimed at");
+
+    player.QueueFree();
+    landmark.QueueFree();
+    await _frames(1);
+  }
+
   // A shot borrows the camera, and a respawn revokes the borrow. What the shot does afterwards
   // - hand back a stale target, restore a travel speed the reload has already set - must reach
   // nothing, or the restore is undone a beat after it happened.
