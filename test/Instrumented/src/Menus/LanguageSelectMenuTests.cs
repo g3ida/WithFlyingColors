@@ -87,17 +87,19 @@ public class LanguageSelectMenuTests(Node testScene) : TestClass(testScene) {
     _captionsOf(screen).ShouldBe(["Navigate", "Select"]);
   }
 
+  // Which screen it hands over to depends on what else the settings file still owes an
+  // answer for, and that routing is covered against a controlled file in
+  // FirstLaunchBootTests. What matters here is that confirming writes the choice and
+  // the screen does not stay up.
   [Test]
-  public async Task ConfirmingWritesTheLanguageAndLeavesForTheMainMenu() {
+  public async Task ConfirmingWritesTheLanguageAndLeaves() {
     var screen = await _openLanguageSelect();
     _pick(screen, Language.German);
 
     _confirm(screen);
 
-    (await _waitUntil(() => _provider.MenuManager.GetCurrentMenu() == GameMenus.MAIN_MENU))
-      .ShouldBeTrue("the language screen never handed over to the main menu");
-    // What a later launch reads to decide whether to ask again.
-    GameSettings.HasStoredLanguage.ShouldBeTrue();
+    (await _waitUntil(() => _provider.MenuManager.GetCurrentMenu() != GameMenus.LANGUAGE_SELECT))
+      .ShouldBeTrue("the language screen never handed over");
     _savedLanguageCode().ShouldBe(Language.German.GetLanguageCode());
   }
 

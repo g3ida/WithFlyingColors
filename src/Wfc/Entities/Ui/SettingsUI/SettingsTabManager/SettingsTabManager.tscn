@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bo2x0ri6jenb3"]
+[gd_scene load_steps=21 format=3 uid="uid://bo2x0ri6jenb3"]
 
 [ext_resource type="Theme" uid="uid://duyihjolb12bh" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabsTheme.tres" id="1_6eew3"]
 [ext_resource type="Theme" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabsDarkTheme.tres" id="1_dark"]
@@ -11,6 +11,8 @@
 [ext_resource type="PackedScene" uid="uid://dxigkx14q5mf" path="res://src/Wfc/Entities/Ui/SettingsUI/Grid/UIGridTitleRow/UIGridTitleRow.tscn" id="6_pupl0"]
 [ext_resource type="PackedScene" uid="uid://hsu5s7km4rsn" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/UISelect/UISelectButton.tscn" id="7_4gkar"]
 [ext_resource type="PackedScene" uid="uid://tx6n18iputhf" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/LanguageSelectDriver/LanguageSelectDriver.tscn" id="8_2vkcc"]
+[ext_resource type="PackedScene" uid="uid://vpeledf8aw7b" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/SkinSelectDriver/SkinSelectDriver.tscn" id="9_sknsd"]
+[ext_resource type="PackedScene" uid="uid://c0uqeinohsdos" path="res://src/Wfc/Entities/Ui/SkinSwatches/SkinSwatches.tscn" id="9_swtch"]
 [ext_resource type="PackedScene" uid="uid://bjcxvhuuecsgw" path="res://src/Wfc/Entities/Ui/SettingsUI/Grid/UIGridContainer/UIGridContainer.tscn" id="10_1dfed"]
 [ext_resource type="Script" uid="uid://ueqk7kj1n7gs" path="res://src/Wfc/Entities/Ui/SettingsUI/Panel/VideoSettingsPanelContainer.cs" id="10_pax5l"]
 [ext_resource type="Script" uid="uid://llo6p8fbjy6n" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/ResolutionSelectDriver/ResolutionSelectDriver.cs" id="11_hajtt"]
@@ -115,6 +117,21 @@ IsDark = true
 layout_mode = 2
 
 [node name="LanguageSelectDriver" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/UIGridRow/UISelectButton" instance=ExtResource("8_2vkcc")]
+
+[node name="SkinGridRow" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+theme = null
+TranslationKey = 88
+
+[node name="UISelectButton" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/SkinGridRow" instance=ExtResource("7_4gkar")]
+layout_mode = 2
+
+[node name="SkinSelectDriver" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/SkinGridRow/UISelectButton" instance=ExtResource("9_sknsd")]
+
+[node name="SkinSwatches" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/SkinGridRow" instance=ExtResource("9_swtch")]
+layout_mode = 2
+theme_override_constants/separation = 8
+SwatchSize = Vector2(38, 38)
 
 [node name="VideoSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer"]
 unique_name_in_owner = true

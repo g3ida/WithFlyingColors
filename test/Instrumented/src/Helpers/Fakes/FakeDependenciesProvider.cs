@@ -59,10 +59,11 @@ public partial class FakeDependenciesProvider :
   IModalStack IProvide<IModalStack>.Value() => _modalStack.Value;
 
   public FakeDependenciesProvider() : base() {
-    // Anything a test drives into saving (closing a settings view does) writes
-    // through this path. Left on the default it overwrites the developer's real
-    // settings.ini - a headless run wrote the window's zero size into it once.
-    GameSettings.ConfigFilePath = "user://test-settings.ini";
+    // Anything a test drives into saving (closing a settings view does) writes through
+    // this path. The suite is already pointed here before the first test runs; this is
+    // belt and braces for a fake built outside it, and shares the same constant so the
+    // two cannot drift apart.
+    GameSettings.ConfigFilePath = WithFlyingColors.Main.TEST_CONFIG_PATH;
     _menuManager = new Lazy<IMenuManager>(() => new MenuManager(this));
     _modalStack = new Lazy<IModalStack>(() => new ModalStack(GetTree()));
   }

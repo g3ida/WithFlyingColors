@@ -62,6 +62,11 @@ public partial class Events : RefCounted {
   // so it can be treated as a menu action the player took.
   [Signal]
   public delegate void LanguageChangedEventHandler(int language);
+  // Same idea for the palette: raised when the player picks one, not when the stored
+  // one is applied on startup. What is already drawn in the old colours listens for
+  // this to draw itself again.
+  [Signal]
+  public delegate void SkinChangedEventHandler(string skin);
   [Signal]
   public delegate void OnActionBoundEventHandler(string action, int key);
   [Signal]

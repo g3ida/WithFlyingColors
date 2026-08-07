@@ -89,6 +89,8 @@ public enum TranslationKey {
   menu_button_restartCheckpoint = 84,
   game_notification_checkpointReached = 85,
   game_notification_levelCleared = 86,
+  menu_header_pickColors = 87,
+  game_settings_general_colors = 88,
 }
 
 public static partial class TranslationKeyExtensions {

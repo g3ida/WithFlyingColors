@@ -1,11 +1,14 @@
 namespace Wfc.test.instrumented.Menus;
 
+using System.Linq;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
 using Wfc.Core.Input.Controllers;
 using Wfc.Core.Settings;
+using Wfc.Entities.Ui.SettingsUI.Grid;
+using Wfc.Entities.Ui.SettingsUI.UISelect;
 using Wfc.Screens;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
@@ -38,6 +41,22 @@ public class PauseSettingsMenuTests(Node testScene) : TestClass(testScene) {
     GameSettings.LastUsedController = _savedController;
     TestScene.GetTree().Paused = false;
     _provider.QueueFree();
+  }
+
+  // The palette is baked into the sprites as a level builds itself, so picking another
+  // one under a level already on screen would change nothing the player could see. The
+  // row belongs to the settings reached from the main menu, and only there.
+  [Test]
+  public async Task ThePaletteIsNotOfferedWhileALevelIsUp() {
+    await _pause();
+    _settingsButton().EmitSignal(BaseButton.SignalName.Pressed);
+    await _idle();
+
+    var skinRow = _settingsView().FindDescendants<UIGridRow>()
+      .FirstOrDefault(row => row.FindDescendants<SkinSelectDriver>().Any());
+    skinRow.ShouldNotBeNull("the pause settings no longer carry the palette row at all");
+    skinRow.Visible
+      .ShouldBeFalse("the palette row is reachable from the pause overlay, where changing it does nothing");
   }
 
   [Test]

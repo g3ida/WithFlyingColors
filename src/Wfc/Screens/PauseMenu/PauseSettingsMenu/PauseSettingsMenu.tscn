@@ -23,6 +23,7 @@ offset_left = 250.0
 offset_right = -250.0
 offset_bottom = -80.0
 OnDarkBackground = true
+HideSettingsNeedingAFreshLevel = true
 
 [node name="DialogContainer" parent="." instance=ExtResource("3")]
 layout_mode = 1

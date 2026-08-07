@@ -7,6 +7,7 @@ using Godot;
 using Microsoft.VisualBasic;
 using Wfc.Core.Input.Controllers;
 using Wfc.Core.Localization;
+using Wfc.Skin;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -88,11 +89,31 @@ public static class GameSettings {
   }
 
   /// <summary>
-  /// Whether the settings file names a language. False until the player has been
-  /// asked for one, which is what marks a launch as the first: the language read
-  /// otherwise is the system's, guessed rather than chosen.
+  /// Whether the settings file named a language when it was read. False marks a launch
+  /// as a first one: the language in use otherwise came off the system, guessed rather
+  /// than chosen.
+  ///
+  /// A snapshot of the file as loaded, deliberately not kept up to date by Save. The
+  /// first-run screens save on their way out - the language screen's save writes a
+  /// palette too - and a flag that followed the file would report the next question as
+  /// already answered before it had been asked.
   /// </summary>
   public static bool HasStoredLanguage { get; private set; }
+
+  /// <summary>
+  /// Whether the settings file named a palette when it was read, on the same terms as
+  /// <see cref="HasStoredLanguage"/>.
+  /// </summary>
+  public static bool HasStoredSkin { get; private set; }
+
+  /// <summary>
+  /// The palette the game draws itself in. Held by SkinManager, which every drawing
+  /// node already reads; this is only the way in and out of the settings file.
+  /// </summary>
+  public static string Skin {
+    get => SkinManager.Instance.CurrentSkinName;
+    set => SkinManager.Instance.SetCurrentSkin(value);
+  }
 
   private static Language? _cachedLanguage;
   public static Language Language {
@@ -417,10 +438,10 @@ public static class GameSettings {
 
     // General settings:
     configFile.SetValue("general", "language", Language.GetLanguageCode());
+    configFile.SetValue("general", "skin", Skin);
     configFile.SetValue("general", "last_controller", (int)LastUsedController);
 
     configFile.Save(ConfigFilePath);
-    HasStoredLanguage = true;
   }
 
   /// <summary>
@@ -442,6 +463,7 @@ public static class GameSettings {
   public static void Load() {
     var configFile = new ConfigFile();
     HasStoredLanguage = false;
+    HasStoredSkin = false;
     if (configFile.Load(ConfigFilePath) == Error.Ok) {
       // Keyboard settings:
       if (configFile.HasSection("keyboard")) {
@@ -521,6 +543,12 @@ public static class GameSettings {
               Language = code.LanguageCodeToLanguage();
               HasStoredLanguage = true;
             }
+          }
+          else if (key == "skin") {
+            // A name no longer in the game leaves the default in place, and counts as
+            // never having been asked, so the player is asked again rather than
+            // playing on in a palette they did not pick.
+            HasStoredSkin = SkinManager.Instance.SetCurrentSkin(keyValue.As<string>());
           }
           else if (key == "last_controller") {
             LastUsedController = (ControllerType)keyValue.As<int>();
