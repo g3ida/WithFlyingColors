@@ -87,6 +87,13 @@ public static class GameSettings {
     }
   }
 
+  /// <summary>
+  /// Whether the settings file names a language. False until the player has been
+  /// asked for one, which is what marks a launch as the first: the language read
+  /// otherwise is the system's, guessed rather than chosen.
+  /// </summary>
+  public static bool HasStoredLanguage { get; private set; }
+
   private static Language? _cachedLanguage;
   public static Language Language {
     get {
@@ -413,6 +420,7 @@ public static class GameSettings {
     configFile.SetValue("general", "last_controller", (int)LastUsedController);
 
     configFile.Save(ConfigFilePath);
+    HasStoredLanguage = true;
   }
 
   /// <summary>
@@ -433,6 +441,7 @@ public static class GameSettings {
 
   public static void Load() {
     var configFile = new ConfigFile();
+    HasStoredLanguage = false;
     if (configFile.Load(ConfigFilePath) == Error.Ok) {
       // Keyboard settings:
       if (configFile.HasSection("keyboard")) {
@@ -507,7 +516,11 @@ public static class GameSettings {
         foreach (string key in configFile.GetSectionKeys("general")) {
           var keyValue = configFile.GetValue("general", key);
           if (key == "language") {
-            Language = keyValue.As<string>().LanguageCodeToLanguage();
+            var code = keyValue.As<string>();
+            if (!string.IsNullOrEmpty(code)) {
+              Language = code.LanguageCodeToLanguage();
+              HasStoredLanguage = true;
+            }
           }
           else if (key == "last_controller") {
             LastUsedController = (ControllerType)keyValue.As<int>();

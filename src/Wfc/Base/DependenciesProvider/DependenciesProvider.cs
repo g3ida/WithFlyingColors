@@ -71,8 +71,12 @@ public partial class DependenciesProvider :
     // The first navigation, which is also what seeds the history the back button
     // unwinds. It only succeeds from an empty history, so nothing else may navigate
     // before this runs.
-    if (!_menuManager.Value.GoToMenu(GameMenus.MAIN_MENU)) {
-      throw new GameExceptions.InvalidArgumentException("Main menu scene could not be shown");
+    //
+    // A settings file that names no language is a first launch: the language is asked
+    // for before the main menu, since it is what every screen after it is drawn in.
+    var firstScreen = GameSettings.HasStoredLanguage ? GameMenus.MAIN_MENU : GameMenus.LANGUAGE_SELECT;
+    if (!_menuManager.Value.GoToMenu(firstScreen)) {
+      throw new GameExceptions.InvalidArgumentException($"{firstScreen} scene could not be shown");
     }
   }
 }

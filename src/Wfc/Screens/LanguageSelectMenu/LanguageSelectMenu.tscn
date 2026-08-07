@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://l4b37if6ymnx"]
+
+[ext_resource type="Script" uid="uid://cmym18j75ig3j" path="res://src/Wfc/Screens/LanguageSelectMenu/LanguageSelectMenu.cs" id="1_lngsl"]
+[ext_resource type="PackedScene" uid="uid://hsu5s7km4rsn" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/UISelect/UISelectButton.tscn" id="2_uisel"]
+[ext_resource type="PackedScene" uid="uid://tx6n18iputhf" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/LanguageSelectDriver/LanguageSelectDriver.tscn" id="3_lngdr"]
+[ext_resource type="PackedScene" uid="uid://bhntbarscn01" path="res://src/Wfc/Entities/Ui/InputHint/InputHintBar/InputHintBar.tscn" id="4_hintb"]
+
+[node name="LanguageSelectMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lngsl")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Picker" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="UISelectButton" parent="Picker" instance=ExtResource("2_uisel")]
+layout_mode = 2
+ArrowsFlankValue = true
+FontSize = 80
+
+[node name="LanguageSelectDriver" parent="Picker/UISelectButton" instance=ExtResource("3_lngdr")]
+
+[node name="InputHintBar" parent="." instance=ExtResource("4_hintb")]
+OnDarkBackground = true

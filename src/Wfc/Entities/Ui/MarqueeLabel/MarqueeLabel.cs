@@ -24,6 +24,16 @@ public partial class MarqueeLabel : Control {
   // The widest this control will ever ask for. Anything longer scrolls instead.
   [Export]
   public float MaxWidth { get; set; } = 380f;
+
+  // The size the text is drawn at. Zero leaves the label whatever the theme gives it.
+  [Export]
+  public int FontSize {
+    get => _fontSize;
+    set {
+      _fontSize = value;
+      _applyFontSize();
+    }
+  }
   #endregion Exports
 
   #region Nodes
@@ -33,8 +43,11 @@ public partial class MarqueeLabel : Control {
   };
   #endregion Nodes
 
+  private static readonly StringName FONT_SIZE = "font_size";
+
   private Tween? _scroller;
   private bool _isSubscribed;
+  private int _fontSize;
 
   // The inner label is only there from _Ready onwards, so this guards every read of
   // it that a resize could reach first.
@@ -69,10 +82,25 @@ public partial class MarqueeLabel : Control {
 
   public override void _Ready() {
     base._Ready();
-    ClipContents = true;
     MouseFilter = MouseFilterEnum.Ignore;
     AddChild(_labelNode);
     _isWired = true;
+    // The exported size arrives before the label it belongs to exists.
+    _applyFontSize();
+    _scheduleLayout();
+  }
+
+  private void _applyFontSize() {
+    if (!_isWired) {
+      return;
+    }
+    if (_fontSize > 0) {
+      _labelNode.AddThemeFontSizeOverride(FONT_SIZE, _fontSize);
+    }
+    else {
+      _labelNode.RemoveThemeFontSizeOverride(FONT_SIZE);
+    }
+    UpdateMinimumSize();
     _scheduleLayout();
   }
 
@@ -105,6 +133,11 @@ public partial class MarqueeLabel : Control {
     _labelNode.Size = new Vector2(text.X, Size.Y);
 
     var overflow = text.X - Size.X;
+    // Only text that has to be held in is clipped. Clipping is to the box on both
+    // axes, and the box is exactly a line tall, so a clip kept on for text that fits
+    // buys nothing and shaves the accents that reach above the ascent - the tilde
+    // came off the N of "Español".
+    ClipContents = overflow > OVERFLOW_EPSILON;
     if (overflow <= OVERFLOW_EPSILON) {
       // Sits where a plain centred Label would, so rows that fit look untouched.
       _labelNode.Position = new Vector2(Mathf.Round((Size.X - text.X) * 0.5f), 0f);

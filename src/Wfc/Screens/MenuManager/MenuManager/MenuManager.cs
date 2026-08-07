@@ -51,6 +51,7 @@ public class MenuManager : IMenuManager {
     GameMenus.LEVEL_CLEAR_MENU => GetScenePath<LevelClearedMenu>(),
     GameMenus.SELECT_SLOT => GetScenePath<SelectSlotMenu>(),
     GameMenus.LEVEL_SELECT_MENU => GetScenePath<LevelSelectMenu>(),
+    GameMenus.LANGUAGE_SELECT => GetScenePath<LanguageSelectMenu>(),
     _ => null,
   };
 
