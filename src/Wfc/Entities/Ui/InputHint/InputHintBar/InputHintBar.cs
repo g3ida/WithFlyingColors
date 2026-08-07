@@ -58,15 +58,41 @@ public partial class InputHintBar : Control {
   // Rewords one card and re-lays the row out, so a screen can reuse the default
   // cards across its modes instead of stacking near-identical bars.
   public void RelabelCard(string cardName, TranslationKey captionKey) {
+    var card = _findCard(cardName);
+    if (card == null) {
+      return;
+    }
+    card.SetCaption(captionKey);
+    _refreshAll();
+  }
+
+  // Drops one of the default cards, for a screen that does not offer the action it
+  // stands for - the first-launch language screen has nothing behind it to go back to.
+  //
+  // Taken out rather than hidden: whether a card shows is its own to decide, from
+  // whether the action it stands for resolves to a binding at all, and it decides
+  // that again on every refresh.
+  public void RemoveCard(string cardName) {
+    var card = _findCard(cardName);
+    if (card == null) {
+      return;
+    }
+    _cards.Remove(card);
+    // Out of the tree now rather than whenever the free lands, so the row it was in
+    // is laid out again without it in the same frame.
+    card.GetParent().RemoveChild(card);
+    card.QueueFree();
+    _equalizeCardWidths();
+  }
+
+  private InputHintCard? _findCard(string cardName) {
     var card = _cards.Find(candidate => candidate.Name == cardName);
     if (card == null) {
       // Silence here would leave the screen advertising the wrong action with nothing
       // to say why, so a renamed or misspelt card is loud instead.
       GD.PushError($"{nameof(InputHintBar)} has no card named '{cardName}'.");
-      return;
     }
-    card.SetCaption(captionKey);
-    _refreshAll();
+    return card;
   }
 
   // Subscribed from _EnterTree rather than _Ready so it stays subscribed through

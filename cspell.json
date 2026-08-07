@@ -148,6 +148,7 @@
     "Nederlands",
     "Général",
     "Langue",
+    "Valider",
     "rebindable",
     "Keycap",
     "Capslock",
@@ -186,6 +187,7 @@
     "neighbour",
     "fwidth",
     "rasterizer",
+    "rasterised",
     "screenful",
     "playthrough",
     "lerped"

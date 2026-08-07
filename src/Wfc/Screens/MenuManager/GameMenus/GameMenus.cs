@@ -7,5 +7,6 @@ public enum GameMenus {
   MAIN_MENU,
   LEVEL_SELECT_MENU,
   LEVEL_CLEAR_MENU,
-  GAME
+  GAME,
+  LANGUAGE_SELECT
 }

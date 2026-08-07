@@ -25,6 +25,21 @@ public partial class UISelectButton : Button, IDarkBackgroundAware {
   public IInputManager InputManager => this.DependOn<IInputManager>();
   #endregion Dependencies
 
+  #region Exports
+  // On a settings row the arrows sit together ahead of the value, which the eye reads
+  // against the caption of the row they share. A picker standing on its own has no
+  // caption to read against, so it puts the value between the arrows instead.
+  [Export]
+  public bool ArrowsFlankValue { get; set; }
+
+  // What the value is drawn at when the picker is a screen of its own rather than one
+  // row of a panel. A real font size, not a scale on the control: scaling redraws
+  // glyphs the engine has already rasterised at the theme's size, which is what leaves
+  // large text soft. Zero keeps the theme's size.
+  [Export]
+  public int FontSize { get; set; }
+  #endregion Exports
+
   public UISelectDriver SelectDriver = default!;
 
   #region Nodes
@@ -34,6 +49,10 @@ public partial class UISelectButton : Button, IDarkBackgroundAware {
   private Button LeftArrowNode = default!;
   [NodePath("HBoxContainer/Left/AnimationPlayer")]
   private AnimationPlayer LeftArrowAnimationNode = default!;
+  [NodePath("HBoxContainer/Spacer")]
+  private Control LeftSpacerNode = default!;
+  [NodePath("HBoxContainer/Spacer2")]
+  private Control RightSpacerNode = default!;
   [NodePath("HBoxContainer/Right")]
   private Button RightArrowNode = default!;
   [NodePath("HBoxContainer/Right/AnimationPlayer")]
@@ -76,6 +95,12 @@ public partial class UISelectButton : Button, IDarkBackgroundAware {
 
     _makeAnimationsLocal(LeftArrowAnimationNode);
     _makeAnimationsLocal(RightArrowAnimationNode);
+    if (FontSize > 0) {
+      _growValueTo(FontSize);
+    }
+    if (ArrowsFlankValue) {
+      _flankValueWithArrows();
+    }
     _index = SelectDriver.GetDefaultSelectedIndex();
     UpdateSelectedItem();
     UpdateRectSize();
@@ -83,6 +108,39 @@ public partial class UISelectButton : Button, IDarkBackgroundAware {
     this.GrabFocusOnHover();
     this.BlinkWhileFocused(AnimationPlayerNode);
     _isReady = true;
+  }
+
+  // Redraws the value at the given size, and grows everything else the picker is made
+  // of by however much taller a line of it got, so the picker keeps its proportions at
+  // any size. The arrows are art rather than text and can only be stretched, but they
+  // are plain chevrons and carry it.
+  private void _growValueTo(int fontSize) {
+    var lineHeightBefore = LabelNode.GetMinimumSize().Y;
+    LabelNode.FontSize = fontSize;
+    var growth = LabelNode.GetMinimumSize().Y / lineHeightBefore;
+    // Without this the longer names would start scrolling instead of simply being
+    // shown, since the cap is a width and the text just got wider.
+    LabelNode.MaxWidth *= growth;
+    LeftSpacerNode.CustomMinimumSize *= growth;
+    RightSpacerNode.CustomMinimumSize *= growth;
+    _growArrow(LeftArrowNode, growth);
+    _growArrow(RightArrowNode, growth);
+  }
+
+  private static void _growArrow(Button arrow, float growth) {
+    arrow.ExpandIcon = true;
+    arrow.CustomMinimumSize = arrow.Icon.GetSize() * growth;
+  }
+
+  // Sends the right arrow past the value to the far end of the row. The two spacers
+  // then stand on either side of the value rather than one after the other, so both
+  // are widened to the larger of the pair to keep the value centred between them.
+  private void _flankValueWithArrows() {
+    ChildContainerNode.MoveChild(LabelNode, RightArrowNode.GetIndex());
+    ChildContainerNode.MoveChild(RightArrowNode, -1);
+    var gap = Mathf.Max(LeftSpacerNode.CustomMinimumSize.X, RightSpacerNode.CustomMinimumSize.X);
+    LeftSpacerNode.CustomMinimumSize = new Vector2(gap, LeftSpacerNode.CustomMinimumSize.Y);
+    RightSpacerNode.CustomMinimumSize = new Vector2(gap, RightSpacerNode.CustomMinimumSize.Y);
   }
 
   private void _trySetSelectDriver(Node child) {
