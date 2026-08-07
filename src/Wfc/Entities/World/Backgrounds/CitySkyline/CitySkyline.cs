@@ -31,6 +31,9 @@ public partial class CitySkyline : Parallax2D {
   // has to match, so a skin tint keeps only part of its saturation and the rest
   // is pulled toward the sodium glow of a street at night.
   private static readonly Color NIGHT_GLOW = new(0.44f, 0.4f, 0.31f);
+  // A window may borrow the skin's hue but never out-saturate the glow it sits
+  // in, so no skin and no WindowVibrance can push one back into game color.
+  private static readonly float WINDOW_SATURATION_MAX = NIGHT_GLOW.S;
   private const float WINDOW_VALUE_MAX = 0.72f;
   private const float NIGHT_BLEND = 0.4f;
   private const float WINDOW_BRIGHTNESS_MIN = 0.55f;
@@ -67,9 +70,9 @@ public partial class CitySkyline : Parallax2D {
   [Export] public float WindowPitch { get; set; } = 32f;
   [Export] public float LitChance { get; set; } = 0.26f;
   [Export] public float WindowAlpha { get; set; } = 0.9f;
-  // How much of the skin's saturation a lit window keeps: 0 is grey, 1 is the
-  // raw skin color. Push it far and the window stops reading as a city light
-  // and starts reading as something the player has to match.
+  // How much of the skin's saturation a lit window keeps, up to the ceiling the
+  // wash imposes: 0 is grey, 1 is as much of a skin color as a night window is
+  // ever allowed to show.
   [Export] public float WindowVibrance { get; set; } = 0.6f;
   // Long enough that a window going out is something the player catches out of
   // the corner of an eye rather than a light show competing with the level.
@@ -213,7 +216,7 @@ public partial class CitySkyline : Parallax2D {
 
   private Color _washOut(Color color) => Color.FromHsv(
       color.H,
-      color.S * WindowVibrance,
+      Mathf.Min(color.S * WindowVibrance, WINDOW_SATURATION_MAX),
       Mathf.Min(color.V, WINDOW_VALUE_MAX))
     .Lerp(NIGHT_GLOW, NIGHT_BLEND);
 
