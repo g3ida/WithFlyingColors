@@ -21,6 +21,15 @@
     "src/Scripts/Skin/SkinLoader.cs",
     "Assets/Locale/**/*.*"
   ],
+  "ignoreRegExpList": [
+    "/\"[IJLOSTZijlostz.\\\\n ]{3,}\"/g",
+    "/^\\s*\\/\\/\\s+[IJLOSTZ. ]+$/gm"
+  ],
+  "ignoreWords": [
+    "IJLOST",
+    "IJLOSTZ",
+    "Zijlostz"
+  ],
   "words": [
     "Alric",
     "assemblyfilters",

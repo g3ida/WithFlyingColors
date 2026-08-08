@@ -16,6 +16,10 @@ public partial class BlockSprite : Node2D {
 
   public void SetGroup(string group) {
     _colorGroup = group;
+    Color frameColor = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(_colorGroup),
+      SkinColorIntensity.VeryDark
+    );
     Color baseColor = SkinManager.Instance.CurrentSkin.GetColor(
       GameSkin.ColorGroupToSkinColor(_colorGroup),
       SkinColorIntensity.Basic
@@ -32,6 +36,7 @@ public partial class BlockSprite : Node2D {
     GetNode<Sprite2D>("Layer1").Modulate = lightColor;
     GetNode<Sprite2D>("Layer2").Modulate = darkColor;
     GetNode<Sprite2D>("TopLayer").Modulate = baseColor;
+    GetNode<TextureRect>("Frame").Modulate = frameColor;
   }
 
   public string GetGroup() {

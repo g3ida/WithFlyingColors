@@ -1,0 +1,154 @@
+[gd_scene format=3 uid="uid://bgog7aojowtke"]
+
+[ext_resource type="PackedScene" uid="uid://dmrllj22gpdev" path="res://src/Wfc/Screens/Levels/GameLevel/GameLevel.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://src/Wfc/Entities/World/Fallzone/Fallzone.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://dlpwg47je31y" path="res://src/Wfc/Entities/World/Platforms/FlatPlatform/FlatPlatform.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Platforms/TetrominoRain/TetrominoRain.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://src/Wfc/Entities/World/Gems/Gem/Gem.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://cyq2n8rwlxk3d" path="res://src/Wfc/Entities/World/Exit/LevelExit/LevelExit.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Backgrounds/TetrisBackground/TetrisBackground.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="8"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Platforms/TetrominoStack/TetrominoStack.tscn" id="9"]
+
+[node name="LevelHandler" instance=ExtResource("1")]
+Track = "tetris"
+
+[node name="Camera2D" parent="." index="1"]
+limit_left = -900
+limit_top = -1700
+limit_right = 10800
+limit_bottom = 620
+
+[node name="FallZone" parent="." index="3" instance=ExtResource("2")]
+position = Vector2(5000, 1122)
+scale = Vector2(350, 4.788)
+
+[node name="StartGround" type="StaticBody2D" parent="." index="4"]
+
+[node name="Visual" type="Polygon2D" parent="StartGround" index="0"]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(-900, -1700, -500, -1700, -500, 414, 1248, 414, 1248, 1200, -900, 1200)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StartGround" index="1"]
+polygon = PackedVector2Array(-900, -1700, -500, -1700, -500, 414, 1248, 414, 1248, 1200, -900, 1200)
+
+[node name="ColorArea" type="Area2D" parent="StartGround" index="2" groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StartGround/ColorArea" index="0"]
+polygon = PackedVector2Array(-900, -1700, -500, -1700, -500, 414, 1248, 414, 1248, 1200, -900, 1200)
+
+[node name="EndGround" type="StaticBody2D" parent="." index="5"]
+
+[node name="Visual" type="Polygon2D" parent="EndGround" index="0"]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(9168, 270, 10400, 270, 10400, -1700, 10800, -1700, 10800, 1200, 9168, 1200)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround" index="1"]
+polygon = PackedVector2Array(9168, 270, 10400, 270, 10400, -1700, 10800, -1700, 10800, 1200, 9168, 1200)
+
+[node name="ColorArea" type="Area2D" parent="EndGround" index="2" groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround/ColorArea" index="0"]
+polygon = PackedVector2Array(9168, 270, 10400, 270, 10400, -1700, 10800, -1700, 10800, 1200, 9168, 1200)
+
+[node name="Platforms" type="Node2D" parent="." index="6"]
+
+[node name="RestIsland" parent="Platforms" index="0" instance=ExtResource("3")]
+position = Vector2(3408, -32)
+SnapToGrid = false
+Size = Vector2(288, 256)
+Group = "white"
+
+[node name="ArrivalLedge" parent="Platforms" index="1" instance=ExtResource("3")]
+position = Vector2(5712, 542)
+SnapToGrid = false
+Size = Vector2(288, 256)
+Group = "white"
+
+[node name="Rains" type="Node2D" parent="." index="7"]
+
+[node name="RainA" parent="Rains" index="0" instance=ExtResource("4")]
+position = Vector2(1608, -1200)
+LaneCount = 5
+LaneSpacing = 360.0
+MaxPieceHeight = 2
+SpawnInterval = 5.6
+LaneStagger = 0.285714
+FallHeight = 2400.0
+CellSize = 72.0
+StepInterval = 0.8
+Seed = 7
+
+[node name="RainB" parent="Rains" index="1" instance=ExtResource("4")]
+position = Vector2(3768, -1200)
+LaneCount = 5
+LaneSpacing = 360.0
+MaxPieceHeight = 2
+SpawnInterval = 5.6
+LaneStagger = 0.285714
+FallHeight = 2400.0
+CellSize = 72.0
+StepInterval = 0.8
+Seed = 13
+
+[node name="Stacks" type="Node2D" parent="." index="8"]
+
+[node name="Heap" parent="Stacks" index="0" instance=ExtResource("9")]
+position = Vector2(6072, 198)
+Map = "............TTTT\n........SSZZOOOO\n....LLLLIIIIJJJJ\nIIIIZZSSTTTTOOOO"
+CellSize = 72.0
+
+[node name="HopI" parent="Stacks" index="1" instance=ExtResource("9")]
+position = Vector2(7440, 198)
+Map = "IIII"
+CellSize = 72.0
+
+[node name="HopJ" parent="Stacks" index="2" instance=ExtResource("9")]
+position = Vector2(7944, 198)
+Map = "JJJ\n..J"
+CellSize = 72.0
+
+[node name="HopT" parent="Stacks" index="3" instance=ExtResource("9")]
+position = Vector2(8376, 126)
+Map = "TTT\n.T."
+CellSize = 72.0
+
+[node name="HopZ" parent="Stacks" index="4" instance=ExtResource("9")]
+position = Vector2(8808, 198)
+Map = "ZZ.\n.ZZ"
+CellSize = 72.0
+
+[node name="Gems" type="Node2D" parent="." index="9"]
+
+[node name="BlueGem" parent="Gems" index="0" instance=ExtResource("5")]
+position = Vector2(1788, -60)
+
+[node name="PinkGem" parent="Gems" index="1" instance=ExtResource("5")]
+position = Vector2(2508, -420)
+GroupName = "pink"
+
+[node name="PurpleGem" parent="Gems" index="2" instance=ExtResource("5")]
+position = Vector2(3948, -60)
+GroupName = "purple"
+
+[node name="YellowGem" parent="Gems" index="3" instance=ExtResource("5")]
+position = Vector2(4668, -420)
+GroupName = "yellow"
+
+[node name="LevelExit" parent="." index="10" instance=ExtResource("6")]
+position = Vector2(9900, 127)
+
+[node name="Background" parent="." index="11" instance=ExtResource("7")]
+
+[node name="MidCheckpoint" parent="." index="12" instance=ExtResource("8")]
+position = Vector2(3408, -302)
+
+[node name="LateCheckpoint" parent="." index="13" instance=ExtResource("8")]
+position = Vector2(5712, 272)
+
+[node name="Player" parent="." index="14"]
+position = Vector2(-300, 300)

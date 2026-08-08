@@ -1,22 +1,27 @@
-[gd_scene load_steps=6 format=3 uid="uid://63ve5culn8p0"]
+[gd_scene format=3 uid="uid://63ve5culn8p0"]
 
-[ext_resource type="Texture2D" uid="uid://1vnb1c5gq8hl" path="res://Assets/Sprites/Tetris/block-base.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://dsooctionix57" path="res://Assets/Sprites/Tetris/block-top.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://ehvuy0sskh6" path="res://Assets/Sprites/Tetris/block-sublayer-1.png" id="3"]
 [ext_resource type="Texture2D" uid="uid://rlth8884jhbw" path="res://Assets/Sprites/Tetris/block-sublayer-2.png" id="4"]
 [ext_resource type="Script" uid="uid://d2ga27lrgyy12" path="res://src/Wfc/Entities/World/Tetris/BlockSprite/BlockSprite.cs" id="5"]
 
-[node name="BlockSprite" type="Node2D"]
+[sub_resource type="CanvasTexture" id="CanvasTexture_drbt2"]
+
+[node name="BlockSprite" type="Node2D" unique_id=1882797128]
 script = ExtResource("5")
 
-[node name="Layer1" type="Sprite2D" parent="."]
+[node name="Frame" type="TextureRect" parent="." unique_id=1053343698]
+offset_left = -37.0
+offset_top = -37.0
+offset_right = 37.0
+offset_bottom = 37.0
+texture = SubResource("CanvasTexture_drbt2")
+
+[node name="Layer1" type="Sprite2D" parent="." unique_id=1289053404]
 texture = ExtResource("3")
 
-[node name="Layer2" type="Sprite2D" parent="."]
+[node name="Layer2" type="Sprite2D" parent="." unique_id=533483886]
 texture = ExtResource("4")
 
-[node name="TopLayer" type="Sprite2D" parent="."]
+[node name="TopLayer" type="Sprite2D" parent="." unique_id=1573529941]
 texture = ExtResource("2")
-
-[node name="Base" type="Sprite2D" parent="."]
-texture = ExtResource("1")

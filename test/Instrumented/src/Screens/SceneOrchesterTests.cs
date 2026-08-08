@@ -133,14 +133,17 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
 
   [Test]
   public async Task ClearingTheLastLevelReachesTheClearedScreen() {
+    // Read off the end of the chain rather than named: which level is last changes every time one
+    // is added, and what this is about is what happens when the chain runs out.
+    var lastLevel = LevelDispatcher.LEVELS[^1].Id;
     _provider.Save = new FakeSaveManager(selectedSlot: 0);
-    _provider.MenuManager.SetCurrentLevel(LevelId.Level1);
+    _provider.MenuManager.SetCurrentLevel(lastLevel);
     _provider.MenuManager.GoToMenu(GameMenus.GAME);
     await _idle();
 
     var orchestrator = _orchestrator();
     orchestrator.ShouldNotBeNull();
-    (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Level1))
+    (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == lastLevel))
       .ShouldBeTrue("the game screen never loaded the last level");
 
     EventHandler.Instance.EmitLevelCleared();

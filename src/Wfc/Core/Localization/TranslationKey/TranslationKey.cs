@@ -91,6 +91,7 @@ public enum TranslationKey {
   game_notification_levelCleared = 86,
   menu_header_pickColors = 87,
   game_settings_general_colors = 88,
+  game_level_title_tetris = 89,
 }
 
 public static partial class TranslationKeyExtensions {

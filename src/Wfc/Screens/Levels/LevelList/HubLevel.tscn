@@ -32,6 +32,10 @@ TargetLevel = 2
 position = Vector2(1700, 607)
 TargetLevel = 1
 
+[node name="TetrisDoor" parent="Doors" index="2" instance=ExtResource("2")]
+position = Vector2(2600, 607)
+TargetLevel = 4
+
 [node name="Floor" parent="." index="5" instance=ExtResource("3")]
 position = Vector2(1000, 1000)
 scale = Vector2(55, 3)

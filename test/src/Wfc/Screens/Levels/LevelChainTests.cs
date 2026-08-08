@@ -18,11 +18,14 @@ public class LevelChainTests(Node testScene) : TestClass(testScene) {
   public void EachLevelAdvancesToTheNextInPlayOrder() {
     LevelDispatcher.NextLevel(LevelId.Tutorial).ShouldBe(LevelId.FourColors);
     LevelDispatcher.NextLevel(LevelId.FourColors).ShouldBe(LevelId.Level1);
+    LevelDispatcher.NextLevel(LevelId.Level1).ShouldBe(LevelId.Tetris);
   }
 
+  // Read off the end of the chain rather than named: which level is last is the one thing about
+  // the order that changes every time a level is added, and it is not what this is pinning.
   [Test]
   public void TheLastLevelHasNothingToAdvanceTo() {
-    LevelDispatcher.NextLevel(LevelId.Level1).ShouldBeNull();
+    LevelDispatcher.NextLevel(LevelDispatcher.LEVELS[^1].Id).ShouldBeNull();
   }
 
   [Test]

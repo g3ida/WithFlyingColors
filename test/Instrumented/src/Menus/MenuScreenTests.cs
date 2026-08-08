@@ -82,9 +82,10 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
 
     var panels = screen.FindDescendants<SaveSlotPanel>().ToList();
     panels.Count.ShouldBe(FakeSaveManager.NUM_SLOTS);
-    // A filled slot describes its whole-game completion - one cleared level of the
-    // three in the chain - while an empty one says so.
-    panels[1].Description.ShouldContain("33");
+    // A filled slot describes its whole-game completion - the one cleared level against
+    // however many the chain offers - while an empty one says so.
+    var completion = 100 / LevelDispatcher.LEVELS.Count;
+    panels[1].Description.ShouldContain(completion.ToString());
     panels[0].Description.ShouldBe("<EMPTY>");
   }
 
