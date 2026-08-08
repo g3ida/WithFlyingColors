@@ -37,6 +37,13 @@ public partial class SettingsFocusManager : Node {
     public delegate void TabNavigationRequestedEventHandler(int direction);
     #endregion Signals
 
+    private static readonly IInputManager.Action[] NAVIGATION_ACTIONS = [
+        IInputManager.Action.UIUp,
+        IInputManager.Action.UIDown,
+        IInputManager.Action.UILeft,
+        IInputManager.Action.UIRight,
+    ];
+
     private List<Control> _currentRows = new();
     private UINavigationInput? _navigationInput;
     private int _currentRowIndex = 0;
@@ -133,10 +140,26 @@ public partial class SettingsFocusManager : Node {
                 return;
             }
         }
+        // Anything else carrying a direction is swallowed without being acted on. A stick
+        // reports its way up to the strength that steps the menu and keeps reporting for
+        // as long as it is held, and whatever of that got through reached the engine's own
+        // focus navigation, which walks the focus off the row and onto the tabs.
+        if (_carriesNavigation(@event)) {
+            GetViewport().SetInputAsHandled();
+        }
         // Note: Left/Right for UISelectButton and UiSlider is handled by those controls themselves
         // Note: UICancel is the screen's to answer. This node used to consume it, and
         // being ahead of everything else in the tree that meant a dialog could never
         // see the key that was supposed to close it.
+    }
+
+    private static bool _carriesNavigation(InputEvent @event) {
+        foreach (var action in NAVIGATION_ACTIONS) {
+            if (@event.IsAction(Wfc.Core.Input.InputManager.Actions[action])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void _navigateUp() {
