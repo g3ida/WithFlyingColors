@@ -22,6 +22,7 @@ using Wfc.Utils;
 // they can separate the four.
 public class SettingsColorsRowTests(Node testScene) : TestClass(testScene) {
   private const double SETTLE_TIMEOUT_SECONDS = 6.0;
+  private const double COLUMN_TOLERANCE = 1.0;
 
   private FakeDependenciesProvider _provider = default!;
   private string _skinBeforeTest = default!;
@@ -65,6 +66,20 @@ public class SettingsColorsRowTests(Node testScene) : TestClass(testScene) {
     _swatchColorsOn(screen).ShouldBe(_basicColorsOf("clear"));
   }
 
+  // The title wears the palette too, so the screen the palette is picked on must not be
+  // the last one still drawn in the one being left behind.
+  [Test]
+  public async Task TheTitleUnderlinesFollowThePalettePickedOnTheRow() {
+    var screen = await _openSettings();
+    _underlineColorsOn(screen).ShouldBe(_underlineColorsOf(screen, SkinManager.DEFAULT_SKIN_NAME));
+
+    screen.FindDescendants<SkinSelectDriver>().First()
+      .onItemSelected(Variant.CreateFrom("clear"));
+    await _idle();
+
+    _underlineColorsOn(screen).ShouldBe(_underlineColorsOf(screen, "clear"));
+  }
+
   // The row it belongs to owns the space; the swatches must not push the value out of
   // the row or take the slack away from it.
   [Test]
@@ -78,6 +93,25 @@ public class SettingsColorsRowTests(Node testScene) : TestClass(testScene) {
     rowRect.Encloses(swatchRect).ShouldBeTrue($"swatches at {swatchRect} escaped the row at {rowRect}");
   }
 
+  // The rows of a tab are one pair of columns, so what rides at the end of one row must
+  // not pull its caption and its value out of line with the row above it.
+  [Test]
+  public async Task TheSwatchesLeaveTheRowInLineWithTheOneBesideIt() {
+    var screen = await _openSettings();
+    var row = _colorsRow(screen)!;
+    var neighbour = row.GetParent().GetChildren().OfType<UIGridRow>().First(other => other != row);
+
+    _captionEdgeOf(row).ShouldBe(_captionEdgeOf(neighbour), COLUMN_TOLERANCE);
+    _valueEdgeOf(row).ShouldBe(_valueEdgeOf(neighbour), COLUMN_TOLERANCE);
+  }
+
+  private static double _captionEdgeOf(UIGridRow row) {
+    var caption = row.GetNode<HBoxContainer>("Content").GetChildren().OfType<Label>().First();
+    return caption.GlobalPosition.X + caption.Size.X;
+  }
+
+  private static double _valueEdgeOf(UIGridRow row) => row.GetFocusableControl()!.GlobalPosition.X;
+
   private static UIGridRow? _colorsRow(Node screen) =>
     screen.FindDescendants<UIGridRow>()
       .FirstOrDefault(row => row.FindDescendants<SkinSelectDriver>().Any());
@@ -87,6 +121,18 @@ public class SettingsColorsRowTests(Node testScene) : TestClass(testScene) {
       .OfType<ColorRect>()
       .Select(swatch => swatch.Color.ToHtml(false))
       .ToArray();
+
+  private static string[] _underlineColorsOn(Node screen) =>
+    screen.FindDescendants<TitleLabel>()
+      .Select(title => title.GetNode<Control>("Underline").Modulate.ToHtml(false))
+      .ToArray();
+
+  private static string[] _underlineColorsOf(Node screen, string skinName) {
+    var skin = SkinManager.Instance.GetSkin(skinName);
+    return screen.FindDescendants<TitleLabel>()
+      .Select(title => skin.GetColor(title.UnderlineSkinColor, SkinColorIntensity.Light).ToHtml(false))
+      .ToArray();
+  }
 
   private static string[] _basicColorsOf(string skinName) {
     var colors = SkinManager.Instance.GetSkin(skinName).GetColors(SkinColorIntensity.Basic);

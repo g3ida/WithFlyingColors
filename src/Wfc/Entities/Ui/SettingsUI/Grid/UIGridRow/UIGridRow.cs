@@ -76,6 +76,8 @@ public partial class UIGridRow : PanelContainer {
   private bool _onDarkBackground;
   private Control? _attachedNode = null;
   private Label? _labelNode = null;
+  private Control? _decorationBalanceNode = null;
+  private readonly List<Control> _decorationNodes = [];
   private int _focusState = 0;
   private void _setStyle(bool hasFocus) {
     var style = new StyleBoxFlat {
@@ -158,9 +160,39 @@ public partial class UIGridRow : PanelContainer {
         // of the way of the value, which is the part that takes the slack.
         node.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
         node.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        _decorationNodes.Add(node);
       }
       node.Reparent(_contentNode);
     }
+    _addDecorationBalance();
+  }
+
+  // The label and the value split what the row does not otherwise spend, so trailing
+  // decoration drags the seam between them off the row's centre. An empty stand-in of the
+  // same width at the head puts it back, and every row reads as the same pair of columns.
+  private void _addDecorationBalance() {
+    if (_decorationNodes.Count == 0) {
+      return;
+    }
+    _decorationBalanceNode = new Control { MouseFilter = MouseFilterEnum.Ignore };
+    _contentNode.AddChild(_decorationBalanceNode);
+    _contentNode.MoveChild(_decorationBalanceNode, 0);
+    foreach (var node in _decorationNodes) {
+      node.MinimumSizeChanged += _updateDecorationBalance;
+    }
+    _updateDecorationBalance();
+  }
+
+  private void _updateDecorationBalance() {
+    if (_decorationBalanceNode == null) {
+      return;
+    }
+    var separation = _contentNode.GetThemeConstant("separation");
+    var width = (float)-separation;
+    foreach (var node in _decorationNodes) {
+      width += node.GetCombinedMinimumSize().X + separation;
+    }
+    _decorationBalanceNode.CustomMinimumSize = new Vector2(Mathf.Max(0f, width), 0f);
   }
 
   private void _onAttachedNodeFocusEntered() {
