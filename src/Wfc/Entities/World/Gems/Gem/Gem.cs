@@ -28,6 +28,11 @@ public partial class Gem : Area2D, IPersistent {
   // face may walk through it.
   public bool IsAlreadyCollected { get; private set; }
 
+  // Settled the moment a face of this gem's color reaches it, a physics frame before the state
+  // that plays the pickup runs. Whatever else lands on the gem inside that frame reads this
+  // rather than the state, which has not moved yet.
+  public bool IsBeingCollected { get; private set; }
+
   // What the shine is worth on this gem, for the state that animates it.
   public float LightEnergyScale => IsAlreadyCollected ? GHOST_LIGHT_SCALE : 1f;
 
@@ -69,6 +74,13 @@ public partial class Gem : Area2D, IPersistent {
     _statesStore = new GemStatesStore(this);
     _currentState = _statesStore.GetState<GemNotCollectedState>();
     _currentState?.Enter(this);
+  }
+
+  // The shape can only be taken away by a deferred call - the contact that took the gem is still
+  // being flushed - so the flag stands in for it until the call lands.
+  public void Take() {
+    IsBeingCollected = true;
+    CollisionShapeNode.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
   }
 
   // Called by the level once it knows what the slot has already banked. The gem is
@@ -131,6 +143,7 @@ public partial class Gem : Area2D, IPersistent {
       SwitchState(_statesStore.GetState<GemCollectedState>());
     }
     else {
+      IsBeingCollected = false;
       SwitchState(_statesStore.GetState<GemNotCollectedState>());
     }
   }

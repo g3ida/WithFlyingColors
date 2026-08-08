@@ -11,6 +11,7 @@ using Wfc.Core.Input;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Entities.World.Checkpoints;
+using Wfc.Entities.World.Gems;
 using Wfc.Screens.Levels;
 using Wfc.State;
 using Wfc.Utils;
@@ -323,6 +324,11 @@ public partial class Player : CharacterBody2D, IPersistent {
     if (_pendingDeath.Type == EntityType.Crusher && (EntityType)entityType != EntityType.Crusher) {
       return;
     }
+    // A gem reports before it is known whether it is also being taken this frame, so its report is
+    // provisional and must not displace one that is not.
+    if (area is Gem && _pendingDeath.Type != EntityType.None) {
+      return;
+    }
     _pendingDeath = new PendingDeath(
       (EntityType)entityType,
       position,
@@ -337,7 +343,10 @@ public partial class Player : CharacterBody2D, IPersistent {
   public PendingDeath TakePendingDeath() {
     var death = _pendingDeath;
     _pendingDeath = PendingDeath.Nothing;
-    return death;
+    // Every contact of the frame has been flushed by the time a state asks, so the gem has settled
+    // whether it is being taken. One a face of its own color reached is a pickup however many other
+    // faces the same contact buried it in, and a dash buries it in several.
+    return death.Source is Gem { IsBeingCollected: true } ? PendingDeath.Nothing : death;
   }
 
   private void ConnectSignals() {
