@@ -63,6 +63,7 @@ menu.label.slot_index,Slot {0},Emplacement {0},Slot {0},Ranura {0},Slot {0},Slot
 game.level.title.four_colors,4 Colors Is All You Need,4 couleurs suffisent,4 Farben genügen,Con 4 colores basta,Bastano 4 colori,4 cores bastam,4 kleuren zijn genoeg
 game.level.title.lets_play_with_colors,Let's Play with Colors,Jouons avec les couleurs,Spielen wir mit Farben,Juguemos con los colores,Giochiamo con i colori,Vamos brincar com as cores,Spelen met kleuren
 game.level.title.hub,The Arena,L'Arène,Die Arena,La Arena,L'Arena,A Arena,De Arena
+game.level.title.tetris,It's Raining Blocks,Il pleut des blocs,Es regnet Blöcke,Llueven bloques,Piovono blocchi,Chovem blocos,Het regent blokken
 menu.button.load_game,Load Game,Charger une partie,Spiel laden,Cargar partida,Carica partita,Carregar jogo,Spel laden
 menu.dialog.overwrite_slot,Starting a new game here will erase this save. Continue?,Commencer une nouvelle partie ici effacera cette sauvegarde. Continuer ?,Ein neues Spiel hier löscht diesen Spielstand. Fortfahren?,Empezar una nueva partida aquí borrará esta partida guardada. ¿Continuar?,Iniziare una nuova partita qui cancellerà questo salvataggio. Continuare?,Começar um novo jogo aqui apagará este jogo guardado. Continuar?,Een nieuw spel starten wist deze opgeslagen game. Doorgaan?
 menu.header.load_game,Load Game,Charger une partie,Spiel laden,Cargar partida,Carica partita,Carregar jogo,Spel laden

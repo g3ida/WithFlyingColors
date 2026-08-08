@@ -1,0 +1,58 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/Wfc/Entities/World/Backgrounds/TetrisBackground/TetrisBackground.cs" id="1"]
+[ext_resource type="Script" path="res://src/Wfc/Entities/World/Backgrounds/BlockOutlineField/BlockOutlineField.cs" id="2"]
+
+[node name="TetrisBackground" type="CanvasLayer"]
+layer = -100
+script = ExtResource("1")
+
+[node name="Fill" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.129412, 0.129412, 0.141176, 1)
+
+[node name="FarBlocks" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.07, 0.045)
+repeat_size = Vector2(1920, 1080)
+repeat_times = 3
+follow_viewport = false
+script = ExtResource("2")
+Seed = 811
+ShapeCount = 46
+SizeMin = 34.0
+SizeMax = 96.0
+StrokeWidth = 3.5
+Alpha = 0.32
+Vibrance = 0.4
+GradientChance = 0.3
+ElbowChance = 0.16
+DriftMin = 4.0
+DriftMax = 11.0
+SpinMax = 0.03
+PeriodMin = 7.0
+PeriodMax = 16.0
+
+[node name="NearBlocks" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.17, 0.095)
+repeat_size = Vector2(1920, 1080)
+repeat_times = 3
+follow_viewport = false
+script = ExtResource("2")
+Seed = 2287
+ShapeCount = 26
+SizeMin = 84.0
+SizeMax = 188.0
+StrokeWidth = 5.0
+Alpha = 0.55
+Vibrance = 0.62
+GradientChance = 0.45
+ElbowChance = 0.2
+DriftMin = 7.0
+DriftMax = 18.0
+SpinMax = 0.04
+PeriodMin = 5.5
+PeriodMax = 12.0

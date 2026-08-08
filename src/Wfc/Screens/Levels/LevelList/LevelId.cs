@@ -20,6 +20,8 @@ public enum LevelId {
   // LevelDispatcher.LEVELS: it is where levels are chosen from, not a level on offer.
   [LevelPath("HubLevel")]
   Hub,
+  [LevelPath("TetrisLevel")]
+  Tetris,
 }
 
 
