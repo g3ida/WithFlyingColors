@@ -10,7 +10,6 @@
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="7_grsqt"]
 [ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="9_prclt"]
 [ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="10_4uxlv"]
-[ext_resource type="PackedScene" uid="uid://bxr7f2qk1nvca" path="res://src/Wfc/Entities/World/Platforms/RotatingPlatform/RotatingPlatform.tscn" id="11_fxs1j"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_v7wth"]
 size = Vector2(96, 750)
@@ -94,7 +93,7 @@ scale = Vector2(4, 4)
 Group = "yellow"
 
 [node name="PinkStep" parent="Platforms" index="1" unique_id=1277681785 instance=ExtResource("3_prclt")]
-position = Vector2(14832, -790.6)
+position = Vector2(15040, -1024)
 scale = Vector2(4, 4)
 Group = "pink"
 
@@ -128,7 +127,12 @@ position = Vector2(6496, 1070)
 Size = Vector2(1024, 1500)
 Group = "white"
 
-[node name="SlidingPlatform" parent="Platforms" index="7" unique_id=1950131993 instance=ExtResource("9_prclt")]
+[node name="YellowPlatform3" parent="Platforms" index="7" unique_id=736766615 instance=ExtResource("4_0dcb7")]
+position = Vector2(10208, 750)
+Size = Vector2(1024, 1500)
+Group = "white"
+
+[node name="SlidingPlatform" parent="Platforms" index="8" unique_id=1950131993 instance=ExtResource("9_prclt")]
 position = Vector2(3584, -320)
 Axis = 1
 Distance = 600.0
@@ -139,7 +143,7 @@ SmoothLanding = true
 Track = 2
 Size = Vector2(384, 64)
 
-[node name="SlidingPlatform2" parent="Platforms" index="8" unique_id=315199356 instance=ExtResource("9_prclt")]
+[node name="SlidingPlatform2" parent="Platforms" index="9" unique_id=315199356 instance=ExtResource("9_prclt")]
 position = Vector2(4224, 384)
 Axis = 1
 Distance = 600.0
@@ -152,7 +156,7 @@ Track = 2
 Size = Vector2(384, 64)
 Group = "pink"
 
-[node name="SlidingPlatform3" parent="Platforms" index="9" unique_id=2016051831 instance=ExtResource("9_prclt")]
+[node name="SlidingPlatform3" parent="Platforms" index="10" unique_id=2016051831 instance=ExtResource("9_prclt")]
 position = Vector2(4864, -320)
 Axis = 1
 Distance = 600.0
@@ -164,7 +168,7 @@ Track = 2
 Size = Vector2(384, 64)
 Group = "purple"
 
-[node name="SlidingPlatform6" parent="Platforms" index="10" unique_id=1244767661 instance=ExtResource("9_prclt")]
+[node name="SlidingPlatform6" parent="Platforms" index="11" unique_id=1244767661 instance=ExtResource("9_prclt")]
 position = Vector2(7936, -224)
 Axis = 1
 Distance = 600.0
@@ -177,7 +181,59 @@ Track = 2
 Size = Vector2(384, 64)
 Group = "purple"
 
-[node name="SlidingPlatform4" parent="Platforms" index="11" unique_id=106888261 instance=ExtResource("9_prclt")]
+[node name="SlidingPlatform8" parent="Platforms" index="12" unique_id=872857558 instance=ExtResource("9_prclt")]
+position = Vector2(11136, -32)
+Axis = 1
+Distance = 500.0
+Speed = 5.0
+WaitTime = 3.0
+StartDelay = 2.0
+OneShotPhase = 3
+SmoothLanding = true
+Track = 2
+Size = Vector2(384, 64)
+Group = "purple"
+
+[node name="SlidingPlatform10" parent="Platforms" index="13" unique_id=1585621518 instance=ExtResource("9_prclt")]
+position = Vector2(12736, 480)
+Axis = 1
+Distance = 500.0
+StartAt = 1
+Speed = 5.0
+WaitTime = 3.0
+StartDelay = 2.0
+OneShotPhase = 3
+SmoothLanding = true
+Track = 2
+Size = Vector2(384, 64)
+Group = "purple"
+
+[node name="SlidingPlatform11" parent="Platforms" index="14" unique_id=627279530 instance=ExtResource("9_prclt")]
+position = Vector2(13280, -512)
+Axis = 1
+Distance = 500.0
+Speed = 5.0
+WaitTime = 3.0
+StartDelay = 2.0
+OneShotPhase = 3
+SmoothLanding = true
+Track = 2
+Size = Vector2(384, 64)
+Group = "pink"
+
+[node name="SlidingPlatform7" parent="Platforms" index="15" unique_id=365108196 instance=ExtResource("9_prclt")]
+position = Vector2(8544, -224)
+Distance = 600.0
+Speed = 3.0
+WaitTime = 4.0
+StartDelay = 2.0
+OneShotPhase = 3
+SmoothLanding = true
+Track = 2
+Size = Vector2(384, 64)
+Group = "pink"
+
+[node name="SlidingPlatform4" parent="Platforms" index="16" unique_id=106888261 instance=ExtResource("9_prclt")]
 position = Vector2(5504, 384)
 Axis = 1
 Distance = 600.0
@@ -190,7 +246,7 @@ Track = 2
 Size = Vector2(384, 64)
 Group = "yellow"
 
-[node name="SlidingPlatform5" parent="Platforms" index="12" unique_id=232735946 instance=ExtResource("9_prclt")]
+[node name="SlidingPlatform5" parent="Platforms" index="17" unique_id=232735946 instance=ExtResource("9_prclt")]
 position = Vector2(8544, 128)
 Distance = 1200.0
 StartAt = 1
@@ -202,14 +258,50 @@ Track = 2
 Size = Vector2(384, 64)
 Group = "yellow"
 
+[node name="SlidingPlatform9" parent="Platforms" index="18" unique_id=1819260864 instance=ExtResource("9_prclt")]
+position = Vector2(11744, 480)
+Distance = 500.0
+Speed = 5.0
+WaitTime = 3.0
+OneShotPhase = 3
+SmoothLanding = true
+Track = 2
+Size = Vector2(384, 64)
+Group = "yellow"
+
+[node name="SlidingPlatform12" parent="Platforms" index="19" unique_id=411525954 instance=ExtResource("9_prclt")]
+position = Vector2(12224, -640)
+Distance = 500.0
+Speed = 5.0
+WaitTime = 3.0
+OneShotPhase = 3
+SmoothLanding = true
+Track = 2
+Size = Vector2(384, 64)
+
+[node name="FlatPlatform" parent="Platforms" index="20" unique_id=2074557092 instance=ExtResource("4_0dcb7")]
+position = Vector2(11584, -864)
+Size = Vector2(384, 64)
+Group = "purple"
+
+[node name="FlatPlatform2" parent="Platforms" index="21" unique_id=1274513071 instance=ExtResource("4_0dcb7")]
+position = Vector2(12224, -1120)
+Size = Vector2(384, 64)
+Group = "yellow"
+
+[node name="FlatPlatform3" parent="Platforms" index="22" unique_id=388368341 instance=ExtResource("4_0dcb7")]
+position = Vector2(11552, -1376)
+Size = Vector2(384, 64)
+Group = "pink"
+
 [node name="Gems" type="Node2D" parent="." index="7" unique_id=233669701]
 
-[node name="BlueGem" parent="Gems" index="0" unique_id=1183457114 instance=ExtResource("4_4uxlv")]
+[node name="PinkGem" parent="Gems" index="0" unique_id=1183457114 instance=ExtResource("4_4uxlv")]
 position = Vector2(2200, -812)
-
-[node name="PinkGem" parent="Gems" index="1" unique_id=375473338 instance=ExtResource("4_4uxlv")]
-position = Vector2(7424, -384)
 GroupName = "pink"
+
+[node name="BlueGem" parent="Gems" index="1" unique_id=375473338 instance=ExtResource("4_4uxlv")]
+position = Vector2(7424, -384)
 
 [node name="PurpleGem" parent="Gems" index="2" unique_id=2096831046 instance=ExtResource("4_4uxlv")]
 position = Vector2(5912, -680)
@@ -227,10 +319,7 @@ position = Vector2(15624, 271.40002)
 [node name="Player" parent="." index="10"]
 position = Vector2(-56, 336)
 
-[node name="MidCheckpoint" parent="." index="11" unique_id=572080245 instance=ExtResource("7_grsqt")]
-position = Vector2(6504, 272)
-
-[node name="CameraLocalizers" type="Node2D" parent="." index="12" unique_id=757715892]
+[node name="CameraLocalizers" type="Node2D" parent="." index="11" unique_id=757715892]
 
 [node name="Localizer-1" parent="CameraLocalizers" index="0" unique_id=814120356 instance=ExtResource("10_4uxlv")]
 position = Vector2(2256, -152)
@@ -273,6 +362,7 @@ shape = SubResource("RectangleShape2D_v0p06")
 [node name="Localizer-4" parent="CameraLocalizers" index="3" unique_id=1280488030 instance=ExtResource("10_4uxlv")]
 position = Vector2(7720, -143)
 LimitRect = Rect2(-960, -400, 2560, 1080)
+LimitedEdges = 13
 FollowPath = NodePath("")
 
 [node name="Area2D" type="Area2D" parent="CameraLocalizers/Localizer-4" index="0" unique_id=2073272786]
@@ -281,7 +371,19 @@ FollowPath = NodePath("")
 position = Vector2(-811, 195.125)
 shape = SubResource("RectangleShape2D_fghih")
 
-[node name="resetter-4" parent="CameraLocalizers" index="4" unique_id=1485624620 instance=ExtResource("10_4uxlv")]
+[node name="Localizer-5" parent="CameraLocalizers" index="4" unique_id=1638958014 instance=ExtResource("10_4uxlv")]
+position = Vector2(11480, -463)
+LimitRect = Rect2(-960, -400, 2560, 1080)
+LimitedEdges = 13
+FollowPath = NodePath("")
+
+[node name="Area2D" type="Area2D" parent="CameraLocalizers/Localizer-5" index="0" unique_id=642440234]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizers/Localizer-5/Area2D" index="0" unique_id=423565455]
+position = Vector2(-811, 195.125)
+shape = SubResource("RectangleShape2D_fghih")
+
+[node name="resetter-4" parent="CameraLocalizers" index="5" unique_id=1485624620 instance=ExtResource("10_4uxlv")]
 position = Vector2(6712, 51)
 RestoreLevelFraming = true
 LimitedEdges = 0
@@ -293,10 +395,10 @@ FollowPath = NodePath("")
 position = Vector2(5.5, 5)
 shape = SubResource("RectangleShape2D_45sie")
 
-[node name="RotatingPlatform" parent="." index="13" unique_id=177360995 instance=ExtResource("11_fxs1j")]
-position = Vector2(7296, 384)
-Speed = 300.0
-Sweep = 90.0
-WaitTime = 2.0
-OneShotPhase = 3
-Size = Vector2(256, 256)
+[node name="Checkpoints" type="Node" parent="." index="12" unique_id=963650579]
+
+[node name="MidCheckpoint" parent="Checkpoints" index="0" unique_id=572080245 instance=ExtResource("7_grsqt")]
+position = Vector2(6496, 68)
+
+[node name="Checkpoint2" parent="Checkpoints" index="1" unique_id=1175863929 instance=ExtResource("7_grsqt")]
+position = Vector2(10184, -224)

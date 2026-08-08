@@ -72,7 +72,7 @@ public partial class GemNotCollectedState : GemBaseState {
     // A gem the level has already given up asks nothing of the player: whichever face
     // reaches it takes it, and taking it is worth nothing.
     if (area.IsInGroup(gem.GroupName) || (gem.IsAlreadyCollected && _isPlayerFace(area))) {
-      gem.CollisionShapeNode.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+      gem.Take();
       return _statesStore.GetState<GemCollectingState>();
     }
     return null;
