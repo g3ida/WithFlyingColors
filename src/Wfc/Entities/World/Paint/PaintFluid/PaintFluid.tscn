@@ -17,7 +17,7 @@ shader_parameter/u_shade = Color(0.8, 0.8, 0.8, 1)
 resource_local_to_scene = true
 size = Vector2(200, 340)
 
-[node name="PaintFluid" type="Node2D"]
+[node name="PaintFluid" type="Node2D" groups=["persist"]]
 script = ExtResource("1")
 
 [node name="Body" type="ColorRect" parent="."]

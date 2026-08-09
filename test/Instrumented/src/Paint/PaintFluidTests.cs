@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Serialization;
 using Wfc.Entities.World.Paint;
 using Wfc.Entities.World.Platforms;
 using Wfc.Entities.World.Player;
@@ -173,6 +174,49 @@ public class PaintFluidTests(Node testScene) : TestClass(testScene) {
     // And it carries on from there rather than starting the pour again.
     await PhysicsFrames.Advance(TestScene, 60);
     _fluid.FrontX.ShouldBeGreaterThanOrEqualTo(front, "the flood went backwards after the reload");
+  }
+
+  // And the same again across the game being closed. Nothing that was in memory survives that, so
+  // a room that only remembered its own state would greet a returning player with a full bucket
+  // and a dry floor, and make them run the room a second time.
+  //
+  // The coat is not written down, only which ground wears it: how a column dries follows from
+  // where it is and the seed, so it can be worked out again rather than stored.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task WhatItDriedOntoSurvivesTheGameBeingClosed() {
+    _fluid.Pour();
+    await PhysicsFrames.Advance(TestScene, 240);
+    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+    var coats = _coatsOf(_fluid).Count;
+    coats.ShouldBeGreaterThan(0);
+
+    var serializer = new SimpleJsonSerializer();
+    var written = serializer.Serialize(_fluid.Save(serializer));
+    written.Length.ShouldBeLessThan(4000, "the room writes out more of itself than it needs to");
+
+    // A room that has never heard of any of it, which is all a reopened game has.
+    var reopened = SceneHelpers.InstantiateNode<PaintFluid>();
+    reopened.Position = Vector2.Zero;
+    reopened.Width = _fluid.Width;
+    reopened.Depth = _fluid.Depth;
+    reopened.Group = ColorUtils.PURPLE;
+    reopened.SpoutOffset = _fluid.SpoutOffset;
+    reopened.CameraZoom = 0f;
+    _level.AddChild(reopened);
+    await PhysicsFrames.Frame(TestScene);
+
+    reopened.Load(serializer, serializer.Deserialize<string>(written)!);
+    await PhysicsFrames.Advance(TestScene, 3);
+
+    _coatsOf(reopened).Count.ShouldBe(coats, "the paint the flood had dried did not come back");
+
+    // And the bucket stays empty. A room that came back dry-but-armed would flood itself again the
+    // moment the returning player stepped into the trigger they had already been past.
+    reopened.Pour();
+    await PhysicsFrames.Advance(TestScene, 60);
+    reopened.ParticleCount.ShouldBe(0, "the emptied bucket poured itself a second time");
+    reopened.QueueFree();
   }
 
   // Whatever the flood has dried onto and left able to kill. Read off the node rather than exposed

@@ -59,12 +59,18 @@ public partial class PaintSplat : Node2D {
 
   private string _group = "purple";
   private float _width = 256f;
+  private bool _dried;
 
   // Called before the splat is in the tree, so what it is told is kept until _Ready has the
   // nodes to put it on.
-  public void Setup(string colorGroup, float width) {
+  //
+  // Paint put back from a saved game is already dry: it was thrown long before the game was
+  // last closed, and playing the throw again on load would have the room splash itself as the
+  // player arrives in it.
+  public void Setup(string colorGroup, float width, bool dried = false) {
     _group = colorGroup;
     _width = width;
+    _dried = dried;
   }
 
   public string Group => _group;
@@ -108,9 +114,22 @@ public partial class PaintSplat : Node2D {
     _dropletsNode.Color = color;
     _dropletsNode.InitialVelocityMax = _width * DROPLET_SPEED_PER_WIDTH;
     _dropletsNode.InitialVelocityMin = _dropletsNode.InitialVelocityMax * 0.35f;
-    _dropletsNode.Emitting = true;
 
+    if (_dried) {
+      _settled();
+      return;
+    }
+    _dropletsNode.Emitting = true;
     _play();
+  }
+
+  // Where the throw would have ended: fully spread, fully run off, and lethal from the outset.
+  private void _settled() {
+    if (_paintNode.Material is ShaderMaterial material) {
+      material.SetShaderParameter(SpreadParam, 1f);
+      material.SetShaderParameter(RunParam, 1f);
+    }
+    _areaNode.Monitorable = true;
   }
 
   private void _play() {

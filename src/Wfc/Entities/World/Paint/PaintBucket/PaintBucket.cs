@@ -2,8 +2,11 @@ namespace Wfc.Entities.World.Paint;
 
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
+using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Input;
+using Wfc.Core.Persistence;
+using Wfc.Core.Serialization;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
@@ -25,7 +28,7 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [Tool]
 [ScenePath]
 [Meta(typeof(IAutoNode))]
-public partial class PaintBucket : CharacterBody2D {
+public partial class PaintBucket : CharacterBody2D, IPersistent {
   public override void _Notification(int what) => this.Notify(what);
 
   #region Dependencies
@@ -113,6 +116,17 @@ public partial class PaintBucket : CharacterBody2D {
   // How far past the body the landing probe looks for the surface it came down on.
   private const float LANDING_PROBE = 24f;
 
+  // How finely the surface is felt along for its ends, and the least paint worth making a splat
+  // of. Anything narrower than this reads as a smear rather than as a run of coloured floor, and
+  // it would claim a strip of colour too thin for the player to see they had to match.
+  private const float EDGE_STEP = 4f;
+  private const float MIN_SPLASH = 28f;
+
+  // How far below the lip paint thrown off the end will look for something to land on. Past this
+  // it is falling into the room rather than onto the next shelf down, and there is nothing there
+  // for it to coat.
+  private const float OVERFLOW_DROP = 900f;
+
   private const float IMPACT_SHAKE = 8f;
   #endregion Constants
 
@@ -154,10 +168,13 @@ public partial class PaintBucket : CharacterBody2D {
   private Vector2 _size = new Vector2(64f, 72f);
   private Vector2 _home;
   private float _homeRotation;
+  private Node? _homeParent;
+  private string _saveId = string.Empty;
   private Player.Player? _pusherNode;
   private float _shoveSoundIn;
   private float _kick;
-  private PaintSplat? _splatNode;
+  // Everything it put down: what stayed on the shelf, and whatever ran off either end of it.
+  private readonly List<PaintSplat> _splats = [];
   private Vector2 _pivot;
   private Vector2 _arm;
   private float _tipAngle;
@@ -183,6 +200,11 @@ public partial class PaintBucket : CharacterBody2D {
     _paintAreaNode.AddToGroup(Group);
     _home = Position;
     _homeRotation = Rotation;
+    _homeParent = GetParent();
+    // Taken now, while it is still where the level put it. An emptied bucket goes to live under
+    // whatever caught it so that it rides, and a saved entry filed under where it ended up is
+    // filed under a name no freshly built level has.
+    _saveId = GetPath();
     // Before the cube, whatever order the level put the two in. A shove is the bucket getting out
     // of the way and the cube walking into the room it left; the other way round, the cube walks
     // into the bucket and loses its speed to the collision every single tick.
@@ -237,7 +259,7 @@ public partial class PaintBucket : CharacterBody2D {
 
   public bool IsUpright => _state is State.Resting;
 
-  public PaintSplat? Splat => _splatNode;
+  public PaintSplat? Splat => _splats.Count > 0 ? _splats[0] : null;
 
   private void _rest(float delta) {
     _takeKick();
@@ -319,10 +341,11 @@ public partial class PaintBucket : CharacterBody2D {
     var (point, surface) = landing;
     var centre = new Vector2(ToGlobal(_collisionShapeNode.Position).X, point.Y);
 
-    _spawnSplat(centre, surface);
+    _spread(centre, surface);
     _spriteNode.Empty();
     _spriteNode.Impact();
     _settle(centre);
+    _rideOn(surface);
     // Its paint is on the floor now, so what is left is a tin the cube can stand on whichever way
     // up it happens to be.
     _paintAreaNode.Monitorable = false;
@@ -334,6 +357,18 @@ public partial class PaintBucket : CharacterBody2D {
     // An empty bucket lying on a surface is scenery the cube can climb, and scenery does not
     // need a tick.
     SetPhysicsProcess(false);
+  }
+
+  // An emptied bucket belongs to whatever it came down on rather than to the room, the same way
+  // the paint it spilled does. A surface that moves then takes both with it, and neither has to
+  // know that it moves: the tin is carried by the very transform that carries the platform's own
+  // collision, so there is nothing per-frame to keep the two in step and nothing to drift.
+  private void _rideOn(Node? surface) {
+    if (surface is not Node2D host || host == GetParent()) {
+      return;
+    }
+    // Left exactly where it came to rest; what changes is only what it is measured against.
+    Reparent(host, keepGlobalTransform: true);
   }
 
   // Which way the bucket falls: +1 for over its right-hand edge, -1 for its left, 0 while it is
@@ -423,18 +458,79 @@ public partial class PaintBucket : CharacterBody2D {
     return (GlobalPosition, null);
   }
 
-  private void _spawnSplat(Vector2 where, Node? surface) {
+  // The paint goes as far as the surface does and no further. A bucket emptied over a shelf
+  // narrower than the splash coats the shelf and pours the rest off its ends, which then falls and
+  // coats whatever is under there - so a platform never wears a coat wider than itself with the
+  // ends of it hanging in the air.
+  private void _spread(Vector2 where, Node? surface) {
+    var half = SplashWidth / 2f;
+    var from = where.X - half;
+    var to = where.X + half;
+    var (left, right) = _surfaceRun(where, surface, half);
+
+    _lay(surface, Mathf.Max(from, left), Mathf.Min(to, right), where.Y);
+    _spillOver(from, Mathf.Min(to, left), where.Y);
+    _spillOver(Mathf.Max(from, right), to, where.Y);
+  }
+
+  // How far what it landed on actually runs, either side of where the paint hit it. Felt along
+  // rather than read off the platform, because what caught the bucket is whatever the physics
+  // server says it is and need not be a platform the level knows how to measure.
+  private (float Left, float Right) _surfaceRun(Vector2 point, Node? surface, float reach) {
+    return (point.X - _runsTo(point, surface, -1f, reach), point.X + _runsTo(point, surface, 1f, reach));
+  }
+
+  private float _runsTo(Vector2 point, Node? surface, float direction, float reach) {
+    var run = 0f;
+    while (run + EDGE_STEP <= reach) {
+      var at = run + EDGE_STEP;
+      var from = new Vector2(point.X + (direction * at), point.Y - PROBE_RISE);
+      using var hit = GetWorld2D().DirectSpaceState.IntersectRay(
+        _groundRay(from, from + new Vector2(0f, PROBE_RISE + PROBE_DROP))
+      );
+      if (hit.Count == 0 || hit["collider"].As<Node>() != surface) {
+        break;
+      }
+      run = at;
+    }
+    return run;
+  }
+
+  // Paint thrown past the end of the shelf, which falls and lands on whatever is below.
+  private void _spillOver(float from, float to, float lip) {
+    if (to - from < MIN_SPLASH) {
+      return;
+    }
+    var start = new Vector2((from + to) / 2f, lip);
+    using var hit = GetWorld2D().DirectSpaceState.IntersectRay(
+      _groundRay(start, start + new Vector2(0f, OVERFLOW_DROP))
+    );
+    if (hit.Count == 0) {
+      return;
+    }
+    _lay(hit["collider"].As<Node>(), from, to, hit["position"].AsVector2().Y);
+  }
+
+  private void _lay(Node? surface, float from, float to, float top) {
+    var width = to - from;
+    if (width < MIN_SPLASH) {
+      return;
+    }
     var host = surface as Node2D ?? GetParent() as Node2D;
     if (host is null) {
       return;
     }
 
+    _splats.Add(_makeSplat(host, host.ToLocal(new Vector2((from + to) / 2f, top)), width, dried: false));
+  }
+
+  private PaintSplat _makeSplat(Node2D host, Vector2 where, float width, bool dried) {
     var splat = SceneHelpers.InstantiateNode<PaintSplat>();
-    splat.Setup(Group, SplashWidth);
+    splat.Setup(Group, width, dried);
     // Both before it is in the tree: physics interpolation is on for the whole project, and a
     // node given its transform after it is added draws its first frames sweeping in from its
     // parent's origin.
-    splat.Position = host.ToLocal(where);
+    splat.Position = where;
     // The paint is a size in pixels wherever it lands, and some of the older platforms are sized
     // by scaling them.
     var scale = host.GlobalScale;
@@ -444,7 +540,7 @@ public partial class PaintBucket : CharacterBody2D {
     );
 
     host.AddChild(splat);
-    _splatNode = splat;
+    return splat;
   }
 
   // Lay the bucket down on what it broke over, on whichever quarter turn it came down nearest -
@@ -571,10 +667,13 @@ public partial class PaintBucket : CharacterBody2D {
     if (!IsNodeReady()) {
       return;
     }
-    _remembered = new Remembered(_state, Position, Rotation, _splatNode);
+    _remembered = new Remembered(_state, GetParent(), Position, Rotation, _splats.ToArray());
   }
 
-  private sealed record Remembered(State State, Vector2 Position, float Rotation, PaintSplat? Splat);
+  // The position is the one it had inside that parent, which for a bucket riding a platform is the
+  // only one still worth anything once the platform has been put back where it started too.
+  private sealed record Remembered(
+    State State, Node? Parent, Vector2 Position, float Rotation, PaintSplat[] Splats);
 
   private Remembered? _remembered;
 
@@ -588,11 +687,24 @@ public partial class PaintBucket : CharacterBody2D {
   }
 
   private void _restore() {
-    var kept = _remembered?.Splat;
-    if (_splatNode is not null && _splatNode != kept && IsInstanceValid(_splatNode)) {
-      _splatNode.QueueFree();
+    var kept = _remembered?.Splats ?? System.Array.Empty<PaintSplat>();
+    foreach (var splat in _splats) {
+      if (IsInstanceValid(splat) && System.Array.IndexOf(kept, splat) < 0) {
+        splat.QueueFree();
+      }
     }
-    _splatNode = kept is not null && IsInstanceValid(kept) ? kept : null;
+    _splats.Clear();
+    foreach (var splat in kept) {
+      if (IsInstanceValid(splat)) {
+        _splats.Add(splat);
+      }
+    }
+
+    // Back under whatever it belonged to then, before its position is read against it.
+    var host = _remembered?.Parent ?? _homeParent;
+    if (host is not null && IsInstanceValid(host) && host != GetParent()) {
+      Reparent(host, keepGlobalTransform: false);
+    }
 
     Position = _remembered?.Position ?? _home;
     Rotation = _remembered?.Rotation ?? _homeRotation;
@@ -616,4 +728,75 @@ public partial class PaintBucket : CharacterBody2D {
     ResetPhysicsInterpolation();
     SetPhysicsProcess(!emptied);
   }
+
+  #region Persistence
+  // What a saved game has to carry. The in-session snapshot points straight at the nodes it
+  // remembers, which is all a death needs because the nodes live through one - but a game that was
+  // closed and opened again has none of them, so this says where they were rather than which they
+  // were. The paint is described well enough to be built again, since nothing in the level holds
+  // it: it only ever existed because this bucket made it.
+  private sealed record SplatData(string Host = "", float X = 0f, float Y = 0f, float Width = 0f);
+
+  private sealed record SaveData(
+    int State = 0,
+    string Parent = "",
+    float X = 0f,
+    float Y = 0f,
+    float Rotation = 0f,
+    SplatData[]? Splats = null);
+
+  public string GetSaveId() => _saveId.Length > 0 ? _saveId : GetPath();
+
+  public string Save(ISerializer serializer) {
+    // What the last checkpoint saw, not what is on screen: a saved game is resumed from the
+    // checkpoint, so it has to carry what a death would have put back.
+    var was = _remembered;
+    var splats = new List<SplatData>();
+    foreach (var splat in was?.Splats ?? System.Array.Empty<PaintSplat>()) {
+      if (IsInstanceValid(splat) && splat.GetParent() is Node2D host) {
+        splats.Add(new SplatData(host.GetPath(), splat.Position.X, splat.Position.Y, splat.Width));
+      }
+    }
+
+    var at = was?.Position ?? _home;
+    return serializer.Serialize(new SaveData(
+      (int)(was?.State ?? State.Resting),
+      (was?.Parent ?? _homeParent)?.GetPath() ?? string.Empty,
+      at.X,
+      at.Y,
+      was?.Rotation ?? _homeRotation,
+      splats.ToArray()));
+  }
+
+  public void Load(ISerializer serializer, string data) {
+    var saved = serializer.Deserialize<SaveData>(data);
+    if (saved is null) {
+      return;
+    }
+
+    var splats = new List<PaintSplat>();
+    foreach (var splat in saved.Splats ?? System.Array.Empty<SplatData>()) {
+      if (GetNodeOrNull(splat.Host) is Node2D host) {
+        splats.Add(_makeSplat(host, new Vector2(splat.X, splat.Y), splat.Width, dried: true));
+      }
+    }
+
+    _remembered = new Remembered(
+      (State)saved.State,
+      GetNodeOrNull(saved.Parent),
+      new Vector2(saved.X, saved.Y),
+      saved.Rotation,
+      splats.ToArray());
+    // Adopted before the restore, or it would take the paint it has just put back for paint
+    // spilled since the checkpoint and throw it away again.
+    _splats.Clear();
+    _splats.AddRange(splats);
+
+    if (IsNodeReady()) {
+      _restore();
+      return;
+    }
+    Callable.From(_restore).CallDeferred();
+  }
+  #endregion Persistence
 }

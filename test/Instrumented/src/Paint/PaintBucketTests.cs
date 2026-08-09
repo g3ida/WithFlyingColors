@@ -1,13 +1,16 @@
 namespace Wfc.test.instrumented.Paint;
 
+using System.Linq;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Serialization;
 using Wfc.Entities.World.Paint;
 using Wfc.Entities.World.Platforms;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
+using Wfc.Utils.Layers;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -305,6 +308,203 @@ public class PaintBucketTests(Node testScene) : TestClass(testScene) {
     bucket.GlobalPosition.X.ShouldBe(restedAt.X, 0.5f, "the emptied bucket was carried back up the level");
     bucket.GlobalPosition.Y.ShouldBe(restedAt.Y, 0.5f, "the emptied bucket was carried back up the level");
     bucket.Rotation.ShouldBe(lay, 0.01f, "the bucket stood itself back up");
+  }
+
+  // Paint that lands on something that moves goes with it, and so must the tin it came out of.
+  // Left behind, an emptied bucket sits in mid-air over the gap the platform used to be in.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task AnEmptiedTinRidesTheSurfaceItCameDownOn() {
+    _ledge(-320f, 320f);
+    var carriage = _movingRun(-320f, 1600f);
+    var bucket = _standBucket(160f);
+    _playerAt(0f, LEDGE_TOP - 120f);
+
+    _services.Input.Press(Wfc.Core.Input.IInputManager.Action.MoveRight);
+    (await PhysicsFrames.WaitFor(TestScene, () => bucket.IsSpilled, TIMEOUT)).ShouldBeTrue();
+    _services.Input.ReleaseAll();
+    await PhysicsFrames.Advance(TestScene, 20);
+
+    var rodeFrom = bucket.GlobalPosition.X;
+    var carried = carriage.Position.X;
+    carriage.Position += new Vector2(240f, 0f);
+    await PhysicsFrames.Advance(TestScene, 4);
+
+    bucket.GlobalPosition.X.ShouldBe(rodeFrom + 240f, 1f, "the tin stayed behind when the floor moved");
+    bucket.Splat!.GlobalPosition.X.ShouldBe(
+      bucket.GlobalPosition.X, 40f, "the tin and its paint came apart");
+
+    // And what it is measured against went with it, so a reload can still place it.
+    carriage.Position = new Vector2(carried, carriage.Position.Y);
+    await PhysicsFrames.Advance(TestScene, 4);
+    bucket.GlobalPosition.X.ShouldBe(rodeFrom, 1f, "the tin did not come back with the floor");
+  }
+
+  // Which is what makes the save work on one: the position it is remembered at is the one it had
+  // on the platform, so putting the platform back puts the bucket back with it.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task ACheckpointRemembersWhereOnAMovingFloorItCameToRest() {
+    _ledge(-320f, 320f);
+    var carriage = _movingRun(-320f, 1600f);
+    var bucket = _standBucket(160f);
+    _playerAt(0f, LEDGE_TOP - 120f);
+
+    _services.Input.Press(Wfc.Core.Input.IInputManager.Action.MoveRight);
+    (await PhysicsFrames.WaitFor(TestScene, () => bucket.IsSpilled, TIMEOUT)).ShouldBeTrue();
+    _services.Input.ReleaseAll();
+    await PhysicsFrames.Advance(TestScene, 20);
+
+    var startedAt = carriage.Position;
+    var rode = bucket.GlobalPosition.X - carriage.Position.X;
+    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+
+    // The platform wanders off and the player dies out there. A reload puts the platform back to
+    // where it starts, and the bucket has to come back to the same place on it.
+    carriage.Position += new Vector2(400f, 0f);
+    await PhysicsFrames.Advance(TestScene, 4);
+    EventHandler.Instance.EmitCheckpointLoaded();
+    carriage.Position = startedAt;
+    await PhysicsFrames.Advance(TestScene, 4);
+
+    bucket.IsSpilled.ShouldBeTrue("the reload filled the tin back up past a checkpoint");
+    (bucket.GlobalPosition.X - carriage.Position.X)
+      .ShouldBe(rode, 1f, "the tin came back somewhere else on the platform");
+  }
+
+  // Paint cannot hold itself up past the end of what it is lying on. Emptied over a shelf narrower
+  // than the splash, the coat is cut to the shelf rather than making the platform look wider than
+  // it is - which reads as floor the cube can stand on and drops it through.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task PaintIsCutToTheSurfaceItLandsOnRatherThanOverhangingIt() {
+    // Dropped straight onto the shelf rather than shoved at it, so the paint lands in the middle
+    // of it and what this measures is the cut rather than where the bucket happened to come down.
+    var shelf = _platform(420f, 580f, LOWER_TOP);
+    var bucket = _standBucket(500f);
+
+    (await PhysicsFrames.WaitFor(TestScene, () => bucket.IsSpilled, TIMEOUT)).ShouldBeTrue();
+
+    var coat = bucket.Splat!;
+    coat.Width.ShouldBeLessThanOrEqualTo(shelf.Size.X + 1f, "the coat is wider than the shelf under it");
+    (coat.GlobalPosition.X - (coat.Width / 2f))
+      .ShouldBeGreaterThanOrEqualTo(shelf.Position.X - (shelf.Size.X / 2f) - 1f, "the coat hangs off the left end");
+    (coat.GlobalPosition.X + (coat.Width / 2f))
+      .ShouldBeLessThanOrEqualTo(shelf.Position.X + (shelf.Size.X / 2f) + 1f, "the coat hangs off the right end");
+  }
+
+  // And what went past the ends has to go somewhere. Poured over a shelf with a floor beneath it,
+  // the rest falls and coats the floor, the way paint tipped over the end of a plank does.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task WhatRunsOffTheEndsLandsOnWhateverIsBelow() {
+    var shelf = _platform(420f, 580f, LOWER_TOP);
+    var floor = _platform(-320f, 1600f, LOWER_TOP + 400f);
+    var bucket = _standBucket(500f);
+
+    (await PhysicsFrames.WaitFor(TestScene, () => bucket.IsSpilled, TIMEOUT)).ShouldBeTrue();
+    await PhysicsFrames.Advance(TestScene, 4);
+
+    var below = floor.GetChildren().OfType<PaintSplat>().ToList();
+    below.Count.ShouldBe(2, "the paint that ran off the shelf did not come down on the floor under it");
+    foreach (var run in below) {
+      run.GlobalPosition.Y.ShouldBe(LOWER_TOP + 400f, 2f, "the spill did not land on the floor");
+      // Past the shelf, which is the only reason it fell at all.
+      var clearOfShelf =
+        run.GlobalPosition.X + (run.Width / 2f) <= shelf.Position.X - (shelf.Size.X / 2f) + 1f
+        || run.GlobalPosition.X - (run.Width / 2f) >= shelf.Position.X + (shelf.Size.X / 2f) - 1f;
+      clearOfShelf.ShouldBeTrue("the spill came down under the shelf it was supposed to have missed");
+    }
+  }
+
+  // Closing the game and opening it again is not a death: nothing that was in memory survives it,
+  // so a bucket that only remembered the nodes it had spilled would come back full with the floor
+  // clean, and the puzzle would be there to be solved a second time.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task WhatItSpilledSurvivesTheGameBeingClosed() {
+    _ledge(-320f, 320f);
+    var lower = _lowerRun(-320f, 1600f);
+    var bucket = _standBucket(160f);
+    _playerAt(0f, LEDGE_TOP - 120f);
+
+    _services.Input.Press(Wfc.Core.Input.IInputManager.Action.MoveRight);
+    (await PhysicsFrames.WaitFor(TestScene, () => bucket.IsSpilled, TIMEOUT)).ShouldBeTrue();
+    _services.Input.ReleaseAll();
+    await PhysicsFrames.Advance(TestScene, 30);
+    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+
+    var restedAt = bucket.GlobalPosition;
+    var painted = lower.GetChildren().OfType<PaintSplat>().Select(s => s.GlobalPosition.X).ToList();
+    painted.Count.ShouldBeGreaterThan(0);
+
+    // Written out, then the level torn down and built again, and the entry matched to the new
+    // bucket the way the slot matches it: by the name it is filed under. Loading back into the
+    // same node would prove only that the writing round-trips, not that a reopened game finds it.
+    var serializer = new SimpleJsonSerializer();
+    var written = bucket.Save(serializer);
+    var filedAs = bucket.GetSaveId();
+    foreach (var splat in lower.GetChildren().OfType<PaintSplat>()) {
+      splat.Free();
+    }
+    bucket.Free();
+
+    var reopened = SceneHelpers.InstantiateNode<PaintBucket>();
+    reopened.Group = ColorUtils.PURPLE;
+    reopened.Position = new Vector2(160f, LEDGE_TOP);
+    _level.AddChild(reopened);
+    await PhysicsFrames.Frame(TestScene);
+
+    reopened.GetSaveId().ShouldBe(filedAs, "the rebuilt bucket answers to a different name");
+    reopened.Load(serializer, written);
+    await PhysicsFrames.Advance(TestScene, 4);
+    bucket = reopened;
+
+    bucket.IsSpilled.ShouldBeTrue("the reopened game filled the tin back up");
+    bucket.GlobalPosition.X.ShouldBe(restedAt.X, 1f, "the tin came back somewhere else");
+    bucket.GlobalPosition.Y.ShouldBe(restedAt.Y, 1f, "the tin came back somewhere else");
+
+    var back = lower.GetChildren().OfType<PaintSplat>().Select(s => s.GlobalPosition.X).ToList();
+    back.Count.ShouldBe(painted.Count, "the paint it had spilled did not come back");
+    for (var i = 0; i < back.Count; i++) {
+      back[i].ShouldBe(painted[i], 1f, "the paint came back somewhere else along the floor");
+    }
+  }
+
+  // What a saved entry is filed under has to be what the bucket answers to in a level that has
+  // just been built. An emptied bucket moves in the tree - it goes to live under whatever caught
+  // it, so that it rides - and a name taken from where it is now is a name nothing in the new
+  // level has, so the entry is read back, matched against nothing, and silently dropped.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task ItIsFiledUnderTheNameItWillHaveWhenTheLevelIsBuiltAgain() {
+    _ledge(-320f, 320f);
+    _lowerRun(-320f, 1600f);
+    var bucket = _standBucket(160f);
+    _playerAt(0f, LEDGE_TOP - 120f);
+    var authored = bucket.GetSaveId();
+
+    _services.Input.Press(Wfc.Core.Input.IInputManager.Action.MoveRight);
+    (await PhysicsFrames.WaitFor(TestScene, () => bucket.IsSpilled, TIMEOUT)).ShouldBeTrue();
+    _services.Input.ReleaseAll();
+    await PhysicsFrames.Advance(TestScene, 30);
+
+    bucket.GetSaveId().ShouldBe(authored, "the spilled bucket saves under a name it will not have again");
+  }
+
+  // A floor that moves. An AnimatableBody2D on the platform layer is a platform as far as the
+  // bucket is concerned - it finds what it lands on by asking the physics server, not the level.
+  private AnimatableBody2D _movingRun(float left, float right) {
+    var carriage = new AnimatableBody2D {
+      CollisionLayer = PhysicsLayers.Platform.Mask,
+      Position = new Vector2((left + right) / 2f, LOWER_TOP + 128f),
+      SyncToPhysics = true,
+    };
+    carriage.AddChild(new CollisionShape2D {
+      Shape = new RectangleShape2D { Size = new Vector2(right - left, 256f) },
+    });
+    _level.AddChild(carriage);
+    return carriage;
   }
 
   // Drops the cube into an open tin, painted either the colour it has facing down or one of the

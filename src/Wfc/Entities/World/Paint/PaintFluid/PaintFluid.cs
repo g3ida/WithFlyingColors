@@ -5,6 +5,8 @@ using Chickensoft.Introspection;
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Persistence;
+using Wfc.Core.Serialization;
 using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
@@ -27,7 +29,7 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [Tool]
 [ScenePath]
 [Meta(typeof(IAutoNode))]
-public partial class PaintFluid : Node2D {
+public partial class PaintFluid : Node2D, IPersistent {
   #region Constants
   private const int MAX_PARTICLES = 4200;
 
@@ -416,12 +418,12 @@ public partial class PaintFluid : Node2D {
     public int Count;
     public Vector2[] At = System.Array.Empty<Vector2>();
     public Vector2[] Going = System.Array.Empty<Vector2>();
-    public float[] Stain = System.Array.Empty<float>();
     public bool[] Stained = System.Array.Empty<bool>();
   }
 
   private Remembered? _remembered;
   private bool _pullBack;
+  private bool _relayCoat;
 
   // One band per unbroken stretch of dried coat, so the paint the flood leaves can be landed on.
   private readonly List<Area2D> _coats = [];
@@ -495,6 +497,15 @@ public partial class PaintFluid : Node2D {
     if (_needsLevel) {
       _readLevel();
       _needsLevel = false;
+    }
+
+    if (_relayCoat) {
+      _relayCoat = false;
+      _relayCoats();
+      _coatSpread = true;
+      // Drawn here rather than left to the tick, because a room that has already been flooded is
+      // sitting still: nothing else would put its coat on the screen.
+      _fill();
     }
 
     if (_pullBack) {
@@ -1239,6 +1250,21 @@ public partial class PaintFluid : Node2D {
     return worn + 1;
   }
 
+  // The coat, worked out again from which columns dried. Everything about how one dries - how deep
+  // it lies, how far its drips run, which way they lean - is fixed by where it is and the seed, so
+  // which columns they were is the whole of what has to be remembered.
+  private void _relayCoats() {
+    System.Array.Clear(_stain);
+    for (var x = 0; x < _columns; x++) {
+      var slot = x * SURFACES_PER_COLUMN;
+      for (var s = 0; s < _surfaceCount[x]; s++) {
+        if (_stained[slot + s]) {
+          _layCoat(x, _surface[slot + s]);
+        }
+      }
+    }
+  }
+
   private float _stainHash(float n) {
     var v = Mathf.Sin((n * 127.1f) + (StainSeed * 13.7f)) * 43758.5453f;
     return v - Mathf.Floor(v);
@@ -1248,7 +1274,11 @@ public partial class PaintFluid : Node2D {
 
   #region The set piece
   public void Pour() {
-    if (_state == State.Waiting) {
+    // A bucket that has already been emptied has nothing left to pour, however many times the
+    // player comes back into the room. The flood ends by leaving the room at rest, so without
+    // this a player who walked back into the trigger would set the whole thing off again - and so
+    // would one who loaded a saved game taken after the room was already crossed.
+    if (_state == State.Waiting && _poured == 0) {
       _begin();
     }
   }
@@ -1467,7 +1497,6 @@ public partial class PaintFluid : Node2D {
     _remembered ??= new Remembered {
       At = new Vector2[MAX_PARTICLES],
       Going = new Vector2[MAX_PARTICLES],
-      Stain = new float[_stain.Length],
       Stained = new bool[_stained.Length],
     };
 
@@ -1485,12 +1514,14 @@ public partial class PaintFluid : Node2D {
 
     System.Array.Copy(_at, _remembered.At, _count);
     System.Array.Copy(_going, _remembered.Going, _count);
-    System.Array.Copy(_stain, _remembered.Stain, _stain.Length);
     System.Array.Copy(_stained, _remembered.Stained, _stained.Length);
   }
 
   private void _recall() {
     var was = _remembered!;
+    // Whether the room has been measured yet. Coming back from a death it has; coming back from a
+    // saved game the level has only just been built, so the coat waits for the first tick.
+    var measured = !_needsLevel;
     _state = was.State;
     _elapsed = was.Elapsed;
     _owed = was.Owed;
@@ -1505,8 +1536,14 @@ public partial class PaintFluid : Node2D {
     System.Array.Copy(was.At, _at, _count);
     System.Array.Copy(was.Going, _going, _count);
     System.Array.Copy(was.At, _bound, _count);
-    System.Array.Copy(was.Stain, _stain, _stain.Length);
     System.Array.Copy(was.Stained, _stained, _stained.Length);
+
+    if (measured) {
+      _relayCoats();
+    }
+    else {
+      _relayCoat = true;
+    }
 
     // Both of these are read off how far through the pour it was rather than kept, because they
     // are only ever a function of it.
@@ -1619,4 +1656,88 @@ public partial class PaintFluid : Node2D {
       new Color(1f, 0.85f, 0.2f, 0.75f), filled: false, width: 2f);
   }
   #endregion Setting up
+
+  #region Persistence
+  // What a saved game carries. Not the paint that was in the air - a checkpoint is not put in the
+  // middle of the chase, so what is worth keeping is whether the bucket has gone over and what the
+  // flood dried onto on its way past. The coat itself is not written down, only which columns wear
+  // it, because the rest of it follows from that and the seed.
+  private sealed record SaveData(
+    int State = 0,
+    float Elapsed = 0f,
+    float Owed = 0f,
+    int Poured = 0,
+    bool HasCaught = false,
+    ulong Scatter = 0,
+    float ZoomBefore = 0f,
+    string Stained = "");
+
+  public string GetSaveId() => GetPath();
+
+  public string Save(ISerializer serializer) {
+    var was = _remembered;
+    return serializer.Serialize(new SaveData(
+      (int)(was?.State ?? State.Waiting),
+      was?.Elapsed ?? 0f,
+      was?.Owed ?? 0f,
+      was?.Poured ?? 0,
+      was?.HasCaught ?? false,
+      was?.Scatter ?? 0,
+      was?.ZoomBefore ?? 0f,
+      was is null ? string.Empty : _asBits(was.Stained)));
+  }
+
+  public void Load(ISerializer serializer, string data) {
+    // The arrays it is read into are built when the room is, so there is nothing to read into yet
+    // if the level is still being put together.
+    if (!IsNodeReady()) {
+      Callable.From(() => Load(serializer, data)).CallDeferred();
+      return;
+    }
+
+    var saved = serializer.Deserialize<SaveData>(data);
+    if (saved is null) {
+      return;
+    }
+
+    _remembered = new Remembered {
+      State = (State)saved.State,
+      Elapsed = saved.Elapsed,
+      Owed = saved.Owed,
+      Poured = saved.Poured,
+      HasCaught = saved.HasCaught,
+      Scatter = saved.Scatter,
+      ZoomBefore = saved.ZoomBefore,
+      Count = 0,
+      At = new Vector2[MAX_PARTICLES],
+      Going = new Vector2[MAX_PARTICLES],
+      Stained = new bool[_stained.Length],
+    };
+    _fromBits(saved.Stained, _remembered.Stained);
+    _recall();
+  }
+
+  // One bit per column per surface. There are a few thousand of them and all but a handful are the
+  // same answer, so writing them out as anything wordier would be most of the save file.
+  private static string _asBits(bool[] bits) {
+    var bytes = new byte[(bits.Length + 7) / 8];
+    for (var i = 0; i < bits.Length; i++) {
+      if (bits[i]) {
+        bytes[i >> 3] |= (byte)(1 << (i & 7));
+      }
+    }
+    return System.Convert.ToBase64String(bytes);
+  }
+
+  private static void _fromBits(string packed, bool[] into) {
+    System.Array.Clear(into);
+    if (packed.Length == 0) {
+      return;
+    }
+    var bytes = System.Convert.FromBase64String(packed);
+    for (var i = 0; i < into.Length && (i >> 3) < bytes.Length; i++) {
+      into[i] = (bytes[i >> 3] & (1 << (i & 7))) != 0;
+    }
+  }
+  #endregion Persistence
 }
