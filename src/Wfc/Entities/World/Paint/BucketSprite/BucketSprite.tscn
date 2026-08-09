@@ -11,45 +11,45 @@
 [ext_resource type="Texture2D" path="res://Assets/Sprites/Splash/bucket-card-shadow.png" id="9"]
 
 [node name="BucketSprite" type="Node2D"]
-scale = Vector2(0.576, 0.576)
+scale = Vector2(0.288, 0.288)
 script = ExtResource("1")
 
 [node name="Bucket" type="Sprite2D" parent="."]
 centered = false
-position = Vector2(-55, -125)
+position = Vector2(-110, -250)
 texture = ExtResource("2")
 
 [node name="Paint" type="Sprite2D" parent="."]
 centered = false
-position = Vector2(-55, -126)
+position = Vector2(-110, -252)
 texture = ExtResource("3")
 
 [node name="PaintShade" type="Sprite2D" parent="."]
 centered = false
-position = Vector2(-55, -126)
+position = Vector2(-110, -252)
 texture = ExtResource("4")
 
 [node name="Bail" type="Sprite2D" parent="."]
 centered = false
-position = Vector2(-55, -123)
+position = Vector2(-110, -246)
 texture = ExtResource("5")
 
 [node name="BailGrip" type="Sprite2D" parent="."]
 centered = false
-position = Vector2(-12, -74)
+position = Vector2(-24, -148)
 texture = ExtResource("6")
 
 [node name="BailGripShade" type="Sprite2D" parent="."]
 centered = false
-position = Vector2(-12, -69)
+position = Vector2(-24, -138)
 texture = ExtResource("7")
 
 [node name="Card" type="Sprite2D" parent="."]
 centered = false
-position = Vector2(-38, -64)
+position = Vector2(-76, -128)
 texture = ExtResource("8")
 
 [node name="CardShade" type="Sprite2D" parent="."]
 centered = false
-position = Vector2(-38, -64)
+position = Vector2(-76, -128)
 texture = ExtResource("9")
