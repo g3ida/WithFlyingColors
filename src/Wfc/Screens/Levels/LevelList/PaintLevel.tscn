@@ -1,0 +1,381 @@
+[gd_scene format=3 uid="uid://es7r7dd47egj"]
+
+[ext_resource type="PackedScene" uid="uid://dmrllj22gpdev" path="res://src/Wfc/Screens/Levels/GameLevel/GameLevel.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://src/Wfc/Entities/World/Fallzone/Fallzone.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://dlpwg47je31y" path="res://src/Wfc/Entities/World/Platforms/FlatPlatform/FlatPlatform.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Paint/PaintBucket/PaintBucket.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://src/Wfc/Entities/World/Gems/Gem/Gem.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://cyq2n8rwlxk3d" path="res://src/Wfc/Entities/World/Exit/LevelExit/LevelExit.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://dxdpkyrs224cf" path="res://src/Wfc/Entities/World/Piano/PianoScene/PianoScene.tscn" id="8"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Backgrounds/CityBackground/CityBackground.tscn" id="9"]
+[ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="10"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Paint/PaintFluid/PaintFluid.tscn" id="11"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Paint/SplashGun/SplashGun.tscn" id="12_ctpm7"]
+
+[node name="LevelHandler" unique_id=1578487532 instance=ExtResource("1")]
+Track = "level1"
+
+[node name="Camera2D" parent="." index="1"]
+limit_left = -1200
+limit_top = -2500
+limit_right = 16200
+limit_bottom = 1600
+
+[node name="FallZone" parent="." index="3" unique_id=1564143194 instance=ExtResource("2")]
+position = Vector2(3700, 1600)
+scale = Vector2(450, 10)
+
+[node name="Ground" type="Node2D" parent="." index="4" unique_id=1316509422]
+
+[node name="LeftWall" parent="Ground" index="0" unique_id=1270677925 instance=ExtResource("3")]
+position = Vector2(-1088, 96)
+Size = Vector2(128, 1024)
+Group = "white"
+
+[node name="StartRun" parent="Ground" index="1" unique_id=2018224300 instance=ExtResource("3")]
+position = Vector2(512, 800)
+Size = Vector2(3072, 768)
+Group = "white"
+
+[node name="Ceiling" parent="Ground" index="2" unique_id=377201687 instance=ExtResource("3")]
+position = Vector2(1632, 208)
+Size = Vector2(832, 96)
+Group = "white"
+
+[node name="LowerRun" parent="Ground" index="3" unique_id=1567798203 instance=ExtResource("3")]
+position = Vector2(2496, 992)
+Size = Vector2(1792, 384)
+Group = "white"
+SlicedCorners = 6
+ShadedEdges = 2
+
+[node name="Step1" parent="Ground" index="4" unique_id=1557723278 instance=ExtResource("3")]
+position = Vector2(3520, 896)
+Size = Vector2(256, 576)
+Group = "white"
+SlicedCorners = 9
+ShadedEdges = 2
+
+[node name="Step2" parent="Ground" index="5" unique_id=1725869524 instance=ExtResource("3")]
+position = Vector2(3776, 800)
+Size = Vector2(256, 768)
+Group = "white"
+SlicedCorners = 7
+ShadedEdges = 2
+
+[node name="MidRun" parent="Ground" index="6" unique_id=1458346501 instance=ExtResource("3")]
+position = Vector2(4512, 800)
+Size = Vector2(1216, 768)
+Group = "white"
+SlicedCorners = 6
+
+[node name="Shelf" parent="Ground" index="7" unique_id=224634115 instance=ExtResource("3")]
+position = Vector2(5504, 992)
+Size = Vector2(1024, 384)
+Group = "white"
+SlicedCorners = 6
+ShadedEdges = 2
+
+[node name="Step3" parent="Ground" index="8" unique_id=728319723 instance=ExtResource("3")]
+position = Vector2(6144, 896)
+Size = Vector2(256, 576)
+Group = "white"
+SlicedCorners = 9
+ShadedEdges = 2
+
+[node name="Step4" parent="Ground" index="9" unique_id=564623235 instance=ExtResource("3")]
+position = Vector2(6400, 800)
+Size = Vector2(256, 768)
+Group = "white"
+SlicedCorners = 7
+ShadedEdges = 2
+
+[node name="EndRun" parent="Ground" index="10" unique_id=1834183853 instance=ExtResource("3")]
+position = Vector2(7552, 800)
+Size = Vector2(2048, 768)
+Group = "white"
+SlicedCorners = 6
+
+[node name="EndRun2" parent="Ground" index="11" unique_id=1197521420 instance=ExtResource("3")]
+position = Vector2(12032, 1024)
+Size = Vector2(2048, 768)
+Group = "white"
+SlicedCorners = 6
+
+[node name="PianoStep" parent="Ground" index="12" unique_id=767008043 instance=ExtResource("3")]
+position = Vector2(6432, 288)
+Size = Vector2(192, 128)
+Group = "white"
+
+[node name="BlueLedge" parent="Ground" index="13" unique_id=291195156 instance=ExtResource("3")]
+position = Vector2(192, 272)
+Size = Vector2(192, 32)
+Inked = true
+
+[node name="PurpleStepA" parent="Ground" index="14" unique_id=436502784 instance=ExtResource("3")]
+position = Vector2(2720, 672)
+Size = Vector2(512, 128)
+Group = "white"
+Inked = true
+InkColor = "purple"
+InkDripLength = 41.0
+InkDripDensity = 1.55
+InkDripWidth = 0.65
+
+[node name="PurpleStepB" parent="Ground" index="15" unique_id=1849329279 instance=ExtResource("3")]
+position = Vector2(2368, 16)
+Size = Vector2(192, 32)
+Group = "purple"
+Inked = true
+
+[node name="PinkFerry" parent="Ground" index="16" unique_id=604139522 instance=ExtResource("10")]
+position = Vector2(5312, 656)
+Distance = 448.0
+Speed = 2.4
+WaitTime = 2.0
+OneShotPhase = 3
+Size = Vector2(192, 32)
+Group = "pink"
+Inked = true
+
+[node name="SlidingPlatform" parent="Ground" index="17" unique_id=495039883 instance=ExtResource("10")]
+position = Vector2(2592, 464)
+Distance = 256.0
+Speed = 3.0
+WaitTime = 4.0
+OneShotPhase = 3
+Group = "white"
+Inked = true
+InkColor = "blue"
+InkDripLength = 18.0
+InkDripDensity = 2.95
+
+[node name="FloodEntry" parent="Ground" index="18" unique_id=1507792464 instance=ExtResource("3")]
+position = Vector2(10088, -960)
+Size = Vector2(2000, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepA" parent="Ground" index="19" unique_id=1137547203 instance=ExtResource("3")]
+position = Vector2(11312, -928)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepA4" parent="Ground" index="20" unique_id=1155657363 instance=ExtResource("3")]
+position = Vector2(10832, -288)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepA5" parent="Ground" index="21" unique_id=908921395 instance=ExtResource("3")]
+position = Vector2(9872, -288)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepA3" parent="Ground" index="22" unique_id=1617535994 instance=ExtResource("3")]
+position = Vector2(11312, -320)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepB" parent="Ground" index="23" unique_id=151252102 instance=ExtResource("3")]
+position = Vector2(11792, -896)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepB3" parent="Ground" index="24" unique_id=1004050542 instance=ExtResource("3")]
+position = Vector2(11792, -352)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepC" parent="Ground" index="25" unique_id=694367655 instance=ExtResource("3")]
+position = Vector2(12272, -864)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepC4" parent="Ground" index="26" unique_id=2077262130 instance=ExtResource("3")]
+position = Vector2(13232, -864)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepC9" parent="Ground" index="27" unique_id=1152252526 instance=ExtResource("3")]
+position = Vector2(13712, -852)
+Size = Vector2(480, 7000)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepC5" parent="Ground" index="28" unique_id=1270568537 instance=ExtResource("3")]
+position = Vector2(12752, -416)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepC6" parent="Ground" index="29" unique_id=1744312470 instance=ExtResource("3")]
+position = Vector2(12752, -416)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepC7" parent="Ground" index="30" unique_id=739428983 instance=ExtResource("3")]
+position = Vector2(13232, -448)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepC3" parent="Ground" index="31" unique_id=990819952 instance=ExtResource("3")]
+position = Vector2(12272, -384)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepA2" parent="Ground" index="32" unique_id=1584749916 instance=ExtResource("3")]
+position = Vector2(9872, 128)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepB2" parent="Ground" index="33" unique_id=150959293 instance=ExtResource("3")]
+position = Vector2(10352, 160)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepC2" parent="Ground" index="34" unique_id=986088918 instance=ExtResource("3")]
+position = Vector2(10832, 192)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepA6" parent="Ground" index="35" unique_id=411645989 instance=ExtResource("3")]
+position = Vector2(11312, 224)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepB4" parent="Ground" index="36" unique_id=1977918217 instance=ExtResource("3")]
+position = Vector2(11792, 256)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="FloodStepC8" parent="Ground" index="37" unique_id=285501277 instance=ExtResource("3")]
+position = Vector2(12272, 288)
+Size = Vector2(480, 64)
+Group = "white"
+SlicedCorners = 2
+ShadedEdges = 2
+
+[node name="SafeRun" parent="Ground" index="38" unique_id=981615297 instance=ExtResource("3")]
+position = Vector2(16720, 1280)
+Size = Vector2(1120, 768)
+Group = "white"
+SlicedCorners = 6
+
+[node name="Buckets" type="Node2D" parent="." index="5" unique_id=1583923955]
+
+[node name="PurpleBucket" parent="Buckets" index="0" unique_id=370661290 instance=ExtResource("4")]
+process_physics_priority = -1
+position = Vector2(1440, 416)
+
+[node name="PinkBucket" parent="Buckets" index="1" unique_id=984766504 instance=ExtResource("4")]
+process_physics_priority = -1
+position = Vector2(4600, 416)
+Group = "pink"
+SplashWidth = 320.0
+
+[node name="Gems" type="Node2D" parent="." index="6" unique_id=2112224983]
+
+[node name="BlueGem" parent="Gems" index="0" unique_id=1599131653 instance=ExtResource("5")]
+position = Vector2(192, 176)
+
+[node name="YellowGem" parent="Gems" index="1" unique_id=760585906 instance=ExtResource("5")]
+position = Vector2(1600, 32)
+GroupName = "yellow"
+
+[node name="PurpleGem" parent="Gems" index="2" unique_id=746271255 instance=ExtResource("5")]
+position = Vector2(3040, 432)
+GroupName = "purple"
+
+[node name="PinkGem" parent="Gems" index="3" unique_id=1897150448 instance=ExtResource("5")]
+position = Vector2(5808, 512)
+GroupName = "pink"
+
+[node name="PianoScene" parent="." index="7" unique_id=1867372046 instance=ExtResource("8")]
+position = Vector2(7600, 122)
+
+[node name="LevelExit" parent="." index="8" unique_id=584658691 instance=ExtResource("6")]
+position = Vector2(17008, 760)
+
+[node name="Background" parent="." index="9" unique_id=875084399 instance=ExtResource("9")]
+
+[node name="Checkpoints" type="Node2D" parent="." index="10" unique_id=1730682530]
+
+[node name="StartCheckpoint" parent="Checkpoints" index="0" unique_id=619919376 instance=ExtResource("7")]
+position = Vector2(-600, 274)
+
+[node name="LowerRunCheckpoint" parent="Checkpoints" index="1" unique_id=223274049 instance=ExtResource("7")]
+position = Vector2(3100, 658)
+
+[node name="MidRunCheckpoint" parent="Checkpoints" index="2" unique_id=1780401189 instance=ExtResource("7")]
+position = Vector2(4200, 274)
+
+[node name="ShelfCheckpoint" parent="Checkpoints" index="3" unique_id=297205884 instance=ExtResource("7")]
+position = Vector2(5800, 658)
+
+[node name="FloodRoomCheckpoint" parent="Checkpoints" index="4" unique_id=1916431749 instance=ExtResource("7")]
+position = Vector2(10168, -1224)
+
+[node name="SafeRunCheckpoint" parent="Checkpoints" index="5" unique_id=35359634 instance=ExtResource("7")]
+position = Vector2(16708, 761)
+
+[node name="Player" parent="." index="11"]
+position = Vector2(-700, 300)
+
+[node name="PaintFluid" parent="." index="12" unique_id=1377078133 instance=ExtResource("11")]
+position = Vector2(10680, -1120)
+Width = 2790.0
+Depth = 1300.0
+PourDuration = 15.0
+CameraZoom = 0.75
+StainDepth = 8.0
+StainDripLength = 40.0
+StainDripWidth = 0.5
+StainTrigger = 1.2
+
+[node name="SlidingPlatform" parent="." index="13" unique_id=1247151612 instance=ExtResource("10")]
+position = Vector2(8768, 272)
+Axis = 1
+Distance = 1280.0
+StartAt = 1
+Speed = 3.0
+WaitTime = 4.0
+OneShotPhase = 3
+
+[node name="SplashGun" parent="." index="14" unique_id=1495805052 instance=ExtResource("12_ctpm7")]
+position = Vector2(-696, -280)

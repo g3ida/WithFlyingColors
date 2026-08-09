@@ -33,6 +33,10 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
   // failed assertion rather than an expired test.
   private const double WALK_TIMEOUT_SECONDS = 15.0;
 
+  // The door the intro hands the player on to, read off the chain rather than named: which level
+  // sits there changes whenever the play order does, and none of this is about that level.
+  private static LevelId _levelTheIntroUnlocks => LevelDispatcher.LEVELS[1].Id;
+
   private FakeDependenciesProvider _provider = default!;
 
   [Setup]
@@ -172,7 +176,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
 
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Hub))
       .ShouldBeTrue("the cleared level never walked back out to the hub");
-    var door = _doorFor(orchestrator!, LevelId.FourColors);
+    var door = _doorFor(orchestrator!, _levelTheIntroUnlocks);
     door.ShouldNotBeNull("the hub has no door for the level the tutorial unlocks");
     door!.IsLocked.ShouldBeFalse("the door the clear unlocked is still chained");
   }
@@ -247,7 +251,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
       .ShouldBeTrue("the cleared level never walked back out to the hub");
     _doorFor(orchestrator!, LevelId.Tutorial)
       .ShouldBeNull("the hub offers the intro level, which is only ever played on the way in");
-    var door = _doorFor(orchestrator!, LevelId.FourColors);
+    var door = _doorFor(orchestrator!, _levelTheIntroUnlocks);
     door.ShouldNotBeNull();
     _hubPlayerX(orchestrator!).ShouldBe(door!.GlobalPosition.X, 1.0f,
       "leaving the intro left the player somewhere other than the door it unlocked");
@@ -270,7 +274,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
 
     var mark = orchestrator!.FindDescendants<HubArrivalMark>().FirstOrDefault();
     mark.ShouldNotBeNull("the hub declares nowhere for a first arrival to be set down");
-    var door = _doorFor(orchestrator, LevelId.FourColors);
+    var door = _doorFor(orchestrator, _levelTheIntroUnlocks);
     door.ShouldNotBeNull();
     // The walk is already under way by the time this is read, so what is asserted is which
     // end of the room the player was put down at, not the pixel they are standing on.
@@ -301,7 +305,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Hub))
       .ShouldBeTrue("the game screen never loaded the hub");
 
-    var door = _doorFor(orchestrator!, LevelId.FourColors);
+    var door = _doorFor(orchestrator!, _levelTheIntroUnlocks);
     door.ShouldNotBeNull();
     _hubPlayerX(orchestrator!).ShouldBe(door!.GlobalPosition.X, 1.0f,
       "the hub opened somewhere other than the door the run is on");

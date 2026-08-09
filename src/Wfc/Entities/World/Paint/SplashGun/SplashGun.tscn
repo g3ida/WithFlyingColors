@@ -1,0 +1,180 @@
+[gd_scene load_steps=19 format=3]
+
+[ext_resource type="Script" path="res://src/Wfc/Entities/World/Paint/SplashGun/SplashGun.cs" id="1"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/base-1.png" id="2"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/base-2.png" id="3"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/base-3.png" id="4"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/base-4.png" id="5"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/body-1.png" id="6"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/body-2.png" id="7"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/body-splash.png" id="8"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/color-container.png" id="9"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/nozzle-1.png" id="10"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/nozzle-2.png" id="11"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/nozzle-paint.png" id="12"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/top-base.png" id="13"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/top-color.png" id="14"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/top-cable.png" id="15"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/SplashGun/body-2-stains.png" id="16"]
+[ext_resource type="Shader" path="res://Assets/Shaders/TankInk.gdshader" id="18"]
+
+[sub_resource type="ShaderMaterial" id="1"]
+resource_local_to_scene = true
+shader = ExtResource("18")
+shader_parameter/u_level = 0.0
+
+[node name="SplashGun" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Mount" type="Node2D" parent="."]
+
+[node name="Plate" type="Sprite2D" parent="Mount"]
+centered = false
+position = Vector2(-33.5, 0)
+texture = ExtResource("2")
+
+[node name="Collar" type="Sprite2D" parent="Mount"]
+centered = false
+position = Vector2(-26.5, 51)
+texture = ExtResource("3")
+
+[node name="Neck" type="Sprite2D" parent="Mount"]
+centered = false
+position = Vector2(-36.5, 66)
+texture = ExtResource("4")
+
+[node name="Ball" type="Sprite2D" parent="Mount"]
+centered = false
+position = Vector2(-36.0, 65)
+texture = ExtResource("5")
+
+[node name="Hose" type="Line2D" parent="Mount"]
+width = 9.0
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+default_color = Color(0.925, 0.941, 0.945, 1)
+
+[node name="HoseInk" type="Line2D" parent="Mount"]
+width = 5.0
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+default_color = Color(0.925, 0.941, 0.945, 1)
+
+[node name="Arm" type="Node2D" parent="."]
+position = Vector2(0, 101.0)
+rotation = -1.5708
+
+[node name="Body" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-116.5, 1.0)
+texture = ExtResource("6")
+
+[node name="Panel" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-129.5, 11.0)
+texture = ExtResource("7")
+
+[node name="Splash" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(18.5, 1.0)
+texture = ExtResource("8")
+
+[node name="TankShell" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(101.5, 7.0)
+texture = ExtResource("9")
+
+[node name="Tank" type="Sprite2D" parent="Arm"]
+material = SubResource("1")
+centered = false
+position = Vector2(101.5, 7.0)
+texture = ExtResource("9")
+
+[node name="Barrel" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-219.5, 31.0)
+texture = ExtResource("10")
+
+[node name="Nose" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-263.5, 26.0)
+texture = ExtResource("11")
+
+[node name="MuzzlePaint" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-265.5, 33.0)
+texture = ExtResource("12")
+
+[node name="Port" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-36.5, 76.0)
+texture = ExtResource("13")
+
+[node name="PortColor" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(15.5, 88.0)
+texture = ExtResource("14")
+
+[node name="PortCable" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(24.5, 89.0)
+texture = ExtResource("15")
+
+[node name="Slot0" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-102.5, 46.0)
+texture = ExtResource("16")
+
+[node name="Slot1" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-69.5, 46.0)
+texture = ExtResource("16")
+
+[node name="Slot2" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-49.5, 46.0)
+texture = ExtResource("16")
+
+[node name="Slot3" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-31.5, 46.0)
+texture = ExtResource("16")
+
+[node name="Slot4" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-12.5, 46.0)
+texture = ExtResource("16")
+
+[node name="Slot5" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-102.5, 58.0)
+texture = ExtResource("16")
+
+[node name="Slot6" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-69.5, 58.0)
+texture = ExtResource("16")
+
+[node name="Slot7" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-49.5, 58.0)
+texture = ExtResource("16")
+
+[node name="Slot8" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-31.5, 58.0)
+texture = ExtResource("16")
+
+[node name="Slot9" type="Sprite2D" parent="Arm"]
+centered = false
+position = Vector2(-12.5, 58.0)
+texture = ExtResource("16")
+
+[node name="Muzzle" type="Marker2D" parent="Arm"]
+position = Vector2(-263.5, 42.0)
+
+[node name="Fire" type="Timer" parent="."]
+one_shot = false
+

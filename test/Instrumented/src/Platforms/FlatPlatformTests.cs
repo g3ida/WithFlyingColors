@@ -19,6 +19,10 @@ public class FlatPlatformTests(Node testScene) : TestClass(testScene) {
   private static readonly StringName SizeParam = "u_size";
   private static readonly StringName ChamferParam = "u_chamfer";
   private static readonly StringName ShadedEdgesParam = "u_shaded_edges";
+  private static readonly StringName ReachParam = "u_reach";
+  private static readonly StringName SpacingParam = "u_spacing";
+  private static readonly StringName WidthParam = "u_width";
+  private static readonly StringName SeedParam = "u_seed";
 
   private FlatPlatform _platform = default!;
 
@@ -98,6 +102,178 @@ public class FlatPlatformTests(Node testScene) : TestClass(testScene) {
       }
       neutral.QueueFree();
     }
+  }
+
+  // A coat of paint is the top of the platform rather than a decoration on it, so what the cube is
+  // judged against up there is the coat. A white platform under purple paint that still answered to
+  // every face would be a purple surface the purple face is not needed for - which the player
+  // learns by crossing it on the wrong one and living.
+  [Test]
+  public async Task AnInkedPlatformAnswersToTheColourOfItsCoat() {
+    _platform.Group = FlatPlatform.NEUTRAL;
+    _platform.Inked = true;
+    _platform.InkColor = ColorUtils.PURPLE;
+    await PhysicsFrames.Frame(TestScene);
+
+    var coat = _platform.GetNode<Area2D>("InkArea");
+    coat.IsInGroup(ColorUtils.PURPLE).ShouldBeTrue("the purple face has nothing to land on");
+    coat.IsInGroup(ColorUtils.BLUE).ShouldBeFalse("a blue face survives paint it should die on");
+    coat.Monitorable.ShouldBeTrue("no face ever reaches the coat");
+    _surface().Color.ShouldBe(Colors.White, "the platform under the paint is not its own colour");
+  }
+
+  // The paint lies on the top and nowhere else. Brushing the side of a painted platform is touching
+  // the platform, and being killed by a colour that is not on the surface you touched is a death
+  // the player has no way to read.
+  [Test]
+  public async Task TheSidesOfAnInkedPlatformAnswerToThePlatformUnderThePaint() {
+    _platform.Group = FlatPlatform.NEUTRAL;
+    _platform.Inked = true;
+    _platform.InkColor = ColorUtils.PURPLE;
+    await PhysicsFrames.Frame(TestScene);
+
+    var body = _platform.GetNode<Area2D>("Area2D");
+    foreach (var colorGroup in ColorUtils.COLOR_GROUPS) {
+      body.IsInGroup(colorGroup).ShouldBeTrue($"a {colorGroup} face dies against a side nobody painted");
+    }
+  }
+
+  // A face is killed by any area it enters that is not its colour, so the two of them overlapping
+  // would have the platform judging a landing the coat had already answered for - and on a coloured
+  // platform under a coat of another colour, nothing could land on it at all.
+  [Test]
+  public async Task TheCoatAndTheBodyDivideThePlatformBetweenThem() {
+    _platform.Size = new Vector2(256f, 96f);
+    _platform.Group = ColorUtils.PINK;
+    _platform.Inked = true;
+    _platform.InkColor = ColorUtils.PURPLE;
+    await PhysicsFrames.Frame(TestScene);
+
+    var coat = _platform.GetNode<CollisionShape2D>("InkArea/InkAreaShape");
+    var coatHeight = ((RectangleShape2D)coat.Shape).Size.Y;
+    var body = _platform.GetNode<CollisionShape2D>("Area2D/ColorAreaShape");
+    var bodyHeight = _colorShape().Size.Y;
+    var top = -_platform.Size.Y / 2f;
+
+    (coat.Position.Y - (coatHeight / 2f)).ShouldBe(top, "the coat is not lying on the surface");
+    coatHeight.ShouldBeLessThan(_platform.Size.Y, "the coat answers for the whole platform");
+    (body.Position.Y - (bodyHeight / 2f))
+      .ShouldBe(coat.Position.Y + (coatHeight / 2f), "the coat and the body overlap");
+    (body.Position.Y + (bodyHeight / 2f)).ShouldBe(-top, "the body stops short of the bottom");
+  }
+
+  // A ledge hanging over a drop is the one place the drips are worth authoring, and it is also the
+  // thinnest thing in the level - so the length has to come off the field rather than the height.
+  // The quad has to grow with it too, or the shader draws the longest drips cut off square.
+  [Test]
+  public async Task AnAuthoredDripLengthOutrunsTheHeightAndTheQuadGrowsWithIt() {
+    _platform.Size = new Vector2(320f, 32f);
+    _platform.Inked = true;
+    _platform.InkColor = ColorUtils.PINK;
+    _platform.InkDripLength = 260f;
+    await PhysicsFrames.Frame(TestScene);
+
+    var ink = _platform.GetNode<ColorRect>("Ink");
+    _inkMaterial().GetShaderParameter(ReachParam).AsSingle().ShouldBe(260f);
+    ink.Size.Y.ShouldBeGreaterThan(260f, "the longest drips are cut off by the quad drawing them");
+    _inkMaterial().GetShaderParameter(SizeParam).AsVector2().ShouldBe(ink.Size);
+  }
+
+  // Both are authored as a multiple of the coat every platform already wears, so they mean the same
+  // thing on a narrow ledge as on a wide one. The shader is handed the spacing it draws one drip
+  // per, which is density the other way up.
+  //
+  // The two are held apart on purpose: asking for more drips used to give the same number of fatter
+  // ones, because the shader measured a drip's thickness against the gap to the next.
+  [Test]
+  public async Task DensityDrawsMoreDripsWithoutFatteningThem() {
+    _platform.Inked = true;
+    _platform.InkColor = ColorUtils.PINK;
+    _platform.InkDripDensity = 1f;
+    await PhysicsFrames.Frame(TestScene);
+    var spread = _inkMaterial().GetShaderParameter(SpacingParam).AsSingle();
+    var thickness = _inkMaterial().GetShaderParameter(WidthParam).AsSingle();
+
+    _platform.InkDripDensity = 2f;
+    await PhysicsFrames.Frame(TestScene);
+
+    _inkMaterial().GetShaderParameter(SpacingParam).AsSingle()
+      .ShouldBe(spread / 2f, "twice as dense did not draw twice as many drips");
+    _inkMaterial().GetShaderParameter(WidthParam).AsSingle()
+      .ShouldBe(thickness, "asking for more drips made them thicker instead");
+  }
+
+  // A coat sat by position redraws itself every time the platform is nudged, which is no way to
+  // keep a run the author picked. A seed set by hand outlives being moved.
+  [Test]
+  public async Task AnAuthoredSeedOutlastsMovingThePlatform() {
+    _platform.Inked = true;
+    _platform.InkColor = ColorUtils.PINK;
+    _platform.Position = new Vector2(640f, 320f);
+    await PhysicsFrames.Frame(TestScene);
+    var byPosition = _inkMaterial().GetShaderParameter(SeedParam).AsSingle();
+
+    _platform.InkSeed = 7;
+    await PhysicsFrames.Frame(TestScene);
+    _inkMaterial().GetShaderParameter(SeedParam).AsSingle()
+      .ShouldBe(7f, "the coat wears a run nobody chose");
+
+    _platform.Position = new Vector2(1920f, 960f);
+    await PhysicsFrames.Frame(TestScene);
+    _inkMaterial().GetShaderParameter(SeedParam).AsSingle()
+      .ShouldBe(7f, "moving the platform repainted a coat that was chosen");
+
+    _platform.InkSeed = 0;
+    await PhysicsFrames.Frame(TestScene);
+    _inkMaterial().GetShaderParameter(SeedParam).AsSingle()
+      .ShouldNotBe(byPosition, "back on its own, the coat did not follow the platform");
+  }
+
+  [Test]
+  public async Task WidthThickensTheDripsWithoutMovingThem() {
+    _platform.Inked = true;
+    _platform.InkColor = ColorUtils.PINK;
+    _platform.InkDripWidth = 1f;
+    await PhysicsFrames.Frame(TestScene);
+    var spread = _inkMaterial().GetShaderParameter(SpacingParam).AsSingle();
+    var thickness = _inkMaterial().GetShaderParameter(WidthParam).AsSingle();
+
+    _platform.InkDripWidth = 2f;
+    await PhysicsFrames.Frame(TestScene);
+
+    _inkMaterial().GetShaderParameter(WidthParam).AsSingle().ShouldBe(thickness * 2f);
+    _inkMaterial().GetShaderParameter(SpacingParam).AsSingle()
+      .ShouldBe(spread, "thickening the drips thinned out how many there are");
+  }
+
+  // Left alone the height still decides, so every platform inked before there was a field to set
+  // wears the coat it was authored with.
+  [Test]
+  public async Task WithoutOneTheHeightStillDecidesTheDrips() {
+    _platform.Inked = true;
+    _platform.InkColor = ColorUtils.PINK;
+    _platform.Size = new Vector2(320f, 32f);
+    await PhysicsFrames.Frame(TestScene);
+    var offAThinLedge = _inkMaterial().GetShaderParameter(ReachParam).AsSingle();
+
+    _platform.Size = new Vector2(320f, 160f);
+    await PhysicsFrames.Frame(TestScene);
+
+    _inkMaterial().GetShaderParameter(ReachParam).AsSingle()
+      .ShouldBeGreaterThan(offAThinLedge, "the height stopped deciding the drips");
+  }
+
+  // An uninked platform is what it always was, whatever colour the coat it is not wearing names.
+  [Test]
+  public async Task ACoatColourOnItsOwnPaintsNothing() {
+    _platform.Group = ColorUtils.PINK;
+    _platform.InkColor = ColorUtils.YELLOW;
+    await PhysicsFrames.Frame(TestScene);
+
+    var area = _platform.GetNode<Area2D>("Area2D");
+    area.IsInGroup(ColorUtils.PINK).ShouldBeTrue();
+    area.IsInGroup(ColorUtils.YELLOW).ShouldBeFalse("a coat nobody painted decides the landing");
+    _platform.GetNode<ColorRect>("Ink").Visible.ShouldBeFalse();
   }
 
   // The ground is drawn plain white, never taken through the skin, so a neutral platform set
@@ -214,6 +390,9 @@ public class FlatPlatformTests(Node testScene) : TestClass(testScene) {
   private ColorRect _surface() => _platform.GetNode<ColorRect>("Surface");
 
   private ShaderMaterial _material() => (ShaderMaterial)_surface().Material;
+
+  private ShaderMaterial _inkMaterial() =>
+    (ShaderMaterial)_platform.GetNode<ColorRect>("Ink").Material;
 
   private RectangleShape2D _solidShape() =>
     (RectangleShape2D)_platform.GetNode<CollisionShape2D>("CollisionShape").Shape;

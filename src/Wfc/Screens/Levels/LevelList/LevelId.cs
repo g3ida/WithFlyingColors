@@ -22,6 +22,8 @@ public enum LevelId {
   Hub,
   [LevelPath("TetrisLevel")]
   Tetris,
+  [LevelPath("PaintLevel")]
+  Paint,
 }
 
 

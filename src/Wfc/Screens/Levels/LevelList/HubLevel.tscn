@@ -14,7 +14,7 @@ IntroWalkTime = 0.0
 
 [node name="Camera2D" parent="." index="1"]
 limit_left = -1200
-limit_right = 3200
+limit_right = 4100
 limit_bottom = 1080
 
 [node name="GemContainerHUD" parent="HUD" index="0"]
@@ -24,21 +24,25 @@ visible = false
 
 [node name="Doors" type="Node2D" parent="." index="4"]
 
-[node name="FourColorsDoor" parent="Doors" index="0" instance=ExtResource("2")]
+[node name="PaintDoor" parent="Doors" index="0" instance=ExtResource("2")]
 position = Vector2(800, 607)
+TargetLevel = 5
+
+[node name="FourColorsDoor" parent="Doors" index="1" instance=ExtResource("2")]
+position = Vector2(1700, 607)
 TargetLevel = 2
 
-[node name="Level1Door" parent="Doors" index="1" instance=ExtResource("2")]
-position = Vector2(1700, 607)
+[node name="Level1Door" parent="Doors" index="2" instance=ExtResource("2")]
+position = Vector2(2600, 607)
 TargetLevel = 1
 
-[node name="TetrisDoor" parent="Doors" index="2" instance=ExtResource("2")]
-position = Vector2(2600, 607)
+[node name="TetrisDoor" parent="Doors" index="3" instance=ExtResource("2")]
+position = Vector2(3500, 607)
 TargetLevel = 4
 
 [node name="Floor" parent="." index="5" instance=ExtResource("3")]
-position = Vector2(1000, 1000)
-scale = Vector2(55, 3)
+position = Vector2(1450, 1000)
+scale = Vector2(66.25, 3)
 Group = ""
 geared = false
 splash_darkness = 0.93
@@ -50,7 +54,7 @@ position = Vector2(-1240, 0)
 shape = SubResource("1")
 
 [node name="RightWall" type="CollisionShape2D" parent="Walls" index="1"]
-position = Vector2(3240, 0)
+position = Vector2(4140, 0)
 shape = SubResource("1")
 
 [node name="ArrivalMark" type="Marker2D" parent="." index="7"]

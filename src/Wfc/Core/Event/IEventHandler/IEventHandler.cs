@@ -81,5 +81,11 @@ public interface IEventHandler {
   public void EmitLevelRestartRequested();
   public void EmitSaveSlotUpdated();
   public void EmitNotificationRaised(TranslationKey key);
+  public void EmitPaintSpilled(Vector2 position);
+  public void EmitBucketShoved(Vector2 position);
+  public void EmitPaintPouring(Vector2 position);
+  public void EmitPaintSplashed(Vector2 position);
+  public void EmitPaintGunCooling(Vector2 position);
+  public void EmitPaintGunFired(Vector2 position);
 
 }

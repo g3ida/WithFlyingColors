@@ -164,6 +164,12 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitLevelRestartRequested() => Events.EmitSignal(Events.SignalName.LevelRestartRequested);
   public void EmitSaveSlotUpdated() => Events.EmitSignal(Events.SignalName.SaveSlotUpdated);
   public void EmitNotificationRaised(TranslationKey key) => Events.EmitSignal(Events.SignalName.NotificationRaised, (int)key);
+  public void EmitPaintSpilled(Vector2 position) => Events.EmitSignal(Events.SignalName.PaintSpilled, position);
+  public void EmitBucketShoved(Vector2 position) => Events.EmitSignal(Events.SignalName.BucketShoved, position);
+  public void EmitPaintPouring(Vector2 position) => Events.EmitSignal(Events.SignalName.PaintPouring, position);
+  public void EmitPaintSplashed(Vector2 position) => Events.EmitSignal(Events.SignalName.PaintSplashed, position);
+  public void EmitPaintGunCooling(Vector2 position) => Events.EmitSignal(Events.SignalName.PaintGunCooling, position);
+  public void EmitPaintGunFired(Vector2 position) => Events.EmitSignal(Events.SignalName.PaintGunFired, position);
 
   public void EmitCameraShakeRequest(float amplitude) => Events.EmitSignal(Events.SignalName.CameraShakeRequest, amplitude);
   public void EmitCameraZoomPunchRequest(float strength) => Events.EmitSignal(Events.SignalName.CameraZoomPunchRequest, strength);

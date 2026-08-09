@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dxdpkyrs224cf"]
+[gd_scene format=3 uid="uid://dxdpkyrs224cf"]
 
 [ext_resource type="PackedScene" uid="uid://c81yhhex2g2mu" path="res://src/Wfc/Entities/World/Piano/Piano/Piano.tscn" id="1"]
 [ext_resource type="Script" uid="uid://ertk10yu7hbi" path="res://src/Wfc/Entities/World/Piano/PianoScene/PianoScene.cs" id="2"]
@@ -8,25 +8,26 @@
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(40, 29.4)
 
-[node name="PianoScene" type="Node2D"]
+[node name="PianoScene" type="Node2D" unique_id=579951373]
 script = ExtResource("2")
 
-[node name="Piano" parent="." instance=ExtResource("1")]
+[node name="Piano" parent="." unique_id=392613188 instance=ExtResource("1")]
 
-[node name="CheckpointArea" parent="." instance=ExtResource("3")]
+[node name="CheckpointArea" parent="." unique_id=814438585 instance=ExtResource("3")]
 position = Vector2(-799, -503)
 scale = Vector2(1, 20)
+ColorGroup = "purple"
 
-[node name="TriggerArea" type="Area2D" parent="."]
+[node name="TriggerArea" type="Area2D" parent="." unique_id=716309356]
 position = Vector2(-568, -248)
 scale = Vector2(1, 10)
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TriggerArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TriggerArea" unique_id=1658127848]
 position = Vector2(0, -5.3)
 shape = SubResource("1")
 
-[node name="SimplePlatform" parent="." instance=ExtResource("4")]
+[node name="SimplePlatform" parent="." unique_id=495139612 instance=ExtResource("4")]
 position = Vector2(-911, -42)
 scale = Vector2(3.5, 1.11)
 Group = "purple"
