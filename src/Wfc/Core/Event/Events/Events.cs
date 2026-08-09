@@ -156,6 +156,17 @@ public partial class Events : RefCounted {
   // can carry on rather than sounding once and stopping.
   [Signal]
   public delegate void PaintPouringEventHandler(Vector2 position);
+
+  [Signal]
+  // Paint landing on something, from a gun or anything else that throws it.
+  public delegate void PaintSplashedEventHandler(Vector2 position);
+
+  [Signal]
+  // A gun that has run its tank dry and started drawing ink back up its cable.
+  public delegate void PaintGunCoolingEventHandler(Vector2 position);
+
+  [Signal]
+  public delegate void PaintGunFiredEventHandler(Vector2 position);
   // A bucket being shoved along the surface it stands on. Raised again for as long as the shove
   // lasts, so what answers it can carry on rather than sounding once and stopping.
   [Signal]

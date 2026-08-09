@@ -116,17 +116,6 @@ public partial class PaintBucket : CharacterBody2D, IPersistent {
   // How far past the body the landing probe looks for the surface it came down on.
   private const float LANDING_PROBE = 24f;
 
-  // How finely the surface is felt along for its ends, and the least paint worth making a splat
-  // of. Anything narrower than this reads as a smear rather than as a run of coloured floor, and
-  // it would claim a strip of colour too thin for the player to see they had to match.
-  private const float EDGE_STEP = 4f;
-  private const float MIN_SPLASH = 28f;
-
-  // How far below the lip paint thrown off the end will look for something to land on. Past this
-  // it is falling into the room rather than onto the next shelf down, and there is nothing there
-  // for it to coat.
-  private const float OVERFLOW_DROP = 900f;
-
   private const float IMPACT_SHAKE = 8f;
   #endregion Constants
 
@@ -458,71 +447,9 @@ public partial class PaintBucket : CharacterBody2D, IPersistent {
     return (GlobalPosition, null);
   }
 
-  // The paint goes as far as the surface does and no further. A bucket emptied over a shelf
-  // narrower than the splash coats the shelf and pours the rest off its ends, which then falls and
-  // coats whatever is under there - so a platform never wears a coat wider than itself with the
-  // ends of it hanging in the air.
-  private void _spread(Vector2 where, Node? surface) {
-    var half = SplashWidth / 2f;
-    var from = where.X - half;
-    var to = where.X + half;
-    var (left, right) = _surfaceRun(where, surface, half);
-
-    _lay(surface, Mathf.Max(from, left), Mathf.Min(to, right), where.Y);
-    _spillOver(from, Mathf.Min(to, left), where.Y);
-    _spillOver(Mathf.Max(from, right), to, where.Y);
-  }
-
-  // How far what it landed on actually runs, either side of where the paint hit it. Felt along
-  // rather than read off the platform, because what caught the bucket is whatever the physics
-  // server says it is and need not be a platform the level knows how to measure.
-  private (float Left, float Right) _surfaceRun(Vector2 point, Node? surface, float reach) {
-    return (point.X - _runsTo(point, surface, -1f, reach), point.X + _runsTo(point, surface, 1f, reach));
-  }
-
-  private float _runsTo(Vector2 point, Node? surface, float direction, float reach) {
-    var run = 0f;
-    while (run + EDGE_STEP <= reach) {
-      var at = run + EDGE_STEP;
-      var from = new Vector2(point.X + (direction * at), point.Y - PROBE_RISE);
-      using var hit = GetWorld2D().DirectSpaceState.IntersectRay(
-        _groundRay(from, from + new Vector2(0f, PROBE_RISE + PROBE_DROP))
-      );
-      if (hit.Count == 0 || hit["collider"].As<Node>() != surface) {
-        break;
-      }
-      run = at;
-    }
-    return run;
-  }
-
-  // Paint thrown past the end of the shelf, which falls and lands on whatever is below.
-  private void _spillOver(float from, float to, float lip) {
-    if (to - from < MIN_SPLASH) {
-      return;
-    }
-    var start = new Vector2((from + to) / 2f, lip);
-    using var hit = GetWorld2D().DirectSpaceState.IntersectRay(
-      _groundRay(start, start + new Vector2(0f, OVERFLOW_DROP))
-    );
-    if (hit.Count == 0) {
-      return;
-    }
-    _lay(hit["collider"].As<Node>(), from, to, hit["position"].AsVector2().Y);
-  }
-
-  private void _lay(Node? surface, float from, float to, float top) {
-    var width = to - from;
-    if (width < MIN_SPLASH) {
-      return;
-    }
-    var host = surface as Node2D ?? GetParent() as Node2D;
-    if (host is null) {
-      return;
-    }
-
-    _splats.Add(_makeSplat(host, host.ToLocal(new Vector2((from + to) / 2f, top)), width, dried: false));
-  }
+  // Paint that stays: a bucket is emptied once and the room is authored around what it leaves.
+  private void _spread(Vector2 where, Node? surface) =>
+    PaintSpread.Lay(this, where, surface, Group, SplashWidth, life: 0f, _splats);
 
   private PaintSplat _makeSplat(Node2D host, Vector2 where, float width, bool dried) {
     var splat = SceneHelpers.InstantiateNode<PaintSplat>();

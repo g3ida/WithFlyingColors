@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Backgrounds/CityBackground/CityBackground.tscn" id="9"]
 [ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="10"]
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Paint/PaintFluid/PaintFluid.tscn" id="11"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Paint/SplashGun/SplashGun.tscn" id="12_ctpm7"]
 
 [node name="LevelHandler" unique_id=1578487532 instance=ExtResource("1")]
 Track = "level1"
@@ -123,7 +124,7 @@ InkDripDensity = 1.55
 InkDripWidth = 0.65
 
 [node name="PurpleStepB" parent="Ground" index="15" unique_id=1849329279 instance=ExtResource("3")]
-position = Vector2(3040, 528)
+position = Vector2(2368, 16)
 Size = Vector2(192, 32)
 Group = "purple"
 Inked = true
@@ -375,3 +376,6 @@ StartAt = 1
 Speed = 3.0
 WaitTime = 4.0
 OneShotPhase = 3
+
+[node name="SplashGun" parent="." index="14" unique_id=1495805052 instance=ExtResource("12_ctpm7")]
+position = Vector2(-696, -280)

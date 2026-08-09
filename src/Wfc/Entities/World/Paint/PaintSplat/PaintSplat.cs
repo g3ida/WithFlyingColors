@@ -4,6 +4,7 @@ using Godot;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
+using EventHandler = Wfc.Core.Event.EventHandler;
 
 // What a dropped bucket leaves behind: a run of paint lying along the surface it broke over, in
 // the bucket's colour, which from then on is a surface of that colour - the cube crosses it on
@@ -24,6 +25,7 @@ public partial class PaintSplat : Node2D {
   private static readonly StringName SpreadParam = "u_spread";
   private static readonly StringName RunParam = "u_run";
   private static readonly StringName SeedParam = "u_seed";
+  private static readonly StringName EndsParam = "u_ends";
   private static readonly StringName ColorParam = "u_color";
   private static readonly StringName ShadeParam = "u_shade";
 
@@ -41,6 +43,10 @@ public partial class PaintSplat : Node2D {
   private const float RUN_DURATION = 0.95f;
 
   private const float DROPLET_SPEED_PER_WIDTH = 0.9f;
+
+  // How long paint that expires takes to go once its time is up. Long enough to be seen drying
+  // rather than blinking out, and it stops being lethal only when there is nothing left to see.
+  private const float DRY_UP_DURATION = 0.8f;
 
   private const SkinColorIntensity PAINT = SkinColorIntensity.Basic;
   private const SkinColorIntensity PAINT_SHADE = SkinColorIntensity.Dark;
@@ -60,6 +66,9 @@ public partial class PaintSplat : Node2D {
   private string _group = "purple";
   private float _width = 256f;
   private bool _dried;
+  private float _life;
+  private Vector2 _ends = Vector2.One;
+  private bool _isSubscribed;
 
   // Called before the splat is in the tree, so what it is told is kept until _Ready has the
   // nodes to put it on.
@@ -67,10 +76,20 @@ public partial class PaintSplat : Node2D {
   // Paint put back from a saved game is already dry: it was thrown long before the game was
   // last closed, and playing the throw again on load would have the room splash itself as the
   // player arrives in it.
-  public void Setup(string colorGroup, float width, bool dried = false) {
+  //
+  // A life of zero is paint that stays: what a bucket leaves is a piece of the puzzle and the room
+  // is authored around it. Anything that paints over and over has to be given one, or every shot
+  // it takes is on the level for good and the room ends up one colour.
+  //
+  // Ends says which of its two ends were cut rather than run out: a splash divided at the end of
+  // the shelf it landed on has to reach that edge and stop dead there.
+  public void Setup(
+    string colorGroup, float width, bool dried = false, float life = 0f, Vector2? ends = null) {
     _group = colorGroup;
     _width = width;
     _dried = dried;
+    _life = life;
+    _ends = ends ?? Vector2.One;
   }
 
   public string Group => _group;
@@ -98,6 +117,7 @@ public partial class PaintSplat : Node2D {
       material.SetShaderParameter(ColorParam, color);
       material.SetShaderParameter(ShadeParam, SkinManager.Instance.CurrentSkin.GetColor(skinColor, PAINT_SHADE));
       material.SetShaderParameter(SeedParam, GD.Randf() * 100f);
+      material.SetShaderParameter(EndsParam, _ends);
       material.SetShaderParameter(SpreadParam, 0f);
       material.SetShaderParameter(RunParam, 0f);
     }
@@ -117,10 +137,43 @@ public partial class PaintSplat : Node2D {
 
     if (_dried) {
       _settled();
-      return;
     }
-    _dropletsNode.Emitting = true;
-    _play();
+    else {
+      _dropletsNode.Emitting = true;
+      _play();
+    }
+
+    if (_life > 0f) {
+      _dryUp();
+    }
+  }
+
+  private void _dryUp() {
+    var tween = CreateTween();
+    tween.TweenInterval(_life);
+    // It stops counting the moment it starts to go. Paint the player can see is on its way out but
+    // is still killed by is the worst of both: it reads as safe and is not.
+    tween.TweenCallback(Callable.From(() => _areaNode.Monitorable = false));
+    tween.TweenProperty(this, "modulate:a", 0f, DRY_UP_DURATION);
+    tween.TweenCallback(Callable.From(QueueFree));
+  }
+
+  // Paint that expires belongs to the run rather than to the level, so a death takes it with it.
+  // What a bucket left is not this: it has no life, and putting it back is the bucket's own affair.
+  public override void _EnterTree() {
+    base._EnterTree();
+    if (_life > 0f && !_isSubscribed) {
+      EventHandler.Instance.Events.CheckpointLoaded += QueueFree;
+      _isSubscribed = true;
+    }
+  }
+
+  public override void _ExitTree() {
+    base._ExitTree();
+    if (_isSubscribed) {
+      EventHandler.Instance.Events.CheckpointLoaded -= QueueFree;
+      _isSubscribed = false;
+    }
   }
 
   // Where the throw would have ended: fully spread, fully run off, and lethal from the outset.

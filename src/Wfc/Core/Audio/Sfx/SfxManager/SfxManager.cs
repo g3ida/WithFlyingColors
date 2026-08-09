@@ -91,6 +91,9 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PaintSpilled += OnPaintSpilled;
     EventHandler.Instance.Events.BucketShoved += OnBucketShoved;
     EventHandler.Instance.Events.PaintPouring += OnPaintPouring;
+    EventHandler.Instance.Events.PaintSplashed += OnPaintSplashed;
+    EventHandler.Instance.Events.PaintGunCooling += OnPaintGunCooling;
+    EventHandler.Instance.Events.PaintGunFired += OnPaintGunFired;
   }
 
   private void DisconnectSignals() {
@@ -133,6 +136,9 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PaintSpilled -= OnPaintSpilled;
     EventHandler.Instance.Events.BucketShoved -= OnBucketShoved;
     EventHandler.Instance.Events.PaintPouring -= OnPaintPouring;
+    EventHandler.Instance.Events.PaintSplashed -= OnPaintSplashed;
+    EventHandler.Instance.Events.PaintGunCooling -= OnPaintGunCooling;
+    EventHandler.Instance.Events.PaintGunFired -= OnPaintGunFired;
   }
 
   public override void _ExitTree() {
@@ -215,6 +221,9 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnPaintSpilled(Vector2 position) => OnPlaySfx("bucketFall");
   private void OnBucketShoved(Vector2 position) => OnPlaySfx("bucketPush");
   private void OnPaintPouring(Vector2 position) => OnPlaySfx("paintPour");
+  private void OnPaintSplashed(Vector2 position) => OnPlaySfx("paintSplash");
+  private void OnPaintGunCooling(Vector2 position) => OnPlaySfx("gunCooldown");
+  private void OnPaintGunFired(Vector2 position) => OnPlaySfx("shooting");
   private void OnDoorGemFilled() => OnPlaySfx("doorGemFill");
   private void OnDoorCometFormed() => OnPlaySfx("doorCometFormed");
   private void OnPauseMenuEnter() => OnPlaySfx("menuSelect");

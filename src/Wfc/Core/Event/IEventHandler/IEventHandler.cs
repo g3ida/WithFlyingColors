@@ -84,5 +84,8 @@ public interface IEventHandler {
   public void EmitPaintSpilled(Vector2 position);
   public void EmitBucketShoved(Vector2 position);
   public void EmitPaintPouring(Vector2 position);
+  public void EmitPaintSplashed(Vector2 position);
+  public void EmitPaintGunCooling(Vector2 position);
+  public void EmitPaintGunFired(Vector2 position);
 
 }

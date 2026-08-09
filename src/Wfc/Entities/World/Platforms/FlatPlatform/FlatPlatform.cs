@@ -487,7 +487,7 @@ public partial class FlatPlatform : StaticBody2D {
     material.SetShaderParameter(InkRunParam, reach);
     // A coat rather than a spill: it was painted onto the platform, so it reaches both ends of it
     // and stops where the platform does.
-    material.SetShaderParameter(InkEndsParam, 0f);
+    material.SetShaderParameter(InkEndsParam, Vector2.Zero);
     material.SetShaderParameter(InkColorParam, skin.GetColor(skinColor, SkinColorIntensity.Basic));
     material.SetShaderParameter(InkShadeParam, skin.GetColor(skinColor, SkinColorIntensity.Dark));
     // Failing a run chosen by hand, where the platform stands: two of them side by side wear

@@ -28,10 +28,15 @@ uniform float u_run = 1.0;
 // Which splat this is. Two buckets emptied over the same platform draw the same paint otherwise.
 uniform float u_seed = 0.0;
 
-// Whether the paint runs out at its own ends or reaches the ends of what it is on. Spilt paint
-// thins away to nothing wherever it stopped; a coat someone painted goes right to the edge of the
-// platform and stops there with it.
-uniform float u_ends : hint_range(0.0, 1.0) = 1.0;
+// Whether the paint runs out at its own ends or reaches the ends of what it is on, given for each
+// end separately: x is the left, y is the right. Spilt paint thins away to nothing wherever it
+// stopped; a coat someone painted goes right to the edge of the platform and stops there with it.
+//
+// The two are apart because a splash can be both at once. Paint thrown over the end of a shelf is
+// cut where the shelf ends, and that end has to run right up to the edge and stop dead - the far
+// end is still where the paint simply ran out. Tapering the cut leaves the coat short of the edge
+// with a gap between it and the paint that carried on down.
+uniform vec2 u_ends = vec2(1.0);
 
 uniform vec4 u_color : source_color = vec4(1.0);
 uniform vec4 u_shade : source_color = vec4(0.8, 0.8, 0.8, 1.0);
@@ -105,7 +110,7 @@ float pool_depth(float x, float reach) {
   // the quad: a pool still deep where the quad ends is cut off square, and a straight vertical
   // edge is the one thing in the whole splat that reads as drawn rather than spilt.
   float run_out = pow(max(1.0 - t * t, 0.0), 0.32 + (0.2 * side)) * (1.0 - smoothstep(0.68 + (0.2 * side), 0.99, t));
-  float body = mix(1.0, run_out, u_ends);
+  float body = mix(1.0, run_out, x < 0.0 ? u_ends.x : u_ends.y);
   // Three lengths of wobble laid over each other, the slowest carrying most of it: a pool whose
   // underside runs level is a band with a fringe on it rather than paint that gathered where it
   // gathered. The range is wide on purpose - the deepest stretches are twice the shallowest.
@@ -143,7 +148,7 @@ vec3 fingers(vec2 p, float reach, float aa) {
     float carry = mix(
       1.0,
       sqrt(max(1.0 - t * t, 0.0)) * (1.0 - smoothstep(0.68 + (0.2 * side_of(cx)), 0.99, t)),
-      u_ends
+      cx < 0.0 ? u_ends.x : u_ends.y
     );
     float length_here = u_reach * (0.14 + 0.86 * hash(i + 17.0)) * carry * u_run;
     float radius = u_width * mix(FINGER_RADIUS_MIN, FINGER_RADIUS_MAX, hash(i + 41.0)) * min(carry * 2.0, 1.0);
