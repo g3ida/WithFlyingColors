@@ -12,6 +12,8 @@ public static class GameSfx {
   public static readonly Dictionary<string, SfxInfo> Data = new() {
     ["brick"] = new SfxInfo(BASE_PATH + "brick.ogg", -4),
     ["bricksSlide"] = new SfxInfo(BASE_PATH + "bricks_slide.ogg"),
+    ["bucketFall"] = new SfxInfo(BASE_PATH + "bucket-fall.ogg", -4),
+    ["bucketPush"] = new SfxInfo(BASE_PATH + "bucket-push.ogg", -8),
     ["dash"] = new SfxInfo(BASE_PATH + "dash.ogg", -6),
     // Placeholders: the door ceremony wants sounds of its own, and until they exist it borrows
     // two that are close enough to read. Only the paths here need replacing.

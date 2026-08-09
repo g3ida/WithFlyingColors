@@ -16,7 +16,8 @@ public class LevelChainTests(Node testScene) : TestClass(testScene) {
 
   [Test]
   public void EachLevelAdvancesToTheNextInPlayOrder() {
-    LevelDispatcher.NextLevel(LevelId.Tutorial).ShouldBe(LevelId.FourColors);
+    LevelDispatcher.NextLevel(LevelId.Tutorial).ShouldBe(LevelId.Paint);
+    LevelDispatcher.NextLevel(LevelId.Paint).ShouldBe(LevelId.FourColors);
     LevelDispatcher.NextLevel(LevelId.FourColors).ShouldBe(LevelId.Level1);
     LevelDispatcher.NextLevel(LevelId.Level1).ShouldBe(LevelId.Tetris);
   }

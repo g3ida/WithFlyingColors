@@ -5,6 +5,19 @@
 [ext_resource type="Texture2D" uid="uid://tl2572rfbvxj" path="res://Assets/Sprites/Platforms/rotate-arrow.png" id="3"]
 [ext_resource type="Script" uid="uid://2gyr0t52hf1a" path="res://src/Wfc/Entities/World/Platforms/RotatingPlatformArrow/RotatingPlatformArrow.cs" id="4"]
 [ext_resource type="AudioStream" uid="uid://dpc3wp4koii7n" path="res://Assets/sfx/bricks_slide.ogg" id="5"]
+[ext_resource type="Shader" path="res://Assets/Shaders/PaintSplat.gdshader" id="6"]
+
+[sub_resource type="ShaderMaterial" id="4"]
+resource_local_to_scene = true
+shader = ExtResource("6")
+shader_parameter/u_size = Vector2(256, 74)
+shader_parameter/u_pool = 18.0
+shader_parameter/u_reach = 56.0
+shader_parameter/u_spread = 1.0
+shader_parameter/u_run = 1.0
+shader_parameter/u_seed = 0.0
+shader_parameter/u_color = Color(1, 1, 1, 1)
+shader_parameter/u_shade = Color(0.8, 0.8, 0.8, 1)
 
 [sub_resource type="ShaderMaterial" id="1"]
 resource_local_to_scene = true
@@ -27,6 +40,10 @@ size = Vector2(256, 32)
 resource_local_to_scene = true
 size = Vector2(256, 32)
 
+[sub_resource type="RectangleShape2D" id="5"]
+resource_local_to_scene = true
+size = Vector2(256, 18)
+
 [node name="RotatingPlatform" type="AnimatableBody2D" groups=["persist"]]
 collision_layer = 5
 collision_mask = 255
@@ -40,6 +57,15 @@ offset_right = 128.0
 offset_bottom = 16.0
 mouse_filter = 2
 
+[node name="Ink" type="ColorRect" parent="."]
+visible = false
+material = SubResource("4")
+offset_left = -128.0
+offset_top = -19.0
+offset_right = 128.0
+offset_bottom = 55.0
+mouse_filter = 2
+
 [node name="CollisionShape" type="CollisionShape2D" parent="."]
 shape = SubResource("2")
 
@@ -49,6 +75,14 @@ collision_mask = 16
 
 [node name="ColorAreaShape" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("3")
+
+[node name="InkArea" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 16
+monitorable = false
+
+[node name="InkAreaShape" type="CollisionShape2D" parent="InkArea"]
+shape = SubResource("5")
 
 [node name="Arrow" type="Sprite2D" parent="."]
 texture = ExtResource("3")

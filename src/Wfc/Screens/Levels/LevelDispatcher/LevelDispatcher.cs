@@ -26,6 +26,7 @@ public static class LevelDispatcher {
   // into. LevelId's own ordinals mean nothing here (they are serialization ids).
   public static readonly List<LevelInfo> LEVELS = [
           new() { Id = LevelId.Tutorial, TranslationKey = TranslationKey.game_level_title_tutorial },
+          new() { Id = LevelId.Paint, TranslationKey = TranslationKey.game_level_title_paint },
           new() { Id = LevelId.FourColors, TranslationKey = TranslationKey.game_level_title_fourColors },
           new() { Id = LevelId.Level1, TranslationKey = TranslationKey.game_level_title_letsPlayWithColors },
           new() { Id = LevelId.Tetris, TranslationKey = TranslationKey.game_level_title_tetris }

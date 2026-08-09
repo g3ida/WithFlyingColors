@@ -148,6 +148,14 @@ public partial class Events : RefCounted {
   // system's.
   [Signal]
   public delegate void NotificationRaisedEventHandler(int translationKey);
+  // A bucket of paint breaking over a surface, at the point it broke. What the paint then does
+  // to that surface is the splat's business; this is only the moment it landed.
+  [Signal]
+  public delegate void PaintSpilledEventHandler(Vector2 position);
+  // A bucket being shoved along the surface it stands on. Raised again for as long as the shove
+  // lasts, so what answers it can carry on rather than sounding once and stopping.
+  [Signal]
+  public delegate void BucketShovedEventHandler(Vector2 position);
   // Both carry how hard they want it, so one move can ask for a nudge where it starts and a
   // jolt where it lands without either reading as the other.
   [Signal]

@@ -1,0 +1,55 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://src/Wfc/Entities/World/Paint/BucketSprite/BucketSprite.cs" id="1"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/Splash/bucket.png" id="2"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/Splash/paint.png" id="3"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/Splash/paint-shadow.png" id="4"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/Splash/bail.png" id="5"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/Splash/bail-hand.png" id="6"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/Splash/bail-hand-shadow.png" id="7"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/Splash/bucket-card.png" id="8"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/Splash/bucket-card-shadow.png" id="9"]
+
+[node name="BucketSprite" type="Node2D"]
+scale = Vector2(0.576, 0.576)
+script = ExtResource("1")
+
+[node name="Bucket" type="Sprite2D" parent="."]
+centered = false
+position = Vector2(-55, -125)
+texture = ExtResource("2")
+
+[node name="Paint" type="Sprite2D" parent="."]
+centered = false
+position = Vector2(-55, -126)
+texture = ExtResource("3")
+
+[node name="PaintShade" type="Sprite2D" parent="."]
+centered = false
+position = Vector2(-55, -126)
+texture = ExtResource("4")
+
+[node name="Bail" type="Sprite2D" parent="."]
+centered = false
+position = Vector2(-55, -123)
+texture = ExtResource("5")
+
+[node name="BailGrip" type="Sprite2D" parent="."]
+centered = false
+position = Vector2(-12, -74)
+texture = ExtResource("6")
+
+[node name="BailGripShade" type="Sprite2D" parent="."]
+centered = false
+position = Vector2(-12, -69)
+texture = ExtResource("7")
+
+[node name="Card" type="Sprite2D" parent="."]
+centered = false
+position = Vector2(-38, -64)
+texture = ExtResource("8")
+
+[node name="CardShade" type="Sprite2D" parent="."]
+centered = false
+position = Vector2(-38, -64)
+texture = ExtResource("9")

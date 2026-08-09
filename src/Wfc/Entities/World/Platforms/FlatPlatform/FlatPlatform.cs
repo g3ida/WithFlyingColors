@@ -56,6 +56,40 @@ public partial class FlatPlatform : StaticBody2D {
   // Every tileset in the game is on this cell, and level geometry is laid out against it.
   private const float CELL_SIZE = 32f;
 
+  // The coat of paint an inked platform wears, as a share of the platform's own depth: what covers
+  // a ledge is a stripe on a wall, and what covers a wall swallows a ledge. Held between these so a
+  // thin platform still wears a coat thick enough to read and a deep one is not painted to the
+  // ground.
+  private const float INK_POOL_SHARE = 0.42f;
+  private const float INK_POOL_MIN = 16f;
+  private const float INK_POOL_MAX = 52f;
+  private const float INK_REACH_SHARE = 0.95f;
+  private const float INK_REACH_MIN = 44f;
+  private const float INK_REACH_MAX = 140f;
+
+  // What the shader spaces and sizes the drips by at a setting of one, so both fields read as a
+  // multiple of the coat the game already wears rather than as pixel counts.
+  private const float INK_DRIP_SPACING = 26f;
+  private const float INK_DRIP_WIDTH = 26f;
+  private const float MIN_DRIP_SCALE = 0.1f;
+
+  // The most of a platform's height the coat may answer for. The sides of a platform are not
+  // painted, so however deep the paint is there has to be a side left to touch.
+  private const float INK_COAT_MAX_SHARE = 0.5f;
+
+  // What InkColor is set to when the coat is simply the platform's own colour.
+  public const string INK_FOLLOWS_PLATFORM = "platform";
+
+  private static readonly StringName InkSizeParam = "u_size";
+  private static readonly StringName InkPoolParam = "u_pool";
+  private static readonly StringName InkRunParam = "u_reach";
+  private static readonly StringName InkSeedParam = "u_seed";
+  private static readonly StringName InkSpacingParam = "u_spacing";
+  private static readonly StringName InkWidthParam = "u_width";
+  private static readonly StringName InkEndsParam = "u_ends";
+  private static readonly StringName InkColorParam = "u_color";
+  private static readonly StringName InkShadeParam = "u_shade";
+
   // The platforms that belong to no colour. The ground draws itself the same way - plain white,
   // never taken through the skin - so a neutral platform set against it is the same surface.
   public const string NEUTRAL = "white";
@@ -144,6 +178,86 @@ public partial class FlatPlatform : StaticBody2D {
   }
   private Edges _shadedEdges = ALL_EDGES;
 
+  // Wears its colour as paint: a coat of it lying along the top with the last of it running off
+  // the underside. It says nothing new about the platform - the colour and the box that judges a
+  // landing are the same either way - so a level can ink the platforms a puzzle is about and leave
+  // the rest plain.
+  [Export]
+  public bool Inked {
+    get => _inked;
+    set {
+      _inked = value;
+      _applyColorGroups();
+      _applyInk();
+    }
+  }
+  private bool _inked;
+
+  // Which colour the coat is, when it is not the platform's own. A coat is the top of the platform
+  // rather than a decoration on it, so this is also the colour the cube is judged against: a white
+  // platform under purple paint is landed on by the purple face alone.
+  [Export(PropertyHint.Enum, "platform,blue,pink,yellow,purple")]
+  public string InkColor {
+    get => _inkColor;
+    set {
+      _inkColor = value;
+      _applyColorGroups();
+      _applyInk();
+    }
+  }
+  private string _inkColor = INK_FOLLOWS_PLATFORM;
+
+  // How far the longest drip may run below the coat. Left at zero it is taken from the platform's
+  // own height, which is what a platform inked because it is thick wants. A thin ledge says
+  // nothing about how far paint should run off it, so anything hanging over a drop is worth
+  // saying outright.
+  [Export(PropertyHint.Range, "0,400,1,or_greater")]
+  public float InkDripLength {
+    get => _inkDripLength;
+    set {
+      _inkDripLength = Mathf.Max(value, 0f);
+      _applyInk();
+    }
+  }
+  private float _inkDripLength;
+
+  // How many drips run along the same stretch of coat, against the number the coat carries by
+  // default. It says nothing about how thick they are - a denser coat is more of the same drips.
+  [Export(PropertyHint.Range, "0.1,4,0.05,or_greater")]
+  public float InkDripDensity {
+    get => _inkDripDensity;
+    set {
+      _inkDripDensity = Mathf.Max(value, MIN_DRIP_SCALE);
+      _applyInk();
+    }
+  }
+  private float _inkDripDensity = 1f;
+
+  // How thick the drips are, against the thickness the coat carries by default. Independent of how
+  // many there are, so a coat can be a few heavy runs or a close fringe of fine ones.
+  [Export(PropertyHint.Range, "0.1,4,0.05,or_greater")]
+  public float InkDripWidth {
+    get => _inkDripWidth;
+    set {
+      _inkDripWidth = Mathf.Max(value, MIN_DRIP_SCALE);
+      _applyInk();
+    }
+  }
+  private float _inkDripWidth = 1f;
+
+  // Which run of paint this coat wears. Left at zero it is taken from where the platform stands, so
+  // that two of them side by side never wear the same one. Set it to pick a run by hand - which
+  // also holds that run still, where a coat sat by position redraws itself whenever it is nudged.
+  [Export]
+  public int InkSeed {
+    get => _inkSeed;
+    set {
+      _inkSeed = value;
+      _applyInk();
+    }
+  }
+  private int _inkSeed;
+
   [Export]
   public float SplashDarkness { get; set; } = 0.78f;
   #endregion Exports
@@ -160,12 +274,18 @@ public partial class FlatPlatform : StaticBody2D {
   #region Nodes
   [NodePath("Surface")]
   private ColorRect _surfaceNode = default!;
+  [NodePath("Ink")]
+  private ColorRect _inkNode = default!;
   [NodePath("CollisionShape")]
   private CollisionShape2D _collisionShapeNode = default!;
   [NodePath("Area2D")]
   private Area2D _areaNode = default!;
   [NodePath("Area2D/ColorAreaShape")]
   private CollisionShape2D _colorAreaShapeNode = default!;
+  [NodePath("InkArea")]
+  private Area2D _inkAreaNode = default!;
+  [NodePath("InkArea/InkAreaShape")]
+  private CollisionShape2D _inkAreaShapeNode = default!;
   #endregion Nodes
 
   public override void _Ready() {
@@ -176,6 +296,7 @@ public partial class FlatPlatform : StaticBody2D {
     _applyShape();
     _applyColorGroups();
     _applyColor();
+    _applyInk();
 
     // The snap has to hear about a platform being dragged. Left to Godot's own setting for a
     // collision object rather than turned off outside the editor: a body that moves needs the same
@@ -193,6 +314,10 @@ public partial class FlatPlatform : StaticBody2D {
     // and the band come out a different size from the ground's and only read as wrong beside it.
     if (!Scale.IsEqualApprox(Vector2.One)) {
       warnings.Add("Scale stretches the slice and the shade band out of step with the ground. Leave Scale at (1, 1) and set Size instead.");
+    }
+
+    if (Inked && _inkGroup().Length == 0) {
+      warnings.Add("Inked, but neither the platform nor InkColor names a colour to wear. Set InkColor, or turn Inked off.");
     }
 
     var topLeft = Position - (Size / 2f);
@@ -267,8 +392,9 @@ public partial class FlatPlatform : StaticBody2D {
     // The body is centred on the node, the way every other platform in the game is placed.
     _surfaceNode.Position = -Size / 2f;
     _surfaceNode.Size = Size;
+    _applyInk();
     _resizeShape(_collisionShapeNode, Size);
-    _resizeShape(_colorAreaShapeNode, Size);
+    _applyColorAreas();
 
     if (_surfaceNode.Material is ShaderMaterial material) {
       material.SetShaderParameter(SizeParam, Size);
@@ -321,32 +447,135 @@ public partial class FlatPlatform : StaticBody2D {
       return;
     }
     _surfaceNode.Color = SurfaceColor;
+    _applyInk();
   }
+
+  // The colour of the coat: the platform's own unless the author named another. Empty when neither
+  // names a colour, which is a platform with nothing to wear.
+  private string _inkGroup() {
+    var group = InkColor == INK_FOLLOWS_PLATFORM ? Group : InkColor;
+    return Array.IndexOf(ColorUtils.COLOR_GROUPS, group) < 0 ? string.Empty : group;
+  }
+
+  // The coat is laid along the whole top edge, so it is the platform's own width and needs redoing
+  // whenever the platform is resized or repainted. It starts exactly on the surface: a coat drawn
+  // even a little above it stands on a step of its own and reads as a band laid over the platform
+  // rather than as paint lying on it.
+  private void _applyInk() {
+    if (!_isWired) {
+      return;
+    }
+
+    var inkGroup = _inkGroup();
+    _inkNode.Visible = Inked && inkGroup.Length > 0;
+    if (!_inkNode.Visible || _inkNode.Material is not ShaderMaterial material) {
+      return;
+    }
+
+    var pool = _inkPoolDepth();
+    var reach = InkDripLength > 0f
+      ? InkDripLength
+      : Mathf.Clamp(Size.Y * INK_REACH_SHARE, INK_REACH_MIN, INK_REACH_MAX);
+    var size = new Vector2(Size.X, pool + reach);
+    _inkNode.Position = new Vector2(-Size.X / 2f, -Size.Y / 2f);
+    _inkNode.Size = size;
+
+    var skin = SkinManager.Instance.CurrentSkin;
+    var skinColor = GameSkin.ColorGroupToSkinColor(inkGroup);
+    material.SetShaderParameter(InkSizeParam, size);
+    material.SetShaderParameter(InkPoolParam, pool);
+    material.SetShaderParameter(InkRunParam, reach);
+    // A coat rather than a spill: it was painted onto the platform, so it reaches both ends of it
+    // and stops where the platform does.
+    material.SetShaderParameter(InkEndsParam, 0f);
+    material.SetShaderParameter(InkColorParam, skin.GetColor(skinColor, SkinColorIntensity.Basic));
+    material.SetShaderParameter(InkShadeParam, skin.GetColor(skinColor, SkinColorIntensity.Dark));
+    // Failing a run chosen by hand, where the platform stands: two of them side by side wear
+    // different runs of it, and the same platform wears the same one every time the level is opened.
+    material.SetShaderParameter(InkSeedParam, InkSeed != 0
+      ? InkSeed
+      : Mathf.Abs((Position.X * 0.017f) + (Position.Y * 0.083f)));
+    material.SetShaderParameter(InkSpacingParam, INK_DRIP_SPACING / InkDripDensity);
+    material.SetShaderParameter(InkWidthParam, INK_DRIP_WIDTH * InkDripWidth);
+  }
+
+  // How deep the paint lies on the surface, which is both what the shader draws and how far down
+  // the platform the coat is the thing being touched.
+  private float _inkPoolDepth() => Mathf.Clamp(Size.Y * INK_POOL_SHARE, INK_POOL_MIN, INK_POOL_MAX);
 
   // Anything the four colour groups do not name is neutral, so a platform left blank can be landed
   // on rather than being a lethal surface nobody meant to author.
   private bool _isNeutral() => Array.IndexOf(ColorUtils.COLOR_GROUPS, Group) < 0;
 
-  // The groups follow the export rather than being fixed at load: a platform given a new colour in
+  // What the cube actually lands on, which is whatever it can see: a coat of paint if the platform
+  // is wearing one, and the platform's own colour if it is not. A white platform under purple paint
+  // is a purple surface - the paint is the top of it.
+  public string LandingGroup {
+    get {
+      var ink = _inkGroup();
+      return Inked && ink.Length > 0 ? ink : Group;
+    }
+  }
+
+  // Whether the coat answers for anything the platform itself would not. One wearing its own
+  // colour is judged the same whichever part of it is touched, so it is left as a single area.
+  private bool _isCoated() {
+    var ink = _inkGroup();
+    return Inked && ink.Length > 0 && ink != Group;
+  }
+
+  // The groups follow the exports rather than being fixed at load: a platform given a new colour in
   // the inspector that still answers to its old one kills whoever lands on what they can see.
   private void _applyColorGroups() {
     if (!_isWired) {
       return;
     }
 
+    // The paint lies on the top and nowhere else, so it is the top alone that answers for it. The
+    // platform answers for the rest of itself: brushing the side of a painted platform is touching
+    // the platform, not the coat, and dying against a colour that is not on the surface you touched
+    // is a death the player has no way to read.
+    _setColorGroups(_areaNode, Group);
+    _setColorGroups(_inkAreaNode, _inkGroup());
+    _applyColorAreas();
+  }
+
+  // Anything the four colour groups do not name is neutral, and a neutral surface answers to every
+  // face rather than to none.
+  private static void _setColorGroups(Area2D area, string group) {
     foreach (var colorGroup in ColorUtils.COLOR_GROUPS) {
-      if (_areaNode.IsInGroup(colorGroup)) {
-        _areaNode.RemoveFromGroup(colorGroup);
+      if (area.IsInGroup(colorGroup)) {
+        area.RemoveFromGroup(colorGroup);
       }
     }
 
-    if (!_isNeutral()) {
-      _areaNode.AddToGroup(Group);
+    if (Array.IndexOf(ColorUtils.COLOR_GROUPS, group) >= 0) {
+      area.AddToGroup(group);
       return;
     }
     foreach (var colorGroup in ColorUtils.COLOR_GROUPS) {
-      _areaNode.AddToGroup(colorGroup);
+      area.AddToGroup(colorGroup);
     }
+  }
+
+  // The two of them divide the platform between them rather than overlapping: a face is killed by
+  // any area it enters whose colour is not its own, so a coat laid over the whole platform would
+  // have the body underneath judging the same landing a second time.
+  private void _applyColorAreas() {
+    if (!_isWired) {
+      return;
+    }
+
+    var coat = _isCoated() ? Mathf.Min(_inkPoolDepth(), Size.Y * INK_COAT_MAX_SHARE) : 0f;
+    var top = -Size.Y / 2f;
+
+    _inkAreaNode.Monitorable = coat > 0f;
+    _resizeShape(_inkAreaShapeNode, new Vector2(Size.X, Mathf.Max(coat, 1f)));
+    _inkAreaShapeNode.Position = new Vector2(0f, top + (coat / 2f));
+
+    var body = Size.Y - coat;
+    _resizeShape(_colorAreaShapeNode, new Vector2(Size.X, body));
+    _colorAreaShapeNode.Position = new Vector2(0f, top + coat + (body / 2f));
   }
 
   private Vector4 _chamferWidths() => new Vector4(
