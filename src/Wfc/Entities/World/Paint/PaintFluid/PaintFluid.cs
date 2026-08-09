@@ -401,6 +401,28 @@ public partial class PaintFluid : Node2D {
   private float _kernelSlope;
   private float _cohesionAt;
 
+  // Everything about the room that a retry from the last checkpoint has to come back to. Held on
+  // the node because a death reloads the checkpoint rather than the level: the nodes live through
+  // it, so what they were like is theirs to keep.
+  private sealed class Remembered {
+    public State State;
+    public float Elapsed;
+    public float Owed;
+    public int Poured;
+    public bool HasCaught;
+    public float Sound;
+    public ulong Scatter;
+    public float ZoomBefore;
+    public int Count;
+    public Vector2[] At = System.Array.Empty<Vector2>();
+    public Vector2[] Going = System.Array.Empty<Vector2>();
+    public float[] Stain = System.Array.Empty<float>();
+    public bool[] Stained = System.Array.Empty<bool>();
+  }
+
+  private Remembered? _remembered;
+  private bool _pullBack;
+
   // One band per unbroken stretch of dried coat, so the paint the flood leaves can be landed on.
   private readonly List<Area2D> _coats = [];
   private bool _coatSpread;
@@ -425,6 +447,7 @@ public partial class PaintFluid : Node2D {
       return;
     }
     EventHandler.Instance.Events.CheckpointLoaded += _onCheckpointLoaded;
+    EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
     _isSubscribed = true;
   }
 
@@ -434,6 +457,7 @@ public partial class PaintFluid : Node2D {
       return;
     }
     EventHandler.Instance.Events.CheckpointLoaded -= _onCheckpointLoaded;
+    EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
     _isSubscribed = false;
   }
 
@@ -471,6 +495,11 @@ public partial class PaintFluid : Node2D {
     if (_needsLevel) {
       _readLevel();
       _needsLevel = false;
+    }
+
+    if (_pullBack) {
+      _pullBack = false;
+      _level?.CameraNode.ZoomTo(CameraZoom);
     }
 
     if (_state == State.Waiting) {
@@ -1397,10 +1426,15 @@ public partial class PaintFluid : Node2D {
     if (!IsNodeReady()) {
       return;
     }
-    _restore();
+    if (_remembered is null) {
+      _reset();
+      return;
+    }
+    _recall();
   }
 
-  private void _restore() {
+  // The room as the player first met it, for a retry from before any of this happened.
+  private void _reset() {
     _count = 0;
     _state = State.Waiting;
     _hasCaught = false;
@@ -1419,6 +1453,82 @@ public partial class PaintFluid : Node2D {
     _spoutNode.Fill();
     _sprayNode.Emitting = false;
     _fill();
+  }
+
+  // What the room was like when the player last reached a checkpoint. A set piece is only worth
+  // retrying from as far as it was got to: sent back to a checkpoint beyond the flood, a player
+  // who had already outrun it would find the bucket standing full again and the room dry, and be
+  // made to run it a second time to reach the point they had already reached.
+  private void _onCheckpointReached(Vector2 position, string colorGroup) {
+    if (!IsNodeReady() || Engine.IsEditorHint()) {
+      return;
+    }
+
+    _remembered ??= new Remembered {
+      At = new Vector2[MAX_PARTICLES],
+      Going = new Vector2[MAX_PARTICLES],
+      Stain = new float[_stain.Length],
+      Stained = new bool[_stained.Length],
+    };
+
+    _remembered.State = _state;
+    _remembered.Elapsed = _elapsed;
+    _remembered.Owed = _owed;
+    _remembered.Poured = _poured;
+    _remembered.HasCaught = _hasCaught;
+    _remembered.Sound = _sound;
+    // Where the scatter had got to, not the seed it started from: the pour is only the same run
+    // twice if it carries on drawing from where it left off.
+    _remembered.Scatter = _scatter.State;
+    _remembered.ZoomBefore = _zoomBefore;
+    _remembered.Count = _count;
+
+    System.Array.Copy(_at, _remembered.At, _count);
+    System.Array.Copy(_going, _remembered.Going, _count);
+    System.Array.Copy(_stain, _remembered.Stain, _stain.Length);
+    System.Array.Copy(_stained, _remembered.Stained, _stained.Length);
+  }
+
+  private void _recall() {
+    var was = _remembered!;
+    _state = was.State;
+    _elapsed = was.Elapsed;
+    _owed = was.Owed;
+    _poured = was.Poured;
+    _hasCaught = was.HasCaught;
+    _sound = was.Sound;
+    _scatter.State = was.Scatter;
+    _zoomBefore = was.ZoomBefore;
+    _count = was.Count;
+    _needsLevel = true;
+
+    System.Array.Copy(was.At, _at, _count);
+    System.Array.Copy(was.Going, _going, _count);
+    System.Array.Copy(was.At, _bound, _count);
+    System.Array.Copy(was.Stain, _stain, _stain.Length);
+    System.Array.Copy(was.Stained, _stained, _stained.Length);
+
+    // Both of these are read off how far through the pour it was rather than kept, because they
+    // are only ever a function of it.
+    _tipTo(_elapsed >= TIP_DURATION ? TIP_ANGLE : TIP_ANGLE * _tipEase(_elapsed / TIP_DURATION));
+    // Interpolation is on for the whole project, so a bucket put back part-way over would
+    // otherwise be drawn swinging there from wherever it was standing.
+    _spoutNode.ResetPhysicsInterpolation();
+    if (_state == State.Waiting || (_state == State.Tipping && _elapsed < POUR_DELAY)) {
+      _spoutNode.Fill();
+    }
+    else {
+      _spoutNode.Empty();
+    }
+
+    _sprayNode.Emitting = false;
+    // The coat is worked out from which columns had dried, so it comes back with them.
+    _coatSpread = true;
+    _fill();
+
+    // Pulled back again if the flood was still running, and left to the next tick so that whatever
+    // the camera does about the reload itself has already happened by the time this lands.
+    _pullBack = CameraZoom > 0f && _state is State.Tipping or State.Pouring;
   }
   #endregion The set piece
 

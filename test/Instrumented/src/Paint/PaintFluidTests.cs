@@ -145,6 +145,36 @@ public class PaintFluidTests(Node testScene) : TestClass(testScene) {
     _coatsOf(_fluid).Count.ShouldBe(0, "the coat the player died to is still lethal");
   }
 
+  // Unless the player got past it first. A checkpoint reached once the bucket has gone over says
+  // the room was crossed, and a retry from there must not stand the bucket back up in a dry room:
+  // the player would be made to outrun the flood a second time to reach the point the checkpoint
+  // already granted them.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task ACheckpointPastTheFloodDoesNotMakeThemOutrunItTwice() {
+    _fluid.Pour();
+    await PhysicsFrames.Advance(TestScene, 200);
+
+    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+    var front = _fluid.FrontX;
+    var coats = _coatsOf(_fluid).Count;
+    front.ShouldBeGreaterThan(0f, "the flood had not started, so there was nothing to remember");
+    coats.ShouldBeGreaterThan(0, "nothing had dried yet, so there was nothing to remember");
+
+    await PhysicsFrames.Advance(TestScene, 120);
+    EventHandler.Instance.EmitCheckpointLoaded();
+
+    // Read before letting it run on, so this is what the reload put back rather than what the
+    // flood had already done with it by the next tick.
+    _fluid.IsRunning.ShouldBeTrue("the bucket is standing full again in a room it has already flooded");
+    _fluid.FrontX.ShouldBe(front, 0.5f, "the flood came back to somewhere it had not reached");
+    _coatsOf(_fluid).Count.ShouldBe(coats, "the paint it had already dried was washed off");
+
+    // And it carries on from there rather than starting the pour again.
+    await PhysicsFrames.Advance(TestScene, 60);
+    _fluid.FrontX.ShouldBeGreaterThanOrEqualTo(front, "the flood went backwards after the reload");
+  }
+
   // Whatever the flood has dried onto and left able to kill. Read off the node rather than exposed
   // by it, because nothing in the game asks the paint for this - the faces find it by touching it.
   private static List<Area2D> _coatsOf(PaintFluid fluid) =>

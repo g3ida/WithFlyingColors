@@ -276,6 +276,37 @@ public class PaintBucketTests(Node testScene) : TestClass(testScene) {
     GodotObject.IsInstanceValid(splat).ShouldBeFalse("the paint it spilled outlived the reload");
   }
 
+  // Unless the player got past it first. A checkpoint reached after the bucket has gone over says
+  // the puzzle was solved, and solving it again is not what a retry is for - so the paint stays on
+  // the floor and the tin stays lying where it emptied itself.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task ACheckpointPastItLeavesTheTinDownAndThePaintWhereItFell() {
+    _ledge(-320f, 320f);
+    _lowerRun(-320f, 1600f);
+    var bucket = _standBucket(160f);
+    _playerAt(0f, LEDGE_TOP - 120f);
+
+    _services.Input.Press(Wfc.Core.Input.IInputManager.Action.MoveRight);
+    (await PhysicsFrames.WaitFor(TestScene, () => bucket.IsSpilled, TIMEOUT)).ShouldBeTrue();
+    _services.Input.ReleaseAll();
+    await PhysicsFrames.Advance(TestScene, 30);
+
+    var splat = bucket.Splat!;
+    var restedAt = bucket.GlobalPosition;
+    var lay = bucket.Rotation;
+    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+
+    EventHandler.Instance.EmitCheckpointLoaded();
+    await PhysicsFrames.Advance(TestScene, 4);
+
+    bucket.IsSpilled.ShouldBeTrue("the bucket filled itself back up past a checkpoint that said it had not");
+    GodotObject.IsInstanceValid(splat).ShouldBeTrue("the paint it had already put down was taken away");
+    bucket.GlobalPosition.X.ShouldBe(restedAt.X, 0.5f, "the emptied bucket was carried back up the level");
+    bucket.GlobalPosition.Y.ShouldBe(restedAt.Y, 0.5f, "the emptied bucket was carried back up the level");
+    bucket.Rotation.ShouldBe(lay, 0.01f, "the bucket stood itself back up");
+  }
+
   // Drops the cube into an open tin, painted either the colour it has facing down or one of the
   // three it has not.
   private async Task<Wfc.Entities.World.Player.Player> _dropOntoTheTin(bool matching) {

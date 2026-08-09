@@ -200,6 +200,7 @@ public partial class PaintBucket : CharacterBody2D {
       return;
     }
     EventHandler.Instance.Events.CheckpointLoaded += _onCheckpointLoaded;
+    EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
     _isSubscribed = true;
   }
 
@@ -209,6 +210,7 @@ public partial class PaintBucket : CharacterBody2D {
       return;
     }
     EventHandler.Instance.Events.CheckpointLoaded -= _onCheckpointLoaded;
+    EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
     _isSubscribed = false;
   }
 
@@ -561,8 +563,23 @@ public partial class PaintBucket : CharacterBody2D {
     }
   }
 
-  // A bucket is part of the puzzle rather than part of the level, so a reload puts it back where
-  // it was authored with its paint still in it, and takes the paint it spilled with it.
+  // Where the bucket had got to when the player last reached a checkpoint, and the paint it had
+  // already put down. A bucket is part of the puzzle, and a puzzle solved before the checkpoint
+  // stays solved: sent back to make the same shove again, a player would be redoing work the
+  // checkpoint said they were past.
+  private void _onCheckpointReached(Vector2 position, string colorGroup) {
+    if (!IsNodeReady()) {
+      return;
+    }
+    _remembered = new Remembered(_state, Position, Rotation, _splatNode);
+  }
+
+  private sealed record Remembered(State State, Vector2 Position, float Rotation, PaintSplat? Splat);
+
+  private Remembered? _remembered;
+
+  // A reload puts the bucket back where the checkpoint left it, with the paint it had spilled by
+  // then still on the floor, and takes any it has spilled since with it.
   private void _onCheckpointLoaded() {
     if (!IsNodeReady()) {
       return;
@@ -571,22 +588,32 @@ public partial class PaintBucket : CharacterBody2D {
   }
 
   private void _restore() {
-    if (_splatNode is not null && IsInstanceValid(_splatNode)) {
+    var kept = _remembered?.Splat;
+    if (_splatNode is not null && _splatNode != kept && IsInstanceValid(_splatNode)) {
       _splatNode.QueueFree();
     }
-    _splatNode = null;
+    _splatNode = kept is not null && IsInstanceValid(kept) ? kept : null;
 
-    Position = _home;
-    Rotation = _homeRotation;
+    Position = _remembered?.Position ?? _home;
+    Rotation = _remembered?.Rotation ?? _homeRotation;
+    _state = _remembered?.State ?? State.Resting;
     Velocity = Vector2.Zero;
     _kick = 0f;
     _pusherNode = null;
-    _state = State.Resting;
-    _spriteNode.Fill();
-    _paintAreaNode.Monitorable = true;
+
+    // An emptied bucket is a tin: no paint on it to be judged against, and nothing left for it to
+    // do but be stood on.
+    var emptied = _state == State.Spilled;
+    if (emptied) {
+      _spriteNode.Empty();
+    }
+    else {
+      _spriteNode.Fill();
+    }
+    _paintAreaNode.Monitorable = !emptied;
     // Put back rather than travelling back: interpolation would otherwise draw the bucket
     // sweeping across the level from wherever it came to rest.
     ResetPhysicsInterpolation();
-    SetPhysicsProcess(true);
+    SetPhysicsProcess(!emptied);
   }
 }
