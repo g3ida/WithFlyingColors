@@ -83,5 +83,6 @@ public interface IEventHandler {
   public void EmitNotificationRaised(TranslationKey key);
   public void EmitPaintSpilled(Vector2 position);
   public void EmitBucketShoved(Vector2 position);
+  public void EmitPaintPouring(Vector2 position);
 
 }

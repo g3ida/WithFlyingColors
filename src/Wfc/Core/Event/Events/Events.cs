@@ -152,6 +152,10 @@ public partial class Events : RefCounted {
   // to that surface is the splat's business; this is only the moment it landed.
   [Signal]
   public delegate void PaintSpilledEventHandler(Vector2 position);
+  // Paint running out of a bucket. Raised again for as long as the pour lasts, so what answers it
+  // can carry on rather than sounding once and stopping.
+  [Signal]
+  public delegate void PaintPouringEventHandler(Vector2 position);
   // A bucket being shoved along the surface it stands on. Raised again for as long as the shove
   // lasts, so what answers it can carry on rather than sounding once and stopping.
   [Signal]

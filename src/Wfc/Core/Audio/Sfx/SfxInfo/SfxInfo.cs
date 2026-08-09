@@ -15,6 +15,7 @@ public static class GameSfx {
     ["bucketFall"] = new SfxInfo(BASE_PATH + "bucket-fall.ogg", -4),
     ["bucketPush"] = new SfxInfo(BASE_PATH + "bucket-push.ogg", -8),
     ["dash"] = new SfxInfo(BASE_PATH + "dash.ogg", -6),
+    ["paintPour"] = new SfxInfo(BASE_PATH + "paint-pour.ogg", -6),
     // Placeholders: the door ceremony wants sounds of its own, and until they exist it borrows
     // two that are close enough to read. Only the paths here need replacing.
     ["doorCometFormed"] = new SfxInfo(BASE_PATH + "shine.ogg", -2),

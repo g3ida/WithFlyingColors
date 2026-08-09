@@ -90,6 +90,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.DoorCometFormed += OnDoorCometFormed;
     EventHandler.Instance.Events.PaintSpilled += OnPaintSpilled;
     EventHandler.Instance.Events.BucketShoved += OnBucketShoved;
+    EventHandler.Instance.Events.PaintPouring += OnPaintPouring;
   }
 
   private void DisconnectSignals() {
@@ -131,6 +132,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.DoorCometFormed -= OnDoorCometFormed;
     EventHandler.Instance.Events.PaintSpilled -= OnPaintSpilled;
     EventHandler.Instance.Events.BucketShoved -= OnBucketShoved;
+    EventHandler.Instance.Events.PaintPouring -= OnPaintPouring;
   }
 
   public override void _ExitTree() {
@@ -212,6 +214,7 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnNotificationRaised(int translationKey) => OnPlaySfx("notification");
   private void OnPaintSpilled(Vector2 position) => OnPlaySfx("bucketFall");
   private void OnBucketShoved(Vector2 position) => OnPlaySfx("bucketPush");
+  private void OnPaintPouring(Vector2 position) => OnPlaySfx("paintPour");
   private void OnDoorGemFilled() => OnPlaySfx("doorGemFill");
   private void OnDoorCometFormed() => OnPlaySfx("doorCometFormed");
   private void OnPauseMenuEnter() => OnPlaySfx("menuSelect");
