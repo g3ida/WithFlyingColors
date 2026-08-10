@@ -460,6 +460,36 @@ public partial class Player : CharacterBody2D, IPersistent {
   public bool AcceptsColorOfAt(Vector2 globalPoint, Area2D area) =>
     _acceptsAt(globalPoint, face => face.AcceptsColorOf(area));
 
+  // The point of the cube's surface nearest something out in the world - where anything drawn
+  // between the two has to leave from, and the point whose color decides what it is drawn in.
+  public Vector2 ClosestSurfacePoint(Vector2 globalPoint) {
+    var half = GetCollisionHalfExtents();
+    var local = (globalPoint - GlobalPosition).Rotated(-GlobalRotation);
+    return GlobalPosition + local.Clamp(-half, half).Rotated(GlobalRotation);
+  }
+
+  // The color the cube presents at a point on its surface. A corner wears two and answers with
+  // the first of them: which one it names only matters to something picking a color to draw
+  // with, and both are equally the cube's there.
+  public string? SurfaceColorGroupAt(Vector2 globalPoint) {
+    var box = new PlayerBox(GetCollisionHalfExtents(), CornerSeam * Mathf.Abs(GlobalScale.X));
+    var faces = box.FacesAt((globalPoint - GlobalPosition).Rotated(-GlobalRotation));
+    BoxFace? face = null;
+    if (faces.HasFlag(PlayerBox.Faces.Right)) {
+      face = _rightFaceNode;
+    }
+    else if (faces.HasFlag(PlayerBox.Faces.Left)) {
+      face = _leftFaceNode;
+    }
+    else if (faces.HasFlag(PlayerBox.Faces.Bottom)) {
+      face = _bottomFaceNode;
+    }
+    else if (faces.HasFlag(PlayerBox.Faces.Top)) {
+      face = _topFaceNode;
+    }
+    return face is null ? null : ColorUtils.ColorGroupOf(face);
+  }
+
   private bool _acceptsAt(Vector2 globalPoint, Func<BoxFace, bool> accepts) {
     var box = new PlayerBox(GetCollisionHalfExtents(), CornerSeam * Mathf.Abs(GlobalScale.X));
     var faces = box.FacesAt((globalPoint - GlobalPosition).Rotated(-GlobalRotation));

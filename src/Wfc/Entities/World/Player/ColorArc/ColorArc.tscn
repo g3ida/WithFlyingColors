@@ -1,0 +1,59 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://src/Wfc/Entities/World/Player/ColorArc/ColorArc.cs" id="1"]
+[ext_resource type="Shader" path="res://Assets/Shaders/ColorArc.gdshader" id="2"]
+[ext_resource type="Shader" path="res://Assets/Shaders/ColorArcGlow.gdshader" id="3"]
+[ext_resource type="AudioStream" path="res://Assets/sfx/electric.ogg" id="4"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 125.0
+
+[sub_resource type="ShaderMaterial" id="2"]
+shader = ExtResource("2")
+
+[sub_resource type="ShaderMaterial" id="3"]
+shader = ExtResource("3")
+
+[node name="ColorArc" type="Node2D"]
+script = ExtResource("1")
+Enabled = true
+Opacity = 0.6
+
+[node name="Sensor" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1260
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sensor"]
+shape = SubResource("1")
+
+[node name="Glow" type="Line2D" parent="."]
+top_level = true
+z_index = 1
+modulate = Color(1, 1, 1, 0.24)
+material = SubResource("3")
+points = PackedVector2Array(0, 0, 1, 0)
+width = 13.0
+texture_mode = 2
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="Arc" type="Line2D" parent="."]
+top_level = true
+z_index = 2
+modulate = Color(1, 1, 1, 0.55)
+material = SubResource("2")
+points = PackedVector2Array(0, 0, 1, 0)
+width = 3.0
+texture_mode = 2
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="Sound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4")
+volume_db = -4.0
+max_distance = 900.0
+attenuation = 0.7
+bus = &"sfx2d"

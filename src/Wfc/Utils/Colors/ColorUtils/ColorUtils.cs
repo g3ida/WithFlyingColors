@@ -32,6 +32,19 @@ public partial class ColorUtils : Node {
 
   public const int TILE_SOURCE_ID_COUNT = 4;
 
+  // The color a node is tagged with, picked out of whatever else it has been grouped into.
+  // Groups are how every colored thing in the game carries its color, so anything that has to
+  // draw in a partner's color starts here.
+  public static string? ColorGroupOf(Node node) {
+    foreach (var group in node.GetGroups()) {
+      var name = group.ToString();
+      if (Array.IndexOf(COLOR_GROUPS, name) >= 0) {
+        return name;
+      }
+    }
+    return null;
+  }
+
   public static HSLColor RgbToHsl(Color color) {
     float R = color.R * 255.0f;
     float G = color.G * 255.0f;
