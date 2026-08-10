@@ -58,11 +58,26 @@ public sealed class FakeSaveManager : ISaveManager {
     return this;
   }
 
+  // A counter the run has already climbed, which is what the hub's stats board reads.
+  public FakeSaveManager WithRunStat(int slotIndex, RunStat stat, ulong count) {
+    _slots[slotIndex] ??= new SlotMetaData(slotIndex, 1_700_000_000UL, LevelId.Level1, 0, 1_700_000_000UL);
+    _slots[slotIndex]!.Counters[stat] = count;
+    return this;
+  }
+
   // Gems already banked for a level, which is what a hub door's pentagon reads.
   public FakeSaveManager WithCollectedGems(int slotIndex, LevelId levelId, params string[] colorGroups) {
     _slots[slotIndex] ??= new SlotMetaData(slotIndex, 1_700_000_000UL, levelId, 0, 1_700_000_000UL);
     _bankGems(_slots[slotIndex]!, levelId, colorGroups);
     return this;
+  }
+
+  public void RecordRunStat(RunStat stat, int slotIndex = ISaveManager.NO_SLOT) {
+    var index = _resolve(slotIndex);
+    if (!_isValid(index) || _slots[index] is not { } metaData) {
+      return;
+    }
+    metaData.Counters[stat] = metaData.CounterOf(stat) + 1;
   }
 
   private int _resolve(int slotIndex) => slotIndex == ISaveManager.NO_SLOT ? Mathf.Max(0, SelectedSlot) : slotIndex;

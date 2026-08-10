@@ -87,6 +87,23 @@ public partial class SaveManager : ISaveManager {
     _loadSlotsMetaData();
   }
 
+  // Silent about a bad slot index, unlike its siblings: this is called from player events
+  // many times a second, and a run played with no slot picked would fill the log rather than
+  // simply not being counted.
+  public void RecordRunStat(RunStat stat, int slotIndex = ISaveManager.NO_SLOT) {
+    slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
+    if (slotIndex is < 0 or >= NUM_SLOTS) {
+      return;
+    }
+
+    var slot = _saveSlots[slotIndex];
+    if (!slot.IsFilled || slot.MetaData == null) {
+      return;
+    }
+
+    slot.RecordRunStat(stat);
+  }
+
   public void RecordHubArrivalSeen(int slotIndex = ISaveManager.NO_SLOT) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {

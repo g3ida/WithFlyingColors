@@ -32,6 +32,14 @@ public static class LevelDispatcher {
           new() { Id = LevelId.Paint, TranslationKey = TranslationKey.game_level_title_paint }
   ];
 
+  // The number a level wears wherever it is named to the player - its door in the hub, its
+  // card in the level select - counted from one so the two never disagree. Null for a level
+  // the chain does not know, which is named without a number.
+  public static int? PlayOrderNumberOf(LevelId levelId) {
+    var index = LEVELS.FindIndex(level => level.Id == levelId);
+    return index < 0 ? null : index + 1;
+  }
+
   // The level after this one in play order, or null at the end of the chain (and for
   // a level the chain does not know, which the caller treats the same way: nowhere
   // to advance to).

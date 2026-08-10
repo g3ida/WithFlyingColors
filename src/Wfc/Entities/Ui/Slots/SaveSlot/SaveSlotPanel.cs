@@ -72,6 +72,8 @@ public partial class SaveSlotPanel : PanelContainer {
   private Label _slotIndexNode = default!;
   [NodePath("HBoxContainer/VBoxContainer/LevelName")]
   private Label _levelNameNode = default!;
+  [NodePath("HBoxContainer/PlayTimeColumn/PlayTime")]
+  private Label _playTimeNode = default!;
   [NodePath("Button")]
   private Button _buttonNode = default!;
   #endregion Nodes
@@ -150,12 +152,12 @@ public partial class SaveSlotPanel : PanelContainer {
 
   private static string _formatTimestamp(int value) {
     if (value == -1) {
-      return "----/--/-- --:--";
+      return "--/--/-- --:--";
     }
     // Read out as ints first: the dictionary hands back Variants, and a numeric format
     // string applied to one is ignored, so midnight printed as "0:0".
     var time = Time.GetDatetimeDictFromUnixTime(value);
-    return $"{time["year"].AsInt32()}/{time["month"].AsInt32():00}/{time["day"].AsInt32():00}"
+    return $"{time["year"].AsInt32() % 100:00}/{time["month"].AsInt32():00}/{time["day"].AsInt32():00}"
         + $" {time["hour"].AsInt32():00}:{time["minute"].AsInt32():00}";
   }
 
@@ -189,7 +191,7 @@ public partial class SaveSlotPanel : PanelContainer {
   }
 
   private void _setFontColor(Color color) {
-    foreach (var label in new[] { _slotIndexNode, _levelNameNode, _createdNode, _lastPlayedNode, _descriptionNode }) {
+    foreach (var label in new[] { _slotIndexNode, _levelNameNode, _createdNode, _lastPlayedNode, _descriptionNode, _playTimeNode }) {
       label.AddThemeColorOverride("font_color", color);
     }
   }
@@ -254,11 +256,18 @@ public partial class SaveSlotPanel : PanelContainer {
       SetDescription(string.Format(
           LocalizationService.GetLocalizedString(TranslationKey.menu_label_slotCompletion),
           metaData.CompletionPercent(LevelDispatcher.LEVELS.Count)));
+      _playTimeNode.Text = string.Format(
+          LocalizationService.GetLocalizedString(TranslationKey.menu_label_slotPlayTime),
+          PlayTimeFormat.Format(metaData.PlayTimeSeconds));
+      _playTimeNode.Visible = true;
     }
     else {
       _setTimestamps(-1, -1);
       _levelNameNode.Text = "";
       _levelNameNode.Visible = false;
+      // An empty slot has no run to have spent time in, so the corner stays blank rather
+      // than claiming zero.
+      _playTimeNode.Visible = false;
       SetDescription(LocalizationService.GetLocalizedString(TranslationKey.menu_label_emptySlot));
     }
   }

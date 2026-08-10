@@ -16,7 +16,9 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
     int? progress = null;
     HashSet<LevelId>? clearedLevels = null;
     Dictionary<LevelId, HashSet<string>>? collectedGems = null;
+    Dictionary<RunStat, ulong>? counters = null;
     var hasSeenHubArrival = false;
+    ulong playTimeSeconds = 0;
 
     if (reader.TokenType != JsonTokenType.StartObject) {
       throw new JsonException();
@@ -56,8 +58,14 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
         case nameof(SlotMetaData.CollectedGems):
           collectedGems = _readCollectedGems(ref reader, options);
           break;
+        case nameof(SlotMetaData.Counters):
+          counters = _readCounters(ref reader);
+          break;
         case nameof(SlotMetaData.HasSeenHubArrival):
           hasSeenHubArrival = reader.GetBoolean();
+          break;
+        case nameof(SlotMetaData.PlayTimeSeconds):
+          playTimeSeconds = reader.GetUInt64();
           break;
         default:
           reader.Skip();
@@ -65,15 +73,17 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
       }
     }
 
-    // ClearedLevels, CollectedGems and HasSeenHubArrival are deliberately not in this check:
-    // saves written before completion, gem tracking or the hub existed have no such
-    // properties, and they must keep loading as slots with nothing cleared or collected yet.
+    // ClearedLevels, CollectedGems, Counters, HasSeenHubArrival and PlayTimeSeconds are
+    // deliberately not in this check: saves written before completion, gem tracking, the run
+    // counters, the hub or the play clock existed have no such properties, and they must keep
+    // loading with those simply empty or at zero.
     if (slotId == null || saveTimestamp == null || levelId == null || progress == null || lastLoadDate == null) {
       throw new JsonException("Missing required property");
     }
 
-    return new SlotMetaData(slotId.Value, saveTimestamp.Value, levelId ?? LevelId.Tutorial, progress.Value, lastLoadDate.Value, clearedLevels, collectedGems) {
+    return new SlotMetaData(slotId.Value, saveTimestamp.Value, levelId ?? LevelId.Tutorial, progress.Value, lastLoadDate.Value, clearedLevels, collectedGems, counters) {
       HasSeenHubArrival = hasSeenHubArrival,
+      PlayTimeSeconds = playTimeSeconds,
     };
   }
 
@@ -108,6 +118,35 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
     return collectedGems;
   }
 
+  // Counters are keyed by name for the same reason the gems above are, and a name this
+  // build no longer knows is dropped rather than rejected: a save from a build with an
+  // extra counter still loads.
+  private static Dictionary<RunStat, ulong> _readCounters(ref Utf8JsonReader reader) {
+    if (reader.TokenType != JsonTokenType.StartObject) {
+      throw new JsonException();
+    }
+
+    var counters = new Dictionary<RunStat, ulong>();
+    while (reader.Read()) {
+      if (reader.TokenType == JsonTokenType.EndObject) {
+        break;
+      }
+      if (reader.TokenType != JsonTokenType.PropertyName) {
+        throw new JsonException();
+      }
+
+      var statName = reader.GetString();
+      reader.Read();
+      if (Enum.TryParse<RunStat>(statName, out var stat)) {
+        counters[stat] = reader.GetUInt64();
+      }
+      else {
+        reader.Skip();
+      }
+    }
+    return counters;
+  }
+
   public override void Write(Utf8JsonWriter writer, SlotMetaData value, JsonSerializerOptions options) {
     writer.WriteStartObject();
     writer.WriteNumber(nameof(SlotMetaData.SlotId), value.SlotId);
@@ -125,7 +164,14 @@ public class SlotMetaDataJsonConverter : JsonConverter<SlotMetaData> {
       JsonSerializer.Serialize(writer, gems, options);
     }
     writer.WriteEndObject();
+    writer.WritePropertyName(nameof(SlotMetaData.Counters));
+    writer.WriteStartObject();
+    foreach (var (stat, count) in value.Counters) {
+      writer.WriteNumber(stat.ToString(), count);
+    }
+    writer.WriteEndObject();
     writer.WriteBoolean(nameof(SlotMetaData.HasSeenHubArrival), value.HasSeenHubArrival);
+    writer.WriteNumber(nameof(SlotMetaData.PlayTimeSeconds), value.PlayTimeSeconds);
     writer.WriteEndObject();
   }
 }

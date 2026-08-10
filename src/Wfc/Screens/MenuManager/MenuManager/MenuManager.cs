@@ -46,7 +46,7 @@ public class MenuManager : IMenuManager {
   public string? GetMenuScenePath(GameMenus menu) => menu switch {
     GameMenus.GAME => GetScenePath<SceneOrchester>(),
     GameMenus.SETTINGS_MENU => GetScenePath<SettingsMenu>(),
-    GameMenus.STATS_MENU => GetScenePath<StatsMenu>(),
+    GameMenus.CREDITS_MENU => GetScenePath<CreditsMenu>(),
     GameMenus.MAIN_MENU => GetScenePath<MainMenu>(),
     GameMenus.LEVEL_CLEAR_MENU => GetScenePath<LevelClearedMenu>(),
     GameMenus.SELECT_SLOT => GetScenePath<SelectSlotMenu>(),

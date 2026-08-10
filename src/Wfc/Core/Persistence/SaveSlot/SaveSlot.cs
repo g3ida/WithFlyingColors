@@ -25,9 +25,33 @@ public partial class SaveSlot {
   private const string NODE_PATH_KEY = "node_path";
   private const string PROGRESS_KEY = "progress";
 
+  // Where the play clock was last read. It lives in memory, not in the save: the gap
+  // between two writes of one session is time the player spent in this slot, while the
+  // gap across a game that was closed and reopened is not.
+  private ulong _playTimeAnchor = _getUnixTimestamp();
+
   public SaveSlot(int slotIndex) {
     _slotIndex = slotIndex;
 
+  }
+
+  // Stamps the slot as touched and banks the time since the last stamp. Every record below
+  // goes through this rather than writing SaveTimestamp itself, so no path can move the
+  // slot on without the clock following it.
+  private void _touch() {
+    var now = _getUnixTimestamp();
+    if (MetaData != null) {
+      MetaData.PlayTimeSeconds += now - _playTimeAnchor;
+      MetaData.SaveTimestamp = now;
+    }
+    _playTimeAnchor = now;
+  }
+
+  // A slot only starts counting from the moment it materializes: the object itself is built
+  // at boot for every slot, and the menu time before one was picked is nobody's play time.
+  private SlotMetaData _startMetaData(LevelId levelId, int progress, IEnumerable<LevelId>? clearedLevels = null) {
+    _playTimeAnchor = _getUnixTimestamp();
+    return new SlotMetaData(_slotIndex, _playTimeAnchor, levelId, progress, _playTimeAnchor, clearedLevels);
   }
 
   public void Load(ISerializer serializer, SceneTree sceneTree) {
@@ -38,16 +62,11 @@ public partial class SaveSlot {
       }
     }
     if (MetaData != null) {
-      MetaData.SaveTimestamp = _getUnixTimestamp();
+      _playTimeAnchor = _getUnixTimestamp();
+      MetaData.SaveTimestamp = _playTimeAnchor;
     }
     else {
-      MetaData = new SlotMetaData(
-        _slotIndex,
-        _getUnixTimestamp(),
-        LevelId.Tutorial,
-        0,
-        _getUnixTimestamp()
-      );
+      MetaData = _startMetaData(LevelId.Tutorial, 0);
     }
   }
 
@@ -56,18 +75,12 @@ public partial class SaveSlot {
     // materialized its metadata yet. Without this the meta file was never written, the
     // slot stayed "unfilled", and every later RecordProgress refused to save into it -
     // a fresh install could play forever and keep nothing.
-    MetaData ??= new SlotMetaData(
-      _slotIndex,
-      _getUnixTimestamp(),
-      LevelId.Tutorial,
-      0,
-      _getUnixTimestamp()
-    );
+    MetaData ??= _startMetaData(LevelId.Tutorial, 0);
     // Every write is a moment the slot was being played, and the panel reads this as when it
     // last was. Left to the record calls alone, a write that moves nothing they track - the
     // quit that only banks where the player is standing - showed the slot as untouched since
     // the last checkpoint.
-    MetaData.SaveTimestamp = _getUnixTimestamp();
+    _touch();
     SaveMetaData(serializer);
     _saveLevelState(serializer, sceneTree);
   }
@@ -78,26 +91,26 @@ public partial class SaveSlot {
   public void RecordProgress(LevelId levelId, int progressPercent) {
     var clamped = Math.Clamp(progressPercent, 0, 100);
     if (MetaData == null) {
-      MetaData = new SlotMetaData(_slotIndex, _getUnixTimestamp(), levelId, clamped, _getUnixTimestamp());
+      MetaData = _startMetaData(levelId, clamped);
       return;
     }
 
     var isNewLevel = MetaData.LevelId != levelId;
     MetaData.LevelId = levelId;
     MetaData.Progress = isNewLevel ? clamped : Math.Max(MetaData.Progress, clamped);
-    MetaData.SaveTimestamp = _getUnixTimestamp();
+    _touch();
   }
 
   // Banked gems are forever, like completions: the union only grows, so a replay that
   // dies before an already-banked gem cannot take it back off the hub door.
   public void RecordCollectedGems(LevelId levelId, IEnumerable<string> colorGroups) {
-    MetaData ??= new SlotMetaData(_slotIndex, _getUnixTimestamp(), levelId, 0, _getUnixTimestamp());
+    MetaData ??= _startMetaData(levelId, 0);
     if (!MetaData.CollectedGems.TryGetValue(levelId, out var gems)) {
       gems = [];
       MetaData.CollectedGems[levelId] = gems;
     }
     gems.UnionWith(colorGroups);
-    MetaData.SaveTimestamp = _getUnixTimestamp();
+    _touch();
   }
 
   // The hub only introduces itself once, so the run remembers having been led in rather
@@ -111,18 +124,29 @@ public partial class SaveSlot {
       return;
     }
     MetaData.HasSeenHubArrival = true;
-    MetaData.SaveTimestamp = _getUnixTimestamp();
+    _touch();
+  }
+
+  // One more of something the run has done. Deliberately does not write: these climb many
+  // times a second, and they ride out with the next progress or clear write like the rest of
+  // the metadata rather than putting the disk under a jump counter.
+  public void RecordRunStat(RunStat stat, ulong amount = 1) {
+    if (MetaData == null) {
+      return;
+    }
+    MetaData.Counters[stat] = MetaData.CounterOf(stat) + amount;
+    _touch();
   }
 
   // Cleared is forever: the set only grows, unlike the resume pointer RecordProgress
   // moves around. Replays of a finished level therefore cannot re-lock anything.
   public void RecordCompletion(LevelId levelId) {
     if (MetaData == null) {
-      MetaData = new SlotMetaData(_slotIndex, _getUnixTimestamp(), levelId, 0, _getUnixTimestamp(), [levelId]);
+      MetaData = _startMetaData(levelId, 0, [levelId]);
       return;
     }
     MetaData.ClearedLevels.Add(levelId);
-    MetaData.SaveTimestamp = _getUnixTimestamp();
+    _touch();
   }
 
   public void LoadMetaData(ISerializer serializer) {

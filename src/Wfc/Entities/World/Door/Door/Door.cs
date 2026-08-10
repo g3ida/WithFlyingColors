@@ -148,13 +148,13 @@ public partial class Door : Node2D {
   // Doors number themselves from play order, not from LevelId ordinals, so the
   // labels always match the order the doors are cleared in.
   private void _applyTitle() {
-    var index = LevelDispatcher.LEVELS.FindIndex(level => level.Id == TargetLevel);
+    var number = LevelDispatcher.PlayOrderNumberOf(TargetLevel);
     var titleKey = LevelDispatcher.TitleKeyOf(TargetLevel);
     var title = titleKey == null
         ? TargetLevel.ToString()
         : LocalizationService.GetLocalizedString(titleKey.Value);
     var upperTitle = title.ToUpperInvariant();
-    _titleLabelNode.Text = index < 0 ? upperTitle : $"{index}. {upperTitle}";
+    _titleLabelNode.Text = number == null ? upperTitle : $"{number}. {upperTitle}";
   }
 
   // The hub is built before the clear that sent the player back to it has been

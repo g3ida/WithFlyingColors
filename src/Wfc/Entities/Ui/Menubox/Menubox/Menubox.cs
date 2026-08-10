@@ -55,8 +55,8 @@ public partial class Menubox : Control {
   private MenuBoxButton _playButtonNode = null!;
   [NodePath("MenuBox/Spr/SettingsBoxButton")]
   private MenuBoxButton _settingsButtonNode = null!;
-  [NodePath("MenuBox/Spr/StatsBoxButton")]
-  private MenuBoxButton _statsButtonNode = null!;
+  [NodePath("MenuBox/Spr/CreditsBoxButton")]
+  private MenuBoxButton _creditsButtonNode = null!;
   [NodePath("MenuBox/Spr/QuitBoxButton")]
   private MenuBoxButton _quitButtonNode = null!;
   private MenuBoxButton[] _buttons = [];
@@ -74,7 +74,7 @@ public partial class Menubox : Control {
   public void FaceLastVisitedMenu() {
     _currentState = States.MENU;
     switch (MenuManager.GetLastVisitedMenu()) {
-      case GameMenus.STATS_MENU:
+      case GameMenus.CREDITS_MENU:
         _menuBoxNode.Rotate(-Mathf.Pi);
         ActiveIndex = 2;
         break;
@@ -97,7 +97,7 @@ public partial class Menubox : Control {
     _boxRotation.SetBody(_menuBoxNode);
 
     _spriteNode.Texture = MenuboxTextureGenerator.GenerateTexture();
-    _buttons = [_playButtonNode, _settingsButtonNode, _statsButtonNode, _quitButtonNode];
+    _buttons = [_playButtonNode, _settingsButtonNode, _creditsButtonNode, _quitButtonNode];
   }
 
   public void OnResolved() {
@@ -190,7 +190,7 @@ public partial class Menubox : Control {
 
   public void OnSettingsButtonPressed() => _processButtonPress(MenuAction.GoToSettings);
 
-  public void OnStatsButtonPressed() => _processButtonPress(MenuAction.GoToStats);
+  public void OnCreditsButtonPressed() => _processButtonPress(MenuAction.GoToCredits);
 
   private void _processButtonPress(MenuAction menuAction) {
     if (!CanRespondToInput()) {
@@ -216,8 +216,8 @@ public partial class Menubox : Control {
     else if (_buttons[ActiveIndex] == _settingsButtonNode) {
       OnSettingsButtonPressed();
     }
-    else if (_buttons[ActiveIndex] == _statsButtonNode) {
-      OnStatsButtonPressed();
+    else if (_buttons[ActiveIndex] == _creditsButtonNode) {
+      OnCreditsButtonPressed();
     }
   }
 

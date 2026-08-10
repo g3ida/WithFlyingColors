@@ -54,12 +54,12 @@ rotation = 1.5708
 SkinColor = 2
 LocalizationTextKey = 5
 
-[node name="StatsBoxButton" parent="MenuBox/Spr" instance=ExtResource("8")]
+[node name="CreditsBoxButton" parent="MenuBox/Spr" instance=ExtResource("8")]
 offset_top = 234.0
 offset_bottom = 234.0
 rotation = 3.14159
 SkinColor = 3
-LocalizationTextKey = 6
+LocalizationTextKey = 91
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MenuBox"]
 shape = SubResource("1")
@@ -92,6 +92,6 @@ flat = true
 [connection signal="pressed" from="MenuBox/Spr/PlayBoxButton" to="." method="OnPlayButtonPressed"]
 [connection signal="pressed" from="MenuBox/Spr/QuitBoxButton" to="." method="OnQuitButtonPressed"]
 [connection signal="pressed" from="MenuBox/Spr/SettingsBoxButton" to="." method="OnSettingsButtonPressed"]
-[connection signal="pressed" from="MenuBox/Spr/StatsBoxButton" to="." method="OnStatsButtonPressed"]
+[connection signal="pressed" from="MenuBox/Spr/CreditsBoxButton" to="." method="OnCreditsButtonPressed"]
 [connection signal="pressed" from="RightButton" to="." method="OnRightButtonPressed"]
 [connection signal="pressed" from="LeftButton" to="." method="OnLeftButtonPressed"]

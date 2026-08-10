@@ -6,7 +6,7 @@ public enum MenuAction {
   Play = 0,
   GoToSettings = 1,
   Quit = 2,
-  GoToStats = 3,
+  GoToCredits = 3,
   GoBack = 5,
   NewGame = 6,
   GoToLevelSelect = 10,

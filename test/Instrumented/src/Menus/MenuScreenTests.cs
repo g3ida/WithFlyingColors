@@ -29,7 +29,7 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
   private static readonly GameMenus[] MENU_SCREENS = [
     GameMenus.MAIN_MENU,
     GameMenus.SETTINGS_MENU,
-    GameMenus.STATS_MENU,
+    GameMenus.CREDITS_MENU,
     GameMenus.SELECT_SLOT,
     GameMenus.LEVEL_SELECT_MENU,
     GameMenus.LEVEL_CLEAR_MENU,
@@ -103,7 +103,7 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
   // Cancel is the screen's to answer, and answering it means going back one hop.
   [Test]
   public async Task CancelTakesASubScreenBackWhereItCameFrom() {
-    var screen = await _open(GameMenus.STATS_MENU);
+    var screen = await _open(GameMenus.CREDITS_MENU);
 
     _press(screen, IInputManager.Action.UICancel);
 
@@ -116,7 +116,7 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
   // points at on a fresh run.
   [Test]
   public async Task CancelOnTheMainMenuStaysPut() {
-    var screen = await _open(GameMenus.MAIN_MENU, from: GameMenus.STATS_MENU);
+    var screen = await _open(GameMenus.MAIN_MENU, from: GameMenus.CREDITS_MENU);
 
     _press(screen, IInputManager.Action.UICancel);
     await _idle();
@@ -168,7 +168,7 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
   public async Task PlayWithEverySlotEmptyStartsANewGameDirectly() {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT);
 
-    await _open(GameMenus.MAIN_MENU, from: GameMenus.STATS_MENU);
+    await _open(GameMenus.MAIN_MENU, from: GameMenus.CREDITS_MENU);
     EventHandler.Instance.EmitMenuActionPressed(MenuAction.Play);
 
     (await _waitUntil(() => _provider.MenuManager.GetCurrentMenu() == GameMenus.GAME))

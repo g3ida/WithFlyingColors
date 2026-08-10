@@ -1,17 +1,21 @@
-[gd_scene load_steps=10 format=3 uid="uid://hx7ougks02cn"]
+[gd_scene load_steps=12 format=3 uid="uid://hx7ougks02cn"]
 [ext_resource type="PackedScene" uid="uid://bhntbarscn01" path="res://src/Wfc/Entities/Ui/InputHint/InputHintBar/InputHintBar.tscn" id="hintbar_ext"]
 
-[ext_resource type="Script" uid="uid://dijpyfod56sum" path="res://src/Wfc/Screens/StatsMenu/StatsMenu.cs" id="2"]
+[ext_resource type="Script" uid="uid://dijpyfod56sum" path="res://src/Wfc/Screens/CreditsMenu/CreditsMenu.cs" id="2"]
 [ext_resource type="Texture2D" uid="uid://bxshy7a672581" path="res://Assets/Sprites/MainMenu/MenuBkg.png" id="3"]
 [ext_resource type="Script" uid="uid://bs3qantpxmo15" path="res://src/Wfc/Entities/Ui/BackButton/BackButton.cs" id="4"]
 [ext_resource type="StyleBox" path="res://Assets/Styles/MenuButtonPressedStyle.tres" id="5"]
 [ext_resource type="Texture2D" uid="uid://ccjrqyrj01x5f" path="res://Assets/Sprites/MainMenu/ArrowBack.png" id="6"]
 [ext_resource type="PackedScene" uid="uid://g35jlyo0jxb4" path="res://src/Wfc/Entities/Ui/UITransition/UITransition.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://wj8mouy5wyl2" path="res://src/Wfc/Entities/Ui/MenuTitle/MenuTitle.tscn" id="8_7njqa"]
+[ext_resource type="FontFile" uid="uid://dvbkqcky3vspv" path="res://Assets/Fonts/HeavyEquipment.otf" id="9_credits"]
 
 [sub_resource type="StyleBoxEmpty" id="1"]
 
-[node name="StatsMenu" type="Control"]
+[sub_resource type="Theme" id="2"]
+Label/fonts/font = ExtResource("9_credits")
+
+[node name="CreditsMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,6 +30,20 @@ offset_left = -270.0
 offset_right = 2370.0
 offset_bottom = 1080.0
 texture = ExtResource("3")
+
+[node name="CreditsContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(880, 0)
+layout_mode = 0
+offset_left = 960.0
+offset_top = 100.0
+offset_right = 1840.0
+offset_bottom = 150.0
+theme = SubResource("2")
+theme_override_constants/separation = 3
+
+[node name="UITransition" parent="CreditsContainer" instance=ExtResource("7")]
+layout_mode = 2
+HiddenRelativePosition = Vector2(2000, 0)
 
 [node name="BackButton" type="Button" parent="."]
 layout_mode = 0
@@ -44,8 +62,9 @@ Delay = 0.6
 HiddenRelativePosition = Vector2(-900, 0)
 
 [node name="MenuTitle" parent="." instance=ExtResource("8_7njqa")]
-DummyContent = "GAME STATS"
-Content = 9
+DummyContent = "CREDITS"
+Content = 92
+MaxLineWidth = 800.0
 
 
 [node name="InputHintBar" parent="." instance=ExtResource("hintbar_ext")]

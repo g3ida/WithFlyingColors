@@ -35,6 +35,10 @@ public interface ISaveManager {
   // time it steps in is never shown again. Metadata alone, so unlike the calls above it says
   // nothing about where the player is standing and needs no scene tree.
   public void RecordHubArrivalSeen(int slotIndex = NO_SLOT);
+  // Counts one more of something the run has done, for the hub's stats board. Metadata only,
+  // and deliberately not written out here: these climb constantly while the player is moving,
+  // so they ride along with the next progress or clear write.
+  public void RecordRunStat(RunStat stat, int slotIndex = NO_SLOT);
   public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = NO_SLOT);
   public bool IsSLotFilled(int slotIndex = NO_SLOT);
   public int GetSelectedSlotIndex();
