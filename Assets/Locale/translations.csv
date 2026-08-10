@@ -83,3 +83,23 @@ game.notification.level_cleared,Level cleared,Niveau terminé,Level geschafft,Ni
 menu.header.pick_colors,Which colours can you tell apart most easily?,Quelles couleurs distinguez-vous le plus facilement ?,Welche Farben kannst du am besten unterscheiden?,¿Qué colores distingues con más facilidad?,Quali colori distingui più facilmente?,Que cores distingues mais facilmente?,Welke kleuren kun je het makkelijkst onderscheiden?
 game.settings.general.colors,Colours,Couleurs,Farben,Colores,Colori,Cores,Kleuren
 game.level.title.paint,Wet Paint,Peinture fraîche,Frisch gestrichen,Pintura fresca,Vernice fresca,Tinta fresca,Natte verf
+menu.button.credits,Credits,Crédits,Mitwirkende,Créditos,Crediti,Créditos,Credits
+menu.header.credits,Credits,Crédits,Mitwirkende,Créditos,Crediti,Créditos,Credits
+credits.section.created_by,Created by,Créé par,Erstellt von,Creado por,Creato da,Criado por,Gemaakt door
+credits.section.music,Music,Musique,Musik,Música,Musica,Música,Muziek
+credits.section.sound_effects,Sound effects,Effets sonores,Soundeffekte,Efectos de sonido,Effetti sonori,Efeitos sonoros,Geluidseffecten
+credits.role.design_code_art,Design / code / art,Conception / code / graphismes,Design / Code / Grafik,Diseño / código / arte,Design / codice / grafica,Design / código / arte,Ontwerp / code / graphics
+credits.section.ai_assistance,AI assistance,Assistance IA,KI-Unterstützung,Asistencia de IA,Assistenza IA,Assistência de IA,AI-ondersteuning
+credits.note.ai_assistance,Particle effects / shaders / some game mechanics,Effets de particules / shaders / certaines mécaniques de jeu,Partikeleffekte / Shader / einige Spielmechaniken,Efectos de partículas / shaders / algunas mecánicas de juego,Effetti particellari / shader / alcune meccaniche di gioco,Efeitos de partículas / shaders / algumas mecânicas de jogo,Deeltjeseffecten / shaders / enkele spelmechanica
+menu.label.slot_play_time,Time played: {0},Temps de jeu : {0},Spielzeit: {0},Tiempo jugado: {0},Tempo di gioco: {0},Tempo jogado: {0},Speeltijd: {0}
+game.hint.read_stats,Press {0} to read,Appuyez sur {0} pour lire,Drücke {0} zum Lesen,Pulsa {0} para leer,Premi {0} per leggere,Pressione {0} para ler,Druk op {0} om te lezen
+menu.tab.game_facts,Game facts,Faits de jeu,Spielfakten,Datos del juego,Dati di gioco,Dados do jogo,Spelfeiten
+menu.tab.achievements,Achievements,Succès,Erfolge,Logros,Obiettivi,Conquistas,Prestaties
+stats.label.total_time_played,Total time played,Temps de jeu total,Gesamtspielzeit,Tiempo total jugado,Tempo di gioco totale,Tempo total jogado,Totale speeltijd
+stats.label.levels_unlocked,Levels unlocked,Niveaux débloqués,Freigeschaltete Level,Niveles desbloqueados,Livelli sbloccati,Níveis desbloqueados,Vrijgespeelde levels
+stats.label.total_jumps,Total jumps,Sauts au total,Sprünge insgesamt,Saltos totales,Salti totali,Saltos totais,Sprongen totaal
+stats.label.total_dashes,Total dashes,Dashs au total,Dashs insgesamt,Impulsos totales,Scatti totali,Impulsos totais,Dashes totaal
+stats.label.total_rotate_left,Total rotate left,Rotations à gauche,Drehungen nach links,Giros a la izquierda,Rotazioni a sinistra,Rotações à esquerda,Draaien naar links
+stats.label.total_rotate_right,Total rotate right,Rotations à droite,Drehungen nach rechts,Giros a la derecha,Rotazioni a destra,Rotações à direita,Draaien naar rechts
+stats.label.total_deaths,Total deaths,Morts au total,Tode insgesamt,Muertes totales,Morti totali,Mortes totais,Sterfgevallen totaal
+stats.label.total_gems_collected,Total gems collected,Gemmes collectées,Gesammelte Edelsteine,Gemas recogidas,Gemme raccolte,Gemas coletadas,Verzamelde edelstenen

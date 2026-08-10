@@ -37,10 +37,8 @@ public partial class LevelSelectMenu : GameMenu {
     var chain = LevelDispatcher.LEVELS.Select(level => level.Id).ToList();
     var clearedLevels = metaData?.ClearedLevels ?? [];
 
-    var index = 0;
     foreach (var level in LevelDispatcher.LEVELS) {
-      index++;
-      var sceneCard = AddSceneCard(index, level);
+      var sceneCard = AddSceneCard(level);
       sceneCard.Locked = !LevelUnlockPolicy.IsUnlocked(level.Id, chain, clearedLevels, metaData?.LevelId);
       _sceneCards.Add(sceneCard);
     }
@@ -53,13 +51,14 @@ public partial class LevelSelectMenu : GameMenu {
     focusCard?.GrabFocus();
   }
 
-  private SceneCard AddSceneCard(int index, LevelDispatcher.LevelInfo level) {
+  private SceneCard AddSceneCard(LevelDispatcher.LevelInfo level) {
     var sceneNode = SceneHelpers.InstantiateNode<SceneCard>();
     var levelsContainer = GetNode<Control>("LevelsContainer");
     levelsContainer.AddChild(sceneNode);
     sceneNode.Owner = levelsContainer;
     sceneNode.LevelScene = level.Id;
-    sceneNode.LevelName = $"{index}.{LocalizationService.GetLocalizedString(level.TranslationKey)}";
+    var number = LevelDispatcher.PlayOrderNumberOf(level.Id);
+    sceneNode.LevelName = $"{number}.{LocalizationService.GetLocalizedString(level.TranslationKey)}";
     return sceneNode;
   }
 

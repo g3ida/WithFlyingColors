@@ -52,9 +52,9 @@ public class MenuManagerTests(Node testScene) : TestClass(testScene) {
   public async Task GoingToAScreenMakesItCurrentAndRemembersTheLast() {
     await _goTo(GameMenus.MAIN_MENU);
 
-    await _goTo(GameMenus.STATS_MENU);
+    await _goTo(GameMenus.CREDITS_MENU);
 
-    _menuManager.GetCurrentMenu().ShouldBe(GameMenus.STATS_MENU);
+    _menuManager.GetCurrentMenu().ShouldBe(GameMenus.CREDITS_MENU);
     _menuManager.PeekBack().ShouldBe(GameMenus.MAIN_MENU);
     _menuManager.GetLastVisitedMenu().ShouldBe(GameMenus.MAIN_MENU);
   }
@@ -62,7 +62,7 @@ public class MenuManagerTests(Node testScene) : TestClass(testScene) {
   [Test]
   public async Task OnlyOneScreenIsAliveAtATime() {
     await _goTo(GameMenus.MAIN_MENU);
-    await _goTo(GameMenus.STATS_MENU);
+    await _goTo(GameMenus.CREDITS_MENU);
     await _goTo(GameMenus.SETTINGS_MENU);
 
     // QueueFree is deferred, so the outgoing screen is only gone a frame later.
@@ -108,7 +108,7 @@ public class MenuManagerTests(Node testScene) : TestClass(testScene) {
     await _goTo(GameMenus.MAIN_MENU);
 
     for (var i = 0; i < 4; i++) {
-      await _goTo(GameMenus.STATS_MENU);
+      await _goTo(GameMenus.CREDITS_MENU);
       await _goTo(GameMenus.MAIN_MENU);
     }
 
@@ -119,11 +119,11 @@ public class MenuManagerTests(Node testScene) : TestClass(testScene) {
   [Test]
   public async Task AskingForTheScreenAlreadyShownChangesNothing() {
     await _goTo(GameMenus.MAIN_MENU);
-    await _goTo(GameMenus.STATS_MENU);
+    await _goTo(GameMenus.CREDITS_MENU);
 
-    _menuManager.GoToMenu(GameMenus.STATS_MENU).ShouldBeFalse();
+    _menuManager.GoToMenu(GameMenus.CREDITS_MENU).ShouldBeFalse();
 
-    _menuManager.GetCurrentMenu().ShouldBe(GameMenus.STATS_MENU);
+    _menuManager.GetCurrentMenu().ShouldBe(GameMenus.CREDITS_MENU);
     // A refused navigation must not make back point at the screen already showing.
     _menuManager.PeekBack().ShouldBe(GameMenus.MAIN_MENU);
     _menuManager.GetLastVisitedMenu().ShouldBe(GameMenus.MAIN_MENU);
@@ -160,7 +160,7 @@ public class MenuManagerTests(Node testScene) : TestClass(testScene) {
     await _goTo(GameMenus.MAIN_MENU);
     _menuManager.SetCurrentLevel(LevelId.Level1);
 
-    await _goTo(GameMenus.STATS_MENU);
+    await _goTo(GameMenus.CREDITS_MENU);
 
     _menuManager.GetCurrentLevelId().ShouldBeNull();
   }
@@ -188,7 +188,7 @@ public class MenuManagerTests(Node testScene) : TestClass(testScene) {
     await _goTo(GameMenus.MAIN_MENU);
     _menuManager.SetSlotPickerMode(SlotPickerMode.NewGame);
 
-    await _goTo(GameMenus.STATS_MENU);
+    await _goTo(GameMenus.CREDITS_MENU);
 
     _menuManager.GetSlotPickerMode().ShouldBe(SlotPickerMode.Load);
   }

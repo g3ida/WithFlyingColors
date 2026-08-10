@@ -64,10 +64,10 @@ public class MenuBoxRotationTests(Node testScene) : TestClass(testScene) {
 
     var target = start - MathUtils.PI2;
     foreach (var angle in angles) {
-      angle.ShouldBeGreaterThanOrEqualTo(target - QUARTER_TURN_EPSILON, "the box swept past Stats");
+      angle.ShouldBeGreaterThanOrEqualTo(target - QUARTER_TURN_EPSILON, "the box swept past Credits");
     }
     angles[^1].ShouldBe(target, QUARTER_TURN_EPSILON);
-    menubox.ActiveIndex.ShouldBe(2, "the box did not end up on Stats");
+    menubox.ActiveIndex.ShouldBe(2, "the box did not end up on Credits");
   }
 
   // Holding the direction down turns the box face by face, and every one of those faces
@@ -76,7 +76,7 @@ public class MenuBoxRotationTests(Node testScene) : TestClass(testScene) {
   // the angle back down rather than letting it climb.
   [Test]
   public async Task EveryFaceInAChainOfTurnsIsAQuarterTurn() {
-    var (_, body) = await _openMainMenuFrom(GameMenus.STATS_MENU);
+    var (_, body) = await _openMainMenuFrom(GameMenus.CREDITS_MENU);
     var previous = body.Rotation;
 
     for (var turn = 0; turn < FACES; turn++) {

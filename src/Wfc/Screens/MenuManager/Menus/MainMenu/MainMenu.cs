@@ -35,8 +35,8 @@ public partial class MainMenu : GameMenu {
           StartNewGameInSlot(0);
         }
         return true;
-      case MenuAction.GoToStats:
-        NavigateToScreen(GameMenus.STATS_MENU);
+      case MenuAction.GoToCredits:
+        NavigateToScreen(GameMenus.CREDITS_MENU);
         return true;
       case MenuAction.GoToSettings:
         NavigateToScreen(GameMenus.SETTINGS_MENU);

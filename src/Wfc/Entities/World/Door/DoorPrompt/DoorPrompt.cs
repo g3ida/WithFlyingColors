@@ -24,6 +24,11 @@ public partial class DoorPrompt : CanvasLayer {
   // Where the button goes inside the translated caption.
   private const string GLYPH_PLACEHOLDER = "{0}";
 
+  // What the prompt is offering. The button is the same one everywhere in the hub, so
+  // only the wording changes between the things it can be pressed at.
+  [Export]
+  public TranslationKey CaptionKey { get; set; } = TranslationKey.game_hint_enterDoor;
+
   #region Nodes
   [NodePath("Center/Panel/Hint/PrefixBox")]
   private MarginContainer _prefixBoxNode = default!;
@@ -94,7 +99,7 @@ public partial class DoorPrompt : CanvasLayer {
 
   private void _refresh() {
     var caption = TranslationServer
-        .Translate(TranslationKey.game_hint_enterDoor.ToTranslationKeyStringSafe())
+        .Translate(CaptionKey.ToTranslationKeyStringSafe())
         .ToString();
     var parts = caption.Split(GLYPH_PLACEHOLDER);
     _setLabel(_prefixBoxNode, _prefixNode, parts[0].TrimEnd());

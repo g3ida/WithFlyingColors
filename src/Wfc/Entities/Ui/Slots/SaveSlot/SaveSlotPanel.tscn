@@ -73,8 +73,25 @@ uppercase = true
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 
+[node name="PlayTimeColumn" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/separation = 3
+
+[node name="PlayTime" type="Label" parent="HBoxContainer/PlayTimeColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 40
+text = "TIME PLAYED: 1H 20MIN"
+horizontal_alignment = 2
+uppercase = true
+
+[node name="VmarginBottom" type="Control" parent="HBoxContainer/PlayTimeColumn"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
 [node name="Hmargin2" type="Control" parent="HBoxContainer"]
-custom_minimum_size = Vector2(50, 0)
+custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 
 [node name="Button" type="Button" parent="."]
