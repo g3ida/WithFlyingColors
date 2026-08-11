@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://cvwwvgh5o2bi"]
+
+[ext_resource type="Script" uid="uid://xryqhfl0whuc" path="res://src/Wfc/Entities/World/ButtonGame/ButtonGameScene/ButtonGameScene.cs" id="1"]
+[ext_resource type="PackedScene" uid="uid://dn1e1bxkoof20" path="res://src/Wfc/Entities/World/ButtonGame/ButtonGame/ButtonGame.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://src/Wfc/Entities/World/Platforms/SimplePlatform/SimplePlatform.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://n6iaorhximfn" path="res://src/Wfc/Entities/World/Platforms/PlatformSlider/PlatformSlider.tscn" id="5"]
+[ext_resource type="Texture2D" uid="uid://m88dr5bhgqc4" path="res://Assets/Sprites/Tetris/platform.png" id="6"]
+[ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="7_cqk6b"]
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(72, 360)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_drbt2"]
+size = Vector2(37, 556)
+
+[node name="ButtonGameScene" type="Node2D" unique_id=2073601669]
+script = ExtResource("1")
+
+[node name="Floor" parent="." unique_id=435395453 instance=ExtResource("4")]
+position = Vector2(-165, 40)
+scale = Vector2(32.875, 1)
+Group = ""
+
+[node name="ButtonGame" parent="." unique_id=1168758026 instance=ExtResource("2")]
+position = Vector2(18, -82)
+
+[node name="CheckpointArea" parent="." unique_id=1302591266 instance=ExtResource("3")]
+position = Vector2(-982, -122)
+ColorGroup = "purple"
+
+[node name="WinCheckpoint" type="Marker2D" parent="."]
+position = Vector2(1000, -48)
+
+[node name="SlidingDoor" type="AnimatableBody2D" parent="." unique_id=1294557029]
+position = Vector2(1186, 0)
+collision_layer = 5
+collision_mask = 255
+
+[node name="Spr" type="Sprite2D" parent="SlidingDoor" unique_id=665376361]
+position = Vector2(0, -36)
+texture = ExtResource("6")
+
+[node name="Spr2" type="Sprite2D" parent="SlidingDoor" unique_id=1915474362]
+position = Vector2(0, -108)
+texture = ExtResource("6")
+
+[node name="Spr3" type="Sprite2D" parent="SlidingDoor" unique_id=1617024545]
+position = Vector2(0, -180)
+texture = ExtResource("6")
+
+[node name="Spr4" type="Sprite2D" parent="SlidingDoor" unique_id=380445641]
+position = Vector2(0, -252)
+texture = ExtResource("6")
+
+[node name="Spr5" type="Sprite2D" parent="SlidingDoor" unique_id=227764016]
+position = Vector2(0, -324)
+texture = ExtResource("6")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SlidingDoor" unique_id=967065919]
+position = Vector2(0, -180)
+shape = SubResource("2")
+
+[node name="Slider" parent="SlidingDoor" unique_id=487387909 instance=ExtResource("5")]
+Axis = 1
+Distance = 360.0
+Speed = 4.0
+WaitTime = 0.5
+StartsStopped = true
+OneShot = true
+OneShotPhase = 1
+ShowGear = false
+
+[node name="LocalizerIn" parent="." unique_id=1792736934 instance=ExtResource("7_cqk6b")]
+position = Vector2(-37, -320)
+LimitedEdges = 3
+FollowPath = NodePath("")
+
+[node name="Area2D" type="Area2D" parent="LocalizerIn" unique_id=497126336]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LocalizerIn/Area2D" unique_id=218240178]
+position = Vector2(-1013, 70)
+shape = SubResource("RectangleShape2D_drbt2")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="LocalizerIn/Area2D" unique_id=1013323504]
+position = Vector2(852, 70)
+shape = SubResource("RectangleShape2D_drbt2")
+
+[node name="LocalizerOut" parent="." unique_id=1988094558 instance=ExtResource("7_cqk6b")]
+position = Vector2(856, -320)
+LimitedEdges = 0
+FollowPath = NodePath("")
+
+[node name="Area2D" type="Area2D" parent="LocalizerOut" unique_id=465931449]
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="LocalizerOut/Area2D" unique_id=1596310900]
+position = Vector2(85, 64)
+shape = SubResource("RectangleShape2D_drbt2")

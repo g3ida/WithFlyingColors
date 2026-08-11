@@ -253,6 +253,23 @@ public sealed class PlatformSlide {
   }
 
   public void Resume() => IsStopped = false;
+
+  // Puts the body at the far end of its run, parked, without travelling there - and remembers it
+  // that way, so a respawn leaves it alone. For restoring something the player has already opened:
+  // replaying the run instead means a door that shuts itself and grinds open again on every death.
+  public void SettleAtEnd() {
+    Phase = SlidePhase.WaitAtEnd;
+    _elapsed = 0.0f;
+    IsStopped = true;
+    _delayedStop = false;
+    Travelled = 0.0f;
+    if (_body is not null) {
+      _placed = _target();
+      _body.GlobalPosition = _placed;
+      _body.ResetPhysicsInterpolation();
+    }
+    _checkpoint = new SaveData(Phase, _elapsed, IsStopped, false);
+  }
   #endregion Stopping
 
   #region Checkpoints

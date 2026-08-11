@@ -85,6 +85,9 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PageFlipped += OnPageFlipped;
     EventHandler.Instance.Events.WrongPianoNotePlayed += OnWrongPianoNotePlayed;
     EventHandler.Instance.Events.PianoPuzzleWon += OnPianoPuzzleWon;
+    EventHandler.Instance.Events.ButtonGameNotePlayed += OnButtonGameNotePlayed;
+    EventHandler.Instance.Events.ButtonGameWrongNotePlayed += OnButtonGameWrongNotePlayed;
+    EventHandler.Instance.Events.ButtonGameWon += OnButtonGameWon;
     EventHandler.Instance.Events.NotificationRaised += OnNotificationRaised;
     EventHandler.Instance.Events.DoorGemFilled += OnDoorGemFilled;
     EventHandler.Instance.Events.DoorCometFormed += OnDoorCometFormed;
@@ -130,6 +133,9 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PageFlipped -= OnPageFlipped;
     EventHandler.Instance.Events.WrongPianoNotePlayed -= OnWrongPianoNotePlayed;
     EventHandler.Instance.Events.PianoPuzzleWon -= OnPianoPuzzleWon;
+    EventHandler.Instance.Events.ButtonGameNotePlayed -= OnButtonGameNotePlayed;
+    EventHandler.Instance.Events.ButtonGameWrongNotePlayed -= OnButtonGameWrongNotePlayed;
+    EventHandler.Instance.Events.ButtonGameWon -= OnButtonGameWon;
     EventHandler.Instance.Events.NotificationRaised -= OnNotificationRaised;
     EventHandler.Instance.Events.DoorGemFilled -= OnDoorGemFilled;
     EventHandler.Instance.Events.DoorCometFormed -= OnDoorCometFormed;
@@ -217,6 +223,9 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnPageFlipped() => OnPlaySfx("pageFlip");
   private void OnWrongPianoNotePlayed() => OnPlaySfx("wrongAnswer");
   private void OnPianoPuzzleWon() => OnPlaySfx("success");
+  private void OnButtonGameNotePlayed(int note) => OnPlaySfx("piano_" + note.ToString());
+  private void OnButtonGameWrongNotePlayed() => OnPlaySfx("wrongAnswer");
+  private void OnButtonGameWon() => OnPlaySfx("success");
   private void OnNotificationRaised(int translationKey) => OnPlaySfx("notification");
   private void OnPaintSpilled(Vector2 position) => OnPlaySfx("bucketFall");
   private void OnBucketShoved(Vector2 position) => OnPlaySfx("bucketPush");

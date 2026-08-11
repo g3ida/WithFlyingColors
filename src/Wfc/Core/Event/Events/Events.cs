@@ -117,6 +117,15 @@ public partial class Events : RefCounted {
   public delegate void WrongPianoNotePlayedEventHandler();
   [Signal]
   public delegate void PianoPuzzleWonEventHandler();
+  // The button room sounds the same notes as the piano, but keeps its own events: the
+  // solfege board answers to PianoNotePressed, and a level holding both would have a
+  // player stepping on a button advance the piano's puzzle from across the room.
+  [Signal]
+  public delegate void ButtonGameNotePlayedEventHandler(int noteIndex);
+  [Signal]
+  public delegate void ButtonGameWrongNotePlayedEventHandler();
+  [Signal]
+  public delegate void ButtonGameWonEventHandler();
   [Signal]
   public delegate void CutSceneRequestStartEventHandler(string id);
   [Signal]

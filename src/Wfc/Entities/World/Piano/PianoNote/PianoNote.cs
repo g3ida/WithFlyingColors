@@ -215,7 +215,9 @@ public partial class PianoNote : AnimatableBody2D {
       _playerProbe.From = from;
       _playerProbe.To = from + new Vector2(0.0f, -RAYCAST_LENGTH);
       using var result = spaceState.IntersectRay(_playerProbe);
-      if (result.Count > 0 && result[_colliderKey].As<Player.Player>() != null) {
+      // As<T> is a hard cast, so converting straight to a Player throws out of the physics tick
+      // on anything else the probe can hit - the debris a death leaves above the keys, say.
+      if (result.Count > 0 && result[_colliderKey].As<GodotObject>() is Player.Player) {
         return true;
       }
     }

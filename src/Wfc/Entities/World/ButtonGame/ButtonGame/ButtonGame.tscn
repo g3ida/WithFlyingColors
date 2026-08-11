@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://dn1e1bxkoof20"]
+
+[ext_resource type="Script" uid="uid://bceu4liols8lu" path="res://src/Wfc/Entities/World/ButtonGame/ButtonGame/ButtonGame.cs" id="1"]
+[ext_resource type="PackedScene" uid="uid://cwjw341v0jkf4" path="res://src/Wfc/Entities/World/ButtonGame/GameButton/GameButton.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://f4mmeccpaaoy" path="res://src/Wfc/Entities/World/ButtonGame/MelodyStand/MelodyStand.tscn" id="3"]
+
+[node name="ButtonGame" type="Node2D" unique_id=1017498071 groups=["persist"]]
+script = ExtResource("1")
+
+[node name="MelodyStand" parent="." unique_id=1007121672 instance=ExtResource("3")]
+position = Vector2(-861, 19)
+
+[node name="Buttons" type="Node2D" parent="." unique_id=375974414]
+
+[node name="GameButton" parent="Buttons" unique_id=1488445109 instance=ExtResource("2")]
+position = Vector2(-540, 0)
+
+[node name="GameButton2" parent="Buttons" unique_id=1460082513 instance=ExtResource("2")]
+position = Vector2(-180, 0)
+Index = 1
+NoteIndex = 2
+ColorGroup = "pink"
+
+[node name="GameButton3" parent="Buttons" unique_id=226584458 instance=ExtResource("2")]
+position = Vector2(180, 0)
+Index = 2
+NoteIndex = 4
+ColorGroup = "yellow"
+
+[node name="GameButton4" parent="Buttons" unique_id=639245857 instance=ExtResource("2")]
+position = Vector2(539, 0)
+Index = 3
+NoteIndex = 5
+ColorGroup = "purple"
+
+[node name="StepTimer" type="Timer" parent="." unique_id=835832392]
+one_shot = true

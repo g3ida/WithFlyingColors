@@ -72,6 +72,9 @@ public interface IEventHandler {
   public void EmitPageFlipped();
   public void EmitWrongPianoNotePlayed();
   public void EmitPianoPuzzleWon();
+  public void EmitButtonGameNotePlayed(int noteIndex);
+  public void EmitButtonGameWrongNotePlayed();
+  public void EmitButtonGameWon();
   public void EmitCutsceneRequestStart(string id);
   public void EmitCutsceneRequestEnd(string id);
   public void EmitLevelCleared();

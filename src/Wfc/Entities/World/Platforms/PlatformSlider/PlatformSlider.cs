@@ -135,6 +135,7 @@ public partial class PlatformSlider : Node2D, IPersistent {
   // The exported setters fire while the scene is still loading, before there are any nodes to push
   // the new value into.
   private bool _isWired;
+  private bool _settleOnStart;
   #endregion Fields
 
   #region Nodes
@@ -168,6 +169,10 @@ public partial class PlatformSlider : Node2D, IPersistent {
     }
     _slide.Begin(_body);
     _showTrack();
+    if (_settleOnStart) {
+      _settleOnStart = false;
+      SettleAtEnd();
+    }
   }
 
   public override string[] _GetConfigurationWarnings() {
@@ -227,6 +232,20 @@ public partial class PlatformSlider : Node2D, IPersistent {
   public void ResumeSlider() {
     _slide.Resume();
     SetPhysicsProcess(true);
+  }
+
+  // Found already at the far end rather than travelling there. A level restoring something the
+  // player opened before they died asks for this instead of setting it going again.
+  public void SettleAtEnd() {
+    // A save is loaded before the slider has taken its body over, and there is nothing to place
+    // until it has. _Ready settles it once the run has been measured.
+    if (_body is null) {
+      _settleOnStart = true;
+      return;
+    }
+    _slide.SettleAtEnd();
+    _hum(false);
+    SetPhysicsProcess(false);
   }
 
   #region Checkpoints
