@@ -6,15 +6,17 @@ using Godot;
 using Wfc.Core.Input;
 using Wfc.Core.Localization;
 using Wfc.Entities.World.Door;
+using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
+using Wfc.Utils.Colors;
 using DoorEntity = Wfc.Entities.World.Door.Door;
 
 // Where the run's numbers are read back in the hub. Answered the same way a door is - walk
 // up to it and press the same button - so the room has one verb rather than two.
 //
-// A blank slab for now: the sprite is still to come, and the board's own title is all it
-// says until it is stood at.
+// The statue itself says nothing legible: the plaque is a block of symbols, and the four
+// colours running down it are the only writing the game ever asks the player to read.
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class HubStatsBoard : Node2D {
@@ -36,6 +38,14 @@ public partial class HubStatsBoard : Node2D {
   private DoorPrompt _promptNode = default!;
   [NodePath("HubStatsMenu")]
   private HubStatsMenu _menuNode = default!;
+  [NodePath("Statue/Symbols/Pink")]
+  private Node2D _pinkSymbolsNode = default!;
+  [NodePath("Statue/Symbols/Blue")]
+  private Node2D _blueSymbolsNode = default!;
+  [NodePath("Statue/Symbols/Yellow")]
+  private Node2D _yellowSymbolsNode = default!;
+  [NodePath("Statue/Symbols/Purple")]
+  private Node2D _purpleSymbolsNode = default!;
   #endregion Nodes
 
   private Player.Player? _playerInside;
@@ -43,6 +53,7 @@ public partial class HubStatsBoard : Node2D {
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
+    _paintSymbols();
     _readAreaNode.BodyEntered += _onReadAreaBodyEntered;
     _readAreaNode.BodyExited += _onReadAreaBodyExited;
     _menuNode.Closed += _refreshPrompt;
@@ -71,6 +82,21 @@ public partial class HubStatsBoard : Node2D {
     _menuNode.Open();
     _refreshPrompt();
   }
+
+  // The plaque is one texture repeated, so the colour is all that separates a column from
+  // its neighbour: the dark tones because the stone behind them is nearly white.
+  private void _paintSymbols() {
+    _paintColumn(_pinkSymbolsNode, ColorUtils.PINK);
+    _paintColumn(_blueSymbolsNode, ColorUtils.BLUE);
+    _paintColumn(_yellowSymbolsNode, ColorUtils.YELLOW);
+    _paintColumn(_purpleSymbolsNode, ColorUtils.PURPLE);
+  }
+
+  private static void _paintColumn(Node2D column, string colorGroup) =>
+    column.Modulate = SkinManager.Instance.CurrentSkin.GetColor(
+      GameSkin.ColorGroupToSkinColor(colorGroup),
+      SkinColorIntensity.VeryDark
+    );
 
   // Nothing to advertise while the board is being read: the overlay carries its own hints,
   // and the prompt underneath would be offering a press that does nothing.

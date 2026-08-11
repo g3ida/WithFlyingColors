@@ -1,35 +1,86 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://src/Wfc/Entities/World/Hub/HubStatsBoard/HubStatsBoard.cs" id="1"]
 [ext_resource type="FontFile" path="res://Assets/Fonts/KeyboardButton.tres" id="2"]
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Door/DoorPrompt/DoorPrompt.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Hub/HubStatsMenu/HubStatsMenu.tscn" id="4"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/Hub/statue-base.png" id="5"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/Hub/statue-symbols.png" id="6"]
 
 [sub_resource type="RectangleShape2D" id="1"]
-size = Vector2(420, 420)
+size = Vector2(480, 460)
 
 [node name="HubStatsBoard" type="Node2D"]
 script = ExtResource("1")
 
-[node name="Frame" type="ColorRect" parent="."]
-offset_left = -210.0
-offset_top = -160.0
-offset_right = 210.0
-offset_bottom = 160.0
-color = Color(0.82, 0.82, 0.85, 1)
+[node name="Statue" type="Node2D" parent="."]
+z_index = -1
+scale = Vector2(0.5, 0.5)
 
-[node name="Board" type="ColorRect" parent="."]
-offset_left = -200.0
-offset_top = -150.0
-offset_right = 200.0
-offset_bottom = 150.0
-color = Color(0.55, 0.55, 0.6, 1)
+[node name="Base" type="Sprite2D" parent="Statue"]
+position = Vector2(-373, -1265)
+texture = ExtResource("5")
+centered = false
+
+[node name="Symbols" type="Node2D" parent="Statue"]
+
+[node name="Pink" type="Node2D" parent="Statue/Symbols"]
+position = Vector2(-310, 0)
+
+[node name="Upper" type="Sprite2D" parent="Statue/Symbols/Pink"]
+position = Vector2(0, -390)
+texture = ExtResource("6")
+centered = false
+
+[node name="Lower" type="Sprite2D" parent="Statue/Symbols/Pink"]
+position = Vector2(0, -230)
+texture = ExtResource("6")
+centered = false
+
+[node name="Blue" type="Node2D" parent="Statue/Symbols"]
+position = Vector2(-154.3, 0)
+
+[node name="Upper" type="Sprite2D" parent="Statue/Symbols/Blue"]
+position = Vector2(0, -390)
+texture = ExtResource("6")
+centered = false
+
+[node name="Lower" type="Sprite2D" parent="Statue/Symbols/Blue"]
+position = Vector2(0, -230)
+texture = ExtResource("6")
+centered = false
+
+[node name="Yellow" type="Node2D" parent="Statue/Symbols"]
+position = Vector2(1.3, 0)
+
+[node name="Upper" type="Sprite2D" parent="Statue/Symbols/Yellow"]
+position = Vector2(0, -390)
+texture = ExtResource("6")
+centered = false
+
+[node name="Lower" type="Sprite2D" parent="Statue/Symbols/Yellow"]
+position = Vector2(0, -230)
+texture = ExtResource("6")
+centered = false
+
+[node name="Purple" type="Node2D" parent="Statue/Symbols"]
+position = Vector2(157, 0)
+
+[node name="Upper" type="Sprite2D" parent="Statue/Symbols/Purple"]
+position = Vector2(0, -390)
+texture = ExtResource("6")
+centered = false
+
+[node name="Lower" type="Sprite2D" parent="Statue/Symbols/Purple"]
+position = Vector2(0, -230)
+texture = ExtResource("6")
+centered = false
 
 [node name="TitleLabel" type="Label" parent="."]
 offset_left = -400.0
-offset_top = -260.0
+offset_top = -700.0
 offset_right = 400.0
-offset_bottom = -210.0
+offset_bottom = -650.0
 theme_override_fonts/font = ExtResource("2")
 theme_override_font_sizes/font_size = 30
 horizontal_alignment = 1
@@ -40,7 +91,7 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ReadArea"]
-position = Vector2(0, 40)
+position = Vector2(0, -230)
 shape = SubResource("1")
 
 [node name="DoorPrompt" parent="." instance=ExtResource("3")]
