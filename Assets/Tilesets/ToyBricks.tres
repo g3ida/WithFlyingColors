@@ -1,0 +1,76 @@
+[gd_resource type="TileSet" format=3]
+
+[ext_resource type="Texture2D" path="res://Assets/Sprites/Bricks/brick-palette.png" id="1_yhhy7"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nj0w1"]
+texture = ExtResource("1_yhhy7")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+0:2/size_in_atlas = Vector2i(2, 1)
+0:2/0 = 0
+2:2/size_in_atlas = Vector2i(2, 1)
+2:2/0 = 0
+4:2/size_in_atlas = Vector2i(2, 1)
+4:2/0 = 0
+6:2/size_in_atlas = Vector2i(2, 1)
+6:2/0 = 0
+8:2/size_in_atlas = Vector2i(2, 1)
+8:2/0 = 0
+0:3/size_in_atlas = Vector2i(4, 1)
+0:3/0 = 0
+4:3/size_in_atlas = Vector2i(4, 1)
+4:3/0 = 0
+8:3/size_in_atlas = Vector2i(4, 1)
+8:3/0 = 0
+12:3/size_in_atlas = Vector2i(4, 1)
+12:3/0 = 0
+16:3/size_in_atlas = Vector2i(4, 1)
+16:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+0:5/size_in_atlas = Vector2i(2, 1)
+0:5/0 = 0
+2:5/size_in_atlas = Vector2i(2, 1)
+2:5/0 = 0
+4:5/size_in_atlas = Vector2i(2, 1)
+4:5/0 = 0
+6:5/size_in_atlas = Vector2i(2, 1)
+6:5/0 = 0
+8:5/size_in_atlas = Vector2i(2, 1)
+8:5/0 = 0
+0:6/size_in_atlas = Vector2i(4, 1)
+0:6/0 = 0
+4:6/size_in_atlas = Vector2i(4, 1)
+4:6/0 = 0
+8:6/size_in_atlas = Vector2i(4, 1)
+8:6/0 = 0
+12:6/size_in_atlas = Vector2i(4, 1)
+12:6/0 = 0
+16:6/size_in_atlas = Vector2i(4, 1)
+16:6/0 = 0
+0:7/size_in_atlas = Vector2i(2, 2)
+0:7/0 = 0
+2:7/size_in_atlas = Vector2i(2, 2)
+2:7/0 = 0
+4:7/size_in_atlas = Vector2i(2, 2)
+4:7/0 = 0
+6:7/size_in_atlas = Vector2i(2, 2)
+6:7/0 = 0
+8:7/size_in_atlas = Vector2i(2, 2)
+8:7/0 = 0
+
+[resource]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_nj0w1")

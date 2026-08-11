@@ -1,0 +1,60 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" uid="uid://eu8b35x1qtkd" path="res://src/Wfc/Entities/World/ToyBricks/SlidingToyBrickPlatform/SlidingToyBrickPlatform.cs" id="1"]
+[ext_resource type="Shader" uid="uid://cnb0r5deqpmec" path="res://Assets/Shaders/ToyBrickSurface.gdshader" id="2"]
+[ext_resource type="TileSet" path="res://Assets/Tilesets/ToyBricks.tres" id="3"]
+[ext_resource type="Script" uid="uid://bdem1voghe4kr" path="res://src/Wfc/Entities/World/Platforms/SlideTrack/SlideTrack.cs" id="4"]
+[ext_resource type="AudioStream" uid="uid://dpc3wp4koii7n" path="res://Assets/sfx/bricks_slide.ogg" id="5"]
+
+[sub_resource type="ShaderMaterial" id="1"]
+resource_local_to_scene = true
+shader = ExtResource("2")
+shader_parameter/u_size = Vector2(96, 96)
+shader_parameter/u_cell = 32.0
+shader_parameter/u_cells = Vector2(3, 3)
+shader_parameter/u_blue = Color(1, 1, 1, 1)
+shader_parameter/u_pink = Color(1, 1, 1, 1)
+shader_parameter/u_yellow = Color(1, 1, 1, 1)
+shader_parameter/u_purple = Color(1, 1, 1, 1)
+shader_parameter/u_neutral = Color(1, 1, 1, 1)
+shader_parameter/u_aspect_ratio = 1.0
+shader_parameter/u_timer = -10.0
+shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
+shader_parameter/propagation_speed = 1.0
+shader_parameter/darkness = 0.78
+
+[sub_resource type="RectangleShape2D" id="2"]
+resource_local_to_scene = true
+size = Vector2(32, 32)
+
+[node name="SlidingToyBrickPlatform" type="AnimatableBody2D"]
+collision_layer = 5
+collision_mask = 255
+script = ExtResource("1")
+
+[node name="Bricks" type="TileMapLayer" parent="."]
+z_index = 1
+tile_set = ExtResource("3")
+
+[node name="Surface" type="ColorRect" parent="."]
+material = SubResource("1")
+offset_right = 96.0
+offset_bottom = 96.0
+mouse_filter = 2
+
+[node name="Bounds" type="CollisionShape2D" parent="."]
+shape = SubResource("2")
+disabled = true
+
+[node name="Track" type="Node2D" parent="."]
+top_level = true
+z_index = -1
+script = ExtResource("4")
+
+[node name="Slide" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5")
+volume_db = -2.0
+max_distance = 900.0
+attenuation = 1.6
+bus = &"sfx2d"
+parameters/looping = true

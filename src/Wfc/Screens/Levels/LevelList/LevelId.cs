@@ -24,6 +24,8 @@ public enum LevelId {
   Tetris,
   [LevelPath("PaintLevel")]
   Paint,
+  [LevelPath("BrickLevel")]
+  Bricks,
 }
 
 
