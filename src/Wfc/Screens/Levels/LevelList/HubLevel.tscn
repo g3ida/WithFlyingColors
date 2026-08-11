@@ -15,7 +15,7 @@ IntroWalkTime = 0.0
 
 [node name="Camera2D" parent="." index="1"]
 limit_left = -1200
-limit_right = 4100
+limit_right = 5050
 limit_bottom = 1080
 
 [node name="GemContainerHUD" parent="HUD" index="0"]
@@ -41,9 +41,13 @@ TargetLevel = 4
 position = Vector2(3500, 607)
 TargetLevel = 5
 
+[node name="BricksDoor" parent="Doors" index="4" instance=ExtResource("2")]
+position = Vector2(4400, 607)
+TargetLevel = 6
+
 [node name="Floor" parent="." index="5" instance=ExtResource("3")]
-position = Vector2(1450, 1000)
-scale = Vector2(66.25, 3)
+position = Vector2(1925, 1000)
+scale = Vector2(78.125, 3)
 Group = ""
 geared = false
 splash_darkness = 0.93
@@ -55,7 +59,7 @@ position = Vector2(-1240, 0)
 shape = SubResource("1")
 
 [node name="RightWall" type="CollisionShape2D" parent="Walls" index="1"]
-position = Vector2(4140, 0)
+position = Vector2(5090, 0)
 shape = SubResource("1")
 
 [node name="ArrivalMark" type="Marker2D" parent="." index="7"]

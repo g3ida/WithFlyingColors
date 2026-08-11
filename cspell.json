@@ -23,9 +23,11 @@
   ],
   "ignoreRegExpList": [
     "/\"[IJLOSTZijlostz.\\\\n ]{3,}\"/g",
-    "/^\\s*\\/\\/\\s+[IJLOSTZ. ]+$/gm"
+    "/^\\s*\\/\\/\\s+[IJLOSTZ. ]+$/gm",
+    "/\"[BPYUW.\\n ]{3,}\"/g"
   ],
   "ignoreWords": [
+    "BPYUW",
     "IJLOST",
     "IJLOSTZ",
     "Zijlostz"
@@ -200,6 +202,8 @@
     "tetris",
     "tetromino",
     "tetrominos",
+    "Rgbf",
+    "texel",
     "texels",
     "tilemap",
     "tilemaps",

@@ -113,6 +113,7 @@ public enum TranslationKey {
   stats_label_totalRotateRight = 108,
   stats_label_totalDeaths = 109,
   stats_label_totalGemsCollected = 110,
+  game_level_title_bricks = 111,
 }
 
 public static partial class TranslationKeyExtensions {
