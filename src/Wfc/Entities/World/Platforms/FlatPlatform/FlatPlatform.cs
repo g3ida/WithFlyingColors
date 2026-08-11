@@ -590,7 +590,7 @@ public partial class FlatPlatform : StaticBody2D {
     ShadedEdges.HasFlag(Edges.Bottom) ? 1f : 0f
   );
 
-  private static void _resizeShape(CollisionShape2D collisionShape, Vector2 size) {
+  protected static void _resizeShape(CollisionShape2D collisionShape, Vector2 size) {
     if (collisionShape.Shape is RectangleShape2D rectangle) {
       rectangle.Size = size;
     }

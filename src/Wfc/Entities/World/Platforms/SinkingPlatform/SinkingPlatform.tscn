@@ -1,0 +1,116 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://src/Wfc/Entities/World/Platforms/SinkingPlatform/SinkingPlatform.cs" id="1"]
+[ext_resource type="Shader" uid="uid://b4uwsdtssr6sv" path="res://Assets/Shaders/PlatformSurface.gdshader" id="2"]
+[ext_resource type="Script" uid="uid://bdem1voghe4kr" path="res://src/Wfc/Entities/World/Platforms/SlideTrack/SlideTrack.cs" id="3"]
+[ext_resource type="Texture2D" uid="uid://7cisdwkrrxri" path="res://Assets/Sprites/Platforms/gear.png" id="4"]
+[ext_resource type="Script" uid="uid://babnj1bb86gwv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatformGear/SlidingPlatformGear.cs" id="5"]
+[ext_resource type="AudioStream" uid="uid://dpc3wp4koii7n" path="res://Assets/sfx/bricks_slide.ogg" id="6"]
+[ext_resource type="Shader" path="res://Assets/Shaders/PaintSplat.gdshader" id="7"]
+
+[sub_resource type="ShaderMaterial" id="4"]
+resource_local_to_scene = true
+shader = ExtResource("7")
+shader_parameter/u_size = Vector2(256, 74)
+shader_parameter/u_pool = 18.0
+shader_parameter/u_reach = 56.0
+shader_parameter/u_spread = 1.0
+shader_parameter/u_run = 1.0
+shader_parameter/u_seed = 0.0
+shader_parameter/u_color = Color(1, 1, 1, 1)
+shader_parameter/u_shade = Color(0.8, 0.8, 0.8, 1)
+
+[sub_resource type="ShaderMaterial" id="1"]
+resource_local_to_scene = true
+shader = ExtResource("2")
+shader_parameter/u_size = Vector2(256, 32)
+shader_parameter/u_chamfer = Vector4(4, 4, 4, 4)
+shader_parameter/u_shaded_edges = Vector2(1, 1)
+shader_parameter/u_shade_width = 3.0
+shader_parameter/u_aspect_ratio = 1.0
+shader_parameter/u_timer = -10.0
+shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
+shader_parameter/propagation_speed = 1.0
+shader_parameter/darkness = 0.78
+
+[sub_resource type="RectangleShape2D" id="2"]
+resource_local_to_scene = true
+size = Vector2(256, 32)
+
+[sub_resource type="RectangleShape2D" id="3"]
+resource_local_to_scene = true
+size = Vector2(256, 32)
+
+[sub_resource type="RectangleShape2D" id="5"]
+resource_local_to_scene = true
+size = Vector2(256, 18)
+
+[sub_resource type="RectangleShape2D" id="6"]
+resource_local_to_scene = true
+size = Vector2(244, 26)
+
+[node name="SinkingPlatform" type="AnimatableBody2D"]
+collision_layer = 5
+collision_mask = 255
+script = ExtResource("1")
+
+[node name="Surface" type="ColorRect" parent="."]
+material = SubResource("1")
+offset_left = -128.0
+offset_top = -16.0
+offset_right = 128.0
+offset_bottom = 16.0
+mouse_filter = 2
+
+[node name="Ink" type="ColorRect" parent="."]
+visible = false
+material = SubResource("4")
+offset_left = -128.0
+offset_top = -19.0
+offset_right = 128.0
+offset_bottom = 55.0
+mouse_filter = 2
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+shape = SubResource("2")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 16
+
+[node name="ColorAreaShape" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("3")
+
+[node name="InkArea" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 16
+monitorable = false
+
+[node name="InkAreaShape" type="CollisionShape2D" parent="InkArea"]
+shape = SubResource("5")
+
+[node name="RideArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="RideAreaShape" type="CollisionShape2D" parent="RideArea"]
+position = Vector2(0, -27)
+shape = SubResource("6")
+
+[node name="Track" type="Node2D" parent="."]
+top_level = true
+z_index = -1
+script = ExtResource("3")
+
+[node name="Gear" type="Sprite2D" parent="."]
+texture = ExtResource("4")
+script = ExtResource("5")
+
+[node name="Sink" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6")
+volume_db = -2.0
+max_distance = 900.0
+attenuation = 1.6
+bus = &"sfx2d"
+parameters/looping = true
