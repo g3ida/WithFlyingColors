@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="7_grsqt"]
 [ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="9_prclt"]
 [ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="10_4uxlv"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Platforms/SinkingPlatform/SinkingPlatform.tscn" id="11_fxs1j"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_v7wth"]
 size = Vector2(96, 750)
@@ -402,3 +403,9 @@ position = Vector2(6496, 68)
 
 [node name="Checkpoint2" parent="Checkpoints" index="1" unique_id=1175863929 instance=ExtResource("7_grsqt")]
 position = Vector2(10184, -224)
+
+[node name="SinkingPlatform" parent="." index="13" unique_id=1370285338 instance=ExtResource("11_fxs1j")]
+position = Vector2(1760, -208)
+Depth = 96.0
+SinkSpeed = 1.5
+ShowGear = false
