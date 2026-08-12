@@ -1,10 +1,12 @@
 namespace Wfc.Entities.World.BrickBreaker.Powerups;
 
+using System;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
+using Wfc.Utils.Colors;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
@@ -106,6 +108,11 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   }
 
   private void OnBrickBroken(string color, Vector2 position) {
+    // Bricks are broken outside the arena too, and a wall of them can be neutral - a power-up has
+    // no colour to be drawn in for that, and everything about one is its colour.
+    if (Array.IndexOf(ColorUtils.COLOR_GROUPS, color) < 0) {
+      return;
+    }
     if (_cooldownTimer.TimeLeft < MathUtils.EPSILON && isActive) {
       if (GD.Randi() % ITEM_INV_PROBABILITY == 0) {
         var powerUp = GetRandomPowerup();

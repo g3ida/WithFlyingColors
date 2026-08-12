@@ -1,0 +1,21 @@
+[gd_resource type="TileSet" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://Assets/Sprites/BrickBreaker/breaker-brick-palette.png" id="1_bbrick"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bbrick"]
+texture = ExtResource("1_bbrick")
+texture_region_size = Vector2i(36, 36)
+0:0/size_in_atlas = Vector2i(3, 1)
+0:0/0 = 0
+3:0/size_in_atlas = Vector2i(3, 1)
+3:0/0 = 0
+6:0/size_in_atlas = Vector2i(3, 1)
+6:0/0 = 0
+9:0/size_in_atlas = Vector2i(3, 1)
+9:0/0 = 0
+12:0/size_in_atlas = Vector2i(3, 1)
+12:0/0 = 0
+
+[resource]
+tile_size = Vector2i(36, 36)
+sources/0 = SubResource("TileSetAtlasSource_bbrick")

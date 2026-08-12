@@ -26,6 +26,8 @@ public enum LevelId {
   Paint,
   [LevelPath("BrickLevel")]
   Bricks,
+  [LevelPath("BrickBreakerLevel")]
+  BrickBreaker,
 }
 
 

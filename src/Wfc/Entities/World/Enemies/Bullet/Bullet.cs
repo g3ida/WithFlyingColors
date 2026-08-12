@@ -28,12 +28,36 @@ public partial class Bullet : Node2D, IBullet {
   private float _gravity = 1.0f * Constants.WORLD_TO_SCREEN;
   private Vector2 _movement = new Vector2();
   private Vector2 _initialPosition = new Vector2();
+  private bool _isSubscribed;
 
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
     _initialPosition = GlobalPosition;
   }
+
+  // A respawn puts the level back, and a shot already in the air is part of what has to go: it
+  // outlives the death it was fired before, and lands on a wall that has just been laid again or on
+  // a player who has just been put back on their feet.
+  public override void _EnterTree() {
+    base._EnterTree();
+    if (_isSubscribed) {
+      return;
+    }
+    EventHandler.Instance.Events.CheckpointLoaded += _onRespawn;
+    _isSubscribed = true;
+  }
+
+  public override void _ExitTree() {
+    base._ExitTree();
+    if (!_isSubscribed) {
+      return;
+    }
+    EventHandler.Instance.Events.CheckpointLoaded -= _onRespawn;
+    _isSubscribed = false;
+  }
+
+  private void _onRespawn() => QueueFree();
 
   public void Shoot(Vector2 shootDirection) {
     _movement = shootDirection * SPEED;
@@ -67,6 +91,9 @@ public partial class Bullet : Node2D, IBullet {
     if (body == Global.Instance().Player && body is Player player && !player.IsDying()
         && !player.AcceptsColorOfAt(_colorAreaNode.GlobalPosition, _colorAreaNode)) {
       EventHandler.Instance.EmitPlayerDying(_colorAreaNode, player.GlobalPosition, EntityType.Bullet);
+    }
+    if (body is IShootable shootable) {
+      shootable.OnShot(_colorAreaNode.GlobalPosition);
     }
     QueueFree();
   }
