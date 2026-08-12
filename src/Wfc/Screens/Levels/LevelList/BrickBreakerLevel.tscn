@@ -1,0 +1,203 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://dmrllj22gpdev" path="res://src/Wfc/Screens/Levels/GameLevel/GameLevel.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://dtsxye64qss8g" path="res://src/Wfc/Entities/World/Fallzone/Fallzone.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/BreakerBricks/BreakerBrickPlatform/BreakerBrickPlatform.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/BreakerBricks/SlidingBreakerBrickPlatform/SlidingBreakerBrickPlatform.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://bmm6ljhdxphee" path="res://src/Wfc/Entities/World/Gems/Gem/Gem.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://cyq2n8rwlxk3d" path="res://src/Wfc/Entities/World/Exit/LevelExit/LevelExit.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Backgrounds/CityBackground/CityBackground.tscn" id="8"]
+[ext_resource type="PackedScene" uid="uid://dgx873koyipf1" path="res://src/Wfc/Entities/World/Enemies/Canon/Canon.tscn" id="9"]
+[ext_resource type="PackedScene" uid="uid://cv2xhp6nqf4jr" path="res://src/Wfc/Entities/World/Enemies/SmartCanon/SmartCanon.tscn" id="10"]
+[ext_resource type="PackedScene" uid="uid://doi78tys0psqf" path="res://src/Wfc/Entities/World/BrickBreaker/BrickBreaker/BrickBreaker.tscn" id="11"]
+
+[node name="LevelHandler" instance=ExtResource("1")]
+Track = "fight"
+IntroWalkTime = 0.0
+
+[node name="Camera2D" parent="." index="1"]
+limit_left = -1100
+limit_top = -3200
+limit_right = 6700
+limit_bottom = 1900
+
+[node name="BridgeFallZone" parent="." index="3" instance=ExtResource("2")]
+position = Vector2(1250, 1600)
+scale = Vector2(30, 5)
+
+[node name="FerryFallZone" parent="." index="4" instance=ExtResource("2")]
+position = Vector2(2800, 1800)
+scale = Vector2(25, 5)
+
+[node name="Background" parent="." index="5" instance=ExtResource("8")]
+
+[node name="Terrain" type="Node2D" parent="." index="6"]
+
+[node name="StartGround" type="StaticBody2D" parent="Terrain" index="0"]
+
+[node name="Visual" type="Polygon2D" parent="Terrain/StartGround" index="0"]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(-1000, 600, 700, 600, 700, 1900, -1000, 1900)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/StartGround" index="1"]
+polygon = PackedVector2Array(-1000, 600, 700, 600, 700, 1900, -1000, 1900)
+
+[node name="ColorArea" type="Area2D" parent="Terrain/StartGround" index="2" groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/StartGround/ColorArea" index="0"]
+polygon = PackedVector2Array(-1000, 600, 700, 600, 700, 1900, -1000, 1900)
+
+[node name="MidLedge" type="StaticBody2D" parent="Terrain" index="1"]
+
+[node name="Visual" type="Polygon2D" parent="Terrain/MidLedge" index="0"]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(1800, 600, 2400, 600, 2400, 1900, 1800, 1900)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/MidLedge" index="1"]
+polygon = PackedVector2Array(1800, 600, 2400, 600, 2400, 1900, 1800, 1900)
+
+[node name="ColorArea" type="Area2D" parent="Terrain/MidLedge" index="2" groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/MidLedge/ColorArea" index="0"]
+polygon = PackedVector2Array(1800, 600, 2400, 600, 2400, 1900, 1800, 1900)
+
+[node name="FarLedge" type="StaticBody2D" parent="Terrain" index="2"]
+
+[node name="Visual" type="Polygon2D" parent="Terrain/FarLedge" index="0"]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(3200, 600, 3400, 600, 3400, 1000, 3940, 1000, 3940, 600, 4200, 600, 4200, 1900, 3200, 1900)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/FarLedge" index="1"]
+polygon = PackedVector2Array(3200, 600, 3400, 600, 3400, 1000, 3940, 1000, 3940, 600, 4200, 600, 4200, 1900, 3200, 1900)
+
+[node name="ColorArea" type="Area2D" parent="Terrain/FarLedge" index="2" groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/FarLedge/ColorArea" index="0"]
+polygon = PackedVector2Array(3200, 600, 3400, 600, 3400, 1000, 3940, 1000, 3940, 600, 4200, 600, 4200, 1900, 3200, 1900)
+
+[node name="ChamberStep" type="StaticBody2D" parent="Terrain" index="3"]
+
+[node name="Visual" type="Polygon2D" parent="Terrain/ChamberStep" index="0"]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(3400, 760, 3560, 760, 3560, 1000, 3400, 1000)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/ChamberStep" index="1"]
+polygon = PackedVector2Array(3400, 760, 3560, 760, 3560, 1000, 3400, 1000)
+
+[node name="ColorArea" type="Area2D" parent="Terrain/ChamberStep" index="2" groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/ChamberStep/ColorArea" index="0"]
+polygon = PackedVector2Array(3400, 760, 3560, 760, 3560, 1000, 3400, 1000)
+
+[node name="CanonPedestal" type="StaticBody2D" parent="Terrain" index="4"]
+
+[node name="Visual" type="Polygon2D" parent="Terrain/CanonPedestal" index="0"]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(2740, 1200, 2880, 1200, 2880, 1700, 2740, 1700)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/CanonPedestal" index="1"]
+polygon = PackedVector2Array(2740, 1200, 2880, 1200, 2880, 1700, 2740, 1700)
+
+[node name="ColorArea" type="Area2D" parent="Terrain/CanonPedestal" index="2" groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/CanonPedestal/ColorArea" index="0"]
+polygon = PackedVector2Array(2740, 1200, 2880, 1200, 2880, 1700, 2740, 1700)
+
+[node name="Platforms" type="Node2D" parent="." index="7"]
+
+[node name="Bridge" parent="Platforms" index="0" instance=ExtResource("3")]
+position = Vector2(720, 600)
+
+[node name="Bricks" parent="Platforms/Bridge" index="0"]
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAJAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAAPAAAAAAAAAAAAAAASAAAAAAAAAAAAAAAVAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAbAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAADAAEAAAAAAAAAAAAGAAEAAAAAAAAAAAAJAAEAAAAAAAAAAAAMAAEAAAAAAAAAAAAPAAEAAAAAAAAAAAASAAEAAAAAAAAAAAAVAAEAAAAAAAAAAAAYAAEAAAAAAAAAAAAbAAEAAAAAAAAAAAA=")
+
+[node name="Ferry" parent="Platforms" index="1" instance=ExtResource("4")]
+position = Vector2(2400, 600)
+Distance = 480.0
+Speed = 2.0
+WaitTime = 2.5
+Track = 2
+
+[node name="Bricks" parent="Platforms/Ferry" index="0"]
+tile_map_data = PackedByteArray("AAAAAAAAAAAMAAAAAAADAAAAAAAMAAAAAAAGAAAAAAAMAAAAAAAAAAEAAAAMAAAAAAADAAEAAAAMAAAAAAAGAAEAAAAMAAAAAAA=")
+
+[node name="ChamberLid" parent="Platforms" index="2" instance=ExtResource("3")]
+position = Vector2(3400, 600)
+
+[node name="Bricks" parent="Platforms/ChamberLid" index="0"]
+tile_map_data = PackedByteArray("AAAAAAAAAAAMAAAAAAADAAAAAAAMAAAAAAAGAAAAAAAMAAAAAAAJAAAAAAAMAAAAAAAMAAAAAAAMAAAAAAA=")
+
+[node name="Canons" type="Node2D" parent="." index="8"]
+
+[node name="BridgeCanon" parent="Canons" index="0" instance=ExtResource("9")]
+position = Vector2(1500, 180)
+FollowNodeName = "player"
+ObjectToFollow = NodePath("../../Player")
+cooldown = 1.2
+
+[node name="FerryCanon" parent="Canons" index="1" instance=ExtResource("10")]
+position = Vector2(2810, 1180)
+ObjectToFollow = NodePath("../../Player")
+Cooldown = 3.0
+AimSpread = 55.0
+Range = 8.0
+ColorGroup = "yellow"
+
+[node name="ChamberCanon" parent="Canons" index="2" instance=ExtResource("10")]
+position = Vector2(3810, 980)
+ObjectToFollow = NodePath("../../Player")
+Cooldown = 2.5
+AimSpread = 45.0
+Range = 6.0
+ColorGroup = "purple"
+
+[node name="BrickBreaker" parent="." index="9" instance=ExtResource("11")]
+position = Vector2(4200, -1848)
+
+[node name="Gems" type="Node2D" parent="." index="10"]
+
+[node name="BlueGem" parent="Gems" index="0" instance=ExtResource("5")]
+position = Vector2(1260, 400)
+
+[node name="PinkGem" parent="Gems" index="1" instance=ExtResource("5")]
+position = Vector2(2660, 380)
+GroupName = "pink"
+
+[node name="YellowGem" parent="Gems" index="2" instance=ExtResource("5")]
+position = Vector2(3640, 900)
+GroupName = "yellow"
+
+[node name="PurpleGem" parent="Gems" index="3" instance=ExtResource("5")]
+position = Vector2(6000, -1930)
+GroupName = "purple"
+
+[node name="Checkpoints" type="Node2D" parent="." index="11"]
+
+[node name="StartCheckpoint" parent="Checkpoints" index="0" instance=ExtResource("7")]
+position = Vector2(-500, 400)
+
+[node name="BridgeCheckpoint" parent="Checkpoints" index="1" instance=ExtResource("7")]
+position = Vector2(2200, 400)
+
+[node name="FerryCheckpoint" parent="Checkpoints" index="2" instance=ExtResource("7")]
+position = Vector2(3280, 400)
+
+[node name="ArenaCheckpoint" parent="Checkpoints" index="3" instance=ExtResource("7")]
+position = Vector2(4600, 450)
+
+[node name="LevelExit" parent="." index="12" instance=ExtResource("6")]
+position = Vector2(6300, -2000)
+
+[node name="Player" parent="." index="13"]
+position = Vector2(-500, 450)

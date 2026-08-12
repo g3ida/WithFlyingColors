@@ -30,7 +30,8 @@ public static class LevelDispatcher {
           new() { Id = LevelId.Level1, TranslationKey = TranslationKey.game_level_title_letsPlayWithColors },
           new() { Id = LevelId.Tetris, TranslationKey = TranslationKey.game_level_title_tetris },
           new() { Id = LevelId.Paint, TranslationKey = TranslationKey.game_level_title_paint },
-          new() { Id = LevelId.Bricks, TranslationKey = TranslationKey.game_level_title_bricks }
+          new() { Id = LevelId.Bricks, TranslationKey = TranslationKey.game_level_title_bricks },
+          new() { Id = LevelId.BrickBreaker, TranslationKey = TranslationKey.game_level_title_brickBreaker }
   ];
 
   // The number a level wears wherever it is named to the player - its door in the hub, its
