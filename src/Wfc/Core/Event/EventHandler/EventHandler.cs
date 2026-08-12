@@ -155,6 +155,9 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitPageFlipped() => Events.EmitSignal(Events.SignalName.PageFlipped);
   public void EmitWrongPianoNotePlayed() => Events.EmitSignal(Events.SignalName.WrongPianoNotePlayed);
   public void EmitPianoPuzzleWon() => Events.EmitSignal(Events.SignalName.PianoPuzzleWon);
+  public void EmitButtonGameNotePlayed(int noteIndex) => Events.EmitSignal(Events.SignalName.ButtonGameNotePlayed, noteIndex);
+  public void EmitButtonGameWrongNotePlayed() => Events.EmitSignal(Events.SignalName.ButtonGameWrongNotePlayed);
+  public void EmitButtonGameWon() => Events.EmitSignal(Events.SignalName.ButtonGameWon);
   public void EmitCutsceneRequestStart(string id) => Events.EmitSignal(Events.SignalName.CutSceneRequestStart, id);
   public void EmitCutsceneRequestEnd(string id) => Events.EmitSignal(Events.SignalName.CutSceneRequestEnd, id);
   public void EmitLevelCleared() => Events.EmitSignal(Events.SignalName.LevelCleared);

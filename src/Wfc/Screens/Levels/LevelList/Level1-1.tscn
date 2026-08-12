@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://dgak5j6mp4yuv" path="res://src/Wfc/Entities/World/Platforms/SlidingPlatform/SlidingPlatform.tscn" id="9_prclt"]
 [ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="10_4uxlv"]
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Platforms/SinkingPlatform/SinkingPlatform.tscn" id="11_fxs1j"]
+[ext_resource type="PackedScene" uid="uid://cvwwvgh5o2bi" path="res://src/Wfc/Entities/World/ButtonGame/ButtonGameScene/ButtonGameScene.tscn" id="12_pyeig"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_v7wth"]
 size = Vector2(96, 750)
@@ -318,7 +319,7 @@ position = Vector2(15624, 271.40002)
 [node name="Background" parent="." index="9" unique_id=1744980491 instance=ExtResource("6_pyeig")]
 
 [node name="Player" parent="." index="10"]
-position = Vector2(-56, 336)
+position = Vector2(-1528, -143)
 
 [node name="CameraLocalizers" type="Node2D" parent="." index="11" unique_id=757715892]
 
@@ -405,7 +406,10 @@ position = Vector2(6496, 68)
 position = Vector2(10184, -224)
 
 [node name="SinkingPlatform" parent="." index="13" unique_id=1370285338 instance=ExtResource("11_fxs1j")]
-position = Vector2(1760, -208)
+position = Vector2(832, -112)
 Depth = 96.0
 SinkSpeed = 1.5
 ShowGear = false
+
+[node name="ButtonGameScene" parent="." index="14" unique_id=1957653079 instance=ExtResource("12_pyeig")]
+position = Vector2(-104, 64)
