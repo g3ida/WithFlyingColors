@@ -59,15 +59,17 @@ public class PauseSettingsMenuTests(Node testScene) : TestClass(testScene) {
       .ShouldBeFalse("the palette row is reachable from the pause overlay, where changing it does nothing");
   }
 
+  // The view is not built with the overlay - a level that is never paused into the
+  // settings must not pay for the screen - so "not open yet" is "not there yet".
   [Test]
   public async Task SettingsOpensInsideThePauseOverlayAndKeepsTheGamePaused() {
     await _pause();
-    var settingsView = _settingsView();
-    settingsView.IsOpen.ShouldBeFalse();
+    _settingsViewOrNull().ShouldBeNull("the settings view was built before it was asked for");
 
     _settingsButton().EmitSignal(BaseButton.SignalName.Pressed);
     await _idle();
 
+    var settingsView = _settingsView();
     settingsView.IsOpen.ShouldBeTrue();
     settingsView.Visible.ShouldBeTrue();
     TestScene.GetTree().Paused.ShouldBeTrue();
@@ -98,7 +100,10 @@ public class PauseSettingsMenuTests(Node testScene) : TestClass(testScene) {
     _pauseMenu.GetNode<Button>("PauseMenuImpl/CenterContainer/VBoxContainer/SettingsButton");
 
   private PauseSettingsMenu _settingsView() =>
-    _pauseMenu.GetNode<PauseSettingsMenu>("PauseSettingsMenu");
+    _settingsViewOrNull().ShouldNotBeNull("the settings view was never built");
+
+  private PauseSettingsMenu? _settingsViewOrNull() =>
+    _pauseMenu.GetNodeOrNull<PauseSettingsMenu>("PauseSettingsMenu");
 
   private async Task _idle() {
     var tree = TestScene.GetTree();

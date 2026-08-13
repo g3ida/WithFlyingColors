@@ -47,10 +47,14 @@ public partial class PauseMenu : CanvasLayer {
   private Button _settingsButton = null!;
   [NodePath("PauseMenuImpl/CenterContainer/VBoxContainer/BackButton")]
   private Button _backButtonButton = null!;
-  [NodePath("PauseSettingsMenu")]
-  private PauseSettingsMenu _pauseSettingsMenu = null!;
   [NodePath("InputHintBar")]
   private InputHintBar _inputHintBar = null!;
+
+  // Built the first time the player asks for it rather than with the overlay. The
+  // whole settings screen is a few hundred nodes, and the overlay is rebuilt with
+  // every level: instanced here it was the single largest cost of starting one,
+  // paid on every restart for a screen most runs never open.
+  private PauseSettingsMenu? _pauseSettingsMenu;
 
   private bool _isPaused;
 
@@ -92,7 +96,7 @@ public partial class PauseMenu : CanvasLayer {
 
     // While the settings view is up, backing out returns to the pause buttons
     // rather than to the game, and only if the view agrees to close.
-    if (_pauseSettingsMenu.IsOpen) {
+    if (_pauseSettingsMenu is { IsOpen: true }) {
       if (InputManager.IsEventActionJustPressed(IInputManager.Action.Pause, @event)
           || InputManager.IsEventActionJustPressed(IInputManager.Action.UICancel, @event)) {
         _closeSettings();
@@ -153,14 +157,27 @@ public partial class PauseMenu : CanvasLayer {
   private void _onSettingsButtonPressed() {
     _pauseMenu._Hide();
     _inputHintBar.Exit();
-    _pauseSettingsMenu.Open();
+    _settingsView().Open();
   }
 
   private void _closeSettings() {
-    if (_pauseSettingsMenu.TryClose()) {
+    if (_pauseSettingsMenu?.TryClose() == true) {
       _pauseMenu._Show();
       _inputHintBar.Enter();
     }
+  }
+
+  // Kept once built, so a player going in and out of the settings pays for it once
+  // per level. It takes the hint bar's place among the children because the overlay
+  // draws its layers in order and the view belongs under the bar, not over it.
+  private PauseSettingsMenu _settingsView() {
+    if (_pauseSettingsMenu != null) {
+      return _pauseSettingsMenu;
+    }
+    _pauseSettingsMenu = SceneHelpers.InstantiateNode<PauseSettingsMenu>();
+    AddChild(_pauseSettingsMenu);
+    MoveChild(_pauseSettingsMenu, _inputHintBar.GetIndex());
+    return _pauseSettingsMenu;
   }
 
   private void _onReturnToHubButtonPressed() {
