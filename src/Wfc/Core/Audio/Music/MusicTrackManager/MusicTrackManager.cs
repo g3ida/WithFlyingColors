@@ -55,6 +55,7 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
 
 
   public override void _Ready() {
+    ProcessMode = ProcessModeEnum.Always;
     AddPitchScaleEffect();
     AddNotchEffect();
     SetPauseMenuEffect(false);
