@@ -195,6 +195,11 @@ public partial class BrickBreaker : Node2D, IPersistent {
     if (_currentState != BrickBreakerState.PLAYING) {
       _currentState = BrickBreakerState.PLAYING;
       _currentLevel = 0;
+      // A round begins in an empty room. Losing clears it, but not everything that starts a round
+      // is preceded by a loss - restarting from the pause menu puts the level back without anybody
+      // dying - and a round that began over a round already in progress descended its wall straight
+      // through the standing one, which then hung there for good.
+      Stop();
       // Winning switches the spawner off for the celebration, and nothing else ever switched it
       // back on: a second round in the same session dropped no power-ups at all.
       _bricksPowerUpHandler.SetActive(true);
