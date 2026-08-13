@@ -48,6 +48,7 @@ public interface IEventHandler {
   public void EmitFullscreenToggled(bool fullscreen);
   public void EmitVsyncToggled(bool vsync);
   public void EmitScreenSizeChanged(Vector2 size);
+  public void EmitPerformanceOverlayToggled(bool enabled);
   public void EmitLanguageChanged(Language language);
   public void EmitSkinChanged(string skin);
   public void EmitSfxVolumeChanged(float volume);

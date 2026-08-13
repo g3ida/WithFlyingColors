@@ -115,6 +115,7 @@ public enum TranslationKey {
   stats_label_totalGemsCollected = 110,
   game_level_title_bricks = 111,
   game_level_title_brickBreaker = 112,
+  game_settings_display_performanceOverlay = 113,
 }
 
 public static partial class TranslationKeyExtensions {

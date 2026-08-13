@@ -105,3 +105,4 @@ stats.label.total_deaths,Total deaths,Morts au total,Tode insgesamt,Muertes tota
 stats.label.total_gems_collected,Total gems collected,Gemmes collectées,Gesammelte Edelsteine,Gemas recogidas,Gemme raccolte,Gemas coletadas,Verzamelde edelstenen
 game.level.title.bricks,Building Blocks,Jeu de construction,Bausteine,Piezas de construcción,Mattoncini,Blocos de montar,Bouwstenen
 game.level.title.brick_breaker,Bricks and Bullets,Briques et boulets,Steine und Kugeln,Ladrillos y balas,Mattoni e proiettili,Tijolos e balas,Stenen en kogels
+game.settings.display.performance_overlay,Performance overlay,Infos de performance,Leistungsanzeige,Panel de rendimiento,Statistiche prestazioni,Painel de desempenho,Prestatie-overlay

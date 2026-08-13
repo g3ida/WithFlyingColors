@@ -126,6 +126,7 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitFullscreenToggled(bool fullscreen) => Events.EmitSignal(Events.SignalName.FullscreenToggled, fullscreen);
   public void EmitVsyncToggled(bool vsync) => Events.EmitSignal(Events.SignalName.VsyncToggled, vsync);
   public void EmitScreenSizeChanged(Vector2 size) => Events.EmitSignal(Events.SignalName.ScreenSizeChanged, size);
+  public void EmitPerformanceOverlayToggled(bool enabled) => Events.EmitSignal(Events.SignalName.PerformanceOverlayToggled, enabled);
   public void EmitLanguageChanged(Language language) => Events.EmitSignal(Events.SignalName.LanguageChanged, (int)language);
   public void EmitSkinChanged(string skin) => Events.EmitSignal(Events.SignalName.SkinChanged, skin);
   public void EmitSfxVolumeChanged(float volume) => Events.EmitSignal(Events.SignalName.SfxVolumeChanged, volume);

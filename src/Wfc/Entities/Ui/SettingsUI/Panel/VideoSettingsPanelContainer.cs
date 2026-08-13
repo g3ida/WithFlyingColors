@@ -25,14 +25,19 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
   [NodePath("MarginContainer/UiGridContainer/VSync/Content/VSyncCheckbox")]
   private CheckBox _vsyncCheckbox = default!;
 
+  [NodePath("MarginContainer/UiGridContainer/PerformanceOverlay/Content/PerformanceOverlayCheckbox")]
+  private CheckBox _performanceOverlayCheckbox = default!;
+
   public override void _Ready() {
     base._Ready();
     this.WireNodes();
     _resolutionSelectButton.ValueChanged += _onResolutionUISelectValueChanged;
     _fullscreenCheckbox.Toggled += _onFullscreenCheckboxToggled;
     _vsyncCheckbox.Toggled += _onVsyncCheckboxToggled;
+    _performanceOverlayCheckbox.Toggled += _onPerformanceOverlayCheckboxToggled;
     _fullscreenCheckbox.SetPressed(GameSettings.Fullscreen);
     _vsyncCheckbox.SetPressed(GameSettings.Vsync);
+    _performanceOverlayCheckbox.SetPressed(GameSettings.PerformanceOverlay);
     // Nothing is applied here on purpose: the window already has the size it was
     // last given, and re-applying it made the window jump back to the middle of
     // the screen every time the player opened the settings.
@@ -43,12 +48,18 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
     _resolutionSelectButton.ValueChanged -= _onResolutionUISelectValueChanged;
     _fullscreenCheckbox.Toggled -= _onFullscreenCheckboxToggled;
     _vsyncCheckbox.Toggled -= _onVsyncCheckboxToggled;
+    _performanceOverlayCheckbox.Toggled -= _onPerformanceOverlayCheckboxToggled;
   }
 
   private static void _onVsyncCheckboxToggled(bool buttonPressed) {
     GameSettings.Vsync = buttonPressed;
     EventHandler.Instance.EmitVsyncToggled(buttonPressed);
   }
+
+  // The setting raises the toggle itself, so the overlay follows a settings file that
+  // asks for it as well as a player who ticks the box.
+  private static void _onPerformanceOverlayCheckboxToggled(bool buttonPressed) =>
+    GameSettings.PerformanceOverlay = buttonPressed;
 
   private async void _onFullscreenCheckboxToggled(bool buttonPressed) {
     GameSettings.Fullscreen = buttonPressed;

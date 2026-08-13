@@ -178,6 +178,13 @@ toggle_mode = true
 [node name="ResolutionSelectDriver" type="Node2D" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resolution/ResolutionSelectButton"]
 script = ExtResource("11_hajtt")
 
+[node name="PerformanceOverlay" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+TranslationKey = 113
+
+[node name="PerformanceOverlayCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/PerformanceOverlay" instance=ExtResource("5_0l3vq")]
+layout_mode = 2
+
 [node name="ControllerSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer"]
 unique_name_in_owner = true
 visible = false
