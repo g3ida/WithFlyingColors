@@ -57,6 +57,8 @@ public partial class Events : RefCounted {
   public delegate void VsyncToggledEventHandler(bool value);
   [Signal]
   public delegate void ScreenSizeChangedEventHandler(Vector2 value);
+  [Signal]
+  public delegate void PerformanceOverlayToggledEventHandler(bool value);
   // The player picked another language in the settings. Carries a Language.
   // Raised for the change itself, not for the locale being restored on startup,
   // so it can be treated as a menu action the player took.

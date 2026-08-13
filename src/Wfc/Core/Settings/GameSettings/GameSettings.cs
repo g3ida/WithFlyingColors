@@ -151,6 +151,26 @@ public static class GameSettings {
     set => DisplayServer.WindowSetMode(value ? DisplayServer.WindowMode.Fullscreen : DisplayServer.WindowMode.Windowed);
   }
 
+  /// <summary>
+  /// Whether the frame timing overlay is drawn over the game. The overlay belongs to the
+  /// game screen, so this says nothing about the menus.
+  ///
+  /// Assigning raises Events.PerformanceOverlayToggled, which is how the overlay follows a
+  /// player who ticks the box from the pause menu, with a level already on screen.
+  /// </summary>
+  private static bool _performanceOverlay;
+  public static bool PerformanceOverlay {
+    get => _performanceOverlay;
+    set {
+      if (_performanceOverlay == value) {
+        return;
+      }
+      _performanceOverlay = value;
+      // Null while the settings are loaded, before the autoloads are in the tree.
+      EventHandler.Instance?.EmitPerformanceOverlayToggled(value);
+    }
+  }
+
   public static Vector2I WindowSize {
     get => DisplayServer.WindowGetSize();
     // fixme: github issue: https://github.com/godotengine/godot/issues/105597
@@ -431,6 +451,7 @@ public static class GameSettings {
     configFile.SetValue("display", "fullscreen", Fullscreen);
     configFile.SetValue("display", "vsync", Vsync);
     configFile.SetValue("display", "resolution", $"{WindowSize.X}x{WindowSize.Y}");
+    configFile.SetValue("display", "performance_overlay", PerformanceOverlay);
 
     // Audio settings:
     configFile.SetValue("audio", "sfx_volume", SfxVolume);
@@ -507,6 +528,9 @@ public static class GameSettings {
           }
           else if (key == "vsync") {
             Vsync = keyValue.As<bool>();
+          }
+          else if (key == "performance_overlay") {
+            PerformanceOverlay = keyValue.As<bool>();
           }
           else if (key == "resolution") {
             var values = keyValue.As<string>().Split('x');

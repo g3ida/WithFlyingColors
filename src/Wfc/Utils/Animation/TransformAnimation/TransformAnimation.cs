@@ -4,7 +4,10 @@ using System;
 using Godot;
 using Wfc.Utils.Interpolation;
 
-public partial class TransformAnimation : Node {
+// A plain object rather than a Node: it is never parented, and a Node that is never
+// parented is never freed either - the two the player builds for itself outlived every
+// level they belonged to.
+public class TransformAnimation {
   private float _animationDuration;
   private Interpolation _interpolation;
   private float _offsetY;
