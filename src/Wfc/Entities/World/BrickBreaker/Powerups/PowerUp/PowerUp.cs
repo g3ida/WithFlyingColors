@@ -40,11 +40,9 @@ public partial class PowerUp : Node2D {
     base._Ready();
     this.WireNodes();
     SpriteNode.Texture = Texture;
-    Color color = SkinManager.Instance.CurrentSkin.GetColor(
-      GameSkin.ColorGroupToSkinColor(ColorGroup),
-      SkinColorIntensity.Basic
-    );
-    BackgroundNode.Modulate = color;
+    var skinColor = GameSkin.ColorGroupToSkinColor(ColorGroup);
+    BackgroundNode.Modulate = SkinManager.Instance.CurrentSkin.GetColor(skinColor, SkinColorIntensity.Light);
+    SpriteNode.Modulate = SkinManager.Instance.CurrentSkin.GetColor(skinColor, SkinColorIntensity.ExtremelyDark);
     AreaNode.AddToGroup(ColorGroup);
   }
 

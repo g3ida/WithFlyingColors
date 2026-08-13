@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://ca0rglirtoscy"]
+[gd_scene load_steps=12 format=3 uid="uid://ca0rglirtoscy"]
 [ext_resource type="Script" uid="uid://cjeeg04nm6tgu" path="res://src/Wfc/Entities/World/BrickBreaker/Powerups/ProtectionArea/ProtectionArea.cs" id="1"]
 [ext_resource type="Shader" uid="uid://clljdlovye5nq" path="res://Assets/Shaders/LazerBeam.gdshader" id="2"]
+[ext_resource type="Shader" uid="uid://t5s77lhhul8t" path="res://Assets/Shaders/LazerGlow.gdshader" id="3"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(1224, 5.6)
@@ -17,8 +18,21 @@ noise = SubResource("6")
 [sub_resource type="ShaderMaterial" id="4"]
 shader = ExtResource("2")
 shader_parameter/noise = SubResource("5")
+shader_parameter/scroll_speed = 220.0
+shader_parameter/noise_scale = 0.006
+shader_parameter/core_width = 0.5
 
-[sub_resource type="BoxMesh" id="3"]
+[sub_resource type="ShaderMaterial" id="7"]
+shader = ExtResource("3")
+shader_parameter/softness = 1.9
+shader_parameter/flicker_strength = 0.12
+shader_parameter/flicker_speed = 9.0
+
+[sub_resource type="QuadMesh" id="3"]
+size = Vector2(1224, 8)
+
+[sub_resource type="QuadMesh" id="8"]
+size = Vector2(1224, 120)
 
 [node name="ProtectionArea" type="StaticBody2D"]
 collision_layer = 2048
@@ -35,15 +49,14 @@ collision_mask = 512
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("2")
 
-[node name="MeshInstance2D" type="MeshInstance2D" parent="."]
-modulate = Color(1, 1, 1, 0.537255)
-material = SubResource("4")
-scale = Vector2(1224, 7)
-mesh = SubResource("3")
+[node name="Glow" type="MeshInstance2D" parent="."]
+modulate = Color(0.78, 0.93, 1, 0.5)
+material = SubResource("7")
+mesh = SubResource("8")
 
-[node name="MeshInstance2D2" type="MeshInstance2D" parent="."]
-modulate = Color(1, 1, 1, 0.501961)
-scale = Vector2(1224, 7)
+[node name="Beam" type="MeshInstance2D" parent="."]
+modulate = Color(0.85, 0.96, 1, 0.92)
+material = SubResource("4")
 mesh = SubResource("3")
 
 [connection signal="body_entered" from="Area2D" to="." method="_onArea2DBodyEntered"]
