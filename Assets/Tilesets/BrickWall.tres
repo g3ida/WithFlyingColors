@@ -1,0 +1,95 @@
+[gd_resource type="TileSet" load_steps=13 format=3]
+
+[ext_resource type="Texture2D" path="res://Assets/Sprites/BrickBreaker/wall-tiles.png" id="1_wall"]
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_wall0"]
+polygon = PackedVector2Array(-36.0, -36.0, 36.0, -36.0, 36.0, 36.0, -36.0, 36.0)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_wall1"]
+polygon = PackedVector2Array(-36.0, -36.0, 36.0, -36.0, 36.0, 36.0, -36.0, 36.0)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_wall2"]
+polygon = PackedVector2Array(-36.0, -36.0, 36.0, -36.0, 36.0, 36.0, -36.0, 36.0)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_wall3"]
+polygon = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_wall4"]
+polygon = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_wall5"]
+polygon = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_wall6"]
+polygon = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_wall7"]
+polygon = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_wall8"]
+polygon = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_wall9"]
+polygon = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_wall10"]
+polygon = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wall"]
+texture = ExtResource("1_wall")
+texture_region_size = Vector2i(72, 72)
+0:0/0 = 0
+0:0/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_wall0")
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-36.0, -36.0, 36.0, -36.0, 36.0, 36.0, -36.0, 36.0)
+1:0/0 = 0
+1:0/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_wall1")
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-36.0, -36.0, 36.0, -36.0, 36.0, 36.0, -36.0, 36.0)
+2:0/0 = 0
+2:0/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_wall2")
+2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-36.0, -36.0, 36.0, -36.0, 36.0, 36.0, -36.0, 36.0)
+0:1/size_in_atlas = Vector2i(2, 1)
+0:1/0 = 0
+0:1/0/texture_origin = Vector2i(-36, 0)
+0:1/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_wall3")
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+2:1/size_in_atlas = Vector2i(2, 1)
+2:1/0 = 0
+2:1/0/texture_origin = Vector2i(-36, 0)
+2:1/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_wall4")
+2:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+4:1/size_in_atlas = Vector2i(2, 1)
+4:1/0 = 0
+4:1/0/texture_origin = Vector2i(-36, 0)
+4:1/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_wall5")
+4:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+6:1/size_in_atlas = Vector2i(2, 1)
+6:1/0 = 0
+6:1/0/texture_origin = Vector2i(-36, 0)
+6:1/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_wall6")
+6:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+8:1/size_in_atlas = Vector2i(2, 1)
+8:1/0 = 0
+8:1/0/texture_origin = Vector2i(-36, 0)
+8:1/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_wall7")
+8:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+10:1/size_in_atlas = Vector2i(2, 1)
+10:1/0 = 0
+10:1/0/texture_origin = Vector2i(-36, 0)
+10:1/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_wall8")
+10:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+12:1/size_in_atlas = Vector2i(2, 1)
+12:1/0 = 0
+12:1/0/texture_origin = Vector2i(-36, 0)
+12:1/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_wall9")
+12:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+14:1/size_in_atlas = Vector2i(2, 1)
+14:1/0 = 0
+14:1/0/texture_origin = Vector2i(-36, 0)
+14:1/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_wall10")
+14:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-36.0, -36.0, 108.0, -36.0, 108.0, 36.0, -36.0, 36.0)
+
+[resource]
+tile_size = Vector2i(72, 72)
+occlusion_layer_0/light_mask = 1
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_wall")

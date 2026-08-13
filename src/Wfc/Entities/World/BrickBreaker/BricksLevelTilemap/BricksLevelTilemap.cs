@@ -35,7 +35,11 @@ public partial class BricksLevelTilemap : TileMapLayer {
       }
 
       foreach (Vector2I cell in GetUsedCellsById(tileSourceId)) {
-        Vector2 pos = MapToLocal(cell);
+        // MapToLocal answers with the middle of the cell, and a brick is drawn and shaped from its
+        // own top-left corner. Stood on the middle, every colored brick sat half a brick right and
+        // down of the cell it was painted into: out of step with the white bricks the tilemap draws
+        // for itself, and over the room's wall at the right-hand end of the wall.
+        Vector2 pos = MapToLocal(cell) - ((Vector2)TileSet.TileSize / 2.0f);
         SetCell(cell, -1);
 
         if (_parent.should_instance_bricks) {
