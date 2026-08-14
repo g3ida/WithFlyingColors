@@ -1,0 +1,82 @@
+[gd_scene load_steps=9 format=3 uid="uid://cl3myeon12t01"]
+
+[ext_resource type="Theme" uid="uid://ccmgef5cebsxv" path="res://Assets/Styles/Themes/MenuTheme.tres" id="1_theme"]
+[ext_resource type="Texture2D" uid="uid://dhbxm877o1uai" path="res://Assets/Sprites/UI/ui_right.png" id="2_arrow"]
+[ext_resource type="Script" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/UIDropdownButton/UIDropdownButton.cs" id="3_script"]
+[ext_resource type="Theme" uid="uid://b21a8glbd3bel" path="res://src/Wfc/Entities/Ui/UISelect/UISelectButtonTheme.tres" id="4_arrowtheme"]
+[ext_resource type="Script" path="res://src/Wfc/Entities/Ui/MarqueeLabel/MarqueeLabel.cs" id="5_marquee"]
+
+[sub_resource type="Animation" id="Animation_blink"]
+resource_name = "Blink"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0.470588), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_reset"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_blink"]
+_data = {
+&"Blink": SubResource("Animation_blink"),
+&"RESET": SubResource("Animation_reset")
+}
+
+[node name="UIDropdownButton" type="Button"]
+custom_minimum_size = Vector2(300, 42)
+offset_right = 300.0
+offset_bottom = 42.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("1_theme")
+script = ExtResource("3_script")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Arrow" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("4_arrowtheme")
+theme_override_colors/icon_normal_color = Color(0.18, 0.18, 0.18, 1)
+theme_override_constants/h_separation = 0
+icon = ExtResource("2_arrow")
+
+[node name="Spacer" type="Control" parent="HBoxContainer"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="Label" type="Control" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+script = ExtResource("5_marquee")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="HBoxContainer/Label"]
+libraries = {
+&"": SubResource("AnimationLibrary_blink")
+}
+
+[connection signal="resized" from="HBoxContainer/Label" to="." method="_onLabelResized"]

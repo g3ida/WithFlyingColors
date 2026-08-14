@@ -116,6 +116,10 @@ public enum TranslationKey {
   game_level_title_bricks = 111,
   game_level_title_brickBreaker = 112,
   game_settings_display_performanceOverlay = 113,
+  game_settings_display_resolutionConfirm = 114,
+  game_settings_display_resolutionKeep = 115,
+  game_settings_display_resolutionRevert = 116,
+  game_settings_display_resizable = 117,
 }
 
 public static partial class TranslationKeyExtensions {

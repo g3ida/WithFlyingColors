@@ -33,16 +33,20 @@ public partial class UIGridRow : PanelContainer {
 
   private const string THEME_OVERRIDE_NAME = "panel";
 
+  // The shades a settings row is drawn in. Public because the resolution row's
+  // dropdown is a stack of rows lifted off the panel, and a list that picked its own
+  // shades stopped looking like the settings it was opened from.
+
   // The shade text and art are drawn in on a light surface, matching what the
   // settings themes write their labels in. On a dark one they turn white.
-  private static readonly Color CONTENT_INK = new(0.176471f, 0.176471f, 0.176471f);
+  public static readonly Color CONTENT_INK = new(0.176471f, 0.176471f, 0.176471f);
 
   // The wash that tells one row from the next, laid down in the shade the panel
   // is not so it reads the same on either surface.
-  private static readonly Color ALTERNATE_WASH_ON_LIGHT = new(0f, 0f, 0f, 0.05f);
-  private static readonly Color ALTERNATE_WASH_ON_DARK = new(1f, 1f, 1f, 0.07f);
+  public static readonly Color ALTERNATE_WASH_ON_LIGHT = new(0f, 0f, 0f, 0.05f);
+  public static readonly Color ALTERNATE_WASH_ON_DARK = new(1f, 1f, 1f, 0.07f);
 
-  private static readonly Color ROW_HIGHLIGHT_INK = new(0x2d2d2dff);
+  public static readonly Color ROW_HIGHLIGHT_INK = new(0x2d2d2dff);
 
   // Keeps the label and the value clear of the panel's edges. Without it a value
   // that happened to fill its half of the row - the full name of a connected

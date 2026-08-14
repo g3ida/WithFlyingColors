@@ -64,12 +64,14 @@ public partial class SettingsFocusManager : Node {
     // Sets the list of focusable rows for the current panel. Called when switching tabs/panels.
     public void SetFocusableRows(Button currentPanelButton, List<UIGridRow> rows) {
         _disconnectFromRows();
+        // Deliberately not filtered by what is visible right now: a row can be taken
+        // away and put back while its panel is open - the resizable window row
+        // follows the fullscreen box - so what can be moved to is asked at the time
+        // instead of being settled when the panel was built.
         _currentRows = rows.ConvertAll(row => (Control)row);
-        _currentRows = _currentRows.FindAll(row => row.Visible);
         _currentRows.Insert(0, currentPanelButton);
         _connectToRows();
-        int focusIndex = _shouldFocusOnPanelTab || _currentRows.Count <= 1 ? 0 : 1;
-        _focusRow(focusIndex);
+        _focusRow(_shouldFocusOnPanelTab ? 0 : _firstAvailableRow());
     }
 
     public override void _Ready() {
@@ -162,27 +164,42 @@ public partial class SettingsFocusManager : Node {
         return false;
     }
 
-    private void _navigateUp() {
-        if (_currentRows.Count == 0)
-            return;
+    private void _navigateUp() => _focusAvailableRow(-1);
 
-        int newIndex = _currentRowIndex - 1;
-        if (newIndex < 0) {
-            newIndex = _currentRows.Count - 1;
+    private void _navigateDown() => _focusAvailableRow(1);
+
+    // Walks until it finds a row that is actually there, so a row hidden while its
+    // panel is open cannot be landed on and one put back is reachable again.
+    private void _focusAvailableRow(int direction) {
+        var index = _currentRowIndex;
+        for (var step = 0; step < _currentRows.Count; step++) {
+            index += direction;
+            if (index < 0) {
+                index = _currentRows.Count - 1;
+            }
+            else if (index >= _currentRows.Count) {
+                // Wrapping off the end lands on the first setting, not back on the tab.
+                index = Mathf.Min(1, _currentRows.Count - 1);
+            }
+            if (_isAvailable(index)) {
+                _focusRow(index);
+                return;
+            }
         }
-        _focusRow(newIndex);
     }
 
-    private void _navigateDown() {
-        if (_currentRows.Count == 0)
-            return;
-
-        int newIndex = (_currentRowIndex + 1) % _currentRows.Count;
-        if (newIndex == 0) {
-            newIndex = 1; // Skip panel tab when wrapping
+    // The panel tab unless a setting can be reached instead: it is always there, so
+    // a panel whose every row is hidden still leaves the focus somewhere.
+    private int _firstAvailableRow() {
+        for (var i = 1; i < _currentRows.Count; i++) {
+            if (_isAvailable(i)) {
+                return i;
+            }
         }
-        _focusRow(newIndex);
+        return 0;
     }
+
+    private bool _isAvailable(int index) => _currentRows[index].Visible;
 
     private void _focusRow(int index) {
         if (index < 0 || index >= _currentRows.Count)

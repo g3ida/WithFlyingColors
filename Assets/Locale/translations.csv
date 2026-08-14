@@ -106,3 +106,7 @@ stats.label.total_gems_collected,Total gems collected,Gemmes collectées,Gesamme
 game.level.title.bricks,Building Blocks,Jeu de construction,Bausteine,Piezas de construcción,Mattoncini,Blocos de montar,Bouwstenen
 game.level.title.brick_breaker,Bricks and Bullets,Briques et boulets,Steine und Kugeln,Ladrillos y balas,Mattoni e proiettili,Tijolos e balas,Stenen en kogels
 game.settings.display.performance_overlay,Performance overlay,Infos de performance,Leistungsanzeige,Panel de rendimiento,Statistiche prestazioni,Painel de desempenho,Prestatie-overlay
+game.settings.display.resolution_confirm,Keep this resolution? Reverting in {0}s,Garder cette résolution ? Retour dans {0} s,Diese Auflösung behalten? Zurücksetzen in {0} s,¿Mantener esta resolución? Volviendo en {0} s,Mantenere questa risoluzione? Ripristino tra {0} s,Manter esta resolução? A reverter em {0} s,Deze resolutie behouden? Terugzetten over {0} s
+game.settings.display.resolution_keep,Keep,Garder,Behalten,Mantener,Mantieni,Manter,Behouden
+game.settings.display.resolution_revert,Revert,Annuler,Zurücksetzen,Volver,Ripristina,Reverter,Terugzetten
+game.settings.display.resizable,Resizable window,Fenêtre redimensionnable,Größe änderbar,Ventana redimensionable,Finestra ridimensionabile,Janela redimensionável,Venster schaalbaar

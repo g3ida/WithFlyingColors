@@ -52,6 +52,7 @@ public partial class MarqueeLabel : Control {
   private int _fontSize;
   private IReadOnlyList<string> _reservedTexts = [];
   private float _reservedWidth;
+  private bool _alignLeft;
 
   // The inner label is only there from _Ready onwards, so this guards every read of
   // it that a resize could reach first.
@@ -121,6 +122,20 @@ public partial class MarqueeLabel : Control {
   }
 
   /// <summary>
+  /// Whether the text sits at the left of the room reserved for it rather than in the
+  /// middle of it. A value kept between a pair of arrows reads better centred; one
+  /// that opens a list underneath has to stay on the column the list writes its
+  /// options down, whatever the value happens to be.
+  /// </summary>
+  public bool AlignLeft {
+    get => _alignLeft;
+    set {
+      _alignLeft = value;
+      _scheduleLayout();
+    }
+  }
+
+  /// <summary>
   /// Keeps room for the longest of these however short the text currently is, so a
   /// control that cycles through them keeps one width throughout. Whatever is beside
   /// it - a picker's arrows - then stays where it is instead of walking in and out as
@@ -175,7 +190,8 @@ public partial class MarqueeLabel : Control {
     ClipContents = overflow > OVERFLOW_EPSILON;
     if (overflow <= OVERFLOW_EPSILON) {
       // Sits where a plain centred Label would, so rows that fit look untouched.
-      _labelNode.Position = new Vector2(Mathf.Round((Size.X - text.X) * 0.5f), 0f);
+      _labelNode.Position = new Vector2(
+          _alignLeft ? 0f : Mathf.Round((Size.X - text.X) * 0.5f), 0f);
       return;
     }
 
