@@ -18,7 +18,7 @@ public partial class TetrominoCell : AnimatableBody2D {
   #region Constants
   // What the block art is drawn at. The sprite is scaled by Size against it, so a cell sized off
   // the minigame's grid keeps the bevel in proportion instead of growing a border.
-  private const float ART_CELL_SIZE = Constants.TETRIS_BLOCK_SIZE;
+  private const float ART_CELL_SIZE = Constants.TETRIS_BLOCK_ART_SIZE;
 
   // The colour area stands a shade proud of the body, so a cube resting on a cell is already inside
   // the colour it has to match rather than exactly touching its edge.

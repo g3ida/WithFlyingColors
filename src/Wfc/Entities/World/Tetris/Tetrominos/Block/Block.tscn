@@ -50,7 +50,8 @@ size = Vector2(74, 74)
 script = ExtResource("2")
 
 [node name="BlockSprite" parent="." instance=ExtResource("1")]
-position = Vector2(37, 37)
+position = Vector2(36, 36)
+scale = Vector2(0.972973, 0.972973)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="BlockSprite"]
 libraries = {

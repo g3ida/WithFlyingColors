@@ -21,15 +21,15 @@ public class TetrominoRainTests(Node testScene) : TestClass(testScene) {
   // The level's own settings, so what is asserted here is the crossing that ships.
   private const float CELL = 72.0f;
   private const int LANES = 5;
-  private const float LANE_SPACING = 360.0f;
+  private const int LANE_SPACING = 5;
   private const float FALL_HEIGHT = 2400.0f;
   private const float STEP = 0.8f;
   private const int MAX_HEIGHT = 2;
 
-  // A whole number of rows, so every piece in a lane sits on the same phase of the row clock and the
-  // spacing between two of them is exact rather than off by part of a row.
-  private const float SPAWN = 5.6f;
-  private const float STAGGER = 2.0f / 7.0f;
+  // Counted in rows, which is what makes the spacing between two pieces exact rather than off by
+  // part of a row - the clock the curtain runs on is derived from these.
+  private const int ROW_SPACING = 7;
+  private const int CLIMB = 2;
 
   // A row either way. The descent is stepped, so nothing about a piece's height is finer than that.
   private const float CLOSE = CELL;
@@ -183,7 +183,7 @@ public class TetrominoRainTests(Node testScene) : TestClass(testScene) {
     await PhysicsFrames.Frame(TestScene);
     var held = _piecesOf(rain).Count;
 
-    await PhysicsFrames.Advance(TestScene, (int)(SPAWN * 1.5f * Engine.PhysicsTicksPerSecond));
+    await PhysicsFrames.Advance(TestScene, (int)(rain.SpawnInterval * 1.5f * Engine.PhysicsTicksPerSecond));
 
     _piecesOf(rain).Count.ShouldBeLessThanOrEqualTo(held, "the curtain kept dropping pieces over the death");
   }
@@ -222,16 +222,16 @@ public class TetrominoRainTests(Node testScene) : TestClass(testScene) {
     var rain = await _add();
     rain._GetConfigurationWarnings().ShouldBeEmpty("the level's own settings are being warned about");
 
-    rain.LaneSpacing = CELL;
+    rain.LaneSpacing = 1;
     rain._GetConfigurationWarnings().ShouldContain(
       warning => warning.Contains("LaneSpacing"),
       "lanes narrower than a piece were accepted"
     );
 
     rain.LaneSpacing = LANE_SPACING;
-    rain.LaneStagger = 0.0f;
+    rain.Climb = 0;
     rain._GetConfigurationWarnings().ShouldContain(
-      warning => warning.Contains("stagger"),
+      warning => warning.Contains("Climb"),
       "lanes in step with each other were accepted, so the crossing only ever loses height"
     );
 
@@ -239,10 +239,10 @@ public class TetrominoRainTests(Node testScene) : TestClass(testScene) {
     // to land on. Letting pieces stand taller widens it, and it is the hop that decides whether the
     // crossing can be made at all - the earlier settings cleared every other check and still dealt
     // hops nobody could take.
-    rain.LaneStagger = STAGGER;
+    rain.Climb = CLIMB;
     rain.MaxPieceHeight = TetrominoShape.MAX_SPAN_CELLS;
     rain._GetConfigurationWarnings().ShouldContain(
-      warning => warning.Contains("jump"),
+      warning => warning.Contains("worst pairing"),
       "a curtain whose worst pairing needs nearly the whole jump was accepted"
     );
   }
@@ -290,8 +290,8 @@ public class TetrominoRainTests(Node testScene) : TestClass(testScene) {
     _rain = SceneHelpers.InstantiateNode<TetrominoRain>();
     _rain.LaneCount = LANES;
     _rain.LaneSpacing = LANE_SPACING;
-    _rain.SpawnInterval = SPAWN;
-    _rain.LaneStagger = STAGGER;
+    _rain.RowSpacing = ROW_SPACING;
+    _rain.Climb = CLIMB;
     _rain.FallHeight = FALL_HEIGHT;
     _rain.CellSize = CELL;
     _rain.StepInterval = STEP;

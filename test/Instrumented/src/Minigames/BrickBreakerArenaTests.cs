@@ -37,7 +37,7 @@ public class BrickBreakerArenaTests(Node testScene) : TestClass(testScene) {
     (await PhysicsFrames.WaitFor(TestScene, () => _walls(arena) == 1, TIMEOUT))
       .ShouldBeTrue("the room never laid a wall to play against");
 
-    EventHandler.Instance.EmitPlayerDying(null, Vector2.Zero, EntityType.BrickBreaker);
+    EventHandler.Instance.EmitPlayerDying(Vector2.Zero, EntityType.BrickBreaker);
     await PhysicsFrames.Advance(TestScene, 4);
     _walls(arena).ShouldBe(0, "losing left the wall standing in the room");
 
@@ -75,7 +75,7 @@ public class BrickBreakerArenaTests(Node testScene) : TestClass(testScene) {
     (await PhysicsFrames.WaitFor(TestScene, () => _walls(arena) == 1, TIMEOUT))
       .ShouldBeTrue("the room never laid a wall to play against");
 
-    EventHandler.Instance.EmitPlayerDying(null, Vector2.Zero, EntityType.BrickBreaker);
+    EventHandler.Instance.EmitPlayerDying(Vector2.Zero, EntityType.BrickBreaker);
     await PhysicsFrames.Advance(TestScene, 4);
     EventHandler.Instance.EmitCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 4);

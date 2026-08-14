@@ -146,6 +146,7 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitGamepadDisconnected(int deviceId) =>
     Events.EmitSignal(Events.SignalName.GamepadDisconnected, deviceId);
   public void EmitTetrisLinesRemoved() => Events.EmitSignal(Events.SignalName.TetrisLinesRemoved);
+  public void EmitTetrisPoolEscaped() => Events.EmitSignal(Events.SignalName.TetrisPoolEscaped);
   public void EmitBrickBroken(string color, Vector2 position) => Events.EmitSignal(Events.SignalName.BrickBroken, color, position);
   public void EmitBouncingBallRemoved(Node ball) => Events.EmitSignal(Events.SignalName.BouncingBallRemoved, ball);
   public void EmitPickedPowerup() => Events.EmitSignal(Events.SignalName.PickedPowerUp);

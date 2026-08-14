@@ -47,6 +47,11 @@ public partial class Block : Node2D {
     this.WireNodes();
     SetPhysicsProcess(false);
 
+    // Fitted to the cell it occupies rather than drawn at the size the art happens to be, so a
+    // block covers its own cell and nobody else's.
+    spriteNode.Scale = Vector2.One * (Constants.TETRIS_BLOCK_SIZE / Constants.TETRIS_BLOCK_ART_SIZE);
+    spriteNode.Position = Vector2.One * (Constants.TETRIS_BLOCK_SIZE * 0.5f);
+
     if (ColorGroup != null) {
       areaNode.AddToGroup(ColorGroup);
       spriteNode.ColorGroup = ColorGroup;
@@ -220,8 +225,10 @@ public partial class Block : Node2D {
     neighborColorGroup != null && neighborColorGroup != colorGroup;
 
   private void AddPermissivenessBoundsIfNeeded() {
-    bool rightEdge = I + 1 < Constants.TETRIS_POOL_WIDTH &&
-        Grid?[I + 1, J] != null &&
+    // Against the array rather than the playfield width: the escape wall lives in a column past
+    // the last one a piece can be placed in, and a block landing beside it still needs the seam.
+    bool rightEdge = Grid != null && I + 1 < Grid.GetLength(0) &&
+        Grid[I + 1, J] != null &&
         NeedsEdgeBetween(ColorGroup, Grid[I + 1, J]!.ColorGroup);
     bool leftEdge = I > 0 &&
         Grid?[I - 1, J] != null &&

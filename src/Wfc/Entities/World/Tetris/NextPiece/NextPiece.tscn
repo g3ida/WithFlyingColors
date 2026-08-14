@@ -1,23 +1,60 @@
-[gd_scene load_steps=2 format=3 uid="uid://d2j7an1dv0j8h"]
+[gd_scene load_steps=5 format=3 uid="uid://d2j7an1dv0j8h"]
 
 [ext_resource type="Script" uid="uid://ejhyofn47cm7" path="res://src/Wfc/Entities/World/Tetris/NextPiece/NextPiece.cs" id="1"]
+[ext_resource type="FontFile" path="res://Assets/Fonts/pixel_scoreboard.tres" id="2"]
+
+[sub_resource type="StyleBoxFlat" id="Frame"]
+bg_color = Color(0, 0.047, 0.058, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0, 0.85, 0.94, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0.85, 0.94, 0.27)
+shadow_size = 24
+
+[sub_resource type="StyleBoxFlat" id="Field"]
+bg_color = Color(0, 0.114, 0.133, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.34, 0.4, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [node name="NextPiece" type="Node2D"]
 script = ExtResource("1")
-__meta__ = {
-"_edit_group_": true
-}
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Frame" type="Panel" parent="."]
 offset_left = -252.0
 offset_top = -144.0
 offset_right = 252.0
 offset_bottom = 144.0
-color = Color(0, 0.027451, 0.027451, 1)
+theme_override_styles/panel = SubResource("Frame")
 
-[node name="Background2" type="ColorRect" parent="."]
-offset_left = -234.0
-offset_top = -126.0
-offset_right = 234.0
-offset_bottom = 126.0
-color = Color(0, 0.12549, 0.12549, 1)
+[node name="Field" type="Panel" parent="."]
+offset_left = -238.0
+offset_top = -130.0
+offset_right = 238.0
+offset_bottom = 130.0
+theme_override_styles/panel = SubResource("Field")
+
+[node name="Caption" type="Label" parent="."]
+offset_left = -238.0
+offset_top = -122.0
+offset_right = 238.0
+offset_bottom = -74.0
+theme_override_colors/font_color = Color(0, 0.7, 0.78, 1)
+theme_override_fonts/font = ExtResource("2")
+text = "NEXT"
+horizontal_alignment = 1
+
+[node name="PieceAnchor" type="Node2D" parent="."]
+position = Vector2(0, 26)

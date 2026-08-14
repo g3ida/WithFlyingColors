@@ -11,19 +11,21 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // lanes on a fixed clock - what is random is which of the seven shapes it is and which way round -
 // so the level is a rhythm to be read rather than a sky to be waited out.
 //
-// Three spacings are the level design, and they are all on the tetris grid:
+// Three spacings are the level design, and all three are counted in grid cells, origin to origin -
+// the same units the pieces themselves are built in:
 //
-//   LaneSpacing    how far apart the lanes stand. Wider than the widest piece, so there is always
-//                  a gap between two lanes, and inside one jump of the next lane.
-//   SpawnInterval  how often a lane drops. It sets the headroom between two pieces stacked in the
-//                  same lane: enough to stand under the one above and jump out sideways.
-//   LaneStagger    how far out of step each lane is with the one before it. This is what makes the
-//                  crossing climb: the next lane along always has a piece part of a spacing higher
-//                  than the one being stood on, so a hop rightwards is a hop upwards.
+//   LaneSpacing  how far apart the lanes stand. Wider than the widest piece may stand, so there is
+//                always a gap between two lanes, and inside one jump of the next lane.
+//   RowSpacing   how far apart two pieces stacked in the same lane stand. Taller than a piece by
+//                enough to stand under the one above and jump out sideways.
+//   Climb        how much higher each lane carries its pieces than the one before it. This is what
+//                makes the crossing climb: a hop rightwards is a hop upwards.
 //
-// The player gains height on a hop only while the stagger outruns the fall - the piece being jumped
-// to is coming down too - which is LaneStagger * SpawnInterval against the time the jump is in the
-// air. _GetConfigurationWarnings checks it rather than leaving it to a playtest.
+// What the player actually crosses is those less the pieces themselves, which is NarrowestGap and
+// ClearAir. The clock underneath - which lane drops when - is derived from the three of them, so a
+// piece always lands on an exact row and the climb per hop does not move when the lanes are opened
+// out. _GetConfigurationWarnings checks the lot against the cube's own jump rather than leaving it
+// to a playtest.
 //
 // The rain is seeded, and it is replayed from the start on every respawn, so a crossing that killed
 // the player is the same crossing when they come back to it.
@@ -34,6 +36,9 @@ public partial class TetrominoRain : Node2D {
   // The curtain outline and the lane centres, drawn for the author only.
   private static readonly Color BOUNDS_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.18f);
   private static readonly Color LANE_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.35f);
+  // The rungs of the staircase: one per piece the lane will be holding.
+  private static readonly Color RUNG_COLOR = new Color(0.45f, 1.0f, 0.8f, 0.55f);
+  private const float RUNG_REACH = 46.0f;
   private const float BOUNDS_WIDTH = 2.0f;
 
   private const float MIN_CELL_SIZE = 8.0f;
@@ -78,16 +83,18 @@ public partial class TetrominoRain : Node2D {
   }
   private int _laneCount = 5;
 
-  // How far apart the lanes stand. This is the jump the crossing is made of.
-  [Export]
-  public float LaneSpacing {
+  // How far apart the lanes stand, origin to origin, in cells. This is the jump the crossing is
+  // made of. The clear air actually left between two pieces is this less however wide they happen
+  // to stand, which is NarrowestGap at its tightest.
+  [Export(PropertyHint.Range, "1,12,1,or_greater")]
+  public int LaneSpacing {
     get => _laneSpacing;
     set {
-      _laneSpacing = value;
+      _laneSpacing = Mathf.Max(value, 1);
       _reread();
     }
   }
-  private float _laneSpacing = 360.0f;
+  private int _laneSpacing = 5;
 
   // How tall a piece is allowed to stand, in cells. It is the single biggest thing deciding whether
   // the crossing can be made, for three reasons at once:
@@ -112,34 +119,41 @@ public partial class TetrominoRain : Node2D {
   }
   private int _maxPieceHeight = MIN_PIECE_HEIGHT;
 
-  // How long one lane waits between pieces. Fixed, not rolled: it is the headroom over a piece, and
-  // a headroom that changed from drop to drop could not be jumped out of on purpose.
-  [Export]
-  public float SpawnInterval {
-    get => _spawnInterval;
+  // How far apart two pieces stacked in the same lane stand, origin to origin, in cells. The clear
+  // air left over a piece is this less how tall it stands, which is ClearAir at its tightest, and
+  // that is what has to be stood up in and jumped out of.
+  //
+  // In cells rather than as the interval it used to be: the rain is a clock underneath, so this was
+  // a number of seconds whose effect on the crossing depended on the fall speed, and it only landed
+  // pieces on exact rows at whole multiples of StepInterval. Counting rows makes both automatic.
+  // Floored at one rather than at something that clears a piece: a spacing too tight to stand in is
+  // warned about below rather than silently raised, so what is typed is what the curtain runs.
+  [Export(PropertyHint.Range, "1,16,1,or_greater")]
+  public int RowSpacing {
+    get => _rowSpacing;
     set {
-      _spawnInterval = value;
+      _rowSpacing = Mathf.Max(value, 1);
       _reread();
     }
   }
-  private float _spawnInterval = 5.6f;
+  private int _rowSpacing = 7;
 
-  // How far out of step each lane is with the one before it, as a share of SpawnInterval. This is
-  // the climb the crossing is made of, and it is held from both ends: too little and a hop loses
-  // more height to the piece's own fall than the stagger buys back, too much and the hop cannot be
-  // flown at all. Because it is a share, it has to come down whenever SpawnInterval goes up, or
-  // opening the lanes out vertically steepens every hop along with them.
-  [Export]
-  public float LaneStagger {
-    get => _laneStagger;
-    // Held inside a spacing: a whole one puts every lane back in step, and what is left over is all
-    // that was ever doing anything.
+  // How much higher than its left-hand neighbour each lane carries its pieces, in cells. This is the
+  // climb the crossing is made of, and it is held from both ends: too little and a hop loses more
+  // height to the piece's own fall than the climb buys back, too much and the hop cannot be flown.
+  //
+  // In cells rather than the share of the interval it used to be, which was the worst of the lot:
+  // it silently kept only its fractional part, so a whole number meant no climb at all, and because
+  // it was a share, opening the lanes out vertically steepened every hop along with them.
+  [Export(PropertyHint.Range, "0,8,1,or_greater")]
+  public int Climb {
+    get => _climb;
     set {
-      _laneStagger = value - Mathf.Floor(value);
+      _climb = Mathf.Max(value, 0);
       _reread();
     }
   }
-  private float _laneStagger = 2.0f / 7.0f;
+  private int _climb = 2;
 
   // How far a piece falls through the curtain before it frees itself.
   [Export]
@@ -200,12 +214,42 @@ public partial class TetrominoRain : Node2D {
   // How fast a piece comes down on average, rows and the pauses on them together.
   public float FallSpeed => StepInterval > 0.0f ? CellSize / StepInterval : 0.0f;
 
+  #region Derived
+  // The clock the curtain actually runs on. It is all read off the spacings above rather than
+  // authored: a lane drops every RowSpacing rows, and each lane is Climb rows behind the last.
+  public float SpawnInterval => RowSpacing * StepInterval;
+  public float LaneStagger => RowSpacing > 0 ? (float)Climb / RowSpacing : 0.0f;
+
+  public float LaneSpacingPx => LaneSpacing * CellSize;
+
   // The drop between two pieces stacked in the same lane.
-  public float LanePitch => SpawnInterval * FallSpeed;
+  public float LanePitch => RowSpacing * CellSize;
 
   // How much higher the next lane's piece stands than the one being stood on, measured between the
   // two pieces rather than between the surfaces the player actually leaves and lands on.
-  public float StaggerRise => LaneStagger * LanePitch;
+  public float StaggerRise => Climb * CellSize;
+
+  // The widest a piece is ever allowed to stand, given how tall they may be: flattening pieces is
+  // what makes them wide, so this moves against MaxPieceHeight.
+  public int WidestPieceCells {
+    get {
+      var widest = 1;
+      foreach (var kind in TetrominoShape.KINDS) {
+        for (var rotation = 0; rotation < TetrominoShape.ROTATION_COUNT; rotation++) {
+          if (TetrominoShape.HeightOf(kind, rotation) <= MaxPieceHeight) {
+            widest = Mathf.Max(widest, TetrominoShape.WidthOf(kind, rotation));
+          }
+        }
+      }
+      return widest;
+    }
+  }
+
+  // What the two spacings actually leave between pieces once the pieces themselves are accounted
+  // for - the numbers the crossing is really made of, and the ones worth reading back.
+  public float NarrowestGap => (LaneSpacing - WidestPieceCells) * CellSize;
+  public float ClearAir => (RowSpacing - MaxPieceHeight) * CellSize;
+  #endregion Derived
 
   // How far the worst hop the curtain can deal has to climb. A hop leaves the top of one piece and
   // lands on the top of another, so how tall each of them happens to stand is part of it: the worst
@@ -214,7 +258,7 @@ public partial class TetrominoRain : Node2D {
 
   // The widest a gap between two lanes ever opens: both pieces standing at their narrowest, so each
   // reaches only half its own width out of its lane towards the other.
-  public float WidestGap => LaneSpacing - (MIN_PIECE_CELLS * CellSize);
+  public float WidestGap => LaneSpacingPx - (MIN_PIECE_CELLS * CellSize);
 
   // How much climb a hop across that gap can actually buy. Two things pay for it: how much height
   // the cube has left once it has covered the ground, and how far the piece it is aimed at has come
@@ -227,7 +271,7 @@ public partial class TetrominoRain : Node2D {
     }
   }
 
-  public float LaneX(int lane) => lane * LaneSpacing;
+  public float LaneX(int lane) => lane * LaneSpacingPx;
 
   public override void _Ready() {
     base._Ready();
@@ -264,27 +308,29 @@ public partial class TetrominoRain : Node2D {
     if (SpawnInterval <= 0.0f) {
       warnings.Add("SpawnInterval is zero, so a lane drops a piece on every tick.");
     }
-    if (LaneSpacing <= TetrominoShape.MAX_SPAN_CELLS * CellSize) {
-      warnings.Add("LaneSpacing is no wider than the widest piece, so pieces in adjacent lanes overlap and there is no gap to jump.");
+    if (NarrowestGap <= 0.0f) {
+      warnings.Add($"LaneSpacing of {LaneSpacing} cells is no wider than the {WidestPieceCells} cells a piece may stand, so pieces in adjacent lanes touch and there is no gap to jump.");
     }
 
-    var headroom = LanePitch - (MaxPieceHeight * CellSize) - PLAYER_HEIGHT;
-    if (headroom < StaggerRise) {
-      warnings.Add("SpawnInterval leaves less clear air over a piece than a hop to the next lane needs, so the jump is made into the piece above.");
+    if (ClearAir <= 0.0f) {
+      warnings.Add($"RowSpacing of {RowSpacing} cells is no taller than the {MaxPieceHeight} cells a piece may stand, so pieces stacked in a lane touch and there is nothing to stand in.");
+    }
+    else if (ClearAir - PLAYER_HEIGHT < StaggerRise) {
+      warnings.Add($"RowSpacing of {RowSpacing} cells leaves less clear air over a piece than a hop to the next lane needs. Raise it, drop Climb, or flatten MaxPieceHeight.");
     }
 
     // Which pieces come down is not the player's to choose, so the hop that has to be makeable is
     // the worst pairing the curtain can deal: the flattest piece to stand on and the tallest to land
     // on, whose tops are that much further apart than the stagger alone.
     if (WorstHopRise > ReachableRise * JUMP_BUDGET) {
-      warnings.Add("The worst pairing of pieces this curtain can deal asks for more climb than a hop across its widest gap can buy, so some hops cannot be made at all. Lower LaneStagger or MaxPieceHeight, or close up LaneSpacing.");
+      warnings.Add("The worst pairing of pieces this curtain can deal asks for more climb than a hop across its widest gap can buy, so some hops cannot be made at all. Lower Climb or MaxPieceHeight, or close up LaneSpacing.");
     }
 
     // The piece being jumped to is coming down as well, so a hop only gains height while the stagger
     // is worth more than the fall the jump costs.
-    var flight = PLAYER_RUN_SPEED > 0.0f ? LaneSpacing / PLAYER_RUN_SPEED : 0.0f;
-    if (LaneStagger * SpawnInterval <= flight) {
-      warnings.Add("The lanes are not staggered enough to outrun the fall, so a hop to the next lane loses height instead of gaining it.");
+    var flight = PLAYER_RUN_SPEED > 0.0f ? LaneSpacingPx / PLAYER_RUN_SPEED : 0.0f;
+    if (Climb * StepInterval <= flight) {
+      warnings.Add("Climb is too low to outrun the fall, so a hop to the next lane loses height instead of gaining it.");
     }
 
     return [.. warnings];
@@ -302,9 +348,9 @@ public partial class TetrominoRain : Node2D {
     if (!Engine.IsEditorHint()) {
       return;
     }
-    var half = LaneSpacing / 2.0f;
+    var half = LaneSpacingPx / 2.0f;
     DrawRect(
-      new Rect2(-half, 0.0f, LaneCount * LaneSpacing, FallHeight),
+      new Rect2(-half, 0.0f, LaneCount * LaneSpacingPx, FallHeight),
       BOUNDS_COLOR,
       filled: false,
       width: BOUNDS_WIDTH
@@ -312,6 +358,22 @@ public partial class TetrominoRain : Node2D {
     for (var lane = 0; lane < LaneCount; lane++) {
       var x = LaneX(lane);
       DrawLine(new Vector2(x, 0.0f), new Vector2(x, FallHeight), LANE_COLOR, BOUNDS_WIDTH);
+      _drawLaneRungs(lane, x);
+    }
+  }
+
+  // Where this lane's pieces will actually stand. Without them the two knobs that decide the whole
+  // shape of the crossing - how far apart the pieces come and how far out of step the lanes are -
+  // are numbers with nothing on screen answering to them, and the only way to see what they did is
+  // to play the level.
+  private void _drawLaneRungs(int lane, float x) {
+    var pitch = LanePitch;
+    if (pitch <= 0.0f) {
+      return;
+    }
+    // Later lanes carry their pieces higher, so their rungs sit back up the lane by that much.
+    for (var y = Mathf.PosMod(-_phaseOf(lane) * pitch, pitch); y <= FallHeight; y += pitch) {
+      DrawLine(new Vector2(x - RUNG_REACH, y), new Vector2(x + RUNG_REACH, y), RUNG_COLOR, BOUNDS_WIDTH);
     }
   }
 

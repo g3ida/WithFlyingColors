@@ -7,16 +7,19 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Audio;
 using Wfc.Core.Event;
+using Wfc.Core.Persistence;
+using Wfc.Core.Serialization;
 using Wfc.Entities.Tetris.Tetrominos;
 using Wfc.Entities.World.Platforms;
 using Wfc.Entities.World.Player;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
+using Wfc.Utils.Colors;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
-public partial class TetrisPool : Node2D {
+public partial class TetrisPool : Node2D, IPersistent {
 
   #region Signals
   public override void _Notification(int what) => this.Notify(what);
@@ -27,9 +30,13 @@ public partial class TetrisPool : Node2D {
   public delegate void GameOverEventHandler();
   #endregion Signals
 
+  // Kept apart from the bag so the opening rule below can recognise them.
+  private static readonly PackedScene _sBlock = SceneHelpers.LoadScene<S_Block>();
+  private static readonly PackedScene _zBlock = SceneHelpers.LoadScene<Z_Block>();
+
   private static readonly List<PackedScene> _tetrominos = new List<PackedScene> {
-        SceneHelpers.LoadScene<S_Block>(),
-        SceneHelpers.LoadScene<Z_Block>(),
+        _sBlock,
+        _zBlock,
         SceneHelpers.LoadScene<L_Block>(),
         SceneHelpers.LoadScene<J_Block>(),
         SceneHelpers.LoadScene<O_Block>(),
@@ -38,6 +45,7 @@ public partial class TetrisPool : Node2D {
     };
 
   private Godot.Collections.Array<PackedScene> _randomBag = new Godot.Collections.Array<PackedScene>();
+  private bool _isFirstPiece = true;
   private int _score = 0;
   private int _level = 1;
   private int _highScore = 40;
@@ -58,8 +66,18 @@ public partial class TetrisPool : Node2D {
   private float _phaseElapsed = 0.0f;
   private bool _isTravelling = false;
   private Tetromino? _shape = null;
-  private Block?[,] _grid = new Block?[Constants.TETRIS_POOL_WIDTH, Constants.TETRIS_POOL_HEIGHT];
+  private Block?[,] _grid = new Block?[Constants.TETRIS_GRID_WIDTH, Constants.TETRIS_POOL_HEIGHT];
+  internal Block?[,] Grid => _grid;
   private bool _isVirgin = true;
+
+  // The wall the player has to wear down to reach the room beside the pool, one brick per row.
+  private static readonly string[] ESCAPE_WALL_COLORS = [
+    ColorUtils.YELLOW, ColorUtils.PINK, ColorUtils.BLUE, ColorUtils.PURPLE
+  ];
+  private bool _hasEscaped = false;
+
+  private sealed record SaveData(bool hasEscaped = false);
+  private SaveData _saveData = new SaveData();
 
   #region Nodes
   [NodePath("SpawnPosition")]
@@ -83,7 +101,11 @@ public partial class TetrisPool : Node2D {
   public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
   #endregion Dependencies
 
-  public void OnResolved() { }
+  public void OnResolved() {
+    if (_hasEscaped) {
+      _stopForEscape();
+    }
+  }
 
 
   public override void _Ready() {
@@ -104,7 +126,7 @@ public partial class TetrisPool : Node2D {
   }
 
   private void ClearGrid() {
-    for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++) {
+    for (int i = 0; i < Constants.TETRIS_GRID_WIDTH; i++) {
       for (int j = 0; j < Constants.TETRIS_POOL_HEIGHT; j++) {
         if (_grid[i, j] != null) {
           _grid[i, j]?.QueueFree();
@@ -115,9 +137,50 @@ public partial class TetrisPool : Node2D {
   }
 
   private void InitGrid() {
-    for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++) {
+    for (int i = 0; i < Constants.TETRIS_GRID_WIDTH; i++) {
       for (int j = 0; j < Constants.TETRIS_POOL_HEIGHT; j++) {
         _grid[i, j] = null;
+      }
+    }
+  }
+
+  private Vector2 _cellPosition(int i, int j) =>
+    _spawnPosNode.Position + new Vector2(
+      Constants.TETRIS_BLOCK_SIZE * (i - Constants.TETRIS_SPAWN_I),
+      Constants.TETRIS_BLOCK_SIZE * (j - Constants.TETRIS_SPAWN_J)
+    );
+
+  private void _buildEscapeWall() {
+    for (int j = 0; j < Constants.TETRIS_POOL_HEIGHT; j++) {
+      var brick = SceneHelpers.InstantiateNode<Block>();
+      brick.ColorGroup = ESCAPE_WALL_COLORS[j % ESCAPE_WALL_COLORS.Length];
+      brick.Grid = _grid;
+      brick.MoveTo(Constants.TETRIS_ESCAPE_WALL_I, j);
+      brick.Position = _cellPosition(Constants.TETRIS_ESCAPE_WALL_I, j);
+      AddChild(brick);
+      brick.Owner = this;
+      brick.AddToGrid();
+    }
+  }
+
+  private void _crumbleEscapeWall() {
+    for (int j = 0; j < Constants.TETRIS_POOL_HEIGHT; j++) {
+      _grid[Constants.TETRIS_ESCAPE_WALL_I, j]?.Destroy();
+      _grid[Constants.TETRIS_ESCAPE_WALL_I, j] = null;
+    }
+  }
+
+  // The run never opens with an S or a Z. Dealt onto an empty floor either one settles into a
+  // step the cube can stand in the crook of, out of reach of everything that follows.
+  private void _keepTheOpeningPlayable() {
+    if (!_isFirstPiece) {
+      return;
+    }
+    var top = _randomBag.Count - 1;
+    for (var i = top; i >= 0; i--) {
+      if (_randomBag[i] != _sBlock && _randomBag[i] != _zBlock) {
+        (_randomBag[top], _randomBag[i]) = (_randomBag[i], _randomBag[top]);
+        return;
       }
     }
   }
@@ -127,11 +190,13 @@ public partial class TetrisPool : Node2D {
       var current = _randomBag[_randomBag.Count - 1];
       _randomBag.RemoveAt(_randomBag.Count - 1);
       var next = _randomBag[_randomBag.Count - 1];
+      _isFirstPiece = false;
       return new Dictionary<string, PackedScene> { { "current", current }, { "next", next } };
     }
     else if (_randomBag.Count == 0) {
       _randomBag = new Godot.Collections.Array<PackedScene>(_tetrominos);
       _randomBag.Shuffle();
+      _keepTheOpeningPlayable();
       return GetRandomTetrominoWithNext();
     }
     else {
@@ -160,9 +225,13 @@ public partial class TetrisPool : Node2D {
     // be moved back.
     shape.PlaceAt(pos, Constants.TETRIS_SPAWN_J, rot);
     shape.SetShape();
+    // Placed before it joins the tree, and told to forget where it has been: interpolation
+    // otherwise draws the new piece sweeping up to the spawn row from the pool's own origin,
+    // through the stack, for the frame or two after the previous piece locked.
+    shape.Position = _spawnPosNode.Position + new Vector2(Constants.TETRIS_BLOCK_SIZE * (pos - Constants.TETRIS_SPAWN_I), 0);
     AddChild(shape);
     shape.Owner = this;
-    shape.Position = _spawnPosNode.Position + new Vector2(Constants.TETRIS_BLOCK_SIZE * (pos - Constants.TETRIS_SPAWN_I), 0);
+    shape.ResetPhysicsInterpolation();
     return shape;
   }
 
@@ -286,7 +355,7 @@ public partial class TetrisPool : Node2D {
     RemoveLines();
   }
 
-  private void RemoveLines() {
+  internal void RemoveLines() {
     var lines = DetectLines();
     if (lines.Count > 0) {
       EmitSignal(TetrisPool.SignalName.LinesRemoved, lines.Count);
@@ -301,7 +370,7 @@ public partial class TetrisPool : Node2D {
     var generation = _resetGeneration;
     _nbQueuedLinesToRemove += 1;
     _removeLinesDurationTimerNode.WaitTime = Block.BLINK_ANIMATION_DURATION;
-    for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++) {
+    for (int i = 0; i < Constants.TETRIS_GRID_WIDTH; i++) {
       _grid[i, line]?.Destroy();
       _grid[i, line] = null;
     }
@@ -320,7 +389,7 @@ public partial class TetrisPool : Node2D {
 
   private void MoveDownLinesAbove(int line) {
     for (int j = line - 1; j >= 0; j--) {
-      for (int i = 0; i < Constants.TETRIS_POOL_WIDTH; i++) {
+      for (int i = 0; i < Constants.TETRIS_GRID_WIDTH; i++) {
         Block? currentBlock = _grid[i, j];
         if (currentBlock != null) {
           currentBlock.J += 1;
@@ -358,7 +427,9 @@ public partial class TetrisPool : Node2D {
   }
 
   public void reset(bool firstTime) {
-    if (_isVirgin && !firstTime)
+    // The run is over for good once the player is through the wall, so a death anywhere later in
+    // the level must not start the pool up again behind them.
+    if (!firstTime && (_isVirgin || _hasEscaped))
       return;
 
     _resetGeneration += 1;
@@ -370,6 +441,7 @@ public partial class TetrisPool : Node2D {
     _phaseElapsed = 0.0f;
     _stepInterval = Constants.TETRIS_SPEEDS[0];
     _randomBag.Clear();
+    _isFirstPiece = true;
     _shape?.QueueFree();
     _shape = null;
     if (!firstTime) {
@@ -377,10 +449,14 @@ public partial class TetrisPool : Node2D {
       _isPaused = false;
     }
     InitGrid();
+    if (!_hasEscaped) {
+      _buildEscapeWall();
+    }
     UpdateScoreboard();
   }
 
   private void UpdateScoreboard() {
+    _highScore = Math.Max(_highScore, _score);
     _scoreBoardNode.SetHighScore(_highScore);
     _scoreBoardNode.SetScore(_score);
     int oldLevel = _level;
@@ -392,9 +468,11 @@ public partial class TetrisPool : Node2D {
       MusicTrackManager.SetPitchScale(1 + (speed - 1) * 0.1f);
       if (_level > 1) {
         var levelUpNode = SceneHelpers.InstantiateNode<LevelUp>();
+        levelUpNode.Level = _level;
+        levelUpNode.Position = _levelUpPositionNode.Position;
         AddChild(levelUpNode);
         levelUpNode.Owner = this;
-        levelUpNode.Position = _levelUpPositionNode.Position;
+        levelUpNode.ResetPhysicsInterpolation();
       }
     }
   }
@@ -413,7 +491,7 @@ public partial class TetrisPool : Node2D {
   }
 
   private void _onTriggerEnterAreaBodyEntered(Node body) {
-    if (body is not Player) {
+    if (body is not Player || _hasEscaped) {
       return;
     }
 
@@ -427,6 +505,32 @@ public partial class TetrisPool : Node2D {
     _triggerEnterAreaNode.QueueFree();
   }
 
+  private void _onEscapeCheckpointHit() {
+    if (_hasEscaped) {
+      return;
+    }
+    _hasEscaped = true;
+    _saveData = new SaveData(hasEscaped: true);
+    EventHandler.Instance.EmitTetrisPoolEscaped();
+    _stopForEscape();
+  }
+
+  // The piece in the air is dropped rather than left hanging over a pool nobody is playing any
+  // more, and the floor the player rode up on is set going again so the room has a way out of it.
+  //
+  // What is left of the wall goes with it. The player drops into the room off the top of the wall,
+  // and from the room's own floor that face is sheer: leaving it standing would seal them in.
+  private void _stopForEscape() {
+    _isPaused = true;
+    _isTravelling = false;
+    _haveActiveBlock = false;
+    _shape?.QueueFree();
+    _shape = null;
+    _crumbleEscapeWall();
+    MusicTrackManager.SetPitchScale(1.0f);
+    _slidingFloorSliderNode.ResumeSlider();
+  }
+
   private void ConnectSignals() {
     EventHandler.Instance.Events.PlayerDying += _onPlayerDying;
     EventHandler.Instance.Events.CheckpointLoaded += reset;
@@ -435,5 +539,20 @@ public partial class TetrisPool : Node2D {
   private void DisconnectSignals() {
     EventHandler.Instance.Events.PlayerDying -= _onPlayerDying;
     EventHandler.Instance.Events.CheckpointLoaded -= reset;
+  }
+
+  public string GetSaveId() => this.GetPath();
+  public string Save(ISerializer serializer) => serializer.Serialize(_saveData);
+  public void Load(ISerializer serializer, string data) {
+    var deserializedData = serializer.Deserialize<SaveData>(data);
+    _saveData = deserializedData ?? new SaveData();
+    _hasEscaped = _saveData.hasEscaped;
+    // A pool that has already been beaten comes back empty: the wall it was won by is the only
+    // way back into it from the room the player is standing in.
+    if (_hasEscaped && IsNodeReady()) {
+      ClearGrid();
+      InitGrid();
+      _stopForEscape();
+    }
   }
 }

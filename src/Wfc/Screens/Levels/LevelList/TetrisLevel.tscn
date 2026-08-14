@@ -9,146 +9,170 @@
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Backgrounds/TetrisBackground/TetrisBackground.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="8"]
 [ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Platforms/TetrominoStack/TetrominoStack.tscn" id="9"]
+[ext_resource type="PackedScene" uid="uid://geq5rxi44eiy" path="res://src/Wfc/Entities/World/Tetris/TetrisPool/TetrisPool.tscn" id="10"]
+[ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="11"]
 
-[node name="LevelHandler" instance=ExtResource("1")]
+[sub_resource type="RectangleShape2D" id="PoolExitWayOut"]
+size = Vector2(240, 180)
+
+[node name="LevelHandler" unique_id=1357255613 instance=ExtResource("1")]
 Track = "tetris"
 
 [node name="Camera2D" parent="." index="1"]
 limit_left = -900
-limit_top = -1700
-limit_right = 10800
+limit_top = -3400
+limit_right = 14400
 limit_bottom = 620
 
-[node name="FallZone" parent="." index="3" instance=ExtResource("2")]
+[node name="FallZone" parent="." index="3" unique_id=1395574437 instance=ExtResource("2")]
 position = Vector2(5000, 1122)
 scale = Vector2(350, 4.788)
 
-[node name="StartGround" type="StaticBody2D" parent="." index="4"]
+[node name="StartGround" type="StaticBody2D" parent="." index="4" unique_id=1266880857]
 
-[node name="Visual" type="Polygon2D" parent="StartGround" index="0"]
+[node name="Visual" type="Polygon2D" parent="StartGround" index="0" unique_id=1129862948]
 color = Color(0.235, 0.243, 0.29, 1)
 polygon = PackedVector2Array(-900, -1700, -500, -1700, -500, 414, 1248, 414, 1248, 1200, -900, 1200)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StartGround" index="1"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StartGround" index="1" unique_id=1150823880]
 polygon = PackedVector2Array(-900, -1700, -500, -1700, -500, 414, 1248, 414, 1248, 1200, -900, 1200)
 
-[node name="ColorArea" type="Area2D" parent="StartGround" index="2" groups=["blue", "pink", "purple", "yellow"]]
+[node name="ColorArea" type="Area2D" parent="StartGround" index="2" unique_id=328051392 groups=["blue", "pink", "purple", "yellow"]]
 collision_layer = 4
 collision_mask = 2
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StartGround/ColorArea" index="0"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StartGround/ColorArea" index="0" unique_id=912250978]
 polygon = PackedVector2Array(-900, -1700, -500, -1700, -500, 414, 1248, 414, 1248, 1200, -900, 1200)
 
-[node name="EndGround" type="StaticBody2D" parent="." index="5"]
+[node name="EndGround" type="StaticBody2D" parent="." index="5" unique_id=650283276]
 
-[node name="Visual" type="Polygon2D" parent="EndGround" index="0"]
+[node name="Visual" type="Polygon2D" parent="EndGround" index="0" unique_id=1800810506]
 color = Color(0.235, 0.243, 0.29, 1)
-polygon = PackedVector2Array(9168, 270, 10400, 270, 10400, -1700, 10800, -1700, 10800, 1200, 9168, 1200)
+polygon = PackedVector2Array(9168, 270, 9600, 270, 9600, 1200, 9168, 1200)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround" index="1"]
-polygon = PackedVector2Array(9168, 270, 10400, 270, 10400, -1700, 10800, -1700, 10800, 1200, 9168, 1200)
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround" index="1" unique_id=857231093]
+polygon = PackedVector2Array(9168, 270, 9600, 270, 9600, 1200, 9168, 1200)
 
-[node name="ColorArea" type="Area2D" parent="EndGround" index="2" groups=["blue", "pink", "purple", "yellow"]]
+[node name="ColorArea" type="Area2D" parent="EndGround" index="2" unique_id=1095282898 groups=["blue", "pink", "purple", "yellow"]]
 collision_layer = 4
 collision_mask = 2
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround/ColorArea" index="0"]
-polygon = PackedVector2Array(9168, 270, 10400, 270, 10400, -1700, 10800, -1700, 10800, 1200, 9168, 1200)
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EndGround/ColorArea" index="0" unique_id=534636149]
+polygon = PackedVector2Array(9168, 270, 9600, 270, 9600, 1200, 9168, 1200)
 
-[node name="Platforms" type="Node2D" parent="." index="6"]
+[node name="Platforms" type="Node2D" parent="." index="6" unique_id=129451186]
 
-[node name="RestIsland" parent="Platforms" index="0" instance=ExtResource("3")]
+[node name="RestIsland" parent="Platforms" index="0" unique_id=397585859 instance=ExtResource("3")]
 position = Vector2(3408, -32)
-SnapToGrid = false
 Size = Vector2(288, 256)
+SnapToGrid = false
 Group = "white"
 
-[node name="ArrivalLedge" parent="Platforms" index="1" instance=ExtResource("3")]
-position = Vector2(5712, 542)
-SnapToGrid = false
+[node name="ArrivalLedge" parent="Platforms" index="1" unique_id=581566844 instance=ExtResource("3")]
+position = Vector2(5712, 544)
 Size = Vector2(288, 256)
+SnapToGrid = false
 Group = "white"
 
-[node name="Rains" type="Node2D" parent="." index="7"]
+[node name="Rains" type="Node2D" parent="." index="7" unique_id=1694593484]
 
-[node name="RainA" parent="Rains" index="0" instance=ExtResource("4")]
+[node name="RainA" parent="Rains" index="0" unique_id=209825594 instance=ExtResource("4")]
 position = Vector2(1608, -1200)
-LaneCount = 5
-LaneSpacing = 360.0
-MaxPieceHeight = 2
-SpawnInterval = 5.6
-LaneStagger = 0.285714
-FallHeight = 2400.0
-CellSize = 72.0
-StepInterval = 0.8
+RowSpacing = 8
 Seed = 7
 
-[node name="RainB" parent="Rains" index="1" instance=ExtResource("4")]
+[node name="RainB" parent="Rains" index="1" unique_id=440893092 instance=ExtResource("4")]
 position = Vector2(3768, -1200)
-LaneCount = 5
-LaneSpacing = 360.0
-MaxPieceHeight = 2
-SpawnInterval = 5.6
-LaneStagger = 0.285714
-FallHeight = 2400.0
-CellSize = 72.0
-StepInterval = 0.8
+RowSpacing = 8
 Seed = 13
 
-[node name="Stacks" type="Node2D" parent="." index="8"]
+[node name="Stacks" type="Node2D" parent="." index="8" unique_id=1033403517]
 
-[node name="Heap" parent="Stacks" index="0" instance=ExtResource("9")]
+[node name="Heap" parent="Stacks" index="0" unique_id=1789560862 instance=ExtResource("9")]
 position = Vector2(6072, 198)
-Map = "............TTTT\n........SSZZOOOO\n....LLLLIIIIJJJJ\nIIIIZZSSTTTTOOOO"
-CellSize = 72.0
+Map = "............TTTT
+........SSZZOOOO
+....LLLLIIIIJJJJ
+IIIIZZSSTTTTOOOO"
 
-[node name="HopI" parent="Stacks" index="1" instance=ExtResource("9")]
+[node name="HopI" parent="Stacks" index="1" unique_id=1850145789 instance=ExtResource("9")]
 position = Vector2(7440, 198)
 Map = "IIII"
-CellSize = 72.0
 
-[node name="HopJ" parent="Stacks" index="2" instance=ExtResource("9")]
+[node name="HopJ" parent="Stacks" index="2" unique_id=828810382 instance=ExtResource("9")]
 position = Vector2(7944, 198)
-Map = "JJJ\n..J"
-CellSize = 72.0
+Map = "JJJ
+..J"
 
-[node name="HopT" parent="Stacks" index="3" instance=ExtResource("9")]
+[node name="HopT" parent="Stacks" index="3" unique_id=755098942 instance=ExtResource("9")]
 position = Vector2(8376, 126)
-Map = "TTT\n.T."
-CellSize = 72.0
+Map = "TTT
+.T."
 
-[node name="HopZ" parent="Stacks" index="4" instance=ExtResource("9")]
+[node name="HopZ" parent="Stacks" index="4" unique_id=1976609549 instance=ExtResource("9")]
 position = Vector2(8808, 198)
-Map = "ZZ.\n.ZZ"
-CellSize = 72.0
+Map = "ZZ.
+.ZZ"
 
-[node name="Gems" type="Node2D" parent="." index="9"]
+[node name="Gems" type="Node2D" parent="." index="9" unique_id=1714104113]
 
-[node name="BlueGem" parent="Gems" index="0" instance=ExtResource("5")]
+[node name="BlueGem" parent="Gems" index="0" unique_id=165489530 instance=ExtResource("5")]
 position = Vector2(1788, -60)
 
-[node name="PinkGem" parent="Gems" index="1" instance=ExtResource("5")]
+[node name="PinkGem" parent="Gems" index="1" unique_id=18921661 instance=ExtResource("5")]
 position = Vector2(2508, -420)
 GroupName = "pink"
 
-[node name="PurpleGem" parent="Gems" index="2" instance=ExtResource("5")]
+[node name="PurpleGem" parent="Gems" index="2" unique_id=1849919075 instance=ExtResource("5")]
 position = Vector2(3948, -60)
 GroupName = "purple"
 
-[node name="YellowGem" parent="Gems" index="3" instance=ExtResource("5")]
+[node name="YellowGem" parent="Gems" index="3" unique_id=1958289109 instance=ExtResource("5")]
 position = Vector2(4668, -420)
 GroupName = "yellow"
 
-[node name="LevelExit" parent="." index="10" instance=ExtResource("6")]
-position = Vector2(9900, 127)
+[node name="LevelExit" parent="." index="10" unique_id=1724494876 instance=ExtResource("6")]
+position = Vector2(13600, -1925)
 
-[node name="Background" parent="." index="11" instance=ExtResource("7")]
+[node name="Background" parent="." index="11" unique_id=689859907 instance=ExtResource("7")]
 
-[node name="MidCheckpoint" parent="." index="12" instance=ExtResource("8")]
+[node name="MidCheckpoint" parent="." index="12" unique_id=450356810 instance=ExtResource("8")]
 position = Vector2(3408, -302)
 
-[node name="LateCheckpoint" parent="." index="13" instance=ExtResource("8")]
+[node name="LateCheckpoint" parent="." index="13" unique_id=1400223920 instance=ExtResource("8")]
 position = Vector2(5712, 272)
 
 [node name="Player" parent="." index="14"]
 position = Vector2(-300, 300)
+
+[node name="TetrisPool" parent="." index="15" unique_id=334615294 instance=ExtResource("10")]
+position = Vector2(11220, -1350)
+
+[node name="ExitGround" type="StaticBody2D" parent="." index="16" unique_id=1029848177]
+
+[node name="Visual" type="Polygon2D" parent="ExitGround" index="0" unique_id=728288733]
+color = Color(0.235, 0.243, 0.29, 1)
+polygon = PackedVector2Array(13056, -1782, 14100, -1782, 14100, -3400, 14400, -3400, 14400, 1200, 13056, 1200)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="ExitGround" index="1" unique_id=990103349]
+polygon = PackedVector2Array(13056, -1782, 14100, -1782, 14100, -3400, 14400, -3400, 14400, 1200, 13056, 1200)
+
+[node name="ColorArea" type="Area2D" parent="ExitGround" index="2" unique_id=1536565891 groups=["blue", "pink", "purple", "yellow"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="ExitGround/ColorArea" index="0" unique_id=1219202838]
+polygon = PackedVector2Array(13056, -1782, 14100, -1782, 14100, -3400, 14400, -3400, 14400, 1200, 13056, 1200)
+
+[node name="CameraLocalizers" type="Node2D" parent="." index="17" unique_id=1104274087]
+
+[node name="PoolExitResetter" parent="CameraLocalizers" index="0" unique_id=2084842332 instance=ExtResource("11")]
+position = Vector2(12800, -1880)
+RestoreLevelFraming = true
+LimitedEdges = 0
+FollowPath = NodePath("")
+
+[node name="Area2D" type="Area2D" parent="CameraLocalizers/PoolExitResetter" index="0" unique_id=1895321877]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizers/PoolExitResetter/Area2D" index="0" unique_id=1037251131]
+shape = SubResource("PoolExitWayOut")

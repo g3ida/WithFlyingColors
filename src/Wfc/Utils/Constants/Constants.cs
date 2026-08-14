@@ -4,10 +4,22 @@ using Godot;
 
 public static class Constants {
   public const float TETRIS_BLOCK_SIZE = 72.0f;
+
+  // The size the block art is actually drawn at, bevel and frame included. It is wider than a
+  // cell, so anything laying blocks on the grid has to scale it down to one: left alone, every
+  // block paints over its right and bottom neighbours, and which of the two wins comes down to
+  // the order they happen to be drawn in.
+  public const float TETRIS_BLOCK_ART_SIZE = 74.0f;
   public const int TETRIS_POOL_WIDTH = 10;
   public const int TETRIS_POOL_HEIGHT = 18;
   public const int TETRIS_SPAWN_I = 5;
   public const int TETRIS_SPAWN_J = 2;
+
+  // The escape wall stands in the grid one column past the playfield, where no piece can be
+  // placed: it takes no part in completing a line, but a line that clears takes its brick with
+  // it and the bricks above collapse onto the gap.
+  public const int TETRIS_ESCAPE_WALL_I = TETRIS_POOL_WIDTH;
+  public const int TETRIS_GRID_WIDTH = TETRIS_POOL_WIDTH + 1;
   public static readonly float[] TETRIS_SPEEDS = { 0.3f, 0.23f, 0.17f, 0.11f, 0.07f };
   public const int TETRIS_MAX_LEVELS = 4;
 
