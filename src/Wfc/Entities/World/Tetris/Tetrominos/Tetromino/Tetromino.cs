@@ -196,6 +196,10 @@ public abstract partial class Tetromino : Node2D {
         // being an ancestor.
         block.Owner = null;
         block.Reparent(newParent, keepGlobalTransform: true);
+        // The block stands still either side of this, but its transform is now measured against
+        // the pool rather than the piece, and interpolating between the two draws it a whole
+        // cell out of place on the frame it locks.
+        block.ResetPhysicsInterpolation();
       }
     }
   }

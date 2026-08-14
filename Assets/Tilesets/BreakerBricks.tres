@@ -1,6 +1,6 @@
-[gd_resource type="TileSet" load_steps=2 format=3]
+[gd_resource type="TileSet" format=3 uid="uid://cqkicrlh8buv6"]
 
-[ext_resource type="Texture2D" path="res://Assets/Sprites/BrickBreaker/breaker-brick-palette.png" id="1_bbrick"]
+[ext_resource type="Texture2D" uid="uid://jc88824dy06k" path="res://Assets/Sprites/BrickBreaker/breaker-brick-palette.png" id="1_bbrick"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bbrick"]
 texture = ExtResource("1_bbrick")

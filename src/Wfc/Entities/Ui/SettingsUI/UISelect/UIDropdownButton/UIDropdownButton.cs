@@ -238,7 +238,7 @@ public partial class UIDropdownButton : Button, IDarkBackgroundAware {
     return ImageTexture.CreateFromImage(image);
   }
 
-  private StyleBoxFlat _boxStyle(Color ink) => new() {
+  private static StyleBoxFlat _boxStyle(Color ink) => new() {
     BgColor = Colors.Transparent,
     BorderWidthLeft = BOX_BORDER_WIDTH,
     BorderWidthTop = BOX_BORDER_WIDTH,

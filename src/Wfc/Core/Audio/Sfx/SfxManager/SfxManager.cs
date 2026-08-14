@@ -76,6 +76,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PickedPowerUp += OnPickedPowerup;
     EventHandler.Instance.Events.BrickBroken += OnBrickBroken;
     EventHandler.Instance.Events.BreakBreakerWin += OnWinMiniGame;
+    EventHandler.Instance.Events.TetrisPoolEscaped += OnWinMiniGame;
     EventHandler.Instance.Events.BrickBreakerStart += OnBrickBreakerStart;
     EventHandler.Instance.Events.MenuButtonPressed += OnMenuButtonPressed;
     EventHandler.Instance.Events.SfxVolumeChanged += OnButtonToggle;
@@ -124,6 +125,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PickedPowerUp -= OnPickedPowerup;
     EventHandler.Instance.Events.BrickBroken -= OnBrickBroken;
     EventHandler.Instance.Events.BreakBreakerWin -= OnWinMiniGame;
+    EventHandler.Instance.Events.TetrisPoolEscaped -= OnWinMiniGame;
     EventHandler.Instance.Events.BrickBreakerStart -= OnBrickBreakerStart;
     EventHandler.Instance.Events.MenuButtonPressed -= OnMenuButtonPressed;
     EventHandler.Instance.Events.SfxVolumeChanged -= OnButtonToggle;

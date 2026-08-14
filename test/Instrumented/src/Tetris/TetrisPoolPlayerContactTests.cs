@@ -1,6 +1,7 @@
 namespace Wfc.test.instrumented.Tetris;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
@@ -25,11 +26,11 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
   private static readonly Vector2 POOL_POS = new(1000f, 1000f);
   // The pool scene is scaled; its grid geometry in world space is scaled with it.
   private const float POOL_SCALE = 1.5f;
-  // The bottom row of the pool ends just above the pool origin; the cube stands there.
-  private static readonly float FLOOR_TOP = POOL_POS.Y - 3f;
+  // The bottom row of the pool ends on the pool origin; the cube stands there.
+  private static readonly float FLOOR_TOP = POOL_POS.Y;
   private const float PLAYER_HALF_WIDTH = 95.4f / 2f;
   // World x of the pool's leftmost column, from the spawn marker and spawn column.
-  private static readonly float POOL_LEFT = POOL_POS.X + POOL_SCALE * (-1f - 72f * 5f);
+  private static readonly float POOL_LEFT = POOL_POS.X + (POOL_SCALE * -72f * 5f);
 
   private const float APPROACH_GAP = 200f;
   private const int FRAMES_TO_LAND = 40;
@@ -234,21 +235,23 @@ public class TetrisPoolPlayerContactTests(Node testScene) : TestClass(testScene)
     return (pool, player);
   }
 
-  // Locking hands the blocks to the pool itself, so the first direct Block child marks it.
+  // Locking hands the blocks to the pool itself, so the first direct Block child in a playfield
+  // column marks it - the escape wall is a direct child too, and it is there from the start.
   // The pool is then frozen and the piece it has already dealt next is discarded: the trial
   // is the cube against the landed piece, not against whatever falls across its path.
   private async Task<Block[]> _waitForFirstLockedPiece(TetrisPool pool) {
-    var locked = await _waitFor(
-      () => pool.GetChildren().OfType<Block>().Any(),
-      FIRST_LOCK_TIMEOUT);
+    var locked = await _waitFor(() => _landedBlocks(pool).Any(), FIRST_LOCK_TIMEOUT);
     locked.ShouldBeTrue("no piece ever locked into the pool");
     pool.SetPhysicsProcess(false);
     foreach (var next in pool.GetChildren().OfType<Tetromino>()) {
       next.Free();
     }
     await _physicsFrame();
-    return [.. pool.GetChildren().OfType<Block>()];
+    return [.. _landedBlocks(pool)];
   }
+
+  private static IEnumerable<Block> _landedBlocks(TetrisPool pool) =>
+    pool.GetChildren().OfType<Block>().Where(b => b.I < Constants.TETRIS_POOL_WIDTH);
 
   // Walk in from whichever side has room to stand between the piece and the pool wall.
   // Cells are wider in world space than the block constant: the pool is scaled.

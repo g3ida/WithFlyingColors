@@ -100,6 +100,8 @@ public partial class Events : RefCounted {
   [Signal]
   public delegate void TetrisLinesRemovedEventHandler();
   [Signal]
+  public delegate void TetrisPoolEscapedEventHandler();
+  [Signal]
   public delegate void BrickBrokenEventHandler(string color, Vector2 position);
   [Signal]
   public delegate void BouncingBallRemovedEventHandler(Node2D ball);
