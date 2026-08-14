@@ -30,14 +30,18 @@ public partial class ResolutionSelectDriver : UISelectDriver {
     _onFullscreenToggled(GameSettings.Fullscreen);
   }
 
-  private Dictionary<Vector2I, string> _resolutionNames = new Dictionary<Vector2I, string> {
-    [new Vector2I(3840, 2160)] = "4K UHD",
-    [new Vector2I(2560, 1440)] = "QHD 2K",
-    [new Vector2I(1920, 1080)] = "FHD 1080p",
-    [new Vector2I(1280, 720)] = "HD 720p",
-    [new Vector2I(1024, 576)] = "SD 576p",
-    [new Vector2I(800, 450)] = "SD 450p"
-  };
+  // Largest first, and 4K is as large as the game is offered at. A size worked out
+  // from the screen used to be offered above these, but what the desktop reports is
+  // not reliably the number of pixels the player has - a scaled desktop gives a size
+  // no monitor is - and an option nobody can name is worse than a ceiling.
+  private static readonly (Vector2I Size, string Name)[] RESOLUTIONS = [
+    (new Vector2I(3840, 2160), "4K UHD"),
+    (new Vector2I(2560, 1440), "QHD 2K"),
+    (new Vector2I(1920, 1080), "FHD 1080p"),
+    (new Vector2I(1280, 720), "HD 720p"),
+    (new Vector2I(1024, 576), "SD 576p"),
+    (new Vector2I(800, 450), "SD 450p"),
+  ];
 
   public ResolutionSelectDriver() { }
 
@@ -53,24 +57,22 @@ public partial class ResolutionSelectDriver : UISelectDriver {
     _resolutions.Clear();
     if (!isFullScreen) {
       var screenSize = DisplayServer.ScreenGetSize();
-      foreach (var (vec, name) in _resolutionNames) {
-        if (vec.X <= screenSize.X && vec.Y <= screenSize.Y) {
+      foreach (var (size, name) in RESOLUTIONS) {
+        if (size.X <= screenSize.X && size.Y <= screenSize.Y) {
           Items.Add(name);
-          ItemValues.Add(vec);
-          _resolutions.Add(vec);
+          ItemValues.Add(size);
+          _resolutions.Add(size);
         }
       }
-      // On a screen none of the named sizes can cover — a compositor that reports
-      // the desktop scaled up, a monitor bigger than 4K — windowed mode is left
-      // with nothing that fills it. The screen gets its own entry at the head of
-      // the list in that case, and only then: on any ordinary display the named
-      // sizes already reach as far, and a second way to say the same thing is
-      // just one more item to scroll past.
-      var fitToScreen = _getLargestWindowSizeThatFits(screenSize);
-      if (_resolutions.Count == 0 || _isLargerThan(fitToScreen, _resolutions[0])) {
-        Items.Insert(0, $"{fitToScreen.X}x{fitToScreen.Y}");
-        ItemValues.Insert(0, fitToScreen);
-        _resolutions.Insert(0, fitToScreen);
+      // A screen that reports smaller than every one of them - a desktop the
+      // compositor scales, a run with no screen at all - would leave the row with
+      // nothing to show. The smallest is offered regardless; applying it clamps to
+      // whatever room there turns out to be.
+      if (_resolutions.Count == 0) {
+        var (size, name) = RESOLUTIONS[^1];
+        Items.Add(name);
+        ItemValues.Add(size);
+        _resolutions.Add(size);
       }
     }
     else {
@@ -81,45 +83,29 @@ public partial class ResolutionSelectDriver : UISelectDriver {
     EmitSignal(nameof(ItemListChanged));
   }
 
-  private static bool _isLargerThan(Vector2I size, Vector2I other) => size.X * size.Y > other.X * other.Y;
-
-  // The biggest window this screen can hold, kept at the ratio the game is drawn
-  // at. The room to work with is the screen less what the desktop keeps for
-  // itself (panels, docks) and less the frame the window manager draws, or the
-  // title bar's worth of window would hang off the bottom edge. Growing the base
-  // viewport into it rather than taking the room as it comes matters on a screen
-  // that is not 16:9: the stretch mode is keep_height, so a wider window widens
-  // the view, and the menus are laid out for 1920 wide with only so much bleed
-  // to give.
-  private static Vector2I _getLargestWindowSizeThatFits(Vector2I screenSize) {
-    var usable = DisplayServer.ScreenGetUsableRect(DisplayServer.WindowGetCurrentScreen());
-    var room = usable.Size == Vector2I.Zero ? screenSize : usable.Size;
-    room -= DisplayServer.WindowGetSizeWithDecorations() - DisplayServer.WindowGetSize();
-
-    var baseSize = new Vector2I(
-      (int)ProjectSettings.GetSetting("display/window/size/viewport_width"),
-      (int)ProjectSettings.GetSetting("display/window/size/viewport_height")
-    );
-    var scale = Mathf.Min((float)room.X / baseSize.X, (float)room.Y / baseSize.Y);
-    var fitted = new Vector2I(Mathf.FloorToInt(baseSize.X * scale), Mathf.FloorToInt(baseSize.Y * scale));
-    return fitted.Clamp(Vector2I.One, screenSize);
-  }
-
   public override void onItemSelected(Variant? item) {
     // Logic for handling item selection goes here.
   }
 
+  // The nearest of the offered sizes rather than only an exact one: a window the
+  // player has dragged the edge of is whatever shape they let go of it at, and the
+  // row still has to name something close to what they are looking at.
   public override int GetDefaultSelectedIndex() {
-    if (!GameSettings.Fullscreen) {
-      var w_size = GameSettings.WindowSize;
-      for (int i = 0; i < _resolutions.Count; i++) {
-        if (_resolutions[i] == w_size) {
-          return i;
-        }
+    if (GameSettings.Fullscreen || _resolutions.Count == 0) {
+      return 0;
+    }
+    var windowSize = GameSettings.WindowSize;
+    var nearest = 0;
+    for (var i = 1; i < _resolutions.Count; i++) {
+      if (_areaGap(_resolutions[i], windowSize) < _areaGap(_resolutions[nearest], windowSize)) {
+        nearest = i;
       }
     }
-    return 0;
+    return nearest;
   }
+
+  private static long _areaGap(Vector2I size, Vector2I other) =>
+      System.Math.Abs(((long)size.X * size.Y) - ((long)other.X * other.Y));
 
   public override void _Ready() {
     base._Ready();

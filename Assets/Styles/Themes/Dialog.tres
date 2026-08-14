@@ -94,6 +94,7 @@ Button/styles/normal = SubResource("4")
 Button/styles/pressed = SubResource("9")
 Dialogs/constants/button_margin = 40
 Dialogs/constants/margin = 20
+Label/colors/font_color = Color(1, 1, 1, 1)
 Label/constants/line_spacing = 3
 Label/font_sizes/font_size = 50
 Window/icons/close = ExtResource("1")

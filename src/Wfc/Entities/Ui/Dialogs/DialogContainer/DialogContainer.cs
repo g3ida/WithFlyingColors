@@ -26,6 +26,7 @@ public partial class DialogContainer : Control {
   private const float TWEEN_DURATION = 0.2f;
   // Far enough up that no corner of the centred panel peeks into the screen.
   private const int HIDDEN_OFFSET_Y = 1500;
+  private const int OVERLAY_Z_INDEX = 200;
 
   private enum DialogStates {
     Showing,
@@ -53,6 +54,12 @@ public partial class DialogContainer : Control {
   public ILocalizationService LocalizationService => this.DependOn<ILocalizationService>();
   #endregion Dependencies
 
+  // The player did not accept, whether they backed out or let the countdown run
+  // out. A screen that has something to undo listens here rather than to the
+  // dialog's own Cancelled, which only speaks for the button.
+  [Signal]
+  public delegate void DismissedEventHandler();
+
   [Export] public NodePath DialogNodePath = default!;
 
   // Every dialog is worded in the player's language, so the wording belongs to the
@@ -64,8 +71,22 @@ public partial class DialogContainer : Control {
   [Export] public TranslationKey ConfirmTextKey { get; set; }
   [Export] public TranslationKey CancelTextKey { get; set; }
 
+  // A dialog that answers itself if it is left alone, for a change the player may
+  // not be able to see well enough to answer - a resolution the monitor cannot
+  // show. Running out counts as cancelling, so the harmless answer is the one that
+  // needs nothing done. Zero leaves the dialog waiting, which is what every other
+  // one does. The wording is given the seconds left as {0}.
+  [Export] public int CountdownSeconds { get; set; }
+
+  // Set by a host that hangs the dialog somewhere not covering the screen - the
+  // settings tabs sit in one corner of theirs. The panel centres in this node's
+  // rect, so the rect has to be the whole viewport wherever the node is parented.
+  [Export] public bool CoverViewport { get; set; }
+
   private ColorRect _colorRectNode = default!;
   private ConfirmDialog _dialogNode = default!;
+  private Timer? _countdownNode;
+  private int _secondsLeft;
 
   private DialogStates _currentState = DialogStates.Hidden;
   private Control? _lastFocusOwner;
@@ -85,8 +106,20 @@ public partial class DialogContainer : Control {
   public override void _Ready() {
     base._Ready();
     ProcessMode = ProcessModeEnum.Always;
+    if (CoverViewport) {
+      TopLevel = true;
+      // Parented straight to the canvas, the dialog no longer sits after the screen
+      // in the tree, so it says outright that it is in front.
+      ZIndex = OVERLAY_Z_INDEX;
+      SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+    }
     _colorRectNode = GetNode<ColorRect>("ColorRect");
     _dialogNode = GetNode<ConfirmDialog>(DialogNodePath);
+    if (CountdownSeconds > 0) {
+      _countdownNode = new Timer { WaitTime = 1.0, Autostart = false };
+      _countdownNode.Timeout += _onCountdownTick;
+      AddChild(_countdownNode);
+    }
     _isWired = true;
 
     _moveOffScreen();
@@ -110,7 +143,8 @@ public partial class DialogContainer : Control {
     if (!_isWired) {
       return;
     }
-    _dialogNode.SetText(LocalizationService.GetLocalizedString(DialogTextKey));
+    var text = LocalizationService.GetLocalizedString(DialogTextKey);
+    _dialogNode.SetText(CountdownSeconds > 0 ? string.Format(text, _secondsLeft) : text);
     _dialogNode.SetConfirmCaption(LocalizationService.GetLocalizedString(ConfirmTextKey));
     if (_dialogNode.ShowCancelButton) {
       _dialogNode.SetCancelCaption(LocalizationService.GetLocalizedString(CancelTextKey));
@@ -126,9 +160,27 @@ public partial class DialogContainer : Control {
     _holdsModal = true;
     _lastFocusOwner = GetViewport().GuiGetFocusOwner();
     _currentState = DialogStates.Showing;
+    _startCountdown();
     _showNodes();
     _prepareTween(0);
     _grabDialogFocus();
+  }
+
+  private void _startCountdown() {
+    if (_countdownNode == null) {
+      return;
+    }
+    _secondsLeft = CountdownSeconds;
+    _applyLocalizedText();
+    _countdownNode.Start();
+  }
+
+  private void _onCountdownTick() {
+    _secondsLeft--;
+    _applyLocalizedText();
+    if (_secondsLeft <= 0) {
+      Dismiss();
+    }
   }
 
   // A confirmation opens on its cancel button: these dialogs guard destructive
@@ -167,11 +219,13 @@ public partial class DialogContainer : Control {
       return;
     }
     EventHandler.Instance.EmitMenuActionPressed(MenuAction.DismissDialog);
+    EmitSignal(SignalName.Dismissed);
     _startHiding();
   }
 
   private void _startHiding() {
     _currentState = DialogStates.Hiding;
+    _countdownNode?.Stop();
     _prepareTween(-HIDDEN_OFFSET_Y);
   }
 

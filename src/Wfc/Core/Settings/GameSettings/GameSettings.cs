@@ -152,6 +152,16 @@ public static class GameSettings {
   }
 
   /// <summary>
+  /// Whether the player may drag the window's edges. Says nothing in fullscreen,
+  /// which has no edges to take hold of, but is remembered for the return to
+  /// windowed. What a drag is allowed to end at is WindowAspectGuard's to say.
+  /// </summary>
+  public static bool Resizable {
+    get => !DisplayServer.WindowGetFlag(DisplayServer.WindowFlags.ResizeDisabled);
+    set => DisplayServer.WindowSetFlag(DisplayServer.WindowFlags.ResizeDisabled, !value);
+  }
+
+  /// <summary>
   /// Whether the frame timing overlay is drawn over the game. The overlay belongs to the
   /// game screen, so this says nothing about the menus.
   ///
@@ -451,6 +461,7 @@ public static class GameSettings {
     configFile.SetValue("display", "fullscreen", Fullscreen);
     configFile.SetValue("display", "vsync", Vsync);
     configFile.SetValue("display", "resolution", $"{WindowSize.X}x{WindowSize.Y}");
+    configFile.SetValue("display", "resizable", Resizable);
     configFile.SetValue("display", "performance_overlay", PerformanceOverlay);
 
     // Audio settings:
@@ -531,6 +542,9 @@ public static class GameSettings {
           }
           else if (key == "performance_overlay") {
             PerformanceOverlay = keyValue.As<bool>();
+          }
+          else if (key == "resizable") {
+            Resizable = keyValue.As<bool>();
           }
           else if (key == "resolution") {
             var values = keyValue.As<string>().Split('x');

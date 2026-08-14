@@ -19,6 +19,11 @@ public enum MenuAction {
   ExitClearedLevel = 16,
   DismissDialog = 17,
   LoadGame = 18,
+  // A settings row opened or closed its list of options. No screen answers these -
+  // they are here so opening a list is heard. Reusing ShowDialog for it meant the
+  // settings screen answered by putting its own dialog up.
+  OpenDropdown = 19,
+  CloseDropdown = 20,
 }
 
 public static partial class MenuActionExtensions {

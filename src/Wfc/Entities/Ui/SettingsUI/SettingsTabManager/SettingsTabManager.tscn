@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://bo2x0ri6jenb3"]
+[gd_scene load_steps=24 format=3 uid="uid://bo2x0ri6jenb3"]
 
 [ext_resource type="Theme" uid="uid://duyihjolb12bh" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabsTheme.tres" id="1_6eew3"]
 [ext_resource type="Theme" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabsDarkTheme.tres" id="1_dark"]
@@ -20,6 +20,9 @@
 [ext_resource type="Script" uid="uid://bih8gqyyxj4jj" path="res://src/Wfc/Entities/Ui/SettingsUI/Panel/AudioSettingsPanelContainer.cs" id="13_gigt0"]
 [ext_resource type="PackedScene" uid="uid://6aenyg5mnntr" path="res://src/Wfc/Entities/Ui/SettingsUI/UIkeyBinding/KeyBindingButton/KeybindingButton.tscn" id="13_mrjc8"]
 [ext_resource type="PackedScene" uid="uid://djhvxh4fx0m0u" path="res://src/Wfc/Entities/Ui/SettingsUI/UiSlider/UiSlider/UiSlider.tscn" id="16_sl8rm"]
+[ext_resource type="PackedScene" uid="uid://cl3myeon12t01" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/UIDropdownButton/UIDropdownButton.tscn" id="17_drpdn"]
+[ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://src/Wfc/Entities/Ui/Dialogs/DialogContainer/DialogContainer.tscn" id="18_dlgctr"]
+[ext_resource type="PackedScene" uid="uid://wfccnfdlgscn1" path="res://src/Wfc/Entities/Ui/Dialogs/ConfirmDialog/ConfirmDialog.tscn" id="19_cnfdlg"]
 
 [node name="GameSettingsTabManager" type="Control"]
 layout_mode = 3
@@ -169,14 +172,20 @@ layout_mode = 2
 clip_contents = true
 layout_mode = 2
 TranslationKey = 39
-IsDark = true
 
-[node name="ResolutionSelectButton" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resolution" instance=ExtResource("7_4gkar")]
+[node name="ResolutionSelectButton" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resolution" instance=ExtResource("17_drpdn")]
 layout_mode = 2
-toggle_mode = true
 
 [node name="ResolutionSelectDriver" type="Node2D" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resolution/ResolutionSelectButton"]
 script = ExtResource("11_hajtt")
+
+[node name="Resizable" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+layout_mode = 2
+TranslationKey = 117
+IsDark = true
+
+[node name="ResizableCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resizable" instance=ExtResource("5_0l3vq")]
+layout_mode = 2
 
 [node name="PerformanceOverlay" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
 layout_mode = 2
@@ -184,6 +193,18 @@ TranslationKey = 113
 
 [node name="PerformanceOverlayCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/PerformanceOverlay" instance=ExtResource("5_0l3vq")]
 layout_mode = 2
+
+[node name="ResolutionDialogContainer" parent="PanelManager/VBoxContainer/VideoSettingsPanel" instance=ExtResource("18_dlgctr")]
+layout_mode = 2
+DialogNodePath = NodePath("ResolutionDialog")
+DialogTextKey = 114
+ConfirmTextKey = 115
+CancelTextKey = 116
+CountdownSeconds = 10
+CoverViewport = true
+
+[node name="ResolutionDialog" parent="PanelManager/VBoxContainer/VideoSettingsPanel/ResolutionDialogContainer" instance=ExtResource("19_cnfdlg")]
+layout_mode = 1
 
 [node name="ControllerSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer"]
 unique_name_in_owner = true
