@@ -82,7 +82,6 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.SfxVolumeChanged += OnButtonToggle;
     EventHandler.Instance.Events.MusicVolumeChanged += OnButtonToggle;
     EventHandler.Instance.Events.PianoNotePressed += OnPianoNotePressed;
-    EventHandler.Instance.Events.PianoNotePressed += OnPianoNoteReleased;
     EventHandler.Instance.Events.PageFlipped += OnPageFlipped;
     EventHandler.Instance.Events.WrongPianoNotePlayed += OnWrongPianoNotePlayed;
     EventHandler.Instance.Events.PianoPuzzleWon += OnPianoPuzzleWon;
@@ -131,7 +130,6 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.SfxVolumeChanged -= OnButtonToggle;
     EventHandler.Instance.Events.MusicVolumeChanged -= OnButtonToggle;
     EventHandler.Instance.Events.PianoNotePressed -= OnPianoNotePressed;
-    EventHandler.Instance.Events.PianoNotePressed -= OnPianoNoteReleased;
     EventHandler.Instance.Events.PageFlipped -= OnPageFlipped;
     EventHandler.Instance.Events.WrongPianoNotePlayed -= OnWrongPianoNotePlayed;
     EventHandler.Instance.Events.PianoPuzzleWon -= OnPianoPuzzleWon;
@@ -220,8 +218,9 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnBrickBroken(string color, Vector2 _) => OnPlaySfx("brick");
   private void OnWinMiniGame() => OnPlaySfx("winMiniGame");
   private void OnBrickBreakerStart() => OnPlaySfx("bricksSlide");
+  // A note is a one-shot sample, so releasing a key sounds nothing. Events.PianoNoteReleased is
+  // still raised by the piano for anything that wants it; the sound bank has no answer to it.
   private void OnPianoNotePressed(int note) => OnPlaySfx("piano_" + note.ToString());
-  private void OnPianoNoteReleased(int note) { /* do nothing */}
   private void OnPageFlipped() => OnPlaySfx("pageFlip");
   private void OnWrongPianoNotePlayed() => OnPlaySfx("wrongAnswer");
   private void OnPianoPuzzleWon() => OnPlaySfx("success");
