@@ -4,16 +4,11 @@ using System.Collections.Generic;
 using Godot;
 
 public class ModalStack : IModalStack {
-  private readonly SceneTree _tree;
+  private readonly IPauseOwnership _pause;
   private readonly List<Node> _owners = [];
 
-  // What the pause flag was before the first overlay went up. The pause menu is
-  // already paused underneath its own overlays, so the stack restores rather than
-  // clears.
-  private bool _wasPausedBeforeFirstPush;
-
-  public ModalStack(SceneTree tree) {
-    _tree = tree;
+  public ModalStack(IPauseOwnership pause) {
+    _pause = pause;
   }
 
   public bool IsAnyOpen => _owners.Count > 0;
@@ -24,11 +19,10 @@ public class ModalStack : IModalStack {
     if (_owners.Contains(owner)) {
       return;
     }
-    if (_owners.Count == 0) {
-      _wasPausedBeforeFirstPush = _tree.Paused;
-      _tree.Paused = true;
-    }
     _owners.Add(owner);
+    // One claim for the stack rather than one per overlay: an overlay opened over another
+    // is still the same single reason the game is being held.
+    _pause.Claim(this);
   }
 
   public void Pop(Node owner) {
@@ -36,7 +30,9 @@ public class ModalStack : IModalStack {
       return;
     }
     if (_owners.Count == 0) {
-      _tree.Paused = _wasPausedBeforeFirstPush;
+      // Nothing is restored here. Whatever else was holding the game - the pause menu the
+      // overlay was opened on top of - is still holding it in its own name.
+      _pause.Release(this);
     }
   }
 }
