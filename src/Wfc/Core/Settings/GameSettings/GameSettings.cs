@@ -14,7 +14,16 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 public static class GameSettings {
   // Where the settings live. The instrumented tests point this at a scratch
   // file so a suite that saves can never overwrite the developer's real one.
-  public static string ConfigFilePath { get; set; } = "settings.ini";
+  public static string ConfigFilePath { get; set; } = DEFAULT_CONFIG_PATH;
+
+  // user:// rather than a bare filename: Godot resolves a relative path against the process
+  // working directory, which is the project folder while developing but wherever the player
+  // launched from in an installed build - often somewhere unwritable, and never per-user.
+  public const string DEFAULT_CONFIG_PATH = "user://settings.ini";
+
+  // Where they were kept before that. Read once, when there is nothing at the new path, so a
+  // player who already has settings keeps them rather than being reset to defaults.
+  private const string LEGACY_CONFIG_PATH = "settings.ini";
   private const float MaxVolume = 0f;
   private const float MinVolume = -50f;
 
@@ -533,11 +542,22 @@ public static class GameSettings {
     GD.PushWarning($"Ignoring unreadable gamepad binding for '{action}': '{binding}'.");
   }
 
+  // Falls back to the pre-user:// location, and only ever for the real settings path: the
+  // tests point ConfigFilePath at a scratch file, and a fallback there would quietly read the
+  // developer's own settings into a test that asked for a launch with no file at all.
+  private static Error _loadConfigFile(ConfigFile configFile) {
+    var error = configFile.Load(ConfigFilePath);
+    if (error == Error.Ok || ConfigFilePath != DEFAULT_CONFIG_PATH) {
+      return error;
+    }
+    return configFile.Load(LEGACY_CONFIG_PATH);
+  }
+
   public static void Load() {
     var configFile = new ConfigFile();
     HasStoredLanguage = false;
     HasStoredSkin = false;
-    if (configFile.Load(ConfigFilePath) == Error.Ok) {
+    if (_loadConfigFile(configFile) == Error.Ok) {
       // Keyboard settings:
       if (configFile.HasSection("keyboard")) {
         foreach (string key in configFile.GetSectionKeys("keyboard")) {

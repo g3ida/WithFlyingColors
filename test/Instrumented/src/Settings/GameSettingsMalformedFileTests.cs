@@ -141,6 +141,28 @@ public class GameSettingsMalformedFileTests(Node testScene) : TestClass(testScen
     _keyboardKeyOf("jump").ShouldBe(Key.Space);
   }
 
+  // Settings belong to the player, not to the install: a relative path lands in the process
+  // working directory, which is the project folder while developing but wherever the player
+  // launched from once installed - frequently read-only, and shared between accounts.
+  [Test]
+  public void TheSettingsLiveInTheUserDirectoryTest() {
+    GameSettings.DEFAULT_CONFIG_PATH.ShouldStartWith("user://");
+  }
+
+  // The migration reads the old location when the new one has nothing, which must never happen
+  // for a path a test chose: a suite that asked for a launch with no settings at all would
+  // otherwise be handed whatever the developer has sitting in the project folder.
+  [Test]
+  public void AScratchPathNeverFallsBackToTheOldLocationTest() {
+    DirAccess.RemoveAbsolute(SCRATCH_CONFIG_PATH);
+    GameSettings.ConfigFilePath = SCRATCH_CONFIG_PATH;
+
+    GameSettings.Load();
+
+    GameSettings.HasStoredLanguage.ShouldBeFalse();
+    GameSettings.HasStoredSkin.ShouldBeFalse();
+  }
+
   private static Key _keyboardKeyOf(string action) {
     foreach (var @event in InputMap.ActionGetEvents(action)) {
       if (@event is InputEventKey key) {

@@ -147,6 +147,63 @@ public class SimpleJsonSerializerTests(Node testScene) : TestClass(testScene) {
     exception.Message.ShouldBe("Missing required property");
   }
 
+  // A save file whose JSON parses but whose values are the wrong type. The converter reads
+  // these scalars off Utf8JsonReader by hand, which answers a token of the wrong kind with
+  // InvalidOperationException and a number that will not fit with FormatException - neither of
+  // them a JsonException. What makes the slot degrade to "empty" rather than taking start-up
+  // down is that System.Text.Json wraps both in a JsonException on the way out of a converter,
+  // and JsonException is all SaveSlot.LoadMetaData and SaveManager catch. These pin that down:
+  // it is load-bearing, and nothing in the converter itself says so.
+  [Test]
+  public void RejectsAStringWhereAWholeNumberBelongs() {
+    var json = "{\"SlotId\":1,\"SaveTimestamp\":1700000000,\"LastLoadDate\":1700000001," +
+      "\"LevelId\":\"Tutorial\",\"Progress\":\"50\"}";
+
+    Should.Throw<JsonException>(() => _serializer.Deserialize<SlotMetaData>(json));
+  }
+
+  [Test]
+  public void RejectsANullWhereAWholeNumberBelongs() {
+    var json = "{\"SlotId\":null,\"SaveTimestamp\":1700000000,\"LastLoadDate\":1700000001," +
+      "\"LevelId\":\"Tutorial\",\"Progress\":7}";
+
+    Should.Throw<JsonException>(() => _serializer.Deserialize<SlotMetaData>(json));
+  }
+
+  [Test]
+  public void RejectsATimestampThatIsNotANumber() {
+    var json = "{\"SlotId\":1,\"SaveTimestamp\":\"yesterday\",\"LastLoadDate\":1700000001," +
+      "\"LevelId\":\"Tutorial\",\"Progress\":7}";
+
+    Should.Throw<JsonException>(() => _serializer.Deserialize<SlotMetaData>(json));
+  }
+
+  // A number too large for the field it lands in is corruption just as much as a string is.
+  [Test]
+  public void RejectsAWholeNumberThatWillNotFit() {
+    var json = "{\"SlotId\":99999999999999,\"SaveTimestamp\":1700000000,\"LastLoadDate\":1700000001," +
+      "\"LevelId\":\"Tutorial\",\"Progress\":7}";
+
+    Should.Throw<JsonException>(() => _serializer.Deserialize<SlotMetaData>(json));
+  }
+
+  [Test]
+  public void RejectsANonBooleanHubArrival() {
+    var json = "{\"SlotId\":1,\"SaveTimestamp\":1700000000,\"LastLoadDate\":1700000001," +
+      "\"LevelId\":\"Tutorial\",\"Progress\":7,\"HasSeenHubArrival\":\"yes\"}";
+
+    Should.Throw<JsonException>(() => _serializer.Deserialize<SlotMetaData>(json));
+  }
+
+  // The counters are read by hand too, so they need the same guard as the fields above.
+  [Test]
+  public void RejectsACounterThatIsNotANumber() {
+    var json = "{\"SlotId\":1,\"SaveTimestamp\":1700000000,\"LastLoadDate\":1700000001," +
+      "\"LevelId\":\"Tutorial\",\"Progress\":7,\"Counters\":{\"Jumps\":\"lots\"}}";
+
+    Should.Throw<JsonException>(() => _serializer.Deserialize<SlotMetaData>(json));
+  }
+
   // The level-state file is a string->object map. Without the converter the values come
   // back as JsonElement, which no IPersistent.Load can read.
   [Test]
