@@ -145,7 +145,7 @@ public partial class PauseMenu : CanvasLayer {
   private void PauseGame() {
     SfxManager.PauseAll();
     MusicTrackManager.SetPauseMenuEffect(true);
-    _screenShaders.Call("ActivatePauseShader");
+    _screenShaders.ActivatePauseShader();
     _pauseMenu._Show();
     _inputHintBar.Enter();
     _isPaused = true;

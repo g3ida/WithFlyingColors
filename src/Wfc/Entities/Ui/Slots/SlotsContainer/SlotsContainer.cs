@@ -15,10 +15,12 @@ public partial class SlotsContainer : Control {
   [Signal]
   public delegate void SlotPressedEventHandler(int id);
 
+  // Whether the container places itself in the middle of the viewport rather than where the
+  // scene put it. Set per screen: the slot picker centres, the pause-menu listing does not.
   [Export]
-  public bool centered_on_screen_v = false;
+  public bool CenterVertically;
   [Export]
-  public bool centered_on_screen_h = false;
+  public bool CenterHorizontally;
 
   #region Nodes
   [NodePath("SlotsBox")]
@@ -57,10 +59,10 @@ public partial class SlotsContainer : Control {
     }
     _refresh();
 
-    if (centered_on_screen_h) {
+    if (CenterHorizontally) {
       Position = new Vector2((GetViewportRect().Size.X - Size.X) * 0.5f, Position.Y);
     }
-    if (centered_on_screen_v) {
+    if (CenterVertically) {
       Position = new Vector2(Position.X, (GetViewportRect().Size.Y - Size.Y) * 0.5f);
     }
 

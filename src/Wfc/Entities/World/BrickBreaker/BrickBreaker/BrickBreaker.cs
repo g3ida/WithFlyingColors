@@ -255,7 +255,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
     }
   }
 
-  private void _on_LevelUpTimer_timeout() {
+  private void _onLevelUpTimerTimeout() {
     _currentLevel += 1;
     if (_currentLevel == NUM_LEVELS) {
       _bricksTimerNode.Stop();
@@ -330,7 +330,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
       if (_currentLevel != NUM_LEVELS && _currentLevel + 1 <= level && _bricksTimerNode.TimeLeft > 2.0f) {
         _bricksTimerNode.Stop();
         _bricksTimerNode.Start();
-        _on_LevelUpTimer_timeout();
+        _onLevelUpTimerTimeout();
       }
     }
   }

@@ -312,7 +312,7 @@ public partial class BouncingBall : CharacterBody2D {
     return !isBoxFace && groups.Count > 0;
   }
 
-  private void _on_Area2D_area_entered(Area2D area) {
+  private void _onAreaEntered(Area2D area) {
     if (area == DeathZone) {
       EventHandler.Instance.EmitBouncingBallRemoved(this);
       QueueFree();

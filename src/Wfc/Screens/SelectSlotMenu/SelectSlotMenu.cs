@@ -67,7 +67,7 @@ public partial class SelectSlotMenu : GameMenu {
   public override bool OnMenuButtonPressed(MenuAction menuAction) =>
       menuAction == MenuAction.SelectSlot;
 
-  private void _on_SlotsContainer_SlotPressed(int id) {
+  private void _onSlotsContainerSlotPressed(int id) {
     _pendingSlot = id;
     if (_pickerMode == SlotPickerMode.NewGame) {
       if (SaveManager.IsSLotFilled(id)) {

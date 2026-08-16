@@ -52,7 +52,7 @@ HiddenRelativePosition = Vector2(-900, 0)
 [node name="SlotsContainer" parent="." instance=ExtResource("4")]
 offset_left = 734.0
 offset_right = 734.0
-centered_on_screen_v = true
+CenterVertically = true
 
 [node name="MenuTitle" parent="." instance=ExtResource("3")]
 layout_mode = 0
@@ -91,5 +91,5 @@ layout_mode = 1
 [node name="InputHintBar" parent="." instance=ExtResource("hintbar_ext")]
 
 [connection signal="pressed" from="BackButton" to="." method="OnBackButtonPressed"]
-[connection signal="SlotPressed" from="SlotsContainer" to="." method="_on_SlotsContainer_SlotPressed"]
+[connection signal="SlotPressed" from="SlotsContainer" to="." method="_onSlotsContainerSlotPressed"]
 [connection signal="Confirmed" from="OverwriteDialogContainer/OverwriteDialog" to="." method="_onNewGameOverwriteConfirmed"]
