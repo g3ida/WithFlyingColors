@@ -1,0 +1,45 @@
+name: 🏗 Build
+on:
+  push:
+  pull_request:
+
+jobs:
+  export_release:
+    name: 🏗 ExportRelease
+    runs-on: ubuntu-latest
+    # Seconds of work, so this is a backstop rather than a budget.
+    timeout-minutes: 10
+    # Only run the workflow if it's not a PR or if it's a PR from a fork.
+    # This prevents duplicate workflows from running on PR's that originate
+    # from the repository itself.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      DOTNET_NOLOGO: true
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: 🧾 Checkout
+        uses: actions/checkout@v7
+
+      - name: 💽 Setup .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          # Use the .NET SDK from global.json in the root of the repository.
+          global-json-file: global.json
+
+      # The configuration the game actually ships in, and the only one that leaves the test
+      # tree and its test-only packages out of the assembly. Nothing else in CI compiles it:
+      # the test workflow builds Debug, where all of that is present, so a production file
+      # that picked up a reference to Shouldly or GodotTestDriver would go green there and
+      # fail at export time instead.
+      #
+      # Built from the project rather than the solution, which only defines Debug and
+      # Release: ExportDebug and ExportRelease are the project's own, and are what Godot
+      # builds through when it exports.
+      #
+      # No Godot needed - the SDK and GodotSharp both come from NuGet - which is why this is
+      # its own job rather than another step on the test runner.
+      - name: 🏗 Build ExportRelease
+        run: dotnet build WithFlyingColors.csproj -c ExportRelease
