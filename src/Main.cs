@@ -4,6 +4,7 @@ using Godot;
 #if DEBUG
 using System.Reflection;
 using Chickensoft.GoDotTest;
+using Wfc.Core.Persistence;
 using Wfc.Core.Settings;
 #endif
 
@@ -15,6 +16,11 @@ public partial class Main : Node2D {
 #if DEBUG
   // Where a test run's settings live instead of the real file beside the project.
   public const string TEST_CONFIG_PATH = "user://test-settings.ini";
+
+  // And where its save slots live instead of the player's own. Anything that writes or deletes
+  // a slot goes through SavePaths, so redirecting the root is what keeps a suite that exercises
+  // the real SaveManager from destroying a real game.
+  public const string TEST_SLOTS_ROOT = "user://test-slots";
 
   public TestEnvironment Environment = default!;
 #endif
@@ -41,6 +47,7 @@ public partial class Main : Node2D {
     // settings.ini. A suite that saves used to reach it whenever a test restored the
     // path it found rather than the one it wanted.
     GameSettings.ConfigFilePath = TEST_CONFIG_PATH;
+    SavePaths.Root = TEST_SLOTS_ROOT;
     _ = GoTest.RunTests(Assembly.GetExecutingAssembly(), this, Environment);
   }
 #endif
