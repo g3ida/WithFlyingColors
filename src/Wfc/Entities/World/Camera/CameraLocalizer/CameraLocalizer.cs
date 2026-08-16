@@ -5,6 +5,7 @@ using System.Linq;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Logger;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -285,7 +286,7 @@ public partial class CameraLocalizer : Node2D {
       GameLevel.CameraNode.SetFollowNode(node);
     }
     else {
-      GD.PushError($"{Name} points at '{FollowPath}', which is no Node2D; the camera keeps following what it had.");
+      Log.Error($"{Name} points at '{FollowPath}', which is no Node2D; the camera keeps following what it had.");
     }
   }
 

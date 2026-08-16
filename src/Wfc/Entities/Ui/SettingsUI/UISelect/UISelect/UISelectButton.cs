@@ -5,6 +5,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Input;
+using Wfc.Core.Logger;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
@@ -222,7 +223,7 @@ public partial class UISelectButton : Button, IDarkBackgroundAware {
       UpdateRectSize();
     }
     else {
-      GD.PrintErr("SelectDriver - invalid index ", _index);
+      Log.Error($"SelectDriver - invalid index {_index}");
     }
 
   }

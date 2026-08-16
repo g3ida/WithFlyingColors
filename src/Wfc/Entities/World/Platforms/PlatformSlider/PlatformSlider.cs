@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Platforms;
 
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils;
@@ -163,7 +164,7 @@ public partial class PlatformSlider : Node2D, IPersistent {
     }
 
     if (_body is null) {
-      GD.PushError($"{Name} has no physics body to move: a slider drives the body it is parented to.");
+      Log.Error($"{Name} has no physics body to move: a slider drives the body it is parented to.");
       SetPhysicsProcess(false);
       return;
     }

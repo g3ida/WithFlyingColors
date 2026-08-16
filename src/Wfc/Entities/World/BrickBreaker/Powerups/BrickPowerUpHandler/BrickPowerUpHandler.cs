@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Logger;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
@@ -156,7 +157,7 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
     // reached its own QueueFree and kept falling forever with its monitoring already
     // switched off. Report the authoring mistake and let the pickup itself still count.
     if (hitNode == null) {
-      GD.PushError($"Power-up '{powerUp.SceneFilePath}' has no OnHitScript; no effect applied.");
+      Log.Error($"Power-up '{powerUp.SceneFilePath}' has no OnHitScript; no effect applied.");
     }
     else if (CheckIfCanAddPowerup(hitNode)) {
       var hit = hitNode.Instantiate<PowerUpScript>();

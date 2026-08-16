@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Godot;
+using Wfc.Core.Logger;
 using Wfc.Utils.Attributes;
 
 public static class NodeHelpers {
@@ -33,9 +34,9 @@ public static class NodeHelpers {
         else {
           // Debug info
           // foreach (var n in node.GetChildrenRecursive()) {
-          //   GD.PrintErr(n.GetPath());
+          //   Log.Error(n.GetPath());
           // }
-          GD.PrintErr($"Unable to assign node at path '{path}' to field '{field.Name}'.");
+          Log.Error($"Unable to assign node at path '{path}' to field '{field.Name}'.");
         }
       }
     }

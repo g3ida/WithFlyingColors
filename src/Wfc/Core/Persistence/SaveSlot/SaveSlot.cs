@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Godot;
+using Wfc.Core.Logger;
 using Wfc.Core.Serialization;
 using Wfc.Screens.Levels;
 
@@ -169,7 +170,7 @@ public partial class SaveSlot {
       // A truncated or hand-edited file used to be an unhandled exception during start-up, which
       // meant the player could not even reach the screen that would let them delete the slot.
       // Degrading to "empty" leaves the slot visible and deletable.
-      GD.PushError($"Could not read {MetaPath}: {error.Message}. Treating the slot as empty.");
+      Log.Error($"Could not read {MetaPath}: {error.Message}. Treating the slot as empty.");
       MetaData = null;
     }
   }
@@ -203,12 +204,12 @@ public partial class SaveSlot {
       nodesData = serializer.Deserialize<Dictionary<string, string>>(line);
     }
     catch (JsonException error) {
-      GD.PushError($"Could not read {Path}: {error.Message}. Starting the level from the top.");
+      Log.Error($"Could not read {Path}: {error.Message}. Starting the level from the top.");
       return;
     }
 
     if (nodesData == null) {
-      GD.PushError($"Empty save file!");
+      Log.Error($"Empty save file!");
       return;
     }
 
@@ -222,7 +223,7 @@ public partial class SaveSlot {
         node.Load(serializer, nodeData.Value);
       }
       else {
-        GD.PushWarning($"Save entry '{nodeData.Key}' matches no node in the persist group; ignored.");
+        Log.Warning($"Save entry '{nodeData.Key}' matches no node in the persist group; ignored.");
       }
     }
   }
@@ -231,7 +232,7 @@ public partial class SaveSlot {
   // state written beside them would say has nothing to do with what they changed.
   public void SaveMetaData(ISerializer serializer) {
     if (MetaData == null) {
-      GD.PushError($"Slot {_slotIndex} has no metadata to write.");
+      Log.Error($"Slot {_slotIndex} has no metadata to write.");
       return;
     }
     _writeLineAtomic(MetaPath, serializer.Serialize(MetaData));
@@ -242,11 +243,11 @@ public partial class SaveSlot {
     var saveNodes = sceneTree.GetNodesInGroup(IPersistent.PERSISTENT_GROUP_NAME);
     foreach (var node in saveNodes) {
       if (node.SceneFilePath.Length == 0) {
-        GD.PushError($"persistent node '{node.Name}' is not an instanced scene, skipped");
+        Log.Error($"persistent node '{node.Name}' is not an instanced scene, skipped");
         continue;
       }
       if (node is not IPersistent persistent) {
-        GD.PushError($"persistent node '{node.Name}' does not implement IPersistent, skipped");
+        Log.Error($"persistent node '{node.Name}' does not implement IPersistent, skipped");
         continue;
       }
       var nodeData = persistent.Save(serializer);
@@ -260,7 +261,7 @@ public partial class SaveSlot {
     if (file == null) {
       // Open returns null rather than throwing, so an unchecked handle is a
       // NullReferenceException raised inside whichever signal callback asked for the load.
-      GD.PushError($"Could not open {path} for reading: {FileAccess.GetOpenError()}");
+      Log.Error($"Could not open {path} for reading: {FileAccess.GetOpenError()}");
       return null;
     }
     return file.GetLine();
@@ -279,14 +280,14 @@ public partial class SaveSlot {
     var directory = path.GetBaseDir();
     var directoryError = DirAccess.MakeDirRecursiveAbsolute(directory);
     if (directoryError is not Error.Ok and not Error.AlreadyExists) {
-      GD.PushError($"Could not create {directory}: {directoryError}");
+      Log.Error($"Could not create {directory}: {directoryError}");
       return false;
     }
 
     var tempPath = $"{path}.tmp";
     using (var file = FileAccess.Open(tempPath, FileAccess.ModeFlags.Write)) {
       if (file == null) {
-        GD.PushError($"Could not open {tempPath} for writing: {FileAccess.GetOpenError()}");
+        Log.Error($"Could not open {tempPath} for writing: {FileAccess.GetOpenError()}");
         return false;
       }
       file.StoreLine(line);
@@ -294,7 +295,7 @@ public partial class SaveSlot {
 
     var renameError = DirAccess.RenameAbsolute(tempPath, path);
     if (renameError != Error.Ok) {
-      GD.PushError($"Could not move {tempPath} onto {path}: {renameError}");
+      Log.Error($"Could not move {tempPath} onto {path}: {renameError}");
       return false;
     }
     return true;

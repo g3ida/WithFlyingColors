@@ -3,6 +3,7 @@ namespace Wfc.Screens.MenuManager;
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Logger;
 using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager.Menus.MainMenu;
 using Wfc.Screens.SettingsMenu;
@@ -63,13 +64,13 @@ public class MenuManager : IMenuManager {
 
     var scenePath = GetMenuScenePath(nextMenu);
     if (scenePath == null) {
-      GD.PushError($"No scene registered for menu {nextMenu}");
+      Log.Error($"No scene registered for menu {nextMenu}");
       return false;
     }
 
     var packedScene = GD.Load<PackedScene>(scenePath);
     if (packedScene == null) {
-      GD.PushError($"Could not load menu scene at {scenePath}");
+      Log.Error($"Could not load menu scene at {scenePath}");
       return false;
     }
 

@@ -7,6 +7,7 @@ using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Audio;
 using Wfc.Core.Event;
+using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Ui;
 using Wfc.Entities.Ui;
@@ -269,14 +270,14 @@ public partial class SceneOrchester : Node2D {
       MoveChild(_titleCardNode, GetChildCount() - 1);
     }
     else {
-      GD.PrintErr($"Could not Instantiate level {levelId}");
+      Log.Error($"Could not Instantiate level {levelId}");
     }
     return level;
   }
 
   private void OnLevelCleared() {
     if (_currentLevel == null || _currentLevelId == null) {
-      GD.PushError("LevelCleared raised with no current level: there is nothing to advance from.");
+      Log.Error("LevelCleared raised with no current level: there is nothing to advance from.");
       return;
     }
 
