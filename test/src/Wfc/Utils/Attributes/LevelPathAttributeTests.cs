@@ -63,7 +63,7 @@ public class LevelPathAttributeTests(Node testScene) : TestClass(testScene) {
 
   // This used to assert the fallback it produced when the checkout was not called
   // WithFlyingColors - "res://Level1.tscn", a level that does not exist - which is the bug
-  // rather than the behaviour. Nothing about the directory the repository sits in is the
+  // rather than the behavior. Nothing about the directory the repository sits in is the
   // project's to depend on.
   [Test]
   public void CallerFilePath_InACheckoutOfAnyName_StillResolves() {
