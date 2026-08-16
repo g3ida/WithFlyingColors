@@ -392,3 +392,12 @@ $RECYCLE.BIN/
 # Player settings, written by the running game into the working directory in a
 # development build. Local state, not project configuration.
 settings.ini
+
+# The build-output rules above match by directory name at any depth ([Ll]og/, [Dd]ebug/,
+# [Rr]elease/, [Bb]in/, [Oo]bj/ ...). This project names a directory after every type it
+# holds, so a type called Log or Debug had its entire folder ignored - and an ignored
+# directory is invisible to git status as well as to git add, so the file simply never
+# reaches a commit and CI is the first thing to notice. Nothing under src/ or test/ is
+# build output.
+!src/**/
+!test/**/
