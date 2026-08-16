@@ -388,3 +388,7 @@ $RECYCLE.BIN/
 *.lnk
 *.generated.props
 
+
+# Player settings, written by the running game into the working directory in a
+# development build. Local state, not project configuration.
+settings.ini

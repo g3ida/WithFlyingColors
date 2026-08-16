@@ -11,8 +11,8 @@ using Wfc.Screens.Levels;
 
 public partial class SaveSlot {
   private readonly int _slotIndex;
-  public string Path => $"user://slots/{_slotIndex}/save_slot.save";
-  public string MetaPath => $"user://slots/{_slotIndex}/save_slot_meta.save";
+  public string Path => $"{SavePaths.SlotDirectory(_slotIndex)}/save_slot.save";
+  public string MetaPath => $"{SavePaths.SlotDirectory(_slotIndex)}/save_slot_meta.save";
   public bool IsFilled => FileAccess.FileExists(MetaPath);
   public bool HasProgress => FileAccess.FileExists(Path);
 

@@ -16,7 +16,9 @@ public partial class SaveManager : ISaveManager {
 
   private const int NUM_SLOTS = 3;
   private readonly string LATEST_LOADED_SLOT_FIELD_NAME = "latest_loaded_slot";
-  private readonly string SLOT_INFO_PATH = $"user://slots/slots_info.save";
+  // A property rather than a field: the slot root is settable, and a path captured when the
+  // manager was built would go on naming wherever it used to point.
+  private static string SLOT_INFO_PATH => SavePaths.SlotsInfo;
   public int SlotCount => NUM_SLOTS;
   public int LatestLoadedSlot { get; private set; }
   private readonly SaveSlot[] _saveSlots = [.. Enumerable.Range(1, NUM_SLOTS).Select(i => new SaveSlot(i))];
@@ -198,6 +200,10 @@ public partial class SaveManager : ISaveManager {
     _loadSlotsMetaData();
     if (LatestLoadedSlot == slotIndex) {
       LatestLoadedSlot = ISaveManager.NO_SLOT;
+      // Written out like every other move of the selection. Cleared in memory alone, the next
+      // launch read the deleted slot back out of the file and opened as though that run were
+      // still the one in play.
+      _saveSlotsInfo();
     }
   }
 
@@ -221,7 +227,11 @@ public partial class SaveManager : ISaveManager {
       if (data != null
           && data.TryGetValue(LATEST_LOADED_SLOT_FIELD_NAME, out var latest)
           && latest.TryGetInt32(out var slotIndex)
-          && slotIndex is >= 0 and < NUM_SLOTS) {
+          && slotIndex is >= 0 and < NUM_SLOTS
+          // A slot with nothing in it is nothing to have selected, however the files went -
+          // deleted from a menu, or taken out from under the game. Range alone let an empty
+          // slot come back as the one in play.
+          && _saveSlots[slotIndex].IsFilled) {
         LatestLoadedSlot = slotIndex;
       }
     }
