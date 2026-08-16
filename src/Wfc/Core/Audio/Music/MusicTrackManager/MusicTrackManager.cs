@@ -45,7 +45,10 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
   private const int EFF_INDEX = 0;
   private const int NOTCH_EFF_INDEX = 1;
 
-  private const int BUS_INDEX = 1;
+  // Looked up by name rather than pinned to a position in the layout. The bus order is a
+  // resource the project is free to rearrange, and an effect added to the wrong bus says
+  // nothing about it - the music simply stops answering the pause filter and the pitch.
+  private static int BusIndex => AudioServer.GetBusIndex(BUS_NAME);
 
   private State _currentState = State.STOPPED;
 
@@ -65,25 +68,25 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
     var shift = new AudioEffectPitchShift {
       PitchScale = 1.0f
     };
-    AudioServer.AddBusEffect(BUS_INDEX, shift, EFF_INDEX);
+    AudioServer.AddBusEffect(BusIndex, shift, EFF_INDEX);
   }
 
   private static void AddNotchEffect() {
     var notch = new AudioEffectNotchFilter {
       Resonance = 0.05f
     };
-    AudioServer.AddBusEffect(BUS_INDEX, notch, NOTCH_EFF_INDEX);
+    AudioServer.AddBusEffect(BusIndex, notch, NOTCH_EFF_INDEX);
   }
 
   public void SetPauseMenuEffect(bool isOn) {
-    AudioServer.SetBusEffectEnabled(BUS_INDEX, NOTCH_EFF_INDEX, isOn);
+    AudioServer.SetBusEffectEnabled(BusIndex, NOTCH_EFF_INDEX, isOn);
   }
 
   public void SetPitchScale(float _pitch_scale) {
     if (_currentTrack == null)
       return;
 
-    var shift = (AudioEffectPitchShift)AudioServer.GetBusEffect(BUS_INDEX, EFF_INDEX);
+    var shift = (AudioEffectPitchShift)AudioServer.GetBusEffect(BusIndex, EFF_INDEX);
     shift.PitchScale = 1.0f / _pitch_scale;
     _currentTrack.Stream.PitchScale = _pitch_scale;
     this._pitchScale = _pitch_scale;
@@ -123,11 +126,12 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
       return;
     }
 
-    var music = value;
-    if (music != null) {
-      RemoveChild(music.Stream);
-      _musicPool.Remove(name);
-    }
+    // Freed, not merely detached. Dropping the pool entry is the last reference this side
+    // holds, so a player left unfreed keeps itself and the stream it loaded for the rest of
+    // the process with nothing able to reach it.
+    RemoveChild(value.Stream);
+    value.Stream.QueueFree();
+    _musicPool.Remove(name);
   }
 
   public void PlayTrack(string name) {
