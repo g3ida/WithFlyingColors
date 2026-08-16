@@ -494,6 +494,45 @@ public static class GameSettings {
     }
   }
 
+  // Load runs before the first screen exists, so neither of these throws on an entry it cannot
+  // read: a dropped binding falls back to whatever the action already carries, while an
+  // exception here takes start-up with it and leaves nowhere to correct the file from.
+  private static void _bindKeyboardFromFile(string action, Variant value) {
+    // A keycode is written as an integer and an unbound action as an empty string. Anything
+    // else converts to Key.None, which binds and passes validation while answering to no key.
+    if (value.VariantType == Variant.Type.Int) {
+      BindActionToKeyboardKey(action, value.As<int>());
+      return;
+    }
+    if (value.As<string>() != "") {
+      GD.PushWarning($"Ignoring unreadable keyboard binding for '{action}'; keeping the current one.");
+    }
+  }
+
+  private static void _bindGamepadFromFile(string action, string binding) {
+    if (string.IsNullOrEmpty(binding)) {
+      return;
+    }
+
+    if (binding.StartsWith("button:")) {
+      if (int.TryParse(binding[7..], out var buttonIndex)) {
+        BindActionToGamepadButton(action, (JoyButton)buttonIndex);
+        return;
+      }
+    }
+    else if (binding.StartsWith("axis:")) {
+      var parts = binding[5..].Split(':');
+      if (parts.Length == 2
+          && int.TryParse(parts[0], out var axisIndex)
+          && float.TryParse(parts[1], System.Globalization.CultureInfo.InvariantCulture, out var axisValue)) {
+        BindActionToGamepadAxis(action, (JoyAxis)axisIndex, axisValue);
+        return;
+      }
+    }
+
+    GD.PushWarning($"Ignoring unreadable gamepad binding for '{action}': '{binding}'.");
+  }
+
   public static void Load() {
     var configFile = new ConfigFile();
     HasStoredLanguage = false;
@@ -502,10 +541,7 @@ public static class GameSettings {
       // Keyboard settings:
       if (configFile.HasSection("keyboard")) {
         foreach (string key in configFile.GetSectionKeys("keyboard")) {
-          var keyValue = configFile.GetValue("keyboard", key);
-          if ((keyValue.VariantType != Variant.Type.String) || keyValue.As<string>() != "") {
-            BindActionToKeyboardKey(key, keyValue.As<int>());
-          }
+          _bindKeyboardFromFile(key, configFile.GetValue("keyboard", key));
         }
       }
       // Gamepad settings:
@@ -515,21 +551,7 @@ public static class GameSettings {
           if (IsGamepadFixedDirectionAction(action)) {
             continue;
           }
-          var bindingValue = configFile.GetValue("gamepad", action).As<string>();
-          if (!string.IsNullOrEmpty(bindingValue)) {
-            if (bindingValue.StartsWith("button:")) {
-              var buttonIndex = int.Parse(bindingValue.Substring(7));
-              BindActionToGamepadButton(action, (JoyButton)buttonIndex);
-            }
-            else if (bindingValue.StartsWith("axis:")) {
-              var parts = bindingValue.Substring(5).Split(':');
-              if (parts.Length == 2) {
-                var axisIndex = int.Parse(parts[0]);
-                var axisValue = float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture);
-                BindActionToGamepadAxis(action, (JoyAxis)axisIndex, axisValue);
-              }
-            }
-          }
+          _bindGamepadFromFile(action, configFile.GetValue("gamepad", action).As<string>());
         }
       }
       // Display settings:
