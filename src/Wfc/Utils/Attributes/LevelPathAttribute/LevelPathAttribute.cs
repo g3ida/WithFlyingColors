@@ -76,24 +76,12 @@ public class LevelPathAttribute : Attribute {
     }
   }
 
-  // Extracts the directory path after "WithFlyingColors" from the file path
-  private static string GetSceneDirFromCallerFilePath(string callerFilePath) {
-    if (string.IsNullOrEmpty(callerFilePath)) {
-      return string.Empty;
-    }
-
-    // Find the part after the last "WithFlyingColors": a checkout can sit inside a
-    // directory of the same name, which is exactly what GitHub Actions does
-    // (/home/runner/work/WithFlyingColors/WithFlyingColors/src/...). Splitting on the
-    // first occurrence there leaves the repo name glued to the front of the path and
-    // every level resolves to a res:// that does not exist.
-    var index = callerFilePath.LastIndexOf("WithFlyingColors", StringComparison.OrdinalIgnoreCase);
-    if (index == -1) {
-      return string.Empty;
-    }
-
-    var afterProject = callerFilePath.Substring(index + "WithFlyingColors".Length);
-    var dir = Path.GetDirectoryName(afterProject.Replace("\\", "/").TrimStart('/'));
-    return dir ?? string.Empty;
-  }
+  // The directory the calling file sits in, relative to the project root.
+  //
+  // This used to be found by splitting on the repository's own name, which broke once
+  // already on CI - it checks out into /home/runner/work/WithFlyingColors/WithFlyingColors,
+  // one directory of that name inside another - and broke outright for a clone into a
+  // directory called anything else. ProjectPath anchors on src/ instead.
+  private static string GetSceneDirFromCallerFilePath(string callerFilePath) =>
+    Path.GetDirectoryName(ProjectPath.RelativeToProjectRoot(callerFilePath)) ?? string.Empty;
 }

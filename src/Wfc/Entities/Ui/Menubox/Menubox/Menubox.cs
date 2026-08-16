@@ -12,7 +12,6 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Core.Event.EventHandler;
 
-[ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class Menubox : Control {
   #region Dependencies

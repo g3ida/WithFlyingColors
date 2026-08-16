@@ -12,7 +12,10 @@ using Shouldly;
 using Wfc.Entities.World.Player;
 
 public class LevelPathAttributeTests(Node testScene) : TestClass(testScene) {
-  private const string FakeCallerFilePath = @"C:\Projects\WithFlyingColors\scenes\levels\LevelId.cs";
+  // The real LevelId.cs sits here. The paths below are only ever the compile-time location
+  // of that file on whichever machine built it.
+  private const string LEVEL_LIST_DIR = "src/Wfc/Screens/Levels/LevelList";
+  private const string FakeCallerFilePath = @"C:\Projects\WithFlyingColors\src\Wfc\Screens\Levels\LevelList\LevelId.cs";
 
   private Fixture _fixture = default!;
 
@@ -39,15 +42,13 @@ public class LevelPathAttributeTests(Node testScene) : TestClass(testScene) {
   [Test]
   public void RelativeFile_IsCombinedWithCallerDir() {
     var attr = new LevelPathAttribute("tutorialX", FakeCallerFilePath);
-    // Should resolve to res://scenes/levels/tutorialX.tscn
-    attr.ResolvePath("Tutorial").ShouldBe("res://scenes/levels/tutorialX.tscn");
+    attr.ResolvePath("Tutorial").ShouldBe($"res://{LEVEL_LIST_DIR}/tutorialX.tscn");
   }
 
   [Test]
   public void EmptyPath_UsesEnumNameAndCallerDir() {
     var attr = new LevelPathAttribute("", FakeCallerFilePath);
-    // Should resolve to res://scenes/levels/Level1.tscn
-    attr.ResolvePath("Level1").ShouldBe("res://scenes/levels/Level1.tscn");
+    attr.ResolvePath("Level1").ShouldBe($"res://{LEVEL_LIST_DIR}/Level1.tscn");
   }
 
   // GitHub Actions checks the repository out into a directory of the same name, so the
@@ -60,10 +61,13 @@ public class LevelPathAttributeTests(Node testScene) : TestClass(testScene) {
     attr.ResolvePath("Level1").ShouldBe("res://src/Wfc/Screens/Levels/LevelList/Level1.tscn");
   }
 
+  // This used to assert the fallback it produced when the checkout was not called
+  // WithFlyingColors - "res://Level1.tscn", a level that does not exist - which is the bug
+  // rather than the behavior. Nothing about the directory the repository sits in is the
+  // project's to depend on.
   [Test]
-  public void CallerFilePath_WithoutProjectName_ReturnsScenes() {
-    var attr = new LevelPathAttribute("", @"C:\OtherProject\scenes\levels\LevelId.cs");
-    // Should fallback to res://Level1.tscn
-    attr.ResolvePath("Level1").ShouldBe("res://Level1.tscn");
+  public void CallerFilePath_InACheckoutOfAnyName_StillResolves() {
+    var attr = new LevelPathAttribute("", @"C:\OtherProject\src\Wfc\Screens\Levels\LevelList\LevelId.cs");
+    attr.ResolvePath("Level1").ShouldBe($"res://{LEVEL_LIST_DIR}/Level1.tscn");
   }
 }
