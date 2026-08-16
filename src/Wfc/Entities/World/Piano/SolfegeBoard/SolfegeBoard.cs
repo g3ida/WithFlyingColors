@@ -14,6 +14,7 @@ public partial class SolfegeBoard : Node2D, IPersistent {
   private const float DURATION = 0.8f;
   private static readonly Vector2 FLIP_CYLINDER_DIRECTION = new Vector2(5.0f, 1.0f);
   private Texture2D MusicPaperRectTexture = GD.Load<Texture2D>("res://Assets/Sprites/Piano/music-paper-rect.png");
+  private Texture2D BookCoverTexture = GD.Load<Texture2D>("res://Assets/Sprites/Piano/book-cover.png");
 
   [Signal]
   public delegate void BoardNotesPlayedEventHandler();
@@ -96,14 +97,17 @@ public partial class SolfegeBoard : Node2D, IPersistent {
     }
   }
 
-  private void _SetFlipPageShader(Texture2D nextTexture) {
+  // The sheet the flip peels away is the sprite's own texture, except on the opening
+  // turn, where it is the cover of the closed book the player walked up to.
+  private void _SetFlipPageShader(Texture2D nextTexture, Texture2D? pageBeingTurned = null) {
     var paperShaderMaterial = MusicPaperRectNode.Material as ShaderMaterial;
     if (paperShaderMaterial != null) {
       paperShaderMaterial.SetShaderParameter("flip_left", true);
       paperShaderMaterial.SetShaderParameter("cylinder_direction", FLIP_CYLINDER_DIRECTION);
       paperShaderMaterial.SetShaderParameter("next_page", nextTexture);
-      if (_currentTexture != null) {
-        paperShaderMaterial.SetShaderParameter("current_page", _currentTexture);
+      var frontTexture = pageBeingTurned ?? _currentTexture;
+      if (frontTexture != null) {
+        paperShaderMaterial.SetShaderParameter("current_page", frontTexture);
       }
     }
     _time = 0.0f;
@@ -140,8 +144,7 @@ public partial class SolfegeBoard : Node2D, IPersistent {
       MusicPaperRectNode.Visible = true;
       _currentTexture = MusicPaperRectNode.Texture;
       var resetTexture = solfegeNotesTextureGenerator.CreateFromNotes(PAGES[_currentPage], MusicPaperRectNode.GetRect().Size);
-      _SetFlipPageShader(resetTexture);
-      (MusicPaperRectNode.Material as ShaderMaterial)?.SetShaderParameter("current_page", _currentTexture);
+      _SetFlipPageShader(resetTexture, BookCoverTexture);
       if (_notesCursor != null) {
         _notesCursor.QueueFree();
         _notesCursor = null;
