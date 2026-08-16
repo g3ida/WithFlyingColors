@@ -8,6 +8,7 @@ using Godot;
 using Wfc.Autoload;
 using Wfc.Core.Event;
 using Wfc.Core.Input;
+using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Entities.World.Checkpoints;
@@ -260,7 +261,7 @@ public partial class Player : CharacterBody2D, IPersistent {
       // No face wears this color, so there is no orientation to respawn in. This used to fall
       // through with angle 0 - the bottom face - and overwrite a perfectly good save with an
       // orientation nobody asked for.
-      GD.PushError($"Checkpoint color group '{colorGroup}' matches no face of the player; keeping the previous respawn point.");
+      Log.Error($"Checkpoint color group '{colorGroup}' matches no face of the player; keeping the previous respawn point.");
       return;
     }
 

@@ -3,6 +3,7 @@ namespace Wfc.Screens.Levels;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Localization;
+using Wfc.Core.Logger;
 using Wfc.Utils;
 
 public static class LevelDispatcher {
@@ -12,7 +13,7 @@ public static class LevelDispatcher {
     // already handles null: without this the miss surfaces as an NRE a frame later.
     var levelScene = GD.Load<PackedScene>(path);
     if (levelScene == null) {
-      GD.PushError($"No scene found for level {levelId} at '{path}'");
+      Log.Error($"No scene found for level {levelId} at '{path}'");
       return null;
     }
     var level = levelScene.Instantiate<GameLevel>();

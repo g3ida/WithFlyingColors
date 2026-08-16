@@ -35,14 +35,15 @@ public partial class DependenciesProvider :
   private readonly Lazy<IInputManager> _inputManager;
   private readonly Lazy<IModalStack> _modalStack;
   private readonly Lazy<IPauseOwnership> _pauseOwnership;
-  private readonly ILogger _logger = new GDLogger();
   private readonly SaveManager _saveManager = new SaveManager();
   IMenuManager IProvide<IMenuManager>.Value() => _menuManager.Value;
   IModalStack IProvide<IModalStack>.Value() => _modalStack.Value;
   IPauseOwnership IProvide<IPauseOwnership>.Value() => _pauseOwnership.Value;
   ISaveManager IProvide<ISaveManager>.Value() => _saveManager;
   ILocalizationService IProvide<ILocalizationService>.Value() => new LocalizationService();
-  ILogger IProvide<ILogger>.Value() => _logger;
+  // The same instance the static Log facade writes through: a node that takes ILogger as a
+  // dependency and a static class that cannot must not end up with two different floors.
+  ILogger IProvide<ILogger>.Value() => Log.Logger;
   IEventHandler IProvide<IEventHandler>.Value() => AutoloadManager.Instance.EventHandler;
   ISfxManager IProvide<ISfxManager>.Value() => AutoloadManager.Instance.SfxManager;
   IMusicTrackManager IProvide<IMusicTrackManager>.Value() => AutoloadManager.Instance.MusicTrackManager;

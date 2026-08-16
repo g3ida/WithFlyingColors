@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Logger;
 using Wfc.Entities.World.Piano;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -33,7 +34,7 @@ public partial class SfxManager : Node2D, ISfxManager {
       // A sound the editor has not imported yet resolves to null, and taking the whole pool
       // down with it would leave the game silent rather than just that one effect.
       if (stream is null) {
-        GD.PushError("Could not load sfx stream: ", data.Path);
+        Log.Error($"Could not load sfx stream: {data.Path}");
         continue;
       }
       var audioPlayer = new AudioStreamPlayer {
@@ -157,7 +158,7 @@ public partial class SfxManager : Node2D, ISfxManager {
       value.Play();
     }
     else {
-      GD.PushError("Invalid sfx name: ", sfx);
+      Log.Error($"Invalid sfx name: {sfx}");
     }
   }
 

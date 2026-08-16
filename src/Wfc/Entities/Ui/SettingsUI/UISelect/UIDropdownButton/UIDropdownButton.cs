@@ -4,6 +4,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Input;
+using Wfc.Core.Logger;
 using Wfc.Core.Ui;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
@@ -202,7 +203,7 @@ public partial class UIDropdownButton : Button, IDarkBackgroundAware {
     _arrowSpacerNode.Visible = hasChoice;
     _applyInk();
     if (_index < 0 || _index >= SelectDriver.Items.Count || _index >= SelectDriver.ItemValues.Count) {
-      GD.PrintErr("UIDropdownButton - invalid index ", _index);
+      Log.Error($"UIDropdownButton - invalid index {_index}");
       return;
     }
     _labelNode.Text = SelectDriver.Items[_index];

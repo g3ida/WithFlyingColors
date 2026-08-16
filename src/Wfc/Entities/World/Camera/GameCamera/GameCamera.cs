@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Camera;
 
 using Godot;
+using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils.Attributes;
@@ -229,7 +230,7 @@ public partial class GameCamera : Camera2D, IPersistent {
     }
     var target = GetNodeOrNull<Node2D>(FollowPath);
     if (target == null) {
-      GD.PushError($"Camera follow target '{FollowPath}' resolves to no Node2D; the camera keeps following what it had.");
+      Log.Error($"Camera follow target '{FollowPath}' resolves to no Node2D; the camera keeps following what it had.");
       return FollowNode;
     }
     return target;

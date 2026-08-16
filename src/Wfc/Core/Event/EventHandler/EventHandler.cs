@@ -4,6 +4,7 @@ using System;
 using Godot;
 using Wfc.Core.Input.Controllers;
 using Wfc.Core.Localization;
+using Wfc.Core.Logger;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Piano;
 using Wfc.Screens.MenuManager;
@@ -83,7 +84,7 @@ public partial class EventHandler : Node, IEventHandler {
         return true;
       }
       else {
-        GD.PushError("error: " + error);
+        Log.Error("error: " + error);
       }
     }
     return false;

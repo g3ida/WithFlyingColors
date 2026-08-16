@@ -48,10 +48,9 @@ public partial class FakeDependenciesProvider :
   private readonly Lazy<IMenuManager> _menuManager;
   private readonly Lazy<IModalStack> _modalStack;
   private readonly Lazy<IPauseOwnership> _pauseOwnership;
-  private readonly ILogger _logger = new GDLogger();
 
   IEventHandler IProvide<IEventHandler>.Value() => EventHandler.Instance;
-  ILogger IProvide<ILogger>.Value() => _logger;
+  ILogger IProvide<ILogger>.Value() => Log.Logger;
   IMenuManager IProvide<IMenuManager>.Value() => _menuManager.Value;
   ISaveManager IProvide<ISaveManager>.Value() => Save;
   ILocalizationService IProvide<ILocalizationService>.Value() => new LocalizationService();

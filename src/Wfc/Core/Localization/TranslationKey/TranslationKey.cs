@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Godot;
 using Wfc.Core.Exceptions;
+using Wfc.Core.Logger;
 using Wfc.Utils;
 
 // Note: Please only add entries at the end to preserve existing enum values declared in scene files.
@@ -136,7 +137,7 @@ public static partial class TranslationKeyExtensions {
       return key.ToTranslationKeyString();
     }
     catch (Exception ex) {
-      GD.PrintErr($"Failed to convert TranslationKey '{key}' to string: {ex.Message}");
+      Log.Error($"Failed to convert TranslationKey '{key}' to string: {ex.Message}");
       return string.Empty;
     }
   }

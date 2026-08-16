@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Godot;
+using Wfc.Core.Logger;
 using Wfc.Core.Serialization;
 using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Player;
@@ -27,12 +28,12 @@ public partial class SaveManager : ISaveManager {
   public void SaveGame(SceneTree tree, int slotIndex) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
-      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
+      Log.Error($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
     }
     _saveSlots[slotIndex].Save(_serializer, tree);
     _loadSlotsMetaData();
-    GD.Print("Game saved!");
+    Log.Debug($"Saved slot {slotIndex}.");
   }
 
   // Records how far the player has got and writes the slot out.
@@ -47,7 +48,7 @@ public partial class SaveManager : ISaveManager {
   public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, int slotIndex = ISaveManager.NO_SLOT) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
-      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
+      Log.Error($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
     }
 
@@ -66,7 +67,7 @@ public partial class SaveManager : ISaveManager {
   public void RecordLevelCleared(SceneTree tree, LevelId clearedLevelId, LevelId? nextLevelId, IEnumerable<string>? collectedGems = null, int slotIndex = ISaveManager.NO_SLOT) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
-      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
+      Log.Error($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
     }
 
@@ -109,7 +110,7 @@ public partial class SaveManager : ISaveManager {
   public void RecordHubArrivalSeen(int slotIndex = ISaveManager.NO_SLOT) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
-      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
+      Log.Error($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
     }
 
@@ -131,7 +132,7 @@ public partial class SaveManager : ISaveManager {
   public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = ISaveManager.NO_SLOT) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
-      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
+      Log.Error($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
     }
     _saveSlots[slotIndex].Load(_serializer, tree);
@@ -142,13 +143,13 @@ public partial class SaveManager : ISaveManager {
     camera.SnapTo(player.GlobalPosition);
     LatestLoadedSlot = slotIndex;
     _saveSlotsInfo();
-    GD.Print("Game loaded!");
+    Log.Debug($"Loaded slot {slotIndex}.");
   }
 
   public bool IsSLotFilled(int slotIndex = ISaveManager.NO_SLOT) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
-      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
+      Log.Error($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return false;
     }
     return _saveSlots[slotIndex].IsFilled;
@@ -157,7 +158,7 @@ public partial class SaveManager : ISaveManager {
   public SlotMetaData? GetSlotMetaData(int slotIndex = ISaveManager.NO_SLOT) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
-      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
+      Log.Error($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return null;
     }
     return _saveSlots[slotIndex].MetaData;
@@ -184,7 +185,7 @@ public partial class SaveManager : ISaveManager {
   public void SelectSlot(int slotIndex = ISaveManager.NO_SLOT) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;
     if (slotIndex is < 0 or >= NUM_SLOTS) {
-      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
+      Log.Error($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
     }
     LatestLoadedSlot = slotIndex;
@@ -193,7 +194,7 @@ public partial class SaveManager : ISaveManager {
 
   public void RemoveSaveSlot(int slotIndex) {
     if (slotIndex is < 0 or >= NUM_SLOTS) {
-      GD.PushError($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
+      Log.Error($"Invalid slot index: {slotIndex}. Must be 0-{NUM_SLOTS - 1}");
       return;
     }
     _saveSlots[slotIndex].Delete();
@@ -236,7 +237,7 @@ public partial class SaveManager : ISaveManager {
       }
     }
     catch (JsonException error) {
-      GD.PushError($"Could not read {SLOT_INFO_PATH}: {error.Message}");
+      Log.Error($"Could not read {SLOT_INFO_PATH}: {error.Message}");
     }
   }
 
@@ -250,7 +251,7 @@ public partial class SaveManager : ISaveManager {
 
     var saveFile = FileAccess.Open(SLOT_INFO_PATH, FileAccess.ModeFlags.Write);
     if (saveFile == null) {
-      GD.PushError($"Could not write {SLOT_INFO_PATH}: {FileAccess.GetOpenError()}");
+      Log.Error($"Could not write {SLOT_INFO_PATH}: {FileAccess.GetOpenError()}");
       return;
     }
     var data = new Dictionary<string, object> { { LATEST_LOADED_SLOT_FIELD_NAME, LatestLoadedSlot } };

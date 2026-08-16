@@ -3,6 +3,7 @@ namespace Wfc.Entities.World.Checkpoints;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Localization;
+using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils;
@@ -47,7 +48,7 @@ public partial class CheckpointArea : Area2D, IPersistent {
     base._Ready();
     this.WireNodes();
     if (string.IsNullOrEmpty(ColorGroup)) {
-      GD.PushError("ColorGroup cannot be null or empty");
+      Log.Error("ColorGroup cannot be null or empty");
     }
     _campfireNode.Settle(ColorGroup, _isChecked);
   }

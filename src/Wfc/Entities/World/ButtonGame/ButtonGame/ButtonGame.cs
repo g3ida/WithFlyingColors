@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.ButtonGame;
 
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils;
@@ -252,7 +253,7 @@ public partial class ButtonGame : Node2D, IPersistent {
         return button;
       }
     }
-    GD.PushError($"{Name} has no button with index {index}.");
+    Log.Error($"{Name} has no button with index {index}.");
     return null;
   }
   #endregion Rounds

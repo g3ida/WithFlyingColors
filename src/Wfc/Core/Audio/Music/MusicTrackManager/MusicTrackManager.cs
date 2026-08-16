@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils;
@@ -97,7 +98,7 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
       AddTrack(name, track.Path, track.Volume);
     }
     else {
-      GD.PushError("Invalid track name: ", name);
+      Log.Error($"Invalid track name: {name}");
       return;
     }
   }
@@ -122,7 +123,7 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
 
   public void RemoveTrack(string name) {
     if (!_musicPool.TryGetValue(name, out var value)) {
-      GD.PushError("Invalid track name to remove: ", name);
+      Log.Error($"Invalid track name to remove: {name}");
       return;
     }
 
@@ -136,7 +137,7 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
 
   public void PlayTrack(string name) {
     if (!_musicPool.TryGetValue(name, out var value)) {
-      GD.PushError("Invalid track name to play: ", name);
+      Log.Error($"Invalid track name to play: {name}");
       return;
     }
     var track = value;

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Godot;
+using Wfc.Core.Logger;
 using DirAccess = Godot.DirAccess;
 using FileAccess = Godot.FileAccess;
 
@@ -36,7 +37,7 @@ public class LevelPathAttribute : Attribute {
           _type = PathType.Directory;
         }
         else {
-          GD.PushError($"No file or directory found at the path: {path}");
+          Log.Error($"No file or directory found at the path: {path}");
           _path = String.Empty;
         }
       }

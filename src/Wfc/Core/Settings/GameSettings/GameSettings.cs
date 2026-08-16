@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using Microsoft.VisualBasic;
 using Wfc.Core.Input.Controllers;
 using Wfc.Core.Localization;
+using Wfc.Core.Logger;
 using Wfc.Skin;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -514,7 +514,7 @@ public static class GameSettings {
       return;
     }
     if (value.As<string>() != "") {
-      GD.PushWarning($"Ignoring unreadable keyboard binding for '{action}'; keeping the current one.");
+      Log.Warning($"Ignoring unreadable keyboard binding for '{action}'; keeping the current one.");
     }
   }
 
@@ -539,7 +539,7 @@ public static class GameSettings {
       }
     }
 
-    GD.PushWarning($"Ignoring unreadable gamepad binding for '{action}': '{binding}'.");
+    Log.Warning($"Ignoring unreadable gamepad binding for '{action}': '{binding}'.");
   }
 
   // Falls back to the pre-user:// location, and only ever for the real settings path: the

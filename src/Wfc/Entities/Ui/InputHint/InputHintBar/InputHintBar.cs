@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Input.Controllers;
 using Wfc.Core.Localization;
+using Wfc.Core.Logger;
 using Wfc.Core.Settings;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -90,7 +91,7 @@ public partial class InputHintBar : Control {
     if (card == null) {
       // Silence here would leave the screen advertising the wrong action with nothing
       // to say why, so a renamed or misspelt card is loud instead.
-      GD.PushError($"{nameof(InputHintBar)} has no card named '{cardName}'.");
+      Log.Error($"{nameof(InputHintBar)} has no card named '{cardName}'.");
     }
     return card;
   }
