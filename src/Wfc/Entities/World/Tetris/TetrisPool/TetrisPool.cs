@@ -62,7 +62,13 @@ public partial class TetrisPool : Node2D, IPersistent {
   // out from under them, overwriting live grid entries.
   private int _resetGeneration = 0;
   private TetrisAI _ai = new TetrisAI();
-  private float _stepInterval = Constants.TETRIS_SPEEDS[0];
+  private float _stepInterval = _stepIntervalForLevel(1);
+  internal float StepInterval => _stepInterval;
+
+  // The speeds are listed one per level from the first, so a level - which counts from one -
+  // indexes from zero. Past the last of them the pool simply stays at its quickest.
+  private static float _stepIntervalForLevel(int level) =>
+    Constants.TETRIS_SPEEDS[Math.Min(level, Constants.TETRIS_SPEEDS.Length) - 1];
   private float _phaseElapsed = 0.0f;
   private bool _isTravelling = false;
   private Tetromino? _shape = null;
@@ -439,7 +445,10 @@ public partial class TetrisPool : Node2D, IPersistent {
     _haveActiveBlock = false;
     _isTravelling = false;
     _phaseElapsed = 0.0f;
-    _stepInterval = Constants.TETRIS_SPEEDS[0];
+    // Not set here: UpdateScoreboard owns the speed, and a second writer is how a retry came
+    // back faster than the run it was retrying. Cleared rather than left alone so the level it
+    // recomputes always counts as a change and always reapplies the opening speed.
+    _level = 0;
     _randomBag.Clear();
     _isFirstPiece = true;
     _shape?.QueueFree();
@@ -463,9 +472,10 @@ public partial class TetrisPool : Node2D, IPersistent {
     _level = _score / 10 + 1;
     if (oldLevel != _level) {
       _scoreBoardNode.SetLevel(_level);
-      int speed = Math.Min(_level, Constants.TETRIS_MAX_LEVELS);
-      _stepInterval = Constants.TETRIS_SPEEDS[speed];
-      MusicTrackManager.SetPitchScale(1 + (speed - 1) * 0.1f);
+      _stepInterval = _stepIntervalForLevel(_level);
+      // The music climbs over fewer levels than the speed does, so it is clamped separately.
+      var pitchLevel = Math.Min(_level, Constants.TETRIS_MAX_LEVELS);
+      MusicTrackManager.SetPitchScale(1 + (pitchLevel - 1) * 0.1f);
       if (_level > 1) {
         var levelUpNode = SceneHelpers.InstantiateNode<LevelUp>();
         levelUpNode.Level = _level;
