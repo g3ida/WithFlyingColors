@@ -230,22 +230,24 @@ public static class GameSettings {
     return Mathf.Clamp(vol, 0.0f, 1.0f);
   }
 
+  // The setting lives on the bus in two parts, and both are written every time. The bottom of
+  // the range is quiet rather than silent, so turning a slider all the way down has to mute as
+  // well - and a bus muted without its volume following it down keeps whatever it was set to
+  // before, which is what the getter below would then read back.
   private static void _setAudioBusVolume(string busName, float volume) {
-    float vol = _getVolumeInDb(volume);
-    int musicBusIndex = AudioServer.GetBusIndex(busName);
-    if (vol != MinVolume) {
-      AudioServer.SetBusMute(musicBusIndex, false);
-      AudioServer.SetBusVolumeDb(musicBusIndex, vol);
-    }
-    else {
-      AudioServer.SetBusMute(musicBusIndex, true);
-    }
+    var busIndex = AudioServer.GetBusIndex(busName);
+    AudioServer.SetBusVolumeDb(busIndex, _getVolumeInDb(volume));
+    AudioServer.SetBusMute(busIndex, volume <= 0f);
   }
 
+  // Muted is the bottom of the range rather than a state beside it: a slider has one position
+  // to show, and Save reads the setting back out through here.
   private static float _getNormalizedAudioBusVolume(string busName) {
-    int musicBusIndex = AudioServer.GetBusIndex(busName);
-    float volumeDb = AudioServer.GetBusVolumeDb(musicBusIndex);
-    return _getVolumeFromDb(volumeDb);
+    var busIndex = AudioServer.GetBusIndex(busName);
+    if (AudioServer.IsBusMute(busIndex)) {
+      return 0f;
+    }
+    return _getVolumeFromDb(AudioServer.GetBusVolumeDb(busIndex));
   }
 
   private static Language _parseSystemLanguage() {
