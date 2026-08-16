@@ -9,7 +9,8 @@ using Wfc.Utils.Images;
 public partial class SolfegeNotesTextureGenerator {
   public const int SOLFEGE_KEY_OFFSET = 67;
   public const int NOTE_SPRITE_WIDTH = 39;
-  public static readonly Color BACKGROUND_COLOR = new Color(0xfdfbe700);
+  // Opaque: a page is the topmost sheet of the book, and what sits behind it is the cover.
+  public static readonly Color BACKGROUND_COLOR = new Color(0xfdfbe7ff);
   public const string PIANO_RESOURCES_BASE_PATH = @"res://Assets/Sprites/Piano/sheet/";
   private static readonly Texture2D SOLFEGE_TEXTURE = GD.Load<Texture2D>(PIANO_RESOURCES_BASE_PATH + "key-sol.png");
   private static readonly Dictionary<MusicNote, Texture2D> NOTES_TEXTURES = new Dictionary<MusicNote, Texture2D>

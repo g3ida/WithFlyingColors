@@ -11,6 +11,14 @@ uniform vec2 rect;
 uniform sampler2D current_page;
 uniform sampler2D next_page;
 
+// The page coming up is in the shadow of the one being turned, so it darkens towards
+// the start of the flip. Only the colour darkens - scaling the alpha along with it would
+// let whatever sits behind the sheet show through.
+vec4 shaded_next_page(vec2 uv, float da) {
+	vec4 page = texture(next_page, uv);
+	return vec4(mix(0.1, 1.0, da) * page.rgb, page.a);
+}
+
 void fragment() {
 	if (time > flip_duration) {
 		COLOR = texture(next_page, UV);
@@ -31,7 +39,7 @@ void fragment() {
 		if (!onCylinder) {
 			if (neg) {
 				//color = vec4(1,1,0,1);
-				color = mix(0.1, 1.0, da) * texture(next_page, UV);		// next page
+				color = shaded_next_page(UV, da);		// next page
 			} else {
 				//color = vec4(1,0,0,1);
 				color = texture(current_page, UV);						// current page
@@ -47,7 +55,7 @@ void fragment() {
 			bool next = outside && (flip_left ? (pt.x > o.x) : (pt.x < o.x));
 			if (next) {
 				//color = vec4(0,1,1,1);
-				color = mix(0.1, 1.0, da) * texture(next_page, UV);			// next page
+				color = shaded_next_page(UV, da);			// next page
 			} else {
 				//color = (outside ? vec4(1.0,0.5,0.0,1) : vec4(00,0,1,1));
 				color = texture(current_page, (outside ? UV : p / rect));	// front and curved front

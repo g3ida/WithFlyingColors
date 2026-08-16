@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://6ijyjb4sawd4"]
+[gd_scene load_steps=6 format=3 uid="uid://6ijyjb4sawd4"]
 
 [ext_resource type="Script" uid="uid://c2mqhmn7gtkoc" path="res://src/Wfc/Entities/World/Piano/SolfegeBoard/SolfegeBoard.cs" id="1"]
 [ext_resource type="Texture2D" uid="uid://vjord6qrwefq" path="res://Assets/Sprites/Piano/music-paper-rect.png" id="2"]
 [ext_resource type="Shader" uid="uid://xg7n41xe7vh6" path="res://Assets/Shaders/FlipPage.gdshader" id="3"]
+[ext_resource type="Texture2D" uid="uid://cupnymxgn7t5m" path="res://Assets/Sprites/Piano/book-cover.png" id="4"]
 
 [sub_resource type="ShaderMaterial" id="2"]
 shader = ExtResource("3")
@@ -17,9 +18,10 @@ shader_parameter/rect = Vector2(0, 0)
 z_index = -1
 script = ExtResource("1")
 
-[node name="EmptyPaperRect" type="Sprite2D" parent="."]
+[node name="BookCover" type="Sprite2D" parent="."]
 position = Vector2(-177, -216)
-texture = ExtResource("2")
+scale = Vector2(2.637037, 2.630137)
+texture = ExtResource("4")
 centered = false
 
 [node name="MusicPaperRect" type="Sprite2D" parent="."]
