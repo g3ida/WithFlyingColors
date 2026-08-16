@@ -41,7 +41,7 @@ public partial class PlayerSquashedState : PlayerDyingBaseState {
       From = player.GlobalTransform,
       Motion = pin * reach,
     };
-    if (death.Source is PhysicsBody2D crusher && IsInstanceValid(crusher)) {
+    if (death.Source is PhysicsBody2D crusher && GodotObject.IsInstanceValid(crusher)) {
       probe.ExcludeBodies = new Godot.Collections.Array<Rid> { crusher.GetRid() };
     }
     var result = new PhysicsTestMotionResult2D();

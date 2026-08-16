@@ -4,7 +4,7 @@ using Godot;
 using Wfc.Skin;
 using Wfc.Utils.Colors;
 
-public partial class ColorGroup : GodotObject {
+public class ColorGroup {
   public string Value { get; }
   public SkinColor SkinColor { get; }
 

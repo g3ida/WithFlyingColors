@@ -5,7 +5,7 @@ using Wfc.Core.Input;
 using Wfc.State;
 using Wfc.Utils;
 
-public abstract partial class PlayerBaseState : GodotObject, IState<Player> {
+public abstract class PlayerBaseState : IState<Player> {
   const float GRAVITY = 9.8f * Constants.WORLD_TO_SCREEN;
   const float FALL_FACTOR = 2.5f;
   const float RUN_DAMPING = 0.25f;

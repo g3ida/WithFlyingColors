@@ -2,7 +2,7 @@ namespace Wfc.Entities.World.Explosion;
 
 using Godot;
 
-public partial class ExplosionInfo : GodotObject {
+public class ExplosionInfo {
   public Node2D BlocksContainer { get; set; }
   public bool CanDetonate { get; set; }
   public Vector2 CollisionExtents { get; set; }

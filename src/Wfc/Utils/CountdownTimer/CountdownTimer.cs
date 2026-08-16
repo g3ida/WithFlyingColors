@@ -3,7 +3,7 @@ namespace Wfc.Utils;
 using Godot;
 
 // Use built in timer instead. I was new to godot didn't know it existed :p
-public partial class CountdownTimer : GodotObject {
+public class CountdownTimer {
   private float _duration;
   private float _timer;
 

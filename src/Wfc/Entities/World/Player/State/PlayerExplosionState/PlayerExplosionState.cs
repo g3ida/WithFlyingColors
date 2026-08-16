@@ -20,18 +20,10 @@ public partial class PlayerExplosionState : PlayerDyingBaseState {
     player.Velocity = Vector2.Zero;
     lightMask = player.LightOccluder.OccluderLightMask;
     // create the explosion
-    CallDeferred(nameof(CreateExplosion), player);
+    Callable.From(() => CreateExplosion(player)).CallDeferred();
     EventHandler.Instance.EmitPlayerExplode();
     player.LightOccluder.OccluderLightMask = 0;
     player.AnimatedSpriteNode.Play("die");
-  }
-
-  private void OnAnimationFinished(Player player) {
-    player.AnimatedSpriteNode.Disconnect(
-      AnimatedSprite2D.SignalName.AnimationFinished,
-      new Callable(this, nameof(OnAnimationFinished))
-    );
-    EventHandler.Instance.EmitPlayerDied();
   }
 
   protected override void _Exit(Player player) {
@@ -39,13 +31,16 @@ public partial class PlayerExplosionState : PlayerDyingBaseState {
     player.LightOccluder.OccluderLightMask = lightMask;
   }
 
-  private void CreateExplosion(Player player) {
+  private static void CreateExplosion(Player player) {
     var explosion = SceneHelpers.InstantiateNode<Explosion>();
-    explosion.Connect(nameof(Explosion.ObjectDetonated), new Callable(this, nameof(OnObjectDetonated)), flags: (uint)ConnectFlags.OneShot);
+    explosion.Connect(
+      nameof(Explosion.ObjectDetonated),
+      Callable.From<Node>(OnObjectDetonated),
+      flags: (uint)GodotObject.ConnectFlags.OneShot);
     explosion.Connect(Node.SignalName.Ready, Callable.From(() => {
       explosion.Setup(player);
       explosion.FireExplosion();
-    }), (uint)ConnectFlags.OneShot);
+    }), (uint)GodotObject.ConnectFlags.OneShot);
     player.AddChild(explosion);
     explosion.Owner = player;
   }

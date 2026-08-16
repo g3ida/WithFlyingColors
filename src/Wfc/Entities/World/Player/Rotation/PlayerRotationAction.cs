@@ -4,7 +4,7 @@ using System;
 using Godot;
 using Wfc.Utils;
 
-public partial class PlayerRotationAction : GodotObject {
+public class PlayerRotationAction {
   private const float DEFAULT_ROTATION_DURATION = 0.1f;
   private const float FULL_TURN = Mathf.Pi * 2.0f;
 
