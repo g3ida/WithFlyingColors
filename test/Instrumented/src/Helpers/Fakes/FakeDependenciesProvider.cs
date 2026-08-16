@@ -36,7 +36,8 @@ public partial class FakeDependenciesProvider :
   IProvide<ISfxManager>,
   IProvide<IMusicTrackManager>,
   IProvide<IInputManager>,
-  IProvide<IModalStack> {
+  IProvide<IModalStack>,
+  IProvide<IPauseOwnership> {
   public override void _Notification(int what) => this.Notify(what);
 
   public FakeInputManager Input { get; } = new();
@@ -46,6 +47,7 @@ public partial class FakeDependenciesProvider :
 
   private readonly Lazy<IMenuManager> _menuManager;
   private readonly Lazy<IModalStack> _modalStack;
+  private readonly Lazy<IPauseOwnership> _pauseOwnership;
   private readonly ILogger _logger = new GDLogger();
 
   IEventHandler IProvide<IEventHandler>.Value() => EventHandler.Instance;
@@ -57,6 +59,7 @@ public partial class FakeDependenciesProvider :
   IMusicTrackManager IProvide<IMusicTrackManager>.Value() => Wfc.Autoload.AutoloadManager.Instance.MusicTrackManager;
   IInputManager IProvide<IInputManager>.Value() => Input;
   IModalStack IProvide<IModalStack>.Value() => _modalStack.Value;
+  IPauseOwnership IProvide<IPauseOwnership>.Value() => _pauseOwnership.Value;
 
   public FakeDependenciesProvider() : base() {
     // Anything a test drives into saving (closing a settings view does) writes through
@@ -65,7 +68,8 @@ public partial class FakeDependenciesProvider :
     // two cannot drift apart.
     GameSettings.ConfigFilePath = WithFlyingColors.Main.TEST_CONFIG_PATH;
     _menuManager = new Lazy<IMenuManager>(() => new MenuManager(this));
-    _modalStack = new Lazy<IModalStack>(() => new ModalStack(GetTree()));
+    _pauseOwnership = new Lazy<IPauseOwnership>(() => new PauseOwnership(GetTree()));
+    _modalStack = new Lazy<IModalStack>(() => new ModalStack(_pauseOwnership.Value));
   }
 
   public void OnReady() => this.Provide();

@@ -71,8 +71,21 @@ public partial class PauseMenu : CanvasLayer {
   public IInputManager InputManager => this.DependOn<IInputManager>();
   [Dependency]
   public IModalStack ModalStack => this.DependOn<IModalStack>();
+  [Dependency]
+  public IPauseOwnership PauseOwnership => this.DependOn<IPauseOwnership>();
 
   public void OnResolved() { }
+
+  // The level this menu belongs to is freed while it is still paused whenever the player
+  // restarts or walks out from the pause menu, and a claim nobody is left to release would
+  // hold the game still for the rest of the run.
+  public override void _ExitTree() {
+    base._ExitTree();
+    if (_isPaused) {
+      _isPaused = false;
+      PauseOwnership.Release(this);
+    }
+  }
 
   public override void _Ready() {
     this.WireNodes();
@@ -125,7 +138,7 @@ public partial class PauseMenu : CanvasLayer {
     _pauseMenu._Hide();
     _inputHintBar.Exit();
     _isPaused = false;
-    GetTree().Paused = false;
+    PauseOwnership.Release(this);
     EventHandler.Instance.EmitPauseMenuExit();
   }
 
@@ -136,7 +149,7 @@ public partial class PauseMenu : CanvasLayer {
     _pauseMenu._Show();
     _inputHintBar.Enter();
     _isPaused = true;
-    GetTree().Paused = true;
+    PauseOwnership.Claim(this);
     EventHandler.Instance.EmitPauseMenuEnter();
   }
 

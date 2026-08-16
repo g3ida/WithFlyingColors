@@ -27,16 +27,19 @@ public partial class DependenciesProvider :
   IProvide<ISfxManager>,
   IProvide<IMusicTrackManager>,
   IProvide<IInputManager>,
-  IProvide<IModalStack> {
+  IProvide<IModalStack>,
+  IProvide<IPauseOwnership> {
   public override void _Notification(int what) => this.Notify(what);
 
   private readonly Lazy<IMenuManager> _menuManager;
   private readonly Lazy<IInputManager> _inputManager;
   private readonly Lazy<IModalStack> _modalStack;
+  private readonly Lazy<IPauseOwnership> _pauseOwnership;
   private readonly ILogger _logger = new GDLogger();
   private readonly SaveManager _saveManager = new SaveManager();
   IMenuManager IProvide<IMenuManager>.Value() => _menuManager.Value;
   IModalStack IProvide<IModalStack>.Value() => _modalStack.Value;
+  IPauseOwnership IProvide<IPauseOwnership>.Value() => _pauseOwnership.Value;
   ISaveManager IProvide<ISaveManager>.Value() => _saveManager;
   ILocalizationService IProvide<ILocalizationService>.Value() => new LocalizationService();
   ILogger IProvide<ILogger>.Value() => _logger;
@@ -49,7 +52,8 @@ public partial class DependenciesProvider :
     _menuManager = new Lazy<IMenuManager>(() => new MenuManager(this));
     _inputManager = new Lazy<IInputManager>(() => new InputManager());
     // Lazy so GetTree() is only reached once this node is in the tree.
-    _modalStack = new Lazy<IModalStack>(() => new ModalStack(GetTree()));
+    _pauseOwnership = new Lazy<IPauseOwnership>(() => new PauseOwnership(GetTree()));
+    _modalStack = new Lazy<IModalStack>(() => new ModalStack(_pauseOwnership.Value));
   }
 
   public void OnReady() {

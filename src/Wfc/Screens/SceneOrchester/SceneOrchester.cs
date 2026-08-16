@@ -8,6 +8,7 @@ using Godot;
 using Wfc.Core.Audio;
 using Wfc.Core.Event;
 using Wfc.Core.Persistence;
+using Wfc.Core.Ui;
 using Wfc.Entities.Ui;
 using Wfc.Entities.World.Checkpoints;
 using Wfc.Entities.World.Door;
@@ -41,6 +42,9 @@ public partial class SceneOrchester : Node2D {
 
   [Dependency]
   public IMusicTrackManager MusicTrackManager => this.DependOn<IMusicTrackManager>();
+
+  [Dependency]
+  public IPauseOwnership PauseOwnership => this.DependOn<IPauseOwnership>();
 
   // The id the level's Cutscene node matches start and end requests on. Unique to
   // the intro so it cannot collide with a cutscene the level itself is running.
@@ -94,6 +98,9 @@ public partial class SceneOrchester : Node2D {
     base._ExitTree();
     DisconnectSignals();
     MusicTrackManager.Stop();
+    // A swap that was still covering when the screen was left would otherwise hold the game
+    // for the rest of the run, with the only thing that could let go of it gone.
+    PauseOwnership.Release(this);
   }
 
   public override void _Ready() {
@@ -288,7 +295,7 @@ public partial class SceneOrchester : Node2D {
     _pendingClearedLevelId = _currentLevelId;
     _pendingClearedGems = _collectedGemGroups();
     // Freeze play under the cover; the swap happens once it is opaque.
-    GetTree().Paused = true;
+    PauseOwnership.Claim(this);
     _titleCardNode.CoverForSwap();
   }
 
@@ -302,7 +309,7 @@ public partial class SceneOrchester : Node2D {
     _pendingClearedLevelId = null;
     _pendingClearedGems = [];
     _pendingRestart = false;
-    GetTree().Paused = true;
+    PauseOwnership.Claim(this);
     _titleCardNode.CoverForSwap();
   }
 
@@ -317,7 +324,7 @@ public partial class SceneOrchester : Node2D {
     _pendingClearedLevelId = null;
     _pendingClearedGems = [];
     _pendingRestart = true;
-    GetTree().Paused = true;
+    PauseOwnership.Claim(this);
     _titleCardNode.CoverForSwap();
   }
 
@@ -362,13 +369,11 @@ public partial class SceneOrchester : Node2D {
       SaveManager.RecordProgress(GetTree(), nextLevelId, 0);
     }
 
-    // Play resumes under the lifting cover, but inside the intro cutscene: the
-    // player is walked in while the title fades over the scene. If the window lost
-    // focus during the cover, the pause menu legitimately owns the pause now and
-    // keeps it.
-    if (_currentLevel?.PauseMenuNode.IsPaused != true) {
-      GetTree().Paused = false;
-    }
+    // Play resumes under the lifting cover, but inside the intro cutscene: the player is
+    // walked in while the title fades over the scene. Only this claim is let go: if the
+    // window lost focus during the cover, the pause menu is holding the game in its own
+    // name and goes on holding it.
+    PauseOwnership.Release(this);
     _beginLevelIntro();
   }
 
