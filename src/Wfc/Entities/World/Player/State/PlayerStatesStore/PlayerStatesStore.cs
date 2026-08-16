@@ -7,7 +7,7 @@ using Wfc.Core.Input;
 using Wfc.Screens.Levels;
 using Wfc.State;
 
-public partial class PlayerStatesStore : GodotObject, IPlayerStatesStore {
+public class PlayerStatesStore : IPlayerStatesStore {
 
   private readonly Dictionary<Type, IState<Player>> _states;
 
