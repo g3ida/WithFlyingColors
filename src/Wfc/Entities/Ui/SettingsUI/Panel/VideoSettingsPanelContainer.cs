@@ -103,6 +103,12 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
     EventHandler.Instance.EmitFullscreenToggled(buttonPressed);
     _toggleAutoResolution();
     await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+    // The tree outlives this panel, so unlike an await on one of its own children this one
+    // always comes back - on a panel the player may have closed in the meantime, whose
+    // GetWindow() is then null.
+    if (!IsInsideTree()) {
+      return;
+    }
     DisplayServer.WindowMoveToForeground();
     GetWindow().MoveToCenter();
     GetWindow().GrabFocus();
@@ -170,11 +176,15 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
   }
 
   private async Task _refreshWindow(Vector2I newSize) {
+    // Taken once and held, rather than asked for again after each wait: GetTree() answers null
+    // on a node that has left the tree, and the waits below are on the tree itself, which
+    // always comes back however long the panel lasts.
+    var tree = GetTree();
     // hack to force resize immediately, bug happening on Linux https://github.com/godotengine/godot/issues/105597
-    await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-    GetTree().Root.Size = newSize;
-    GetTree().Root.ContentScaleFactor = 1.001f;
-    await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-    GetTree().Root.ContentScaleFactor = 1.0f;
+    await ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+    tree.Root.Size = newSize;
+    tree.Root.ContentScaleFactor = 1.001f;
+    await ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+    tree.Root.ContentScaleFactor = 1.0f;
   }
 }
