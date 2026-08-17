@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
+using Chickensoft.Sync.Primitives;
 using Godot;
 using Wfc.Core.Localization;
 using Wfc.Core.Logger;
+using Wfc.Core.Settings;
 using Wfc.Entities.Ui.SettingsUI.Grid;
 using Wfc.Skin;
 using Wfc.Utils;
@@ -86,7 +88,7 @@ public partial class SettingsTabManager : Control {
   public const int CONTROLLER_PANEL_INDEX = 2;
 
   private GameSkin _skin = SkinManager.Instance.CurrentSkin;
-  private bool _isSubscribed;
+  private AutoChannel.Binding? _skinBinding;
   private int _currentPanelIndex = 0;
   // The buttons are wired in _Ready and captioned once dependencies resolve, so
   // nothing may write to them before both have happened.
@@ -104,24 +106,20 @@ public partial class SettingsTabManager : Control {
 
   public override void _EnterTree() {
     base._EnterTree();
-    if (!_isSubscribed) {
-      EventHandler.Instance.Events.SkinChanged += _onSkinChanged;
-      _isSubscribed = true;
-    }
+    _skinBinding ??= SettingsRepo.Instance.Channel.Bind()
+      .On((in ISettingsRepo.SkinChanged _) => _onSkinChanged());
   }
 
   public override void _ExitTree() {
     base._ExitTree();
-    if (_isSubscribed) {
-      EventHandler.Instance.Events.SkinChanged -= _onSkinChanged;
-      _isSubscribed = false;
-    }
+    _skinBinding?.Dispose();
+    _skinBinding = null;
   }
 
   // The tab washes are cut from the palette when the screen is built, so picking
   // another palette on the general tab has to cut them again - otherwise the one
   // screen still showing the old colours is the screen they were changed on.
-  private void _onSkinChanged(string skin) {
+  private void _onSkinChanged() {
     _skin = SkinManager.Instance.CurrentSkin;
     _setButtonStyles();
   }

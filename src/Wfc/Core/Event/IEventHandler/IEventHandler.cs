@@ -45,12 +45,7 @@ public interface IEventHandler {
   public void EmitMenuBoxRotated();
   public void EmitPauseMenuEnter();
   public void EmitPauseMenuExit();
-  public void EmitFullscreenToggled(bool fullscreen);
-  public void EmitVsyncToggled(bool vsync);
-  public void EmitScreenSizeChanged(Vector2 size);
   public void EmitPerformanceOverlayToggled(bool enabled);
-  public void EmitLanguageChanged(Language language);
-  public void EmitSkinChanged(string skin);
   public void EmitSfxVolumeChanged(float volume);
   public void EmitMusicVolumeChanged(float volume);
   public void EmitOnActionBound(string action, int key);

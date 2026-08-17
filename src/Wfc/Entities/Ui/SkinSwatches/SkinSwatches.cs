@@ -1,9 +1,10 @@
 namespace Wfc.Entities.Ui;
 
+using Chickensoft.Sync.Primitives;
 using Godot;
+using Wfc.Core.Settings;
 using Wfc.Skin;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The four colours the game is played in, side by side, in the order the player meets
 // them on their own four faces. Shows what a palette looks like rather than only what
@@ -26,7 +27,7 @@ public partial class SkinSwatches : HBoxContainer {
     [SkinColor.TopFace, SkinColor.LeftFace, SkinColor.BottomFace, SkinColor.RightFace];
 
   private readonly ColorRect[] _swatches = new ColorRect[FACES.Length];
-  private bool _isSubscribed;
+  private AutoChannel.Binding? _skinBinding;
   private bool _isBuilt;
 
   // Subscribed from _EnterTree rather than _Ready so it survives a reparent: a settings
@@ -34,18 +35,14 @@ public partial class SkinSwatches : HBoxContainer {
   // a node whose _Ready has yet to run.
   public override void _EnterTree() {
     base._EnterTree();
-    if (!_isSubscribed) {
-      EventHandler.Instance.Events.SkinChanged += _onSkinChanged;
-      _isSubscribed = true;
-    }
+    _skinBinding ??= SettingsRepo.Instance.Channel.Bind()
+      .On((in ISettingsRepo.SkinChanged _) => Repaint());
   }
 
   public override void _ExitTree() {
     base._ExitTree();
-    if (_isSubscribed) {
-      EventHandler.Instance.Events.SkinChanged -= _onSkinChanged;
-      _isSubscribed = false;
-    }
+    _skinBinding?.Dispose();
+    _skinBinding = null;
   }
 
   public override void _Ready() {
@@ -73,5 +70,4 @@ public partial class SkinSwatches : HBoxContainer {
     }
   }
 
-  private void _onSkinChanged(string skin) => Repaint();
 }

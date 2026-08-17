@@ -1,7 +1,9 @@
 namespace Wfc.Screens;
 
 using Godot;
+using Chickensoft.Sync.Primitives;
 using Wfc.Core.Localization;
+using Wfc.Core.Settings;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
@@ -26,7 +28,7 @@ public partial class SkinSelectMenu : FirstRunMenu {
   private TextureRect _playerNode = default!;
   #endregion Nodes
 
-  private bool _isSubscribed;
+  private AutoChannel.Binding? _skinBinding;
 
   protected override GameMenus NextScreen => GameMenus.MAIN_MENU;
 
@@ -35,23 +37,17 @@ public partial class SkinSelectMenu : FirstRunMenu {
   // is where it is asked for, not where the answer has arrived.
   protected override void OnFirstRunReady() {
     this.WireNodes();
-    if (!_isSubscribed) {
-      EventHandler.Events.SkinChanged += _onSkinChanged;
-      _isSubscribed = true;
-    }
+    _skinBinding ??= SettingsRepo.Instance.Channel.Bind()
+      .On((in ISettingsRepo.SkinChanged _) => _showPalette());
     _captionNode.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_header_pickColors);
     _showPalette();
   }
 
   public override void _ExitTree() {
     base._ExitTree();
-    if (_isSubscribed) {
-      EventHandler.Events.SkinChanged -= _onSkinChanged;
-      _isSubscribed = false;
-    }
+    _skinBinding?.Dispose();
+    _skinBinding = null;
   }
-
-  private void _onSkinChanged(string skin) => _showPalette();
 
   // The swatches keep themselves in step with the palette; only the box the player
   // will actually be moving has to be cut again, which is what asking for it does.

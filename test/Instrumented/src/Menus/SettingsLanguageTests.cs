@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
+using Chickensoft.Sync.Primitives;
 using Godot;
 using Shouldly;
 using Wfc.Core.Localization;
@@ -101,20 +102,16 @@ public class SettingsLanguageTests(Node testScene) : TestClass(testScene) {
     var driver = screen.FindDescendants<LanguageSelectDriver>().FirstOrDefault();
     driver.ShouldNotBeNull("the general tab has no language select");
 
-    var announced = 0;
-    void onLanguageChanged(int language) => announced++;
-    EventHandler.Instance.Events.LanguageChanged += onLanguageChanged;
-    try {
-      driver.onItemSelected(Variant.CreateFrom(Language.English.GetLanguageCode()));
-      announced.ShouldBe(0, "picking the language already in use was announced as a change");
+    var announced = new List<Language>();
+    using var binding = SettingsRepo.Instance.Channel.Bind()
+      .On((in ISettingsRepo.LanguageChanged message) => announced.Add(message.Language));
 
-      driver.onItemSelected(Variant.CreateFrom(Language.French.GetLanguageCode()));
-      announced.ShouldBe(1);
-      GameSettings.Language.ShouldBe(Language.French);
-    }
-    finally {
-      EventHandler.Instance.Events.LanguageChanged -= onLanguageChanged;
-    }
+    driver.onItemSelected(Variant.CreateFrom(Language.English.GetLanguageCode()));
+    announced.ShouldBeEmpty("picking the language already in use was announced as a change");
+
+    driver.onItemSelected(Variant.CreateFrom(Language.French.GetLanguageCode()));
+    announced.ShouldBe([Language.French]);
+    GameSettings.Language.ShouldBe(Language.French);
   }
 
   private static void _pick(GameMenu screen, Language language) {
