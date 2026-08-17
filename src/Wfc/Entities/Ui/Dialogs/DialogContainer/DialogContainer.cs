@@ -3,12 +3,12 @@ namespace Wfc.Entities.Ui.Dialogs;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Core.Localization;
 using Wfc.Core.Ui;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Slides a ConfirmDialog down over the screen and holds input while it is up.
 //
@@ -209,7 +209,7 @@ public partial class DialogContainer : Control {
     if (_isHiddenOrHiding()) {
       return;
     }
-    EventHandler.Instance.EmitMenuActionPressed(MenuAction.ConfirmDialog);
+    GameEvents.Instance.OnMenuActionPressed(MenuAction.ConfirmDialog);
     _startHiding();
   }
 
@@ -218,7 +218,7 @@ public partial class DialogContainer : Control {
     if (_isHiddenOrHiding()) {
       return;
     }
-    EventHandler.Instance.EmitMenuActionPressed(MenuAction.DismissDialog);
+    GameEvents.Instance.OnMenuActionPressed(MenuAction.DismissDialog);
     EmitSignal(SignalName.Dismissed);
     _startHiding();
   }

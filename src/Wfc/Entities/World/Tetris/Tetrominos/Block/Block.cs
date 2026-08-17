@@ -9,7 +9,6 @@ using Wfc.Entities.World.Platforms;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class Block : Node2D {

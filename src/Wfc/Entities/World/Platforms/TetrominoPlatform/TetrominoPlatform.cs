@@ -7,7 +7,6 @@ using Wfc.Core.Event;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A tetromino coming down through a level the way a piece comes down the pool: a cell at a time,
 // standing still on every row it reaches. Each of its cells is a flat platform in its own right,

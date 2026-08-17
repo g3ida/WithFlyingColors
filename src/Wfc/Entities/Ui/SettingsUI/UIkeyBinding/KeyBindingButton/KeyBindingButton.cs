@@ -1,10 +1,13 @@
 namespace Wfc.Entities.Ui;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Linq;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Event;
+using Wfc.Core.Input.Controllers;
 using Wfc.Core.Input;
 using Wfc.Core.Localization;
 using Wfc.Core.Settings;
@@ -12,10 +15,11 @@ using Wfc.Core.Ui;
 using Wfc.Entities.Ui.SettingsUI;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Meta(typeof(IAutoNode))]
 public partial class KeyBindingButton : Button, IEditableControl, IDarkBackgroundAware {
+  private AutoChannel.Binding? _controllerBinding;
+
 
   #region Dependencies
   // The "empty" caption is a translated string kept in a field, so it has to be
@@ -117,7 +121,8 @@ public partial class KeyBindingButton : Button, IEditableControl, IDarkBackgroun
   public override void _EnterTree() {
     base._EnterTree();
     if (!_isSubscribed) {
-      EventHandler.Instance.Events.LastUsedControllerChanged += _onLastUsedControllerChanged;
+    _controllerBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.LastUsedControllerChanged m) => _onLastUsedControllerChanged(m.Controller));
       Input.JoyConnectionChanged += _onJoyConnectionChanged;
       _isSubscribed = true;
     }
@@ -126,7 +131,8 @@ public partial class KeyBindingButton : Button, IEditableControl, IDarkBackgroun
   public override void _ExitTree() {
     base._ExitTree();
     if (_isSubscribed) {
-      EventHandler.Instance.Events.LastUsedControllerChanged -= _onLastUsedControllerChanged;
+    _controllerBinding?.Dispose();
+    _controllerBinding = null;
       Input.JoyConnectionChanged -= _onJoyConnectionChanged;
       _isSubscribed = false;
     }
@@ -144,7 +150,7 @@ public partial class KeyBindingButton : Button, IEditableControl, IDarkBackgroun
   // A pad of another make draws its buttons with different art, so the icon has
   // to be resolved again even though the binding behind it hasn't moved. The
   // keyboard/gamepad switch arrives separately, through Type.
-  private void _onLastUsedControllerChanged(int controllerType) => _reloadArt();
+  private void _onLastUsedControllerChanged(ControllerType controllerType) => _reloadArt();
 
   // Unplugging the pad in use hands the icons over to whichever is left.
   private void _onJoyConnectionChanged(long device, bool connected) => _reloadArt();
@@ -351,7 +357,7 @@ public partial class KeyBindingButton : Button, IEditableControl, IDarkBackgroun
     if (isEditing) {
       ModalStack.Push(this);
       _animationPlayer.Play("Blink");
-      EventHandler.Instance.EmitKeyboardActionBinding();
+      GameEvents.Instance.OnKeyboardActionBinding();
     }
     else {
       ModalStack.Pop(this);

@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Enemies;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using Godot;
 using Wfc.Core.Event;
@@ -9,10 +10,11 @@ using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class Bullet : Node2D, IBullet {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Constants
   private const float SPEED = 10.0f * Constants.WORLD_TO_SCREEN;
   private const float MAX_DISTANCE = 5000.0f;
@@ -45,7 +47,8 @@ public partial class Bullet : Node2D, IBullet {
     if (_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded += _onRespawn;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointLoaded _) => _onRespawn());
     _isSubscribed = true;
   }
 
@@ -54,7 +57,8 @@ public partial class Bullet : Node2D, IBullet {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded -= _onRespawn;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _isSubscribed = false;
   }
 

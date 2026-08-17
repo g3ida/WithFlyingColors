@@ -1,10 +1,10 @@
 namespace Wfc.Entities.Ui.Dialogs;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Fonts;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A dialog action button: a caption on the menu's pill, with a focus tint that
 // covers the whole of it.
@@ -33,7 +33,7 @@ public partial class DialogButton : PanelContainer {
     // The screen's focus poll sits in GameMenu._Process, which the modal pause
     // stops for exactly as long as a dialog is up - so the dialog's buttons report
     // their own focus moves, or arrowing between Confirm and Cancel is silent.
-    _buttonNode.FocusEntered += EventHandler.Instance.EmitFocusChanged;
+    _buttonNode.FocusEntered += GameEvents.Instance.OnFocusChanged;
   }
 
   public void SetCaption(string caption) => _captionNode.Text = caption;

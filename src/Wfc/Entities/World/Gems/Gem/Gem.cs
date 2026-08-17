@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Gems;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,12 @@ using Wfc.Core.Serialization;
 using Wfc.Skin;
 using Wfc.State;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class Gem : Area2D, IPersistent {
+  private AutoChannel.Binding? _checkpointBinding;
+
   public override void _Notification(int what) => this.Notify(what);
 
   // How much of a ghost is left to see. Enough to read the shape and its color, not
@@ -111,13 +113,14 @@ public partial class Gem : Area2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Events.CheckpointReached += _OnCheckpointHit;
-    EventHandler.Instance.Events.CheckpointLoaded += Reset;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointReached m) => _OnCheckpointHit(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => Reset());
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Events.CheckpointReached -= _OnCheckpointHit;
-    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
   }
 
   public override void _EnterTree() {

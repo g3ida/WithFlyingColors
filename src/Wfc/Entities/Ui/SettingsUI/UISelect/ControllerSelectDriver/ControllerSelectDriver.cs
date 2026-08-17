@@ -1,20 +1,23 @@
 namespace Wfc.Entities.Ui.SettingsUI.UISelect;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input.Controllers;
 using Wfc.Core.Localization;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class ControllerSelectDriver : UISelectDriver {
+  private AutoChannel.Binding? _controllerBinding;
+
 
   // The item names are translated device names, built once, so the list has to be
   // made again for it to follow a language change.
@@ -76,7 +79,7 @@ public partial class ControllerSelectDriver : UISelectDriver {
   // action the player took, and the sfx is wired to this event.
   public override void OnUserSelectionChanged() {
     _isManuallySelected = true;
-    EventHandler.Instance.EmitControllerSelectionChanged(SelectedControllerType);
+    GameEvents.Instance.OnControllerSelectionChanged(SelectedControllerType);
   }
 
   public override int GetDefaultSelectedIndex() {
@@ -95,7 +98,8 @@ public partial class ControllerSelectDriver : UISelectDriver {
     base._EnterTree();
     if (!_isSubscribed) {
       Input.JoyConnectionChanged += OnJoyConnectionChanged;
-      EventHandler.Instance.Events.LastUsedControllerChanged += OnLastUsedControllerChanged;
+    _controllerBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.LastUsedControllerChanged m) => OnLastUsedControllerChanged(m.Controller));
       _isSubscribed = true;
     }
   }
@@ -104,7 +108,8 @@ public partial class ControllerSelectDriver : UISelectDriver {
     base._ExitTree();
     if (_isSubscribed) {
       Input.JoyConnectionChanged -= OnJoyConnectionChanged;
-      EventHandler.Instance.Events.LastUsedControllerChanged -= OnLastUsedControllerChanged;
+    _controllerBinding?.Dispose();
+    _controllerBinding = null;
       _isSubscribed = false;
     }
   }
@@ -113,7 +118,7 @@ public partial class ControllerSelectDriver : UISelectDriver {
   // otherwise this select shows whichever device they last touched. Moving it
   // re-runs onItemSelected, which is what carries the change on to the key
   // binding rows below it.
-  private void OnLastUsedControllerChanged(int controllerType) {
+  private void OnLastUsedControllerChanged(ControllerType controllerType) {
     var type = (ControllerType)controllerType;
     if (type == SelectedControllerType) {
       // Same kind of device, so this is one pad swapped for another: the item
@@ -141,10 +146,10 @@ public partial class ControllerSelectDriver : UISelectDriver {
     RefreshControllerList();
     if (connected) {
       var deviceName = Input.GetJoyName((int)deviceId);
-      EventHandler.Instance.EmitGamepadConnected((int)deviceId, deviceName);
+      GameEvents.Instance.OnGamepadConnected((int)deviceId, deviceName);
     }
     else {
-      EventHandler.Instance.EmitGamepadDisconnected((int)deviceId);
+      GameEvents.Instance.OnGamepadDisconnected((int)deviceId);
     }
     EmitSignal(SignalName.GamepadConnectionChanged, InputUtils.IsGamepadConnected());
   }

@@ -5,7 +5,6 @@ using Wfc.Core.Event;
 using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Everything a dash draws and feels like, kept together so it can be tuned in one place: the
 // beat the world holds still for, the bullet the cube deforms into and the colored speed lines

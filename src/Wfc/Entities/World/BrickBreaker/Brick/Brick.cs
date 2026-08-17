@@ -6,7 +6,6 @@ using Wfc.Core.Event;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
 using Wfc.Skin;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
 public partial class Brick : Node2D {

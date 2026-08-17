@@ -10,7 +10,6 @@ using Wfc.Utils;
 public partial class AutoloadManager : Node {
 
   // TODO: load other scripts
-  public IEventHandler EventHandler => Core.Event.EventHandler.Instance;
   public IMusicTrackManager MusicTrackManager = null!;
   public ISfxManager SfxManager = null!;
   public InputDeviceDetector InputDeviceDetector = null!;

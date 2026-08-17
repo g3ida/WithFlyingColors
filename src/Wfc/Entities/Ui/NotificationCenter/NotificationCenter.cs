@@ -2,12 +2,13 @@ namespace Wfc.Entities.Ui;
 
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
+using Chickensoft.Sync.Primitives;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Localization;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Everything the game wants to tell the player in passing arrives here as a translation key and
 // leaves as a bar in the corner. It hangs off the orchestrator rather than a level, so what a
@@ -15,6 +16,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class NotificationCenter : CanvasLayer {
+  private AutoChannel.Binding? _notificationBinding;
+
   #region Dependencies
   public override void _Notification(int what) => this.Notify(what);
 
@@ -55,7 +58,8 @@ public partial class NotificationCenter : CanvasLayer {
   public override void _EnterTree() {
     base._EnterTree();
     if (!_isSubscribed) {
-      EventHandler.Instance.Events.NotificationRaised += _onNotificationRaised;
+    _notificationBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.NotificationRaised m) => _onNotificationRaised(m.Key));
       _isSubscribed = true;
     }
   }
@@ -63,12 +67,13 @@ public partial class NotificationCenter : CanvasLayer {
   public override void _ExitTree() {
     base._ExitTree();
     if (_isSubscribed) {
-      EventHandler.Instance.Events.NotificationRaised -= _onNotificationRaised;
+    _notificationBinding?.Dispose();
+    _notificationBinding = null;
       _isSubscribed = false;
     }
   }
 
-  private void _onNotificationRaised(int translationKey) {
+  private void _onNotificationRaised(TranslationKey translationKey) {
     _makeRoom();
 
     var card = SceneHelpers.InstantiateNode<NotificationCard>();

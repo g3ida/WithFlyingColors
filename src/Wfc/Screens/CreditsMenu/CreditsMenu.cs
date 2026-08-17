@@ -113,5 +113,5 @@ public partial class CreditsMenu : GameMenu {
 
   // No transition guard here: back buttons only report the intent, and GameMenu drops
   // it unless the screen has finished entering.
-  private void OnBackButtonPressed() => EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
+  private static void OnBackButtonPressed() => GameEvents.Instance.OnMenuActionPressed(MenuAction.GoBack);
 }

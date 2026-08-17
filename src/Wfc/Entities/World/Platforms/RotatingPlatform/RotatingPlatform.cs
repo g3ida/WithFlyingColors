@@ -1,13 +1,14 @@
 namespace Wfc.Entities.World.Platforms;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A flat platform that turns about its own centre: a bar that sweeps out of the player's way and
 // back, or one that goes round the same way for as long as the level is open. It turns a leg of
@@ -23,6 +24,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class RotatingPlatform : FlatPlatform, IPersistent {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Constants
   // How much of the platform's own depth the arrow takes up, so it sits inside the surface rather
   // than hanging off a thin bar.
@@ -207,8 +210,9 @@ public partial class RotatingPlatform : FlatPlatform, IPersistent {
     if (Engine.IsEditorHint() || _isSpinSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
-    EventHandler.Instance.Events.CheckpointLoaded += _onRespawn;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointReached m) => _onCheckpointReached(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => _onRespawn());
     _isSpinSubscribed = true;
   }
 
@@ -217,8 +221,8 @@ public partial class RotatingPlatform : FlatPlatform, IPersistent {
     if (!_isSpinSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
-    EventHandler.Instance.Events.CheckpointLoaded -= _onRespawn;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _isSpinSubscribed = false;
   }
 

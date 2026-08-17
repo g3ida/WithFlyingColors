@@ -3,6 +3,7 @@ namespace Wfc.Entities.Ui.Menubox;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Core.Persistence;
 using Wfc.Entities.World.Player;
@@ -10,7 +11,6 @@ using Wfc.Screens;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Core.Event.EventHandler;
 
 [Meta(typeof(IAutoNode))]
 public partial class Menubox : Control {
@@ -152,7 +152,7 @@ public partial class Menubox : Control {
     HideSubMenuIfNeeded();
     if (_boxRotation.Execute(TURN_CLOCKWISE, MathUtils.PI2, ROTATION_DURATION, shouldForce: false)) {
       _setActiveButton((_activeIndex - 1 + _buttons.Length) % _buttons.Length);
-      EventHandler.Instance.EmitMenuBoxRotated();
+      GameEvents.Instance.OnMenuBoxRotated();
     }
   }
 
@@ -163,7 +163,7 @@ public partial class Menubox : Control {
     HideSubMenuIfNeeded();
     if (_boxRotation.Execute(TURN_COUNTER_CLOCKWISE, MathUtils.PI2, ROTATION_DURATION, shouldForce: false)) {
       _setActiveButton((_activeIndex + 1) % _buttons.Length);
-      EventHandler.Instance.EmitMenuBoxRotated();
+      GameEvents.Instance.OnMenuBoxRotated();
     }
   }
 
@@ -181,7 +181,7 @@ public partial class Menubox : Control {
       else {
         _displayOrHidePlaySubMenu(true);
       }
-      EventHandler.Instance.EmitMenuActionPressed(MenuAction.Play);
+      GameEvents.Instance.OnMenuActionPressed(MenuAction.Play);
     }
   }
 
@@ -196,7 +196,7 @@ public partial class Menubox : Control {
       return;
     }
     _currentState = States.EXIT;
-    EventHandler.Instance.EmitMenuActionPressed(menuAction);
+    GameEvents.Instance.OnMenuActionPressed(menuAction);
   }
 
   private void _clickOnActiveButton() {

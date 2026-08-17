@@ -6,7 +6,6 @@ using Chickensoft.Sync.Primitives;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Screens.Levels;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Meta(typeof(IAutoNode))]
 public partial class PlatformTileMap : TileMapLayer {

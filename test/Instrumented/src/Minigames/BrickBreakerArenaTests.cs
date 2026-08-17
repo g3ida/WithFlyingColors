@@ -10,7 +10,6 @@ using Wfc.Entities.World;
 using Wfc.Entities.World.BrickBreaker;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The room the brick-breaker game is played in, taken through the one thing it does most often:
 // being started, being lost, and being started again. What has to hold is that a round begins in an
@@ -42,7 +41,7 @@ public class BrickBreakerArenaTests(Node testScene) : TestClass(testScene) {
     await PhysicsFrames.Advance(TestScene, 4);
     _walls(arena).ShouldBe(0, "losing left the wall standing in the room");
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     (await PhysicsFrames.WaitFor(TestScene, () => _walls(arena) == 1, TIMEOUT))
       .ShouldBeTrue("starting again laid no wall");
     await PhysicsFrames.Advance(TestScene, 10);
@@ -60,7 +59,7 @@ public class BrickBreakerArenaTests(Node testScene) : TestClass(testScene) {
     (await PhysicsFrames.WaitFor(TestScene, () => _walls(arena) == 1, TIMEOUT))
       .ShouldBeTrue("the room never laid a wall to play against");
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 10);
 
     _walls(arena).ShouldBe(1, "the round started again through the wall the last one left standing");
@@ -78,9 +77,9 @@ public class BrickBreakerArenaTests(Node testScene) : TestClass(testScene) {
 
     GameEvents.Instance.OnPlayerDying(Vector2.Zero, EntityType.BrickBreaker);
     await PhysicsFrames.Advance(TestScene, 4);
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 4);
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 10);
 
     _walls(arena).ShouldBe(1, "two walls were left standing in the room at once");

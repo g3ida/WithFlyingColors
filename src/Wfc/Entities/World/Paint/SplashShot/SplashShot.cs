@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Paint;
 
+using Chickensoft.Sync.Primitives;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Screens.Levels;
@@ -8,7 +9,6 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
 using Wfc.Utils.Layers;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A gobbet of paint in the air. It coats the first thing it runs into, and the cube that meets it
 // on the way lives or dies by the face it has toward it, like everything else here that is a
@@ -20,6 +20,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // says.
 [ScenePath]
 public partial class SplashShot : Node2D {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Constants
   private const float RADIUS = 11f;
 
@@ -58,12 +60,14 @@ public partial class SplashShot : Node2D {
   // land in a room that has just been put back.
   public override void _EnterTree() {
     base._EnterTree();
-    EventHandler.Instance.Events.CheckpointLoaded += QueueFree;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointLoaded _) => QueueFree());
   }
 
   public override void _ExitTree() {
     base._ExitTree();
-    EventHandler.Instance.Events.CheckpointLoaded -= QueueFree;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
   }
 
   public override void _Ready() {

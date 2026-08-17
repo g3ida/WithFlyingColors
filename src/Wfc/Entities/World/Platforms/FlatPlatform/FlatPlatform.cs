@@ -12,7 +12,6 @@ using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The plain building block the levels are laid out with: a flat skin-coloured rectangle of any
 // size, carrying the sliced corners and the edge shade the ground tileset uses, so a run of them

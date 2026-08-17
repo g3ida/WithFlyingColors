@@ -4,7 +4,10 @@ using System;
 using Chickensoft.Sync.Primitives;
 using Godot;
 using Wfc.Core.Localization;
+using Wfc.Core.Input.Controllers;
 using Wfc.Entities.World;
+using Wfc.Screens.Levels;
+using Wfc.Screens.MenuManager;
 
 // Everything the game announces, as typed values rather than Godot signals: these cross no
 // Variant boundary, so a payload that does not fit is a compile error rather than a conversion
@@ -83,6 +86,39 @@ public interface IGameEvents : IDisposable {
   readonly record struct GemCollected(string ColorGroup, Vector2 Position, SpriteFrames Frames);
   #endregion Player
 
+  #region Menus and input
+  // MenuAction, ControllerType, TranslationKey and LevelId all made the same round trip through
+  // an int to cross a Variant, and every reader cast them straight back.
+  readonly record struct MenuActionPressed(MenuAction Action);
+  readonly record struct MenuBoxRotated;
+  readonly record struct PauseMenuEntered;
+  readonly record struct PauseMenuExited;
+  readonly record struct FocusChanged;
+  readonly record struct ActionBound(string Action, int Key);
+  readonly record struct KeyboardActionBinding;
+  readonly record struct GamepadActionBound(string Action, int ButtonOrAxis, bool IsAxis, float AxisDirection);
+  readonly record struct LastUsedControllerChanged(ControllerType Controller);
+  readonly record struct ControllerSelectionChanged(ControllerType Controller);
+  readonly record struct GamepadConnected(int DeviceId, string DeviceName);
+  readonly record struct GamepadDisconnected(int DeviceId);
+  readonly record struct NotificationRaised(TranslationKey Key);
+  #endregion Menus and input
+
+  #region Level and doors
+  // Reached carries values, not the node that raised them: passing the node made a deprecated
+  // Checkpoint fail conversion inside the native emit and take every other subscriber with it.
+  readonly record struct CheckpointReached(Vector2 Position, string ColorGroup);
+  readonly record struct CheckpointLoaded;
+  readonly record struct CutsceneRequestStart(string Id);
+  readonly record struct CutsceneRequestEnd(string Id);
+  readonly record struct LevelCleared;
+  readonly record struct LevelRestartRequested;
+  readonly record struct DoorGemFilled;
+  readonly record struct DoorCometFormed;
+  readonly record struct DoorEntered(LevelId Level);
+  readonly record struct SaveSlotUpdated;
+  #endregion Level and doors
+
   void OnFullscreenToggled(bool isFullscreen);
   void OnVsyncToggled(bool isEnabled);
   void OnScreenSizeChanged(Vector2 size);
@@ -131,4 +167,29 @@ public interface IGameEvents : IDisposable {
   void OnPlayerDashed(Vector2 direction);
   void OnPlayerSlippering();
   void OnGemCollected(string colorGroup, Vector2 position, SpriteFrames frames);
+
+  void OnMenuActionPressed(MenuAction action);
+  void OnMenuBoxRotated();
+  void OnPauseMenuEntered();
+  void OnPauseMenuExited();
+  void OnFocusChanged();
+  void OnActionBound(string action, int key);
+  void OnKeyboardActionBinding();
+  void OnGamepadActionBound(string action, int buttonOrAxis, bool isAxis, float axisDirection);
+  void OnLastUsedControllerChanged(ControllerType controller);
+  void OnControllerSelectionChanged(ControllerType controller);
+  void OnGamepadConnected(int deviceId, string deviceName);
+  void OnGamepadDisconnected(int deviceId);
+  void OnNotificationRaised(TranslationKey key);
+
+  void OnCheckpointReached(Vector2 position, string colorGroup);
+  void OnCheckpointLoaded();
+  void OnCutsceneRequestStart(string id);
+  void OnCutsceneRequestEnd(string id);
+  void OnLevelCleared();
+  void OnLevelRestartRequested();
+  void OnDoorGemFilled();
+  void OnDoorCometFormed();
+  void OnDoorEntered(LevelId level);
+  void OnSaveSlotUpdated();
 }

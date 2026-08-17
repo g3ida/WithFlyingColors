@@ -1,15 +1,17 @@
 namespace Wfc.Entities.World.Door;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using Wfc.Core.Event;
+using Wfc.Core.Input.Controllers;
 using Wfc.Core.Input;
 using Wfc.Core.Localization;
 using Wfc.Entities.Ui.InputHint;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Fonts;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The "press this to go in" line along the bottom of the screen while the player
 // stands in a doorway.
@@ -21,6 +23,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // menu panel.
 [ScenePath]
 public partial class DoorPrompt : CanvasLayer {
+  private AutoChannel.Binding? _inputBinding;
+
   // Where the button goes inside the translated caption.
   private const string GLYPH_PLACEHOLDER = "{0}";
 
@@ -50,9 +54,10 @@ public partial class DoorPrompt : CanvasLayer {
     if (_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.LastUsedControllerChanged += _onLastUsedControllerChanged;
-    EventHandler.Instance.Events.OnActionBound += _onActionRebound;
-    EventHandler.Instance.Events.OnGamepadActionBound += _onGamepadActionRebound;
+    _inputBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.LastUsedControllerChanged m) => _onLastUsedControllerChanged(m.Controller))
+      .On((in IGameEvents.ActionBound m) => _onActionRebound(m.Action, m.Key))
+      .On((in IGameEvents.GamepadActionBound m) => _onGamepadActionRebound(m.Action, m.ButtonOrAxis, m.IsAxis, m.AxisDirection));
     Input.JoyConnectionChanged += _onJoyConnectionChanged;
     _isSubscribed = true;
   }
@@ -62,9 +67,8 @@ public partial class DoorPrompt : CanvasLayer {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.LastUsedControllerChanged -= _onLastUsedControllerChanged;
-    EventHandler.Instance.Events.OnActionBound -= _onActionRebound;
-    EventHandler.Instance.Events.OnGamepadActionBound -= _onGamepadActionRebound;
+    _inputBinding?.Dispose();
+    _inputBinding = null;
     Input.JoyConnectionChanged -= _onJoyConnectionChanged;
     _isSubscribed = false;
   }
@@ -126,7 +130,7 @@ public partial class DoorPrompt : CanvasLayer {
         : Enumerable.Empty<InputEvent>();
   }
 
-  private void _onLastUsedControllerChanged(int controllerType) => _refresh();
+  private void _onLastUsedControllerChanged(ControllerType controllerType) => _refresh();
 
   private void _onJoyConnectionChanged(long device, bool connected) => _refresh();
 

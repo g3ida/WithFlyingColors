@@ -1,6 +1,7 @@
 namespace Wfc.Screens;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Localization;
 using Wfc.Core.Persistence;
 using Wfc.Entities.Ui.Dialogs;
@@ -59,7 +60,7 @@ public partial class SelectSlotMenu : GameMenu {
     }
   }
 
-  private void OnBackButtonPressed() => EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
+  private static void OnBackButtonPressed() => GameEvents.Instance.OnMenuActionPressed(MenuAction.GoBack);
 
   // Backing out without picking is fine in both modes: every write path refuses a slot
   // that holds nothing, and the play sub-menu only offers what the slots can actually
@@ -79,7 +80,7 @@ public partial class SelectSlotMenu : GameMenu {
     }
     else {
       SaveManager.SelectSlot(id);
-      EventHandler.EmitMenuActionPressed(MenuAction.SelectSlot);
+      GameEvents.Instance.OnMenuActionPressed(MenuAction.SelectSlot);
       NavigateToScreen(GameMenus.GAME);
     }
   }

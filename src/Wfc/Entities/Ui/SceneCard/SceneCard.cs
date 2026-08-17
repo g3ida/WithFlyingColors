@@ -89,7 +89,7 @@ public partial class SceneCard : Control {
   }
 
   private void OnButtonPressed() {
-    EventHandler.Instance.EmitMenuActionPressed(MenuAction.GoToLevelSelect);
+    GameEvents.Instance.OnMenuActionPressed(MenuAction.GoToLevelSelect);
     GetParent().GetParent<GameMenu>().NavigateToLevelScreen(_levelId);
   }
 

@@ -13,7 +13,6 @@ using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A ball of the wrong color is fatal, and it is the ball's own area that says so. That makes the death
 // sensitive to anything which changes what the ball collides with or where it comes to rest, and it

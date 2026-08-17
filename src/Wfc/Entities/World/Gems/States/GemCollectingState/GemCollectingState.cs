@@ -5,7 +5,6 @@ using Wfc.Core.Event;
 using Wfc.State;
 using Wfc.Utils;
 using static Godot.AnimationMixer;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class GemCollectingState : GemBaseState {
 

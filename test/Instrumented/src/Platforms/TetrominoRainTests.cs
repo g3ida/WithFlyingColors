@@ -13,7 +13,6 @@ using Wfc.Entities.World.Platforms;
 using Wfc.Utils;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The staircase a stretch of level is crossed on. What makes it a staircase rather than weather is
 // that the lanes are fixed, the clock is fixed, and each lane is a set fraction of that clock out of
@@ -149,7 +148,7 @@ public class TetrominoRainTests(Node testScene) : TestClass(testScene) {
     var first = _describe(rain);
 
     await PhysicsFrames.Advance(TestScene, 40);
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Frame(TestScene);
 
     _describe(rain).ShouldBe(first, "the curtain came back holding different pieces");
@@ -166,7 +165,7 @@ public class TetrominoRainTests(Node testScene) : TestClass(testScene) {
     var lastAttempt = _piecesOf(rain).Select(piece => piece.GetInstanceId()).ToList();
     lastAttempt.Count.ShouldBeGreaterThan(0);
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 2);
 
     _piecesOf(rain).Select(piece => piece.GetInstanceId()).Intersect(lastAttempt).ShouldBeEmpty(

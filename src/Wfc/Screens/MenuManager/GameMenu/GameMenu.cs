@@ -1,5 +1,6 @@
 namespace Wfc.Screens;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
@@ -14,9 +15,10 @@ using Wfc.Entities.Ui;
 using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
-using EventHandler = Core.Event.EventHandler;
 
 public partial class GameMenu : Control {
+  private AutoChannel.Binding? _menuBinding;
+
   // I faced resolution issues when deriving from dependency Injected classes
   // children needs to have [Meta(typeof(IAutoNode))] but still failed to resolve
   // dependencies in some cases So I used composition to get around it.
@@ -26,8 +28,6 @@ public partial class GameMenu : Control {
 
     [Dependency]
     public IMenuManager MenuManager => this.DependOn<IMenuManager>();
-    [Dependency]
-    public IEventHandler EventHandler => this.DependOn<IEventHandler>();
     [Dependency]
     public ISaveManager SaveManager => this.DependOn<ISaveManager>();
     [Dependency]
@@ -64,7 +64,6 @@ public partial class GameMenu : Control {
   // Dependencies
   private DependenciesWrapper _dependenciesWrapper = null!;
   protected IMenuManager MenuManager => _dependenciesWrapper.MenuManager;
-  protected IEventHandler EventHandler => _dependenciesWrapper.EventHandler;
   protected ISaveManager SaveManager => _dependenciesWrapper.SaveManager;
   protected ILocalizationService LocalizationService => _dependenciesWrapper.LocalizationService;
   protected IInputManager InputManager => _dependenciesWrapper.InputManager;
@@ -120,7 +119,7 @@ public partial class GameMenu : Control {
     base._Process(delta);
     var focus_owner = GetViewport().GuiGetFocusOwner();
     if (focus_owner != null && focus_owner != _currentFocus) {
-      EventHandler.EmitFocusChanged();
+      GameEvents.Instance.OnFocusChanged();
     }
     _currentFocus = focus_owner;
     OnProcess(delta);
@@ -151,7 +150,7 @@ public partial class GameMenu : Control {
     // event delivered in that frame - several times over with a gamepad connected.
     if (InputManager.IsEventActionJustPressed(IInputManager.Action.UICancel, @event) ||
         InputManager.IsEventActionJustPressed(IInputManager.Action.UIHome, @event)) {
-      EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
+      GameEvents.Instance.OnMenuActionPressed(MenuAction.GoBack);
       GetViewport().SetInputAsHandled();
     }
   }
@@ -192,8 +191,7 @@ public partial class GameMenu : Control {
     NavigateToLevelScreen(LevelDispatcher.LEVELS[0].Id);
   }
 
-  private void _internalOnMenuButtonPressed(int menuButtonValue) {
-    var menuButton = (MenuAction)menuButtonValue;
+  private void _internalOnMenuButtonPressed(MenuAction menuButton) {
     if (_screenState != MenuScreenState.Entered) {
       return;
     }
@@ -225,11 +223,13 @@ public partial class GameMenu : Control {
   }
 
   private void _connectSignals() {
-    EventHandler.Events.MenuButtonPressed += _internalOnMenuButtonPressed;
+    _menuBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.MenuActionPressed m) => _internalOnMenuButtonPressed(m.Action));
   }
 
   private void _disconnectSignals() {
-    EventHandler.Events.MenuButtonPressed -= _internalOnMenuButtonPressed;
+    _menuBinding?.Dispose();
+    _menuBinding = null;
   }
 
   private void _parseTransitionElements() {

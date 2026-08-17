@@ -10,7 +10,6 @@ using Wfc.Entities.World.Camera;
 using Wfc.Screens.Levels;
 using Wfc.test.instrumented.Helpers;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A respawn is a cut: whatever camera work the death left in flight - the squash's zoom
 // punch is the only death effect that touches zoom - must be discarded outright, not eased
@@ -33,7 +32,7 @@ public class GameCameraTests(Node testScene) : TestClass(testScene) {
     var punched = await _waitFor(() => camera.Zoom.X < 0.999f);
     punched.ShouldBeTrue("the punch never moved the zoom, so there was nothing to interrupt");
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     camera.Zoom.X.ShouldBe(1f, 0.001f, "the reload eased the zoom back instead of cutting to it");
     camera.Offset.ShouldBe(Vector2.Zero, "the reload left an offset on the camera");
 
@@ -81,8 +80,8 @@ public class GameCameraTests(Node testScene) : TestClass(testScene) {
     camera.GetScreenCenterPosition().Y.ShouldBe(centre.Y, 3f,
       "the zoom pulse walked the camera to a different resting place");
 
-    EventHandler.Instance.EmitCheckpointReached(anchor.Position, "blue");
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointReached(anchor.Position, "blue");
+    GameEvents.Instance.OnCheckpointLoaded();
     await _frames(120);
     camera.GetScreenCenterPosition().Y.ShouldBe(centre.Y, 3f,
       "the respawn left the camera off the room's one legal framing");
@@ -110,7 +109,7 @@ public class GameCameraTests(Node testScene) : TestClass(testScene) {
 
     var framedAt = camera.GetScreenCenterPosition();
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await _frames(120);
 
     camera.LimitTop.ShouldBe(-1000, "the respawn replaced the level's own top limit");
@@ -139,11 +138,11 @@ public class GameCameraTests(Node testScene) : TestClass(testScene) {
     await _frames(1);
 
     camera.SetFollowNode(landmark);
-    EventHandler.Instance.EmitCheckpointReached(player.Position, "blue");
+    GameEvents.Instance.OnCheckpointReached(player.Position, "blue");
     await _frames(10);
     camera.GlobalPosition.X.ShouldBe(landmark.Position.X, 1f, "the room never took the camera off the player");
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await _frames(10);
     camera.FollowNode.ShouldBe(player, "the respawn left the camera on the room's landmark");
     camera.GlobalPosition.X.ShouldBe(player.Position.X, 1f, "the camera stopped following the player");
@@ -202,7 +201,7 @@ public class GameCameraTests(Node testScene) : TestClass(testScene) {
     await _frames(2);
     camera.FollowNode.ShouldBe(subject, "the shot never got the camera");
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await _frames(2);
     camera.FollowNode.ShouldBe(player, "the respawn did not take the camera back off the shot");
     camera.PositionSmoothingSpeed.ShouldBe(authoredSpeed, 0.001f,

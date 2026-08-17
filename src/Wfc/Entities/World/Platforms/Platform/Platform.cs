@@ -11,7 +11,6 @@ using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Images;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
 [Meta(typeof(IAutoNode))]

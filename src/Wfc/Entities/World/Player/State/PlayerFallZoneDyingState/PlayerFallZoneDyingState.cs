@@ -6,7 +6,6 @@ using Wfc.Core.Input;
 using Wfc.Entities.World.Explosion;
 using Wfc.State;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerFallZoneDyingState : PlayerDyingBaseState {
   public PlayerFallZoneDyingState(IPlayerStatesStore statesStore, IInputManager inputManager)

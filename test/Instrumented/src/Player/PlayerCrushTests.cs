@@ -12,7 +12,6 @@ using Wfc.Entities.World.Player;
 using Wfc.test;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A sliding platform driving the cube into the floor, which is the one death in the game the
 // engine will not report on its own: neither body gives way, so what actually happens without
@@ -135,7 +134,7 @@ public class PlayerCrushTests(Node testScene) : TestClass(testScene) {
     await _frames(4);
     player.AnimatedSpriteNode.Scale.Y.ShouldBeLessThan(1f, "the cube was never flattened");
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await _frames(4);
 
     player.AnimatedSpriteNode.Scale.ShouldBe(Vector2.One);

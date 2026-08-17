@@ -2,13 +2,14 @@ namespace Wfc.Entities.World.Exit;
 
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
+using Chickensoft.Sync.Primitives;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Localization;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Layers;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The end of a level. Crossing it takes the player's input away and walks them off the right
 // of the frame while the camera holds where it was, so what ends the level is them leaving
@@ -16,6 +17,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class LevelExit : Area2D {
+  private AutoChannel.Binding? _checkpointBinding;
+
   public override void _Notification(int what) => this.Notify(what);
 
   #region Constants
@@ -77,7 +80,8 @@ public partial class LevelExit : Area2D {
   public override void _EnterTree() {
     base._EnterTree();
     if (!_isSubscribed) {
-      EventHandler.Instance.Events.CheckpointLoaded += _onCheckpointLoaded;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointLoaded _) => _onCheckpointLoaded());
       _isSubscribed = true;
     }
   }
@@ -85,7 +89,8 @@ public partial class LevelExit : Area2D {
   public override void _ExitTree() {
     base._ExitTree();
     if (_isSubscribed) {
-      EventHandler.Instance.Events.CheckpointLoaded -= _onCheckpointLoaded;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
       _isSubscribed = false;
     }
   }
@@ -107,8 +112,8 @@ public partial class LevelExit : Area2D {
     // and aiming the camera at them again would chase them off-screen as the level clears. A
     // respawn revokes the borrow on its own, so nothing is left holding it.
     cameraNode.BeginFocusOverride(_cameraAnchorNode, CAMERA_HOLD_SPEED);
-    EventHandler.Instance.EmitCutsceneRequestStart(CUTSCENE_ID);
-    EventHandler.Instance.EmitNotificationRaised(TranslationKey.game_notification_levelCleared);
+    GameEvents.Instance.OnCutsceneRequestStart(CUTSCENE_ID);
+    GameEvents.Instance.OnNotificationRaised(TranslationKey.game_notification_levelCleared);
     SetProcess(true);
   }
 
@@ -139,8 +144,8 @@ public partial class LevelExit : Area2D {
   private void _finishWalkOut() {
     _isWalkingOut = false;
     SetProcess(false);
-    EventHandler.Instance.EmitCutsceneRequestEnd(CUTSCENE_ID);
-    EventHandler.Instance.EmitLevelCleared();
+    GameEvents.Instance.OnCutsceneRequestEnd(CUTSCENE_ID);
+    GameEvents.Instance.OnLevelCleared();
   }
 
   // A respawn puts the player back before the exit, so the walk goes back with them and the

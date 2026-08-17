@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Core.Serialization;
 using Wfc.Entities.World.ButtonGame;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The room plays a melody and then listens for it back. Everything it does that the player can
 // see - a button lighting up, a note sounding, a door opening - is downstream of a round counter
@@ -212,7 +212,7 @@ public class ButtonGameTests(Node testScene) : TestClass(testScene) {
     _playOutMelody();
     var secondRound = _game.ExpectedButtonIndex;
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
 
     _game.IsStopped().ShouldBeTrue("a respawn puts the player back on the stand, not mid-melody");
     _game.StartRound();
@@ -225,9 +225,9 @@ public class ButtonGameTests(Node testScene) : TestClass(testScene) {
   // has to leave it that way rather than starting it for them.
   [Test]
   public void ARespawnBeforeTheRoomWasStartedLeavesItIdle() {
-    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+    GameEvents.Instance.OnCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
 
     _game.IsStopped().ShouldBeTrue();
   }
@@ -235,7 +235,7 @@ public class ButtonGameTests(Node testScene) : TestClass(testScene) {
   [Test]
   public void AWonRoomIsStillWonAfterARespawn() {
     _playThrough();
-    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+    GameEvents.Instance.OnCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
     var won = 0;
     var wonImmediately = false;
     _game.PuzzleWon += immediate => {
@@ -243,7 +243,7 @@ public class ButtonGameTests(Node testScene) : TestClass(testScene) {
       wonImmediately = immediate;
     };
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
 
     _game.IsWon().ShouldBeTrue();
     won.ShouldBe(1);
@@ -281,7 +281,7 @@ public class ButtonGameTests(Node testScene) : TestClass(testScene) {
   [Test]
   public async Task AWonRoomIsStillWonAfterASaveAndLoad() {
     _playThrough();
-    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+    GameEvents.Instance.OnCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
     var serializer = new SimpleJsonSerializer();
     var saved = _game.Save(serializer);
 

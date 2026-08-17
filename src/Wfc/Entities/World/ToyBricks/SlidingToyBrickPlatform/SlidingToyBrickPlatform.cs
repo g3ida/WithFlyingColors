@@ -1,14 +1,15 @@
 namespace Wfc.Entities.World.ToyBricks;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Entities.World.Platforms;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A brick platform that runs back and forth on its own. It is a brick platform in every other
 // respect - the same painted shape, the same brick to a cell, the same colour deciding which face
@@ -22,6 +23,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class SlidingToyBrickPlatform : ToyBrickPlatform, IPersistent {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Exports
   // Each of these is the run itself, and PlatformSlide is where they are described.
   [Export]
@@ -202,8 +205,9 @@ public partial class SlidingToyBrickPlatform : ToyBrickPlatform, IPersistent {
     if (Engine.IsEditorHint() || _isSlideSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
-    EventHandler.Instance.Events.CheckpointLoaded += _onRespawn;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointReached m) => _onCheckpointReached(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => _onRespawn());
     _isSlideSubscribed = true;
   }
 
@@ -212,8 +216,8 @@ public partial class SlidingToyBrickPlatform : ToyBrickPlatform, IPersistent {
     if (!_isSlideSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
-    EventHandler.Instance.Events.CheckpointLoaded -= _onRespawn;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _isSlideSubscribed = false;
   }
 

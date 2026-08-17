@@ -10,7 +10,6 @@ using Wfc.Core.Localization;
 using Wfc.Core.Logger;
 using Wfc.Skin;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public static class GameSettings {
   // Where the settings live. The instrumented tests point this at a scratch
@@ -45,7 +44,7 @@ public static class GameSettings {
       }
       _lastUsedController = value;
       // Null while the settings are loaded, before the autoloads are in the tree.
-      EventHandler.Instance?.EmitLastUsedControllerChanged(value);
+      GameEvents.Instance.OnLastUsedControllerChanged(value);
     }
   }
 

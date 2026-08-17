@@ -11,7 +11,6 @@ using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Animation;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
 [ScenePath]
@@ -69,9 +68,9 @@ public partial class GemHUD : Node2D, IPersistent {
   private void ConnectSignals() {
     if (!Engine.IsEditorHint()) {
     _gemBinding ??= GameEvents.Instance.Channel.Bind()
-      .On((in IGameEvents.GemCollected m) => OnGemCollected(m.ColorGroup, m.Position, m.Frames));
-      EventHandler.Instance.Events.CheckpointReached += OnCheckpointHit;
-      EventHandler.Instance.Events.CheckpointLoaded += Reset;
+      .On((in IGameEvents.GemCollected m) => OnGemCollected(m.ColorGroup, m.Position, m.Frames))
+      .On((in IGameEvents.CheckpointReached m) => OnCheckpointHit(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => Reset());
     }
   }
 
@@ -79,8 +78,6 @@ public partial class GemHUD : Node2D, IPersistent {
     if (!Engine.IsEditorHint()) {
     _gemBinding?.Dispose();
     _gemBinding = null;
-      EventHandler.Instance.Events.CheckpointReached -= OnCheckpointHit;
-      EventHandler.Instance.Events.CheckpointLoaded -= Reset;
     }
   }
 

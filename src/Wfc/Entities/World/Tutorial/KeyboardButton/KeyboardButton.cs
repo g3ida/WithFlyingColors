@@ -1,12 +1,13 @@
 namespace Wfc.Entities.World.Tutorial;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input.Controllers;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The button a tutorial line tells the player to press.
 //
@@ -16,6 +17,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // which is dark, rather than onto a menu panel.
 [Tool]
 public partial class KeyboardButton : Control {
+  private AutoChannel.Binding? _inputBinding;
+
   // A cap belongs on the line of text that names it rather than towering over it, and
   // the nine patch cannot be laid out under its own border thickness - the art's
   // natural size. So the art is scaled instead, while the letter on it keeps the size
@@ -64,9 +67,10 @@ public partial class KeyboardButton : Control {
     if (Engine.IsEditorHint() || _isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.LastUsedControllerChanged += _onLastUsedControllerChanged;
-    EventHandler.Instance.Events.OnActionBound += _onActionRebound;
-    EventHandler.Instance.Events.OnGamepadActionBound += _onGamepadActionRebound;
+    _inputBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.LastUsedControllerChanged m) => _onLastUsedControllerChanged(m.Controller))
+      .On((in IGameEvents.ActionBound m) => _onActionRebound(m.Action, m.Key))
+      .On((in IGameEvents.GamepadActionBound m) => _onGamepadActionRebound(m.Action, m.ButtonOrAxis, m.IsAxis, m.AxisDirection));
     Input.JoyConnectionChanged += _onJoyConnectionChanged;
     _isSubscribed = true;
   }
@@ -76,9 +80,8 @@ public partial class KeyboardButton : Control {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.LastUsedControllerChanged -= _onLastUsedControllerChanged;
-    EventHandler.Instance.Events.OnActionBound -= _onActionRebound;
-    EventHandler.Instance.Events.OnGamepadActionBound -= _onGamepadActionRebound;
+    _inputBinding?.Dispose();
+    _inputBinding = null;
     Input.JoyConnectionChanged -= _onJoyConnectionChanged;
     _isSubscribed = false;
   }
@@ -203,7 +206,7 @@ public partial class KeyboardButton : Control {
     _arrowSpriteNode.Position = faceCenter;
   }
 
-  private void _onLastUsedControllerChanged(int controllerType) => _refreshIfWired();
+  private void _onLastUsedControllerChanged(ControllerType controllerType) => _refreshIfWired();
 
   private void _onJoyConnectionChanged(long device, bool connected) => _refreshIfWired();
 

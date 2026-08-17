@@ -1,11 +1,12 @@
 namespace Wfc.Entities.World.Platforms;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A flat platform that will not hold the player up: it sinks under them, stops once it has given all
 // the way, and comes back once it is left. A stair built out of these is a stair that has to be taken
@@ -18,6 +19,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class SinkingPlatform : FlatPlatform {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Constants
   // How much of the platform's own depth the cog takes up, so it sits inside the surface rather than
   // hanging off a thin ledge.
@@ -206,7 +209,8 @@ public partial class SinkingPlatform : FlatPlatform {
     if (Engine.IsEditorHint() || _isSinkSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded += _onRespawn;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointLoaded _) => _onRespawn());
     _isSinkSubscribed = true;
   }
 
@@ -215,7 +219,8 @@ public partial class SinkingPlatform : FlatPlatform {
     if (!_isSinkSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded -= _onRespawn;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _isSinkSubscribed = false;
   }
 

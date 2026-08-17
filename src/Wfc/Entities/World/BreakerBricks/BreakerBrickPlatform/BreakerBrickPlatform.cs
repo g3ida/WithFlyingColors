@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.BreakerBricks;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
@@ -9,7 +10,6 @@ using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A wall of brick-breaker bricks, whatever shape the author paints it. The shape is a tilemap and
 // nothing else: paint a tile to lay a brick, and the colour it was painted with is the colour that
@@ -32,6 +32,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [Tool]
 [ScenePath]
 public partial class BreakerBrickPlatform : AnimatableBody2D, IShootable {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Constants
   // What the colour areas are on: the same layer and mask a flat platform's is, so a brick surface
   // is seen by exactly what a flat one is seen by.
@@ -88,7 +90,8 @@ public partial class BreakerBrickPlatform : AnimatableBody2D, IShootable {
     if (_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded += _onRespawn;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointLoaded _) => _onRespawn());
     _isSubscribed = true;
   }
 
@@ -98,7 +101,8 @@ public partial class BreakerBrickPlatform : AnimatableBody2D, IShootable {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded -= _onRespawn;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _isSubscribed = false;
   }
 

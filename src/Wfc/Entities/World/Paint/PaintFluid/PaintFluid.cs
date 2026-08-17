@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Paint;
 
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using Godot;
@@ -14,7 +15,6 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
 using Wfc.Utils.Layers;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A bucket big enough to flood the room it stands in, and the paint it lets go of, simulated as
 // paint rather than drawn as a shape that moves.
@@ -31,6 +31,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class PaintFluid : Node2D, IPersistent {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Constants
   private const int MAX_PARTICLES = 4200;
 
@@ -449,8 +451,9 @@ public partial class PaintFluid : Node2D, IPersistent {
     if (Engine.IsEditorHint() || _isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded += _onCheckpointLoaded;
-    EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointReached m) => _onCheckpointReached(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => _onCheckpointLoaded());
     _isSubscribed = true;
   }
 
@@ -459,8 +462,8 @@ public partial class PaintFluid : Node2D, IPersistent {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded -= _onCheckpointLoaded;
-    EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _isSubscribed = false;
   }
 

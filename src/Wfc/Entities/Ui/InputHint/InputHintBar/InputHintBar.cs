@@ -1,13 +1,14 @@
 namespace Wfc.Entities.Ui.InputHint;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input.Controllers;
 using Wfc.Core.Localization;
 using Wfc.Core.Logger;
 using Wfc.Core.Settings;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A bottom-of-screen bar of input-hint cards. Add it to any menu screen and it
 // keeps every child InputHintCard in sync with the currently active controller
@@ -24,6 +25,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // on: tree order alone isn't enough, because menu content like MenuBox raises
 // its own z_index. The bar ignores mouse input, so it never blocks what it covers.
 public partial class InputHintBar : Control {
+  private AutoChannel.Binding? _inputBinding;
+
   // Floor for the shared card width, so short captions ("BACK") still get a
   // chip wide enough to survive a longer translation.
   private const float MIN_CARD_WIDTH = 200f;
@@ -154,9 +157,10 @@ public partial class InputHintBar : Control {
     if (_subscribed) {
       return;
     }
-    EventHandler.Instance.Events.LastUsedControllerChanged += _onLastUsedControllerChanged;
-    EventHandler.Instance.Events.OnActionBound += _onActionRebound;
-    EventHandler.Instance.Events.OnGamepadActionBound += _onGamepadActionRebound;
+    _inputBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.LastUsedControllerChanged m) => _onLastUsedControllerChanged(m.Controller))
+      .On((in IGameEvents.ActionBound m) => _onActionRebound(m.Action, m.Key))
+      .On((in IGameEvents.GamepadActionBound m) => _onGamepadActionRebound(m.Action, m.ButtonOrAxis, m.IsAxis, m.AxisDirection));
     Input.JoyConnectionChanged += _onJoyConnectionChanged;
     _subscribed = true;
   }
@@ -165,15 +169,14 @@ public partial class InputHintBar : Control {
     if (!_subscribed) {
       return;
     }
-    EventHandler.Instance.Events.LastUsedControllerChanged -= _onLastUsedControllerChanged;
-    EventHandler.Instance.Events.OnActionBound -= _onActionRebound;
-    EventHandler.Instance.Events.OnGamepadActionBound -= _onGamepadActionRebound;
+    _inputBinding?.Dispose();
+    _inputBinding = null;
     Input.JoyConnectionChanged -= _onJoyConnectionChanged;
     _subscribed = false;
   }
 
   // The player picked up another device: swap every glyph over to it.
-  private void _onLastUsedControllerChanged(int controllerType) => _refreshIfDeviceChanged();
+  private void _onLastUsedControllerChanged(ControllerType controllerType) => _refreshIfDeviceChanged();
 
   // Unplugging the pad sends the hints back to the keyboard, plugging one in
   // leaves them alone until the player actually presses something on it.

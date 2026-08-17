@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Piano;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using Godot;
@@ -8,10 +9,11 @@ using Wfc.Core.Event;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class Piano : Node2D {
+  private AutoChannel.Binding? _checkpointBinding;
+
 
   [NodePath("NotesContainer/PianoNote")]
   private PianoNote _pianoNote1 = null!;
@@ -48,7 +50,8 @@ public partial class Piano : Node2D {
       _pianoNote6,
       _pianoNote7
     ];
-    EventHandler.Instance.Events.CheckpointLoaded += Reset;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointLoaded _) => Reset());
     _solfegeBoardNode.ExpectedNoteChanged += _onSolfegeBoardExpectedNoteChanged;
     _solfegeBoardNode.BoardNotesPlayed += _onSolfegeBoardNotesPlayed;
     foreach (var note in _pianoNotesNodes) {
@@ -58,7 +61,8 @@ public partial class Piano : Node2D {
   }
 
   public override void _ExitTree() {
-    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _solfegeBoardNode.ExpectedNoteChanged -= _onSolfegeBoardExpectedNoteChanged;
     _solfegeBoardNode.BoardNotesPlayed -= _onSolfegeBoardNotesPlayed;
     foreach (var note in _pianoNotesNodes) {

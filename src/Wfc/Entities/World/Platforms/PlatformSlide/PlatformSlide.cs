@@ -5,7 +5,6 @@ using Wfc.Core.Event;
 using Wfc.Core.Serialization;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The run a sliding platform makes, kept out of the nodes that host it: a platform that carries
 // its own surface and a slider that drives the body it is parented to are the same movement, the

@@ -18,7 +18,6 @@ using Wfc.Entities.World.Platforms;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Meta(typeof(IAutoNode))]
 public partial class BrickBreaker : Node2D, IPersistent {
@@ -118,16 +117,14 @@ public partial class BrickBreaker : Node2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Events.CheckpointReached += _OnCheckpointHit;
-    EventHandler.Instance.Events.CheckpointLoaded += Reset;
     _ballBinding ??= GameEvents.Instance.Channel.Bind()
       .On((in IGameEvents.BouncingBallRemoved message) => _OnBouncingBallRemoved(message.Ball))
-      .On((in IGameEvents.PlayerDying _) => _OnPlayerDying());
+      .On((in IGameEvents.PlayerDying _) => _OnPlayerDying())
+      .On((in IGameEvents.CheckpointReached m) => _OnCheckpointHit(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => Reset());
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Events.CheckpointReached -= _OnCheckpointHit;
-    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
     _ballBinding?.Dispose();
     _ballBinding = null;
   }
@@ -255,7 +252,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
       // arena, a lift still on its loop and the level's own music. Dying in here then restored a
       // room with no game in it and no trigger left to start one. Record it again now that the
       // arena is running.
-      EventHandler.Instance.EmitCheckpointReached(_checkpointNode.GlobalPosition, _checkpointNode.ColorGroup);
+      GameEvents.Instance.OnCheckpointReached(_checkpointNode.GlobalPosition, _checkpointNode.ColorGroup);
     }
   }
 
@@ -310,7 +307,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
       // origin and the fabricated color group flipped the cube upside down, so every death for
       // the rest of the level teleported the player to (0, 0) rotated 180 degrees.
       var player = GameLevel.PlayerNode;
-      EventHandler.Instance.EmitCheckpointReached(player.GlobalPosition, player.GroundColorGroup);
+      GameEvents.Instance.OnCheckpointReached(player.GlobalPosition, player.GroundColorGroup);
     }
   }
 

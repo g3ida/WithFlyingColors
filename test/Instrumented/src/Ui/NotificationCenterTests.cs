@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Core.Localization;
 using Wfc.Entities.Ui;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Anything the game wants to say in passing goes in as a translation key and comes out as a bar in
 // the corner. What has to hold is that the line raised is the line shown, that the corner empties
@@ -41,7 +41,7 @@ public class NotificationCenterTests(Node testScene) : TestClass(testScene) {
 
   [Test]
   public async Task ShowsTheLineItWasRaisedWith() {
-    EventHandler.Instance.EmitNotificationRaised(TranslationKey.game_notification_checkpointReached);
+    GameEvents.Instance.OnNotificationRaised(TranslationKey.game_notification_checkpointReached);
     await _idle();
 
     var expected = new LocalizationService()
@@ -52,7 +52,7 @@ public class NotificationCenterTests(Node testScene) : TestClass(testScene) {
 
   [Test]
   public async Task TakesItselfAwayAgain() {
-    EventHandler.Instance.EmitNotificationRaised(TranslationKey.game_notification_checkpointReached);
+    GameEvents.Instance.OnNotificationRaised(TranslationKey.game_notification_checkpointReached);
     (await _waitUntil(() => _cards().Count == 1)).ShouldBeTrue("nothing was ever shown");
 
     (await _waitUntil(() => _cards().Count == 0, RUN_TIMEOUT_SECONDS))
@@ -62,7 +62,7 @@ public class NotificationCenterTests(Node testScene) : TestClass(testScene) {
   [Test]
   public async Task ARunOfThemNeverWallsOffTheScreen() {
     for (var i = 0; i < MAX_STACKED + 3; i++) {
-      EventHandler.Instance.EmitNotificationRaised(TranslationKey.game_notification_checkpointReached);
+      GameEvents.Instance.OnNotificationRaised(TranslationKey.game_notification_checkpointReached);
     }
 
     (await _waitUntil(() => _cards().Count <= MAX_STACKED, SETTLE_TIMEOUT_SECONDS))

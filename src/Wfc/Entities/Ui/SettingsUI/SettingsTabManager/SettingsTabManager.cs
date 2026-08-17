@@ -13,7 +13,6 @@ using Wfc.Entities.Ui.SettingsUI.Grid;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]

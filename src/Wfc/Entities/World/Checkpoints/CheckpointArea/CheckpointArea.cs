@@ -2,13 +2,13 @@ namespace Wfc.Entities.World.Checkpoints;
 
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Localization;
 using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class CheckpointArea : Area2D, IPersistent {
   // How far below the fire the trigger's floor sits, so a cube standing on the same ground is
@@ -79,8 +79,8 @@ public partial class CheckpointArea : Area2D, IPersistent {
       _saveData = new SaveData(isChecked: true);
       _campfireNode.Snuff(body.GlobalPosition);
       EmitSignal(nameof(checkpoint_hit));
-      EventHandler.Instance.EmitCheckpointReached(GlobalPosition, ColorGroup);
-      EventHandler.Instance.EmitNotificationRaised(TranslationKey.game_notification_checkpointReached);
+      GameEvents.Instance.OnCheckpointReached(GlobalPosition, ColorGroup);
+      GameEvents.Instance.OnNotificationRaised(TranslationKey.game_notification_checkpointReached);
     }
   }
 

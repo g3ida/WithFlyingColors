@@ -1,12 +1,12 @@
 namespace Wfc.Entities.World.ButtonGame;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Localization;
 using Wfc.Entities.World.Platforms;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The room keeps two checkpoints and no more: the campfire beside the stand, which the player
 // walks into on the way in, and the win itself. Everything between them - the rounds - is worth
@@ -56,7 +56,7 @@ public partial class ButtonGameScene : Node2D {
   // is where it is taken. It is reported the same way a campfire is, because to the player it is
   // the same promise - what they just did is theirs now.
   private void _recordWinCheckpoint() {
-    EventHandler.Instance.EmitCheckpointReached(_winCheckpointNode.GlobalPosition, WinColorGroup);
-    EventHandler.Instance.EmitNotificationRaised(TranslationKey.game_notification_checkpointReached);
+    GameEvents.Instance.OnCheckpointReached(_winCheckpointNode.GlobalPosition, WinColorGroup);
+    GameEvents.Instance.OnNotificationRaised(TranslationKey.game_notification_checkpointReached);
   }
 }

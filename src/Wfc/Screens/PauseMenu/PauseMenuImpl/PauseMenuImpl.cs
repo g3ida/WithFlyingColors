@@ -2,6 +2,7 @@ namespace Wfc.Screens;
 
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Localization;
 using Wfc.Entities.Ui;
 using Wfc.Screens;
@@ -94,12 +95,12 @@ public partial class PauseMenuImpl : GameMenu {
     // screen, so this rides the door-swap rail instead of a menu navigation - the
     // orchestrator covers the scene and swaps to the hub exactly as if a door had
     // been walked through.
-    EventHandler.EmitDoorEntered((int)LevelId.Hub);
+    GameEvents.Instance.OnDoorEntered(LevelId.Hub);
   }
 
-  public void RestartLevel() => EventHandler.EmitLevelRestartRequested();
+  public void RestartLevel() => GameEvents.Instance.OnLevelRestartRequested();
 
   // The same road back a death takes: every checkpoint-aware node listens for this
   // and puts itself back where the last checkpoint found it.
-  public void RestartFromCheckpoint() => EventHandler.EmitCheckpointLoaded();
+  public void RestartFromCheckpoint() => GameEvents.Instance.OnCheckpointLoaded();
 }

@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Paint;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
@@ -11,7 +12,6 @@ using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
 using Wfc.Utils.Layers;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A paint gun bolted to the ceiling, which follows the cube around the room and fires at it. What
 // it throws is paint of its own colour: it coats whatever it hits, and the cube crossing that or
@@ -31,6 +31,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class SplashGun : Node2D {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Constants
   // The three tints the gun is cut from, lightest first. The shell is the housing, the trim is the
   // collar and the plate it hangs off, and the paint is what it is full of.
@@ -183,7 +185,8 @@ public partial class SplashGun : Node2D {
     if (Engine.IsEditorHint() || _isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded += _onCheckpointLoaded;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointLoaded _) => _onCheckpointLoaded());
     _isSubscribed = true;
   }
 
@@ -192,7 +195,8 @@ public partial class SplashGun : Node2D {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded -= _onCheckpointLoaded;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _isSubscribed = false;
   }
 

@@ -4,7 +4,10 @@ using System;
 using Chickensoft.Sync.Primitives;
 using Godot;
 using Wfc.Core.Localization;
+using Wfc.Core.Input.Controllers;
 using Wfc.Entities.World;
+using Wfc.Screens.Levels;
+using Wfc.Screens.MenuManager;
 
 public class GameEvents : IGameEvents {
   // Reached through the shared instance rather than only as a dependency: most of what raises
@@ -144,6 +147,67 @@ public class GameEvents : IGameEvents {
   public void OnGemCollected(string colorGroup, Vector2 position, SpriteFrames frames) =>
     _channel.Send(new IGameEvents.GemCollected(colorGroup, position, frames));
   #endregion Player
+
+  #region Menus and input
+  public void OnMenuActionPressed(MenuAction action) =>
+    _channel.Send(new IGameEvents.MenuActionPressed(action));
+
+  public void OnMenuBoxRotated() => _channel.Send(new IGameEvents.MenuBoxRotated());
+
+  public void OnPauseMenuEntered() => _channel.Send(new IGameEvents.PauseMenuEntered());
+
+  public void OnPauseMenuExited() => _channel.Send(new IGameEvents.PauseMenuExited());
+
+  public void OnFocusChanged() => _channel.Send(new IGameEvents.FocusChanged());
+
+  public void OnActionBound(string action, int key) =>
+    _channel.Send(new IGameEvents.ActionBound(action, key));
+
+  public void OnKeyboardActionBinding() => _channel.Send(new IGameEvents.KeyboardActionBinding());
+
+  public void OnGamepadActionBound(string action, int buttonOrAxis, bool isAxis, float axisDirection) =>
+    _channel.Send(new IGameEvents.GamepadActionBound(action, buttonOrAxis, isAxis, axisDirection));
+
+  public void OnLastUsedControllerChanged(ControllerType controller) =>
+    _channel.Send(new IGameEvents.LastUsedControllerChanged(controller));
+
+  public void OnControllerSelectionChanged(ControllerType controller) =>
+    _channel.Send(new IGameEvents.ControllerSelectionChanged(controller));
+
+  public void OnGamepadConnected(int deviceId, string deviceName) =>
+    _channel.Send(new IGameEvents.GamepadConnected(deviceId, deviceName));
+
+  public void OnGamepadDisconnected(int deviceId) =>
+    _channel.Send(new IGameEvents.GamepadDisconnected(deviceId));
+
+  public void OnNotificationRaised(TranslationKey key) =>
+    _channel.Send(new IGameEvents.NotificationRaised(key));
+  #endregion Menus and input
+
+  #region Level and doors
+  public void OnCheckpointReached(Vector2 position, string colorGroup) =>
+    _channel.Send(new IGameEvents.CheckpointReached(position, colorGroup));
+
+  public void OnCheckpointLoaded() => _channel.Send(new IGameEvents.CheckpointLoaded());
+
+  public void OnCutsceneRequestStart(string id) =>
+    _channel.Send(new IGameEvents.CutsceneRequestStart(id));
+
+  public void OnCutsceneRequestEnd(string id) =>
+    _channel.Send(new IGameEvents.CutsceneRequestEnd(id));
+
+  public void OnLevelCleared() => _channel.Send(new IGameEvents.LevelCleared());
+
+  public void OnLevelRestartRequested() => _channel.Send(new IGameEvents.LevelRestartRequested());
+
+  public void OnDoorGemFilled() => _channel.Send(new IGameEvents.DoorGemFilled());
+
+  public void OnDoorCometFormed() => _channel.Send(new IGameEvents.DoorCometFormed());
+
+  public void OnDoorEntered(LevelId level) => _channel.Send(new IGameEvents.DoorEntered(level));
+
+  public void OnSaveSlotUpdated() => _channel.Send(new IGameEvents.SaveSlotUpdated());
+  #endregion Level and doors
 
   protected virtual void Dispose(bool disposing) {
     if (_disposed) {

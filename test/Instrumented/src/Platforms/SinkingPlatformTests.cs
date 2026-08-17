@@ -11,7 +11,6 @@ using Wfc.Entities.World.Platforms;
 using Wfc.Utils;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A sinking platform is a floor that answers being stood on, so nothing about it can be read from
 // the platform alone: every one of these puts the cube on it and watches what the pair of them do.
@@ -120,7 +119,7 @@ public class SinkingPlatformTests(Node testScene) : TestClass(testScene) {
     await _waitFor(() => platform.GlobalPosition.Y > START_Y + (DEPTH / 2.0f));
 
     await _leave(player);
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 2);
 
     platform.GlobalPosition.Y.ShouldBe(START_Y, CLOSE, "the respawn left the platform partway through its give");

@@ -2,7 +2,6 @@ namespace Wfc.Utils.Animation;
 
 using System;
 using Godot;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class SlideAnimation : Node2D {
   private Node2D _thisNode;

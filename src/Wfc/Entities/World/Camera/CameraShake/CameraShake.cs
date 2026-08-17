@@ -1,13 +1,16 @@
 namespace Wfc.Entities.World.Camera;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class CameraShake : Node2D {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Constants
   private const Tween.TransitionType TRANS = Tween.TransitionType.Sine;
   private const Tween.EaseType EASE = Tween.EaseType.InOut;
@@ -35,7 +38,8 @@ public partial class CameraShake : Node2D {
   public override void _EnterTree() {
     base._EnterTree();
     if (!_isSubscribed) {
-      EventHandler.Instance.Events.CheckpointLoaded += _onCheckpointLoaded;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointLoaded _) => _onCheckpointLoaded());
       _isSubscribed = true;
     }
   }
@@ -43,7 +47,8 @@ public partial class CameraShake : Node2D {
   public override void _ExitTree() {
     base._ExitTree();
     if (_isSubscribed) {
-      EventHandler.Instance.Events.CheckpointLoaded -= _onCheckpointLoaded;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
       _isSubscribed = false;
     }
   }

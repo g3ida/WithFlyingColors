@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Logger;
 using Wfc.Core.Serialization;
 using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class SaveManager : ISaveManager {
 
@@ -170,7 +170,7 @@ public partial class SaveManager : ISaveManager {
     foreach (var slot in _saveSlots) {
       slot.LoadMetaData(_serializer);
     }
-    EventHandler.Instance.EmitSaveSlotUpdated();
+    GameEvents.Instance.OnSaveSlotUpdated();
   }
 
   public int GetSelectedSlotIndex() => LatestLoadedSlot;

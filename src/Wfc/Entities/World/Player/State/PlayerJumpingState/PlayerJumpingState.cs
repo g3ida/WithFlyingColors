@@ -5,7 +5,6 @@ using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerJumpingState : PlayerBaseState {
   private const float TIME_UNTIL_FULL_JUMP_IS_CONSIDERED = 0.15f;

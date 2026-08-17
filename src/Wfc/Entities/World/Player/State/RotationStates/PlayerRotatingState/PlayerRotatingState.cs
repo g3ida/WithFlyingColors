@@ -5,7 +5,6 @@ using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public abstract partial class PlayerRotatingState : PlayerRotatingIdleState {
   protected abstract int rotationDirection { get; }

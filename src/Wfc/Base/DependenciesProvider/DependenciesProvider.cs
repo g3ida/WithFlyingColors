@@ -19,7 +19,6 @@ using Wfc.Screens.MenuManager;
 [Meta(typeof(IAutoNode))]
 public partial class DependenciesProvider :
   Node,
-  IProvide<IEventHandler>,
   IProvide<ILogger>,
   IProvide<IMenuManager>,
   IProvide<ISaveManager>,
@@ -48,7 +47,6 @@ public partial class DependenciesProvider :
   // The same instance the static Log facade writes through: a node that takes ILogger as a
   // dependency and a static class that cannot must not end up with two different floors.
   ILogger IProvide<ILogger>.Value() => Log.Logger;
-  IEventHandler IProvide<IEventHandler>.Value() => AutoloadManager.Instance.EventHandler;
   ISfxManager IProvide<ISfxManager>.Value() => AutoloadManager.Instance.SfxManager;
   IMusicTrackManager IProvide<IMusicTrackManager>.Value() => AutoloadManager.Instance.MusicTrackManager;
   IInputManager IProvide<IInputManager>.Value() => _inputManager.Value;

@@ -1,12 +1,13 @@
 namespace Wfc.Entities.World.BreakerBricks;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Entities.World.Platforms;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A wall of brick-breaker bricks that runs back and forth on its own. It is a brick wall in every
 // other respect - the same painted shape, the same brick to a tile, the same shot taking one out -
@@ -17,6 +18,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [Tool]
 [ScenePath]
 public partial class SlidingBreakerBrickPlatform : BreakerBrickPlatform, IPersistent {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Exports
   // Each of these is the run itself, and PlatformSlide is where they are described.
   [Export]
@@ -199,8 +202,9 @@ public partial class SlidingBreakerBrickPlatform : BreakerBrickPlatform, IPersis
     if (Engine.IsEditorHint() || _isSlideSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointReached += _onSlideCheckpointReached;
-    EventHandler.Instance.Events.CheckpointLoaded += _onSlideRespawn;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointReached m) => _onSlideCheckpointReached(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => _onSlideRespawn());
     _isSlideSubscribed = true;
   }
 
@@ -209,8 +213,8 @@ public partial class SlidingBreakerBrickPlatform : BreakerBrickPlatform, IPersis
     if (!_isSlideSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointReached -= _onSlideCheckpointReached;
-    EventHandler.Instance.Events.CheckpointLoaded -= _onSlideRespawn;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _isSlideSubscribed = false;
   }
 

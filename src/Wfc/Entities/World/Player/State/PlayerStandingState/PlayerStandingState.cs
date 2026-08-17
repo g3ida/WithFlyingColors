@@ -5,7 +5,6 @@ using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerStandingState : PlayerBaseState {
   private const float RAYCAST_LENGTH = 10.0f;

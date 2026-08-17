@@ -7,7 +7,6 @@ using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerSlipperingState : PlayerBaseState {
   public int direction = 1;

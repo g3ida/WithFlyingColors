@@ -11,7 +11,6 @@ using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The beam reports by looking rather than by being touched, which makes it the one hazard that can
 // go on reporting the same contact for as long as the cube stands in it.

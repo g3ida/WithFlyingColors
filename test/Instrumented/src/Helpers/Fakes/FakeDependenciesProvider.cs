@@ -14,7 +14,6 @@ using Wfc.Core.Settings;
 using Wfc.Core.Ui;
 using Wfc.Screens.MenuManager;
 using Wfc.test.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Stands in for the RootNode that provides the game's services, which tests never get
 // because Main runs the suite instead of the game scene.
@@ -28,7 +27,6 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [Meta(typeof(IAutoNode))]
 public partial class FakeDependenciesProvider :
   Node,
-  IProvide<IEventHandler>,
   IProvide<ILogger>,
   IProvide<IMenuManager>,
   IProvide<ISaveManager>,
@@ -50,7 +48,6 @@ public partial class FakeDependenciesProvider :
   private readonly ILocalizationService _localizationService = new LocalizationService();
   private readonly Lazy<IPauseOwnership> _pauseOwnership;
 
-  IEventHandler IProvide<IEventHandler>.Value() => EventHandler.Instance;
   ILogger IProvide<ILogger>.Value() => Log.Logger;
   IMenuManager IProvide<IMenuManager>.Value() => _menuManager.Value;
   ISaveManager IProvide<ISaveManager>.Value() => Save;

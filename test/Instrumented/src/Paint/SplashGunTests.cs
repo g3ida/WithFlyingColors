@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Entities.World.Paint;
 using Wfc.Entities.World.Platforms;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A gun bolted to the ceiling that follows the cube and fires paint at it. What it leaves is not
 // the level's - it belongs to the run, so it goes when the run does and it goes on its own after a
@@ -93,7 +93,7 @@ public class SplashGunTests(Node testScene) : TestClass(testScene) {
     (await PhysicsFrames.WaitFor(TestScene, () => _splatsOn(floor).Count > 0, 4.0))
       .ShouldBeTrue("nothing was painted to begin with");
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 4);
 
     _splatsOn(floor).Count.ShouldBe(0, "the last attempt's paint is still on the floor");
@@ -252,7 +252,7 @@ public class SplashGunTests(Node testScene) : TestClass(testScene) {
     await PhysicsFrames.Advance(TestScene, 60);
     _shots().Count(s => seen.Add(s.GetInstanceId())).ShouldBe(0, "it fired again before refilling");
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Frame(TestScene);
 
     // Full again, so it fires without waiting out the rest of a cooldown nobody is serving.

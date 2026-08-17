@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input.Controllers;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
@@ -12,7 +13,6 @@ using Wfc.Entities.Ui.SettingsUI.Grid;
 using Wfc.Entities.Ui.SettingsUI.UISelect;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 
 [Meta(typeof(IAutoNode))]
@@ -64,7 +64,7 @@ public partial class KeyBindingController : PanelContainer {
 		else {
 			GameSettings.BindActionToKeyboardKey(action, key);
 			EmitSignal(nameof(onActionBoundSignal), action, key);
-			EventHandler.Instance.EmitOnActionBound(action, key);
+			GameEvents.Instance.OnActionBound(action, key);
 		}
 	}
 
@@ -84,7 +84,7 @@ public partial class KeyBindingController : PanelContainer {
 			foreach (var bindingButton in _bindingButtons) {
 				bindingButton.HandleGamepadActionBound(action, buttonOrAxis, isAxis, axisDirection);
 			}
-			EventHandler.Instance.EmitOnGamepadActionBound(action, buttonOrAxis, isAxis, axisDirection);
+			GameEvents.Instance.OnGamepadActionBound(action, buttonOrAxis, isAxis, axisDirection);
 		}
 	}
 }

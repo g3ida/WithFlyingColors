@@ -3,6 +3,7 @@ namespace Wfc.Screens;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core;
 using Wfc.Core.Audio;
 using Wfc.Core.Input;
@@ -12,7 +13,6 @@ using Wfc.Screens.Levels;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
@@ -139,7 +139,7 @@ public partial class PauseMenu : CanvasLayer {
     _inputHintBar.Exit();
     _isPaused = false;
     PauseOwnership.Release(this);
-    EventHandler.Instance.EmitPauseMenuExit();
+    GameEvents.Instance.OnPauseMenuExited();
   }
 
   private void PauseGame() {
@@ -150,7 +150,7 @@ public partial class PauseMenu : CanvasLayer {
     _inputHintBar.Enter();
     _isPaused = true;
     PauseOwnership.Claim(this);
-    EventHandler.Instance.EmitPauseMenuEnter();
+    GameEvents.Instance.OnPauseMenuEntered();
   }
 
   private void _onBackButtonPressed() {

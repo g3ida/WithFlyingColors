@@ -5,7 +5,6 @@ using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class PlayerDashingState : PlayerBaseState {
   private const float DASH_DURATION = 0.17f;

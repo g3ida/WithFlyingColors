@@ -10,7 +10,6 @@ using Wfc.Core.Event;
 using Wfc.Entities.World.Player;
 using Wfc.test;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public class PlayerSlipperingStateTest(Node testScene) : TestClass(testScene) {
   private Fixture _fixture = null!;

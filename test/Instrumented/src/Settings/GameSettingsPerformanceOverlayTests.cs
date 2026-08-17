@@ -7,7 +7,6 @@ using Godot;
 using Shouldly;
 using Wfc.Core.Event;
 using Wfc.Core.Settings;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The overlay is drawn by a node that is ready before the settings file has been read, so
 // the setting has to announce itself rather than wait to be asked.
