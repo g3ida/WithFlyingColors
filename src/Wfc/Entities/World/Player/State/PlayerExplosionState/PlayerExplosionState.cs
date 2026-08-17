@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Player;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Entities.World.Explosion;
 using Wfc.State;
@@ -21,7 +22,7 @@ public partial class PlayerExplosionState : PlayerDyingBaseState {
     lightMask = player.LightOccluder.OccluderLightMask;
     // create the explosion
     Callable.From(() => CreateExplosion(player)).CallDeferred();
-    EventHandler.Instance.EmitPlayerExplode();
+    GameEvents.Instance.OnPlayerExploded();
     player.LightOccluder.OccluderLightMask = 0;
     player.AnimatedSpriteNode.Play("die");
   }
@@ -47,6 +48,6 @@ public partial class PlayerExplosionState : PlayerDyingBaseState {
 
   private static void OnObjectDetonated(Node explosion) {
     explosion.QueueFree();
-    EventHandler.Instance.EmitPlayerDied();
+    GameEvents.Instance.OnPlayerDied();
   }
 }

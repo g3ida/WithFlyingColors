@@ -8,6 +8,7 @@ using Chickensoft.GoDotTest;
 using Chickensoft.Sync.Primitives;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Core.Localization;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
@@ -103,8 +104,8 @@ public class SettingsLanguageTests(Node testScene) : TestClass(testScene) {
     driver.ShouldNotBeNull("the general tab has no language select");
 
     var announced = new List<Language>();
-    using var binding = SettingsRepo.Instance.Channel.Bind()
-      .On((in ISettingsRepo.LanguageChanged message) => announced.Add(message.Language));
+    using var binding = GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.LanguageChanged message) => announced.Add(message.Language));
 
     driver.onItemSelected(Variant.CreateFrom(Language.English.GetLanguageCode()));
     announced.ShouldBeEmpty("picking the language already in use was announced as a change");

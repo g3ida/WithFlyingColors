@@ -1,5 +1,6 @@
 namespace Wfc.Entities.HUD;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using Godot;
@@ -15,6 +16,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [Tool]
 [ScenePath]
 public partial class GemHUD : Node2D, IPersistent {
+  private AutoChannel.Binding? _gemBinding;
+
   private const string TEXTURE_COLLECTED_PATH = "res://Assets/Sprites/HUD/gem_hud_collected.png";
   private const string TEXTURE_EMPTY_PATH = "res://Assets/Sprites/HUD/gem_hud.png";
   private const float FLIGHT_DURATION = 0.8f;
@@ -65,7 +68,8 @@ public partial class GemHUD : Node2D, IPersistent {
 
   private void ConnectSignals() {
     if (!Engine.IsEditorHint()) {
-      EventHandler.Instance.Events.GemCollected += OnGemCollected;
+    _gemBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.GemCollected m) => OnGemCollected(m.ColorGroup, m.Position, m.Frames));
       EventHandler.Instance.Events.CheckpointReached += OnCheckpointHit;
       EventHandler.Instance.Events.CheckpointLoaded += Reset;
     }
@@ -73,7 +77,8 @@ public partial class GemHUD : Node2D, IPersistent {
 
   private void DisconnectSignals() {
     if (!Engine.IsEditorHint()) {
-      EventHandler.Instance.Events.GemCollected -= OnGemCollected;
+    _gemBinding?.Dispose();
+    _gemBinding = null;
       EventHandler.Instance.Events.CheckpointReached -= OnCheckpointHit;
       EventHandler.Instance.Events.CheckpointLoaded -= Reset;
     }

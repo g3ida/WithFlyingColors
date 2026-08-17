@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input.Controllers;
 using Wfc.Core.Localization;
 using Wfc.Core.Logger;
@@ -174,8 +175,8 @@ public static class GameSettings {
   /// Whether the frame timing overlay is drawn over the game. The overlay belongs to the
   /// game screen, so this says nothing about the menus.
   ///
-  /// Assigning raises Events.PerformanceOverlayToggled, which is how the overlay follows a
-  /// player who ticks the box from the pause menu, with a level already on screen.
+  /// Assigning announces IGameEvents.PerformanceOverlayToggled, which is how the overlay
+  /// follows a player who ticks the box from the pause menu, with a level already on screen.
   /// </summary>
   private static bool _performanceOverlay;
   public static bool PerformanceOverlay {
@@ -185,8 +186,7 @@ public static class GameSettings {
         return;
       }
       _performanceOverlay = value;
-      // Null while the settings are loaded, before the autoloads are in the tree.
-      EventHandler.Instance?.EmitPerformanceOverlayToggled(value);
+      GameEvents.Instance.OnPerformanceOverlayToggled(value);
     }
   }
 

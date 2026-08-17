@@ -1,10 +1,12 @@
 namespace Wfc.test.instrumented.BrickBreaker;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Entities.World.BrickBreaker;
 using Wfc.test.instrumented.Helpers;
@@ -20,6 +22,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // Subscribed through the typed event rather than SignalsCounter, whose callable takes no arguments and
 // so silently counts nothing for a signal that carries any.
 public class BallHitsPlayerTests(Node testScene) : TestClass(testScene) {
+  private AutoChannel.Binding? _dyingBinding;
+
   private const string PLAYER_SCENE = "res://src/Wfc/Entities/World/Player/Player/Player.tscn";
   private const string TOP_FACE_COLOR = ColorUtils.BLUE;
   private const string A_DIFFERENT_COLOR = ColorUtils.PINK;
@@ -40,13 +44,15 @@ public class BallHitsPlayerTests(Node testScene) : TestClass(testScene) {
     _deaths = 0;
     _provider = new FakeDependenciesProvider();
     TestScene.AddChild(_provider);
-    EventHandler.Instance.Events.PlayerDying += _onPlayerDying;
+    _dyingBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerDying _) => _onPlayerDying());
     await _physicsFrame();
   }
 
   [Cleanup]
   public void Cleanup() {
-    EventHandler.Instance.Events.PlayerDying -= _onPlayerDying;
+    _dyingBinding?.Dispose();
+    _dyingBinding = null;
     _provider.QueueFree();
   }
 
@@ -152,7 +158,7 @@ public class BallHitsPlayerTests(Node testScene) : TestClass(testScene) {
     await _physicsFrame();
   }
 
-  private void _onPlayerDying(Node? area, Vector2 position, int entityType) => _deaths++;
+  private void _onPlayerDying() => _deaths++;
 
   private async Task<Wfc.Entities.World.Player.Player> _addPlayer() {
     var player = GD.Load<PackedScene>(PLAYER_SCENE).Instantiate<Wfc.Entities.World.Player.Player>();

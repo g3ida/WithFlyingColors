@@ -2,8 +2,8 @@ namespace Wfc.Screens;
 
 using Godot;
 using Chickensoft.Sync.Primitives;
+using Wfc.Core.Event;
 using Wfc.Core.Localization;
-using Wfc.Core.Settings;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.MenuManager;
 using Wfc.Utils;
@@ -37,8 +37,8 @@ public partial class SkinSelectMenu : FirstRunMenu {
   // is where it is asked for, not where the answer has arrived.
   protected override void OnFirstRunReady() {
     this.WireNodes();
-    _skinBinding ??= SettingsRepo.Instance.Channel.Bind()
-      .On((in ISettingsRepo.SkinChanged _) => _showPalette());
+    _skinBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.SkinChanged _) => _showPalette());
     _captionNode.Text = LocalizationService.GetLocalizedString(TranslationKey.menu_header_pickColors);
     _showPalette();
   }

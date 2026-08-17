@@ -3,6 +3,7 @@ namespace Wfc.Entities.Tetris.Tetrominos;
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Platforms;
 using Wfc.Screens.Levels;
@@ -132,7 +133,7 @@ public partial class Block : Node2D {
 
     if (-separation > PlatformCrush.TOUCH_DEPTH &&
         !_hasSomewhereToGo(player, PlatformCrush.EscapeMotion(crusher, body, travel), movingBodies)) {
-      EventHandler.Instance.EmitPlayerDying(
+      GameEvents.Instance.OnPlayerDying(
         this,
         PlatformCrush.ContactPoint(crusher, body, travel),
         EntityType.Crusher

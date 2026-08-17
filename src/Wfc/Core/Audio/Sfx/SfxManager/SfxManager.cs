@@ -6,8 +6,8 @@ using Chickensoft.Sync.Primitives;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Logger;
-using Wfc.Core.Settings;
 using Wfc.Entities.World.Piano;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -21,7 +21,7 @@ public partial class SfxManager : Node2D, ISfxManager {
 
   // Every settings change the player makes sounds the same, so the four of them share one
   // callback. Disposing the binding is the whole of the unsubscribe.
-  private AutoChannel.Binding? _settingsBinding;
+  private AutoChannel.Binding? _eventsBinding;
 
   public override void _EnterTree() {
     base._EnterTree();
@@ -60,97 +60,70 @@ public partial class SfxManager : Node2D, ISfxManager {
 
   private void ConnectSignals() {
     PlaySfx += OnPlaySfx;
-    EventHandler.Instance.Events.PlayerJumped += OnPlayerJumped;
-    EventHandler.Instance.Events.PlayerRotate += OnPlayerRotate;
-    EventHandler.Instance.Events.PlayerLand += OnPlayerLand;
-    EventHandler.Instance.Events.PlayerDash += OnPlayerDash;
-    EventHandler.Instance.Events.GemCollected += OnGemCollected;
-    _settingsBinding = SettingsRepo.Instance.Channel.Bind()
-      .On((in ISettingsRepo.FullscreenToggled _) => OnSettingChanged())
-      .On((in ISettingsRepo.VsyncToggled _) => OnSettingChanged())
-      .On((in ISettingsRepo.ScreenSizeChanged _) => OnSettingChanged())
-      .On((in ISettingsRepo.LanguageChanged _) => OnSettingChanged());
     EventHandler.Instance.Events.ControllerSelectionChanged += OnControllerSelectionChanged;
     EventHandler.Instance.Events.OnActionBound += OnKeyBound;
     EventHandler.Instance.Events.FocusChanged += OnFocusChanged;
     EventHandler.Instance.Events.MenuBoxRotated += OnMenuBoxRotated;
     EventHandler.Instance.Events.KeyboardActionBinding += OnKeyboardActionBinding;
-    EventHandler.Instance.Events.PlayerExplode += OnPlayerExplode;
     EventHandler.Instance.Events.PauseMenuEnter += OnPauseMenuEnter;
     EventHandler.Instance.Events.PauseMenuExit += OnPauseMenuExit;
-    EventHandler.Instance.Events.PlayerFall += OnPlayerFalling;
-    EventHandler.Instance.Events.PlayerSquashed += OnPlayerSquashed;
-    EventHandler.Instance.Events.TetrisLinesRemoved += OnTetrisLinesRemoved;
-    EventHandler.Instance.Events.PickedPowerUp += OnPickedPowerup;
-    EventHandler.Instance.Events.BrickBroken += OnBrickBroken;
-    EventHandler.Instance.Events.BreakBreakerWin += OnWinMiniGame;
-    EventHandler.Instance.Events.TetrisPoolEscaped += OnWinMiniGame;
-    EventHandler.Instance.Events.BrickBreakerStart += OnBrickBreakerStart;
     EventHandler.Instance.Events.MenuButtonPressed += OnMenuButtonPressed;
-    EventHandler.Instance.Events.SfxVolumeChanged += OnButtonToggle;
-    EventHandler.Instance.Events.MusicVolumeChanged += OnButtonToggle;
-    EventHandler.Instance.Events.PianoNotePressed += OnPianoNotePressed;
-    EventHandler.Instance.Events.PageFlipped += OnPageFlipped;
-    EventHandler.Instance.Events.WrongPianoNotePlayed += OnWrongPianoNotePlayed;
-    EventHandler.Instance.Events.PianoPuzzleWon += OnPianoPuzzleWon;
-    EventHandler.Instance.Events.ButtonGameNotePlayed += OnButtonGameNotePlayed;
-    EventHandler.Instance.Events.ButtonGameWrongNotePlayed += OnButtonGameWrongNotePlayed;
-    EventHandler.Instance.Events.ButtonGameWon += OnButtonGameWon;
     EventHandler.Instance.Events.NotificationRaised += OnNotificationRaised;
     EventHandler.Instance.Events.DoorGemFilled += OnDoorGemFilled;
     EventHandler.Instance.Events.DoorCometFormed += OnDoorCometFormed;
-    EventHandler.Instance.Events.PaintSpilled += OnPaintSpilled;
-    EventHandler.Instance.Events.BucketShoved += OnBucketShoved;
-    EventHandler.Instance.Events.PaintPouring += OnPaintPouring;
-    EventHandler.Instance.Events.PaintSplashed += OnPaintSplashed;
-    EventHandler.Instance.Events.PaintGunCooling += OnPaintGunCooling;
-    EventHandler.Instance.Events.PaintGunFired += OnPaintGunFired;
+    _eventsBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.FullscreenToggled _) => OnSettingChanged())
+      .On((in IGameEvents.VsyncToggled _) => OnSettingChanged())
+      .On((in IGameEvents.ScreenSizeChanged _) => OnSettingChanged())
+      .On((in IGameEvents.LanguageChanged _) => OnSettingChanged())
+      .On((in IGameEvents.SfxVolumeChanged _) => OnSettingChanged())
+      .On((in IGameEvents.MusicVolumeChanged _) => OnSettingChanged())
+      .On((in IGameEvents.TetrisLinesRemoved _) => OnPlaySfx("tetrisLine"))
+      .On((in IGameEvents.TetrisPoolEscaped _) => OnPlaySfx("winMiniGame"))
+      .On((in IGameEvents.BrickBroken _) => OnPlaySfx("brick"))
+      .On((in IGameEvents.BrickBreakerStarted _) => OnPlaySfx("bricksSlide"))
+      .On((in IGameEvents.BrickBreakerWon _) => OnPlaySfx("winMiniGame"))
+      .On((in IGameEvents.PowerUpPicked _) => OnPlaySfx("pickup"))
+      // A note is a one-shot sample, so releasing a key sounds nothing. PianoNoteReleased is
+      // still announced by the piano for anything that wants it; the sound bank has no answer.
+      .On((in IGameEvents.PianoNotePressed message) => OnPlaySfx("piano_" + message.NoteIndex.ToString()))
+      .On((in IGameEvents.PageFlipped _) => OnPlaySfx("pageFlip"))
+      .On((in IGameEvents.WrongPianoNotePlayed _) => OnPlaySfx("wrongAnswer"))
+      .On((in IGameEvents.PianoPuzzleWon _) => OnPlaySfx("success"))
+      .On((in IGameEvents.ButtonGameNotePlayed message) => OnPlaySfx("piano_" + message.NoteIndex.ToString()))
+      .On((in IGameEvents.ButtonGameWrongNotePlayed _) => OnPlaySfx("wrongAnswer"))
+      .On((in IGameEvents.ButtonGameWon _) => OnPlaySfx("success"))
+      .On((in IGameEvents.PlayerJumped _) => OnPlaySfx("jump"))
+      .On((in IGameEvents.PlayerRotated message) => OnPlayerRotate(message.Direction))
+      .On((in IGameEvents.PlayerLanded _) => OnPlaySfx("land"))
+      .On((in IGameEvents.PlayerDashed _) => OnPlaySfx("dash"))
+      .On((in IGameEvents.PlayerExploded _) => OnPlaySfx("playerExplode"))
+      .On((in IGameEvents.PlayerFell _) => OnPlaySfx("playerFalling"))
+      .On((in IGameEvents.PlayerSquashed _) => OnPlaySfx("playerSquashed"))
+      .On((in IGameEvents.GemCollected _) => OnPlaySfx("gemCollect"))
+      .On((in IGameEvents.PaintSpilled _) => OnPlaySfx("bucketFall"))
+      .On((in IGameEvents.BucketShoved _) => OnPlaySfx("bucketPush"))
+      .On((in IGameEvents.PaintPouring _) => OnPlaySfx("paintPour"))
+      .On((in IGameEvents.PaintSplashed _) => OnPlaySfx("paintSplash"))
+      .On((in IGameEvents.PaintGunCooling _) => OnPlaySfx("gunCooldown"))
+      .On((in IGameEvents.PaintGunFired _) => OnPlaySfx("shooting"));
   }
 
   private void DisconnectSignals() {
     PlaySfx -= OnPlaySfx;
-    EventHandler.Instance.Events.PlayerJumped -= OnPlayerJumped;
-    EventHandler.Instance.Events.PlayerRotate -= OnPlayerRotate;
-    EventHandler.Instance.Events.PlayerLand -= OnPlayerLand;
-    EventHandler.Instance.Events.PlayerDash -= OnPlayerDash;
-    EventHandler.Instance.Events.GemCollected -= OnGemCollected;
-    _settingsBinding?.Dispose();
-    _settingsBinding = null;
     EventHandler.Instance.Events.ControllerSelectionChanged -= OnControllerSelectionChanged;
     EventHandler.Instance.Events.OnActionBound -= OnKeyBound;
     EventHandler.Instance.Events.FocusChanged -= OnFocusChanged;
     EventHandler.Instance.Events.MenuBoxRotated -= OnMenuBoxRotated;
     EventHandler.Instance.Events.KeyboardActionBinding -= OnKeyboardActionBinding;
-    EventHandler.Instance.Events.PlayerExplode -= OnPlayerExplode;
     EventHandler.Instance.Events.PauseMenuEnter -= OnPauseMenuEnter;
     EventHandler.Instance.Events.PauseMenuExit -= OnPauseMenuExit;
-    EventHandler.Instance.Events.PlayerFall -= OnPlayerFalling;
-    EventHandler.Instance.Events.PlayerSquashed -= OnPlayerSquashed;
-    EventHandler.Instance.Events.TetrisLinesRemoved -= OnTetrisLinesRemoved;
-    EventHandler.Instance.Events.PickedPowerUp -= OnPickedPowerup;
-    EventHandler.Instance.Events.BrickBroken -= OnBrickBroken;
-    EventHandler.Instance.Events.BreakBreakerWin -= OnWinMiniGame;
-    EventHandler.Instance.Events.TetrisPoolEscaped -= OnWinMiniGame;
-    EventHandler.Instance.Events.BrickBreakerStart -= OnBrickBreakerStart;
     EventHandler.Instance.Events.MenuButtonPressed -= OnMenuButtonPressed;
-    EventHandler.Instance.Events.SfxVolumeChanged -= OnButtonToggle;
-    EventHandler.Instance.Events.MusicVolumeChanged -= OnButtonToggle;
-    EventHandler.Instance.Events.PianoNotePressed -= OnPianoNotePressed;
-    EventHandler.Instance.Events.PageFlipped -= OnPageFlipped;
-    EventHandler.Instance.Events.WrongPianoNotePlayed -= OnWrongPianoNotePlayed;
-    EventHandler.Instance.Events.PianoPuzzleWon -= OnPianoPuzzleWon;
-    EventHandler.Instance.Events.ButtonGameNotePlayed -= OnButtonGameNotePlayed;
-    EventHandler.Instance.Events.ButtonGameWrongNotePlayed -= OnButtonGameWrongNotePlayed;
-    EventHandler.Instance.Events.ButtonGameWon -= OnButtonGameWon;
     EventHandler.Instance.Events.NotificationRaised -= OnNotificationRaised;
     EventHandler.Instance.Events.DoorGemFilled -= OnDoorGemFilled;
     EventHandler.Instance.Events.DoorCometFormed -= OnDoorCometFormed;
-    EventHandler.Instance.Events.PaintSpilled -= OnPaintSpilled;
-    EventHandler.Instance.Events.BucketShoved -= OnBucketShoved;
-    EventHandler.Instance.Events.PaintPouring -= OnPaintPouring;
-    EventHandler.Instance.Events.PaintSplashed -= OnPaintSplashed;
-    EventHandler.Instance.Events.PaintGunCooling -= OnPaintGunCooling;
-    EventHandler.Instance.Events.PaintGunFired -= OnPaintGunFired;
+    _eventsBinding?.Dispose();
+    _eventsBinding = null;
   }
 
   public override void _ExitTree() {
@@ -201,43 +174,15 @@ public partial class SfxManager : Node2D, ISfxManager {
     }
   }
 
-  private void OnPlayerJumped() => OnPlaySfx("jump");
   private void OnPlayerRotate(int dir) => OnPlaySfx(dir == -1 ? "rotateLeft" : "rotateRight");
-  private void OnPlayerLand() => OnPlaySfx("land");
-  private void OnPlayerDash(Vector2 direction) => OnPlaySfx("dash");
   private void OnMenuButtonPressed(int menuButton) => OnPlaySfx("menuSelect");
-  private void OnGemCollected(string color, Vector2 position, SpriteFrames x) => OnPlaySfx("gemCollect");
-  private void OnButtonToggle(float value) => OnPlaySfx("menuValueChange");
   private void OnSettingChanged() => OnPlaySfx("menuValueChange");
   private void OnControllerSelectionChanged(int controllerType) => OnPlaySfx("menuValueChange");
   private void OnKeyBound(string action, int key) => OnPlaySfx("menuValueChange");
   private void OnFocusChanged() => OnPlaySfx("menuFocus");
   private void OnMenuBoxRotated() => OnPlaySfx("rotateRight");
   private void OnKeyboardActionBinding() => OnPlaySfx("menuValueChange");
-  private void OnPlayerExplode() => OnPlaySfx("playerExplode");
-  private void OnPlayerFalling() => OnPlaySfx("playerFalling");
-  private void OnPlayerSquashed() => OnPlaySfx("playerSquashed");
-  private void OnTetrisLinesRemoved() => OnPlaySfx("tetrisLine");
-  private void OnPickedPowerup() => OnPlaySfx("pickup");
-  private void OnBrickBroken(string color, Vector2 _) => OnPlaySfx("brick");
-  private void OnWinMiniGame() => OnPlaySfx("winMiniGame");
-  private void OnBrickBreakerStart() => OnPlaySfx("bricksSlide");
-  // A note is a one-shot sample, so releasing a key sounds nothing. Events.PianoNoteReleased is
-  // still raised by the piano for anything that wants it; the sound bank has no answer to it.
-  private void OnPianoNotePressed(int note) => OnPlaySfx("piano_" + note.ToString());
-  private void OnPageFlipped() => OnPlaySfx("pageFlip");
-  private void OnWrongPianoNotePlayed() => OnPlaySfx("wrongAnswer");
-  private void OnPianoPuzzleWon() => OnPlaySfx("success");
-  private void OnButtonGameNotePlayed(int note) => OnPlaySfx("piano_" + note.ToString());
-  private void OnButtonGameWrongNotePlayed() => OnPlaySfx("wrongAnswer");
-  private void OnButtonGameWon() => OnPlaySfx("success");
   private void OnNotificationRaised(int translationKey) => OnPlaySfx("notification");
-  private void OnPaintSpilled(Vector2 position) => OnPlaySfx("bucketFall");
-  private void OnBucketShoved(Vector2 position) => OnPlaySfx("bucketPush");
-  private void OnPaintPouring(Vector2 position) => OnPlaySfx("paintPour");
-  private void OnPaintSplashed(Vector2 position) => OnPlaySfx("paintSplash");
-  private void OnPaintGunCooling(Vector2 position) => OnPlaySfx("gunCooldown");
-  private void OnPaintGunFired(Vector2 position) => OnPlaySfx("shooting");
   private void OnDoorGemFilled() => OnPlaySfx("doorGemFill");
   private void OnDoorCometFormed() => OnPlaySfx("doorCometFormed");
   private void OnPauseMenuEnter() => OnPlaySfx("menuSelect");

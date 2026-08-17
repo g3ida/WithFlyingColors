@@ -1,9 +1,12 @@
 namespace Wfc.Entities.World.Camera;
 
+using Chickensoft.Sync.Primitives;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
+using Wfc.Screens.Levels;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -301,6 +304,8 @@ public partial class GameCamera : Camera2D, IPersistent {
   #endregion Zoom
 
   #region Signals
+  private AutoChannel.Binding? _cameraBinding;
+
   public void SetFollowNode(Node2D followNode) => FollowNode = followNode;
 
   public void OnCameraShakeRequest(float amplitude) {
@@ -319,7 +324,7 @@ public partial class GameCamera : Camera2D, IPersistent {
     _applyDragMargins();
   }
 
-  private void _OnPlayerDying(Node? area, Vector2 position, int entityType) {
+  private void _OnPlayerDying() {
     _isAirborne = false;
     _applyDragMargins();
   }
@@ -327,21 +332,19 @@ public partial class GameCamera : Camera2D, IPersistent {
   private void _connectSignals() {
     EventHandler.Instance.Events.CheckpointReached += _OnCheckpointHit;
     EventHandler.Instance.Events.CheckpointLoaded += Reset;
-    EventHandler.Instance.Events.PlayerJumped += _OnPlayerJump;
-    EventHandler.Instance.Events.PlayerLand += _OnPlayerLand;
-    EventHandler.Instance.Events.PlayerDying += _OnPlayerDying;
-    EventHandler.Instance.Events.CameraShakeRequest += OnCameraShakeRequest;
-    EventHandler.Instance.Events.CameraZoomPunchRequest += OnCameraZoomPunchRequest;
+    _cameraBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CameraShakeRequested message) => OnCameraShakeRequest(message.Amplitude))
+      .On((in IGameEvents.CameraZoomPunchRequested message) => OnCameraZoomPunchRequest(message.Strength))
+      .On((in IGameEvents.PlayerJumped _) => _OnPlayerJump())
+      .On((in IGameEvents.PlayerLanded _) => _OnPlayerLand())
+      .On((in IGameEvents.PlayerDying _) => _OnPlayerDying());
   }
 
   private void _disconnectSignals() {
     EventHandler.Instance.Events.CheckpointReached -= _OnCheckpointHit;
     EventHandler.Instance.Events.CheckpointLoaded -= Reset;
-    EventHandler.Instance.Events.PlayerJumped -= _OnPlayerJump;
-    EventHandler.Instance.Events.PlayerLand -= _OnPlayerLand;
-    EventHandler.Instance.Events.PlayerDying -= _OnPlayerDying;
-    EventHandler.Instance.Events.CameraShakeRequest -= OnCameraShakeRequest;
-    EventHandler.Instance.Events.CameraZoomPunchRequest -= OnCameraZoomPunchRequest;
+    _cameraBinding?.Dispose();
+    _cameraBinding = null;
   }
   #endregion Signals
 

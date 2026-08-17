@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Player;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Entities.World.Explosion;
 using Wfc.State;
@@ -14,13 +15,13 @@ public partial class PlayerFallZoneDyingState : PlayerDyingBaseState {
 
   protected override void _Enter(Player player) {
     base._Enter(player);
-    EventHandler.Instance.EmitPlayerFall();
+    GameEvents.Instance.OnPlayerFell();
     player.FallTimerNode.Start();
     player.FallTimerNode.Timeout += OnFallTimeout;
   }
 
   private void OnFallTimeout() {
-    EventHandler.Instance.EmitPlayerDied();
+    GameEvents.Instance.OnPlayerDied();
   }
 
   protected override void _Exit(Player player) {

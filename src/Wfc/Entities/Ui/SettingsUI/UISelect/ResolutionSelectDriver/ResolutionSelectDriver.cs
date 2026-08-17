@@ -52,8 +52,8 @@ public partial class ResolutionSelectDriver : UISelectDriver {
     base._EnterTree();
     // The shared instance rather than a dependency: this runs before AutoInject has resolved
     // anything, which is the whole reason the subscription lives here.
-    _fullscreenBinding ??= SettingsRepo.Instance.Channel.Bind()
-      .On((in ISettingsRepo.FullscreenToggled message) => _onFullscreenToggled(message.IsFullscreen));
+    _fullscreenBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.FullscreenToggled message) => _onFullscreenToggled(message.IsFullscreen));
   }
 
   public void _onFullscreenToggled(bool isFullScreen) {

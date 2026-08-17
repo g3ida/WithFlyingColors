@@ -2,8 +2,10 @@ namespace Wfc.test.instrumented.Settings;
 
 using System.Collections.Generic;
 using Chickensoft.GoDotTest;
+using Chickensoft.Sync.Primitives;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Core.Settings;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -73,18 +75,13 @@ public class GameSettingsPerformanceOverlayTests(Node testScene) : TestClass(tes
   [Test]
   public void TurningItOnAnnouncesItself() {
     var announced = new List<bool>();
-    void OnToggled(bool enabled) => announced.Add(enabled);
-    EventHandler.Instance.Events.PerformanceOverlayToggled += OnToggled;
+    using var binding = GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PerformanceOverlayToggled message) => announced.Add(message.IsEnabled));
 
-    try {
-      GameSettings.PerformanceOverlay = true;
-      // Setting it to what it already is says nothing.
-      GameSettings.PerformanceOverlay = true;
-      GameSettings.PerformanceOverlay = false;
-    }
-    finally {
-      EventHandler.Instance.Events.PerformanceOverlayToggled -= OnToggled;
-    }
+    GameSettings.PerformanceOverlay = true;
+    // Setting it to what it already is says nothing.
+    GameSettings.PerformanceOverlay = true;
+    GameSettings.PerformanceOverlay = false;
 
     announced.ShouldBe(ON_THEN_OFF);
   }

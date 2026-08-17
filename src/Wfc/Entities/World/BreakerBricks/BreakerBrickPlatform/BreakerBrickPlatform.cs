@@ -2,7 +2,9 @@ namespace Wfc.Entities.World.BreakerBricks;
 
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Entities.World.Enemies;
+using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -161,7 +163,7 @@ public partial class BreakerBrickPlatform : AnimatableBody2D, IShootable {
     var brick = _grid.Bricks[index];
     var group = BreakerBrickGrid.GroupOf(brick.Slot);
     var box = _grid.BoxOf(brick);
-    EventHandler.Instance.EmitBrickBroken(group ?? string.Empty, ToGlobal(box.Position + (box.Size / 2.0f)));
+    GameEvents.Instance.OnBrickBroken(group ?? string.Empty, ToGlobal(box.Position + (box.Size / 2.0f)));
   }
 
   public bool IsBroken(int index) => _broken.Contains(index);

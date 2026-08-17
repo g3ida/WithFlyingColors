@@ -1,8 +1,10 @@
 namespace Wfc.Entities.World.Platforms;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -32,6 +34,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [Tool]
 [ScenePath]
 public partial class TetrominoRain : Node2D {
+  private AutoChannel.Binding? _dyingBinding;
+
   #region Constants
   // The curtain outline and the lane centres, drawn for the author only.
   private static readonly Color BOUNDS_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.18f);
@@ -288,7 +292,8 @@ public partial class TetrominoRain : Node2D {
     if (Engine.IsEditorHint() || _isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.PlayerDying += _onPlayerDying;
+    _dyingBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerDying _) => _onPlayerDying());
     EventHandler.Instance.Events.CheckpointLoaded += _restart;
     _isSubscribed = true;
   }
@@ -298,7 +303,8 @@ public partial class TetrominoRain : Node2D {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.PlayerDying -= _onPlayerDying;
+    _dyingBinding?.Dispose();
+    _dyingBinding = null;
     EventHandler.Instance.Events.CheckpointLoaded -= _restart;
     _isSubscribed = false;
   }
@@ -397,7 +403,7 @@ public partial class TetrominoRain : Node2D {
     _dropDuePieces();
   }
 
-  private void _onPlayerDying(Node? area, Vector2 position, int entityType) => _isPaused = true;
+  private void _onPlayerDying() => _isPaused = true;
 
   private void _dropDuePieces() {
     _pieces.RemoveAll(piece => !IsInstanceValid(piece));

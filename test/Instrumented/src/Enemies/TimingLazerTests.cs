@@ -1,9 +1,11 @@
 namespace Wfc.test.instrumented.Enemies;
 
+using Chickensoft.Sync.Primitives;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Entities.World.Enemies;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
@@ -14,6 +16,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // The rhythm is the hazard: the same beam on the same face must burn while it
 // fires and must not while it rests or telegraphs.
 public class TimingLazerTests(Node testScene) : TestClass(testScene) {
+  private AutoChannel.Binding? _dyingBinding;
+
   private const string PLAYER_SCENE = "res://src/Wfc/Entities/World/Player/Player/Player.tscn";
 
   // The beam fires along its own +X, so it lands on the cube's left face, and that face wears pink.
@@ -32,13 +36,15 @@ public class TimingLazerTests(Node testScene) : TestClass(testScene) {
     _deaths = 0;
     _provider = new FakeDependenciesProvider();
     TestScene.AddChild(_provider);
-    EventHandler.Instance.Events.PlayerDying += _onPlayerDying;
+    _dyingBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerDying _) => _onPlayerDying());
     await _physicsFrame();
   }
 
   [Cleanup]
   public void Cleanup() {
-    EventHandler.Instance.Events.PlayerDying -= _onPlayerDying;
+    _dyingBinding?.Dispose();
+    _dyingBinding = null;
     _provider.QueueFree();
   }
 
@@ -87,7 +93,7 @@ public class TimingLazerTests(Node testScene) : TestClass(testScene) {
     await _physicsFrame();
   }
 
-  private void _onPlayerDying(Node? area, Vector2 position, int entityType) => _deaths++;
+  private void _onPlayerDying() => _deaths++;
 
   private Task _physicsFrame() => PhysicsFrames.Frame(TestScene);
 }

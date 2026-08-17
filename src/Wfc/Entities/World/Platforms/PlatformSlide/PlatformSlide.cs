@@ -345,7 +345,7 @@ public sealed class PlatformSlide {
       return;
     }
 
-    EventHandler.Instance.EmitPlayerDying(
+    GameEvents.Instance.OnPlayerDying(
       _body,
       PlatformCrush.ContactPoint(crusher, body, travel),
       EntityType.Crusher

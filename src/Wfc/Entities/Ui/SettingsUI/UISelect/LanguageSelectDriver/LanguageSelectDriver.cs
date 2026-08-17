@@ -3,6 +3,7 @@ namespace Wfc.Entities.Ui.SettingsUI.UISelect;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Localization;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
@@ -33,7 +34,7 @@ public partial class LanguageSelectDriver : UISelectDriver {
       return;
     }
     GameSettings.Language = language;
-    SettingsRepo.Instance.OnLanguageChanged(language);
+    GameEvents.Instance.OnLanguageChanged(language);
   }
 
   public override int GetDefaultSelectedIndex() {

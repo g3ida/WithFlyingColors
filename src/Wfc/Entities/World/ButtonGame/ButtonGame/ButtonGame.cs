@@ -2,9 +2,11 @@ namespace Wfc.Entities.World.ButtonGame;
 
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -179,7 +181,7 @@ public partial class ButtonGame : Node2D, IPersistent {
     var isLighting = _showStep % 2 == 0;
     button.SetHighlight(isLighting ? GameButton.Highlight.Lit : GameButton.Highlight.Dim);
     if (isLighting) {
-      EventHandler.Instance.EmitButtonGameNotePlayed(button.NoteIndex);
+      GameEvents.Instance.OnButtonGameNotePlayed(button.NoteIndex);
     }
     _stepTimerNode.Start(isLighting ? SHOW_LIT : SHOW_GAP);
   }
@@ -190,7 +192,7 @@ public partial class ButtonGame : Node2D, IPersistent {
   private void _onButtonPressed(int buttonIndex) {
     var button = _buttonOf(buttonIndex);
     if (button != null) {
-      EventHandler.Instance.EmitButtonGameNotePlayed(button.NoteIndex);
+      GameEvents.Instance.OnButtonGameNotePlayed(button.NoteIndex);
     }
 
     // The melody is to be watched, not played along with: a button touched while it is still
@@ -226,7 +228,7 @@ public partial class ButtonGame : Node2D, IPersistent {
   }
 
   private void _failRound() {
-    EventHandler.Instance.EmitButtonGameWrongNotePlayed();
+    GameEvents.Instance.OnButtonGameWrongNotePlayed();
     _awaitStand();
   }
 
@@ -237,7 +239,7 @@ public partial class ButtonGame : Node2D, IPersistent {
     _stepTimerNode.Stop();
     _setAll(GameButton.Highlight.Rest);
     _refreshStand();
-    EventHandler.Instance.EmitButtonGameWon();
+    GameEvents.Instance.OnButtonGameWon();
     EmitSignal(SignalName.PuzzleWon, false);
   }
 

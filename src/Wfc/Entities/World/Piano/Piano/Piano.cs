@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Godot;
 using Godot.Collections;
 using Wfc.Core.Event;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -72,15 +73,15 @@ public partial class Piano : Node2D {
   }
 
   private void _onPianoNotePressed(int noteIndex) {
-    EventHandler.Instance.EmitPianoNotePressed(noteIndex);
+    GameEvents.Instance.OnPianoNotePressed(noteIndex);
   }
 
   private void _onPianoNoteReleased(int noteIndex) {
-    EventHandler.Instance.EmitPianoNoteReleased(noteIndex);
+    GameEvents.Instance.OnPianoNoteReleased(noteIndex);
   }
 
   private void _onSolfegeBoardNotesPlayed() {
-    EventHandler.Instance.EmitPianoPuzzleWon();
+    GameEvents.Instance.OnPianoPuzzleWon();
     _removePointerNode();
   }
 

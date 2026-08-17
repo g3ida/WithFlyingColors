@@ -105,28 +105,12 @@ public partial class EventHandler : Node, IEventHandler {
   public void Emit(string eventType, params Variant[] args)
     => Events.EmitSignal(eventType.ToString(), args);
 
-  public void EmitPlayerLanded(Node area, Vector2 position) => Events.EmitSignal(Events.SignalName.PlayerLanded, area, position);
-  public void EmitPlayerDying(Node area, Vector2 position, EntityType entityType) => Events.EmitSignal(Events.SignalName.PlayerDying, area, position, (int)entityType);
-  public void EmitPlayerDying(Vector2 position, EntityType entityType) => Events.EmitSignal(Events.SignalName.PlayerDying, default(Variant), position, (int)entityType);
-  public void EmitPlayerDied() => Events.EmitSignal(Events.SignalName.PlayerDied);
-  public void EmitPlayerSlippering() => Events.EmitSignal(Events.SignalName.PlayerSlippering);
-  public void EmitPlayerJumped() => Events.EmitSignal(Events.SignalName.PlayerJumped);
-  public void EmitPlayerRotate(int dir) => Events.EmitSignal(Events.SignalName.PlayerRotate, dir);
-  public void EmitPlayerLand() => Events.EmitSignal(Events.SignalName.PlayerLand);
-  public void EmitPlayerExplode() => Events.EmitSignal(Events.SignalName.PlayerExplode);
-  public void EmitPlayerFall() => Events.EmitSignal(Events.SignalName.PlayerFall);
-  public void EmitPlayerSquashed() => Events.EmitSignal(Events.SignalName.PlayerSquashed);
-  public void EmitPlayerDash(Vector2 dir) => Events.EmitSignal(Events.SignalName.PlayerDash, dir);
-  public void EmitGemCollected(string color, Vector2 position, SpriteFrames frames) => Events.EmitSignal(Events.SignalName.GemCollected, color, position, frames);
   public void EmitCheckpointReached(Vector2 position, string colorGroup) => Events.EmitSignal(Events.SignalName.CheckpointReached, position, colorGroup);
   public void EmitCheckpointLoaded() => Events.EmitSignal(Events.SignalName.CheckpointLoaded);
   public void EmitMenuActionPressed(MenuAction menuAction) => Events.EmitSignal(Events.SignalName.MenuButtonPressed, (int)menuAction);
   public void EmitMenuBoxRotated() => Events.EmitSignal(Events.SignalName.MenuBoxRotated);
   public void EmitPauseMenuEnter() => Events.EmitSignal(Events.SignalName.PauseMenuEnter);
   public void EmitPauseMenuExit() => Events.EmitSignal(Events.SignalName.PauseMenuExit);
-  public void EmitPerformanceOverlayToggled(bool enabled) => Events.EmitSignal(Events.SignalName.PerformanceOverlayToggled, enabled);
-  public void EmitSfxVolumeChanged(float volume) => Events.EmitSignal(Events.SignalName.SfxVolumeChanged, volume);
-  public void EmitMusicVolumeChanged(float volume) => Events.EmitSignal(Events.SignalName.MusicVolumeChanged, volume);
   public void EmitOnActionBound(string action, int key) => Events.EmitSignal(Events.SignalName.OnActionBound, action, key);
   public void EmitFocusChanged() => Events.EmitSignal(Events.SignalName.FocusChanged);
   public void EmitKeyboardActionBinding() => Events.EmitSignal(Events.SignalName.KeyboardActionBinding);
@@ -140,21 +124,6 @@ public partial class EventHandler : Node, IEventHandler {
     Events.EmitSignal(Events.SignalName.GamepadConnected, deviceId, deviceName);
   public void EmitGamepadDisconnected(int deviceId) =>
     Events.EmitSignal(Events.SignalName.GamepadDisconnected, deviceId);
-  public void EmitTetrisLinesRemoved() => Events.EmitSignal(Events.SignalName.TetrisLinesRemoved);
-  public void EmitTetrisPoolEscaped() => Events.EmitSignal(Events.SignalName.TetrisPoolEscaped);
-  public void EmitBrickBroken(string color, Vector2 position) => Events.EmitSignal(Events.SignalName.BrickBroken, color, position);
-  public void EmitBouncingBallRemoved(Node ball) => Events.EmitSignal(Events.SignalName.BouncingBallRemoved, ball);
-  public void EmitPickedPowerup() => Events.EmitSignal(Events.SignalName.PickedPowerUp);
-  public void EmitBreakBreakerWin() => Events.EmitSignal(Events.SignalName.BreakBreakerWin);
-  public void EmitBrickBreakerStart() => Events.EmitSignal(Events.SignalName.BrickBreakerStart);
-  public void EmitPianoNotePressed(int noteIndex) => Events.EmitSignal(Events.SignalName.PianoNotePressed, noteIndex);
-  public void EmitPianoNoteReleased(int noteIndex) => Events.EmitSignal(Events.SignalName.PianoNoteReleased, noteIndex);
-  public void EmitPageFlipped() => Events.EmitSignal(Events.SignalName.PageFlipped);
-  public void EmitWrongPianoNotePlayed() => Events.EmitSignal(Events.SignalName.WrongPianoNotePlayed);
-  public void EmitPianoPuzzleWon() => Events.EmitSignal(Events.SignalName.PianoPuzzleWon);
-  public void EmitButtonGameNotePlayed(int noteIndex) => Events.EmitSignal(Events.SignalName.ButtonGameNotePlayed, noteIndex);
-  public void EmitButtonGameWrongNotePlayed() => Events.EmitSignal(Events.SignalName.ButtonGameWrongNotePlayed);
-  public void EmitButtonGameWon() => Events.EmitSignal(Events.SignalName.ButtonGameWon);
   public void EmitCutsceneRequestStart(string id) => Events.EmitSignal(Events.SignalName.CutSceneRequestStart, id);
   public void EmitCutsceneRequestEnd(string id) => Events.EmitSignal(Events.SignalName.CutSceneRequestEnd, id);
   public void EmitLevelCleared() => Events.EmitSignal(Events.SignalName.LevelCleared);
@@ -164,14 +133,6 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitLevelRestartRequested() => Events.EmitSignal(Events.SignalName.LevelRestartRequested);
   public void EmitSaveSlotUpdated() => Events.EmitSignal(Events.SignalName.SaveSlotUpdated);
   public void EmitNotificationRaised(TranslationKey key) => Events.EmitSignal(Events.SignalName.NotificationRaised, (int)key);
-  public void EmitPaintSpilled(Vector2 position) => Events.EmitSignal(Events.SignalName.PaintSpilled, position);
-  public void EmitBucketShoved(Vector2 position) => Events.EmitSignal(Events.SignalName.BucketShoved, position);
-  public void EmitPaintPouring(Vector2 position) => Events.EmitSignal(Events.SignalName.PaintPouring, position);
-  public void EmitPaintSplashed(Vector2 position) => Events.EmitSignal(Events.SignalName.PaintSplashed, position);
-  public void EmitPaintGunCooling(Vector2 position) => Events.EmitSignal(Events.SignalName.PaintGunCooling, position);
-  public void EmitPaintGunFired(Vector2 position) => Events.EmitSignal(Events.SignalName.PaintGunFired, position);
 
-  public void EmitCameraShakeRequest(float amplitude) => Events.EmitSignal(Events.SignalName.CameraShakeRequest, amplitude);
-  public void EmitCameraZoomPunchRequest(float strength) => Events.EmitSignal(Events.SignalName.CameraZoomPunchRequest, strength);
 }
 

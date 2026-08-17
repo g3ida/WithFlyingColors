@@ -1,5 +1,6 @@
 namespace Wfc.test.instrumented.Player;
 
+using Chickensoft.Sync.Primitives;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
@@ -15,6 +16,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // A respawn has to hand the cube back exactly as the level starts it: standing still, on the
 // checkpoint, answering to the keys that are actually held.
 public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
+  private AutoChannel.Binding? _diedBinding;
+
   private const float FLOOR_HALF_HEIGHT = 50f;
   private const float FLOOR_HALF_WIDTH = 1200f;
   private const float FLOOR_CENTER_Y = 400f;
@@ -48,7 +51,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
     await _frames(FRAMES_TO_WALK);
     player.GlobalPosition.X.ShouldBeGreaterThan(checkpoint.X, "the cube never started walking");
 
-    EventHandler.Instance.EmitPlayerDying(player.GlobalPosition, EntityType.Platform);
+    GameEvents.Instance.OnPlayerDying(player.GlobalPosition, EntityType.Platform);
     await _frames(2);
     player.IsDying().ShouldBeTrue("the cube never entered a dying state");
 
@@ -70,7 +73,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
     await _frames(FRAMES_TO_WALK);
     player.GlobalPosition.X.ShouldBeLessThan(checkpoint.X, "the cube never started walking");
 
-    EventHandler.Instance.EmitPlayerDying(player.GlobalPosition, EntityType.FallZone);
+    GameEvents.Instance.OnPlayerDying(player.GlobalPosition, EntityType.FallZone);
     await _frames(2);
     player.IsDying().ShouldBeTrue("the cube never entered a dying state");
 
@@ -92,7 +95,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
     _provider.Input.Press(IInputManager.Action.MoveRight);
     await _frames(FRAMES_TO_WALK);
 
-    EventHandler.Instance.EmitPlayerDying(player.GlobalPosition, EntityType.Platform);
+    GameEvents.Instance.OnPlayerDying(player.GlobalPosition, EntityType.Platform);
     await _frames(2);
     await _respawn();
 
@@ -113,8 +116,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
     var checkpoint = new Vector2(200f, 96f);
     EventHandler.Instance.EmitCheckpointReached(checkpoint, "purple");
 
-    var died = await TestScene.GetTree()
-      .ExpectSignal(EventHandler.Instance.Events, Events.SignalName.PlayerDied, DEATH_TIMEOUT * 2);
+    var died = await TestScene.GetTree().ExpectEvent<IGameEvents.PlayerDied>(DEATH_TIMEOUT * 2);
     died.ShouldBeTrue("the cube never slipped off the edge and died");
     EventHandler.Instance.EmitCheckpointLoaded();
     await _frames(20);
@@ -137,7 +139,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
     _provider.Input.Press(IInputManager.Action.RotateRight);
     await _frames(2);
     _provider.Input.Release(IInputManager.Action.RotateRight);
-    EventHandler.Instance.EmitPlayerDying(player.GlobalPosition, EntityType.Platform);
+    GameEvents.Instance.OnPlayerDying(player.GlobalPosition, EntityType.Platform);
     await _frames(2);
     await _respawn();
 
@@ -158,8 +160,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
     var player = scene.GetNode<Wfc.Entities.World.Player.Player>("Player");
     EventHandler.Instance.EmitCheckpointReached(new Vector2(200f, 96f), "purple");
 
-    var slipped = await TestScene.GetTree()
-      .ExpectSignal(EventHandler.Instance.Events, Events.SignalName.PlayerSlippering, DEATH_TIMEOUT);
+    var slipped = await TestScene.GetTree().ExpectEvent<IGameEvents.PlayerSlippering>(DEATH_TIMEOUT);
     slipped.ShouldBeTrue("the cube never started slipping off the edge");
     await _frames(5);
     EventHandler.Instance.EmitCheckpointLoaded();
@@ -181,21 +182,22 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
     var player = await _addPlayerOnGround();
     EventHandler.Instance.EmitCheckpointReached(player.GlobalPosition, "purple");
     var deaths = 0;
-    EventHandler.Instance.Events.PlayerDied += _count;
+    _diedBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerDied _) => _count());
 
-    EventHandler.Instance.EmitPlayerDying(player.GlobalPosition, EntityType.Lazer);
+    GameEvents.Instance.OnPlayerDying(player.GlobalPosition, EntityType.Lazer);
     await _frames(2);
     player.IsDying().ShouldBeTrue();
     for (var i = 0; i < 10; i++) {
-      EventHandler.Instance.EmitPlayerDying(player.GlobalPosition, EntityType.Lazer);
+      GameEvents.Instance.OnPlayerDying(player.GlobalPosition, EntityType.Lazer);
       await _physicsFrame();
     }
 
-    await TestScene.GetTree()
-      .ExpectSignal(EventHandler.Instance.Events, Events.SignalName.PlayerDied, DEATH_TIMEOUT);
+    await TestScene.GetTree().ExpectEvent<IGameEvents.PlayerDied>(DEATH_TIMEOUT);
     EventHandler.Instance.EmitCheckpointLoaded();
     await _frames(FRAMES_TO_SETTLE * 3);
-    EventHandler.Instance.Events.PlayerDied -= _count;
+    _diedBinding?.Dispose();
+    _diedBinding = null;
 
     deaths.ShouldBe(1, "one death reported itself more than once, so the respawn runs again later");
 
@@ -203,8 +205,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
   }
 
   private async Task _respawn() {
-    var died = await TestScene.GetTree()
-      .ExpectSignal(EventHandler.Instance.Events, Events.SignalName.PlayerDied, DEATH_TIMEOUT);
+    var died = await TestScene.GetTree().ExpectEvent<IGameEvents.PlayerDied>(DEATH_TIMEOUT);
     died.ShouldBeTrue("the death never completed");
     EventHandler.Instance.EmitCheckpointLoaded();
     await _frames(20);

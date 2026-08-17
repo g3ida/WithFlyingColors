@@ -2,7 +2,7 @@ namespace Wfc.Entities.Ui;
 
 using Chickensoft.Sync.Primitives;
 using Godot;
-using Wfc.Core.Settings;
+using Wfc.Core.Event;
 using Wfc.Skin;
 using Wfc.Utils.Attributes;
 
@@ -35,8 +35,8 @@ public partial class SkinSwatches : HBoxContainer {
   // a node whose _Ready has yet to run.
   public override void _EnterTree() {
     base._EnterTree();
-    _skinBinding ??= SettingsRepo.Instance.Channel.Bind()
-      .On((in ISettingsRepo.SkinChanged _) => Repaint());
+    _skinBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.SkinChanged _) => Repaint());
   }
 
   public override void _ExitTree() {

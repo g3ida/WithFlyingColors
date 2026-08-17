@@ -38,7 +38,7 @@ public partial class PlayerSlipperingState : PlayerBaseState {
     _skipExitRotation = false;
     _exitRotationSpeed = CORRECT_ROTATION_JUMP_SPEED;
     player.PlayerRotationAction.Execute(direction, MathUtils.PI2, SLIPPERING_ROTATION_DURATION, true, false, true);
-    EventHandler.Instance.EmitPlayerSlippering();
+    GameEvents.Instance.OnPlayerSlippering();
     player.CanDash = true;
     // The rotation action's accumulator, not player.Rotation: the transform folds the angle
     // into (-pi, pi], so a cube slipping while upside down crosses the branch and the

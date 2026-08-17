@@ -6,9 +6,9 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Chickensoft.Sync.Primitives;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Localization;
 using Wfc.Core.Logger;
-using Wfc.Core.Settings;
 using Wfc.Entities.Ui.SettingsUI.Grid;
 using Wfc.Skin;
 using Wfc.Utils;
@@ -106,8 +106,8 @@ public partial class SettingsTabManager : Control {
 
   public override void _EnterTree() {
     base._EnterTree();
-    _skinBinding ??= SettingsRepo.Instance.Channel.Bind()
-      .On((in ISettingsRepo.SkinChanged _) => _onSkinChanged());
+    _skinBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.SkinChanged _) => _onSkinChanged());
   }
 
   public override void _ExitTree() {

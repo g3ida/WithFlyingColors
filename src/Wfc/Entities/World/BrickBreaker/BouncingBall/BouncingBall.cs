@@ -3,6 +3,7 @@ namespace Wfc.Entities.World.BrickBreaker;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
@@ -173,7 +174,7 @@ public partial class BouncingBall : CharacterBody2D {
     if (!player.AcceptsColorAt(contact.Point, ColorGroup)) {
       if (!_wasFatalContact) {
         _wasFatalContact = true;
-        EventHandler.Instance.EmitPlayerDying(_areaNode, GlobalPosition, EntityType.Ball);
+        GameEvents.Instance.OnPlayerDying(_areaNode, GlobalPosition, EntityType.Ball);
       }
       return;
     }
@@ -315,7 +316,7 @@ public partial class BouncingBall : CharacterBody2D {
 
   private void _onAreaEntered(Area2D area) {
     if (area == DeathZone) {
-      EventHandler.Instance.EmitBouncingBallRemoved(this);
+      GameEvents.Instance.OnBouncingBallRemoved(this);
       QueueFree();
       return;
     }
