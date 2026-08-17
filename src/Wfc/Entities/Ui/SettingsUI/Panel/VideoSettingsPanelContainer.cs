@@ -98,6 +98,7 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
     GameSettings.PerformanceOverlay = buttonPressed;
 
   private async void _onFullscreenCheckboxToggled(bool buttonPressed) {
+    PointerFocus.SuspendWhileTheViewSettles();
     GameSettings.Fullscreen = buttonPressed;
     _showResizableRow(!buttonPressed);
     GameEvents.Instance.OnFullscreenToggled(buttonPressed);
@@ -154,9 +155,11 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
     _resolutionSelectButton.SyncSelectionToDefault();
   }
 
+  // Part of leaving fullscreen rather than a change of its own, so it does not
+  // announce itself: the box the player ticked has already been answered.
   private void _applySelectedResolution() {
     if (!GameSettings.Fullscreen && _isUsableSize(_resolutionSelectButton.SelectedValue, out var newSize)) {
-      _applyWindowSize(newSize);
+      _applyWindowSize(newSize, announce: false);
     }
   }
 
@@ -165,11 +168,12 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
     return size.X > 0 && size.Y > 0;
   }
 
-  private async void _applyWindowSize(Vector2I newSize) {
+  private async void _applyWindowSize(Vector2I newSize, bool announce = true) {
+    PointerFocus.SuspendWhileTheViewSettles();
     // Re-centring is part of the size change, GameSettings does it.
     GameSettings.WindowSize = newSize;
 
-    if (this.IsNodeReady()) {
+    if (announce && this.IsNodeReady()) {
       GameEvents.Instance.OnScreenSizeChanged(newSize);
     }
     await _refreshWindow(newSize);
