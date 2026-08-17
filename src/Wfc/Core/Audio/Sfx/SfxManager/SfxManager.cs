@@ -2,9 +2,11 @@ namespace Wfc.Core.Audio;
 
 using System;
 using System.Collections.Generic;
+using Chickensoft.Sync.Primitives;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Logger;
+using Wfc.Core.Settings;
 using Wfc.Entities.World.Piano;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -16,6 +18,10 @@ public partial class SfxManager : Node2D, ISfxManager {
   public delegate void PlaySfxEventHandler(string sfxName);
 
   private readonly Dictionary<string, AudioStreamPlayer> _sfxPool = [];
+
+  // Every settings change the player makes sounds the same, so the four of them share one
+  // callback. Disposing the binding is the whole of the unsubscribe.
+  private AutoChannel.Binding? _settingsBinding;
 
   public override void _EnterTree() {
     base._EnterTree();
@@ -59,10 +65,11 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PlayerLand += OnPlayerLand;
     EventHandler.Instance.Events.PlayerDash += OnPlayerDash;
     EventHandler.Instance.Events.GemCollected += OnGemCollected;
-    EventHandler.Instance.Events.FullscreenToggled += OnButtonToggle;
-    EventHandler.Instance.Events.VsyncToggled += OnButtonToggle;
-    EventHandler.Instance.Events.ScreenSizeChanged += OnButtonToggle;
-    EventHandler.Instance.Events.LanguageChanged += OnLanguageChanged;
+    _settingsBinding = SettingsRepo.Instance.Channel.Bind()
+      .On((in ISettingsRepo.FullscreenToggled _) => OnSettingChanged())
+      .On((in ISettingsRepo.VsyncToggled _) => OnSettingChanged())
+      .On((in ISettingsRepo.ScreenSizeChanged _) => OnSettingChanged())
+      .On((in ISettingsRepo.LanguageChanged _) => OnSettingChanged());
     EventHandler.Instance.Events.ControllerSelectionChanged += OnControllerSelectionChanged;
     EventHandler.Instance.Events.OnActionBound += OnKeyBound;
     EventHandler.Instance.Events.FocusChanged += OnFocusChanged;
@@ -107,10 +114,8 @@ public partial class SfxManager : Node2D, ISfxManager {
     EventHandler.Instance.Events.PlayerLand -= OnPlayerLand;
     EventHandler.Instance.Events.PlayerDash -= OnPlayerDash;
     EventHandler.Instance.Events.GemCollected -= OnGemCollected;
-    EventHandler.Instance.Events.FullscreenToggled -= OnButtonToggle;
-    EventHandler.Instance.Events.VsyncToggled -= OnButtonToggle;
-    EventHandler.Instance.Events.ScreenSizeChanged -= OnButtonToggle;
-    EventHandler.Instance.Events.LanguageChanged -= OnLanguageChanged;
+    _settingsBinding?.Dispose();
+    _settingsBinding = null;
     EventHandler.Instance.Events.ControllerSelectionChanged -= OnControllerSelectionChanged;
     EventHandler.Instance.Events.OnActionBound -= OnKeyBound;
     EventHandler.Instance.Events.FocusChanged -= OnFocusChanged;
@@ -202,10 +207,8 @@ public partial class SfxManager : Node2D, ISfxManager {
   private void OnPlayerDash(Vector2 direction) => OnPlaySfx("dash");
   private void OnMenuButtonPressed(int menuButton) => OnPlaySfx("menuSelect");
   private void OnGemCollected(string color, Vector2 position, SpriteFrames x) => OnPlaySfx("gemCollect");
-  private void OnButtonToggle(bool value) => OnPlaySfx("menuValueChange");
   private void OnButtonToggle(float value) => OnPlaySfx("menuValueChange");
-  private void OnButtonToggle(Vector2 value) => OnPlaySfx("menuValueChange");
-  private void OnLanguageChanged(int language) => OnPlaySfx("menuValueChange");
+  private void OnSettingChanged() => OnPlaySfx("menuValueChange");
   private void OnControllerSelectionChanged(int controllerType) => OnPlaySfx("menuValueChange");
   private void OnKeyBound(string action, int key) => OnPlaySfx("menuValueChange");
   private void OnFocusChanged() => OnPlaySfx("menuFocus");

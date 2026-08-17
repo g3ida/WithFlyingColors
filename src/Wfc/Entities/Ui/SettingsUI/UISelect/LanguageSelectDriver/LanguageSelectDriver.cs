@@ -7,7 +7,6 @@ using Wfc.Core.Localization;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class LanguageSelectDriver : UISelectDriver {
@@ -34,7 +33,7 @@ public partial class LanguageSelectDriver : UISelectDriver {
       return;
     }
     GameSettings.Language = language;
-    EventHandler.Instance.EmitLanguageChanged(language);
+    SettingsRepo.Instance.OnLanguageChanged(language);
   }
 
   public override int GetDefaultSelectedIndex() {

@@ -6,7 +6,6 @@ using Godot;
 using Wfc.Core.Settings;
 using Wfc.Skin;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class SkinSelectDriver : UISelectDriver {
@@ -33,7 +32,7 @@ public partial class SkinSelectDriver : UISelectDriver {
       return;
     }
     GameSettings.Skin = skin;
-    EventHandler.Instance.EmitSkinChanged(skin);
+    SettingsRepo.Instance.OnSkinChanged(skin);
   }
 
   public override int GetDefaultSelectedIndex() {

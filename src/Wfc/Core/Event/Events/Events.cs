@@ -52,23 +52,7 @@ public partial class Events : RefCounted {
   public delegate void MenuButtonPressedEventHandler(int menuButton);
   // Settings signals
   [Signal]
-  public delegate void FullscreenToggledEventHandler(bool value);
-  [Signal]
-  public delegate void VsyncToggledEventHandler(bool value);
-  [Signal]
-  public delegate void ScreenSizeChangedEventHandler(Vector2 value);
-  [Signal]
   public delegate void PerformanceOverlayToggledEventHandler(bool value);
-  // The player picked another language in the settings. Carries a Language.
-  // Raised for the change itself, not for the locale being restored on startup,
-  // so it can be treated as a menu action the player took.
-  [Signal]
-  public delegate void LanguageChangedEventHandler(int language);
-  // Same idea for the palette: raised when the player picks one, not when the stored
-  // one is applied on startup. What is already drawn in the old colours listens for
-  // this to draw itself again.
-  [Signal]
-  public delegate void SkinChangedEventHandler(string skin);
   [Signal]
   public delegate void OnActionBoundEventHandler(string action, int key);
   [Signal]

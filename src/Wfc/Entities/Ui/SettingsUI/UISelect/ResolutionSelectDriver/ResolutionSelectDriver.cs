@@ -3,6 +3,7 @@ namespace Wfc.Entities.Ui.SettingsUI.UISelect;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
+using Chickensoft.Sync.Primitives;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Localization;
@@ -26,6 +27,8 @@ public partial class ResolutionSelectDriver : UISelectDriver {
 
   private List<Vector2I> _resolutions = new List<Vector2I>();
 
+  private AutoChannel.Binding? _fullscreenBinding;
+
   public void OnResolved() {
     _onFullscreenToggled(GameSettings.Fullscreen);
   }
@@ -47,8 +50,10 @@ public partial class ResolutionSelectDriver : UISelectDriver {
 
   public override void _EnterTree() {
     base._EnterTree();
-    // Fixme: need to use dependency injection here
-    EventHandler.Instance.Events.FullscreenToggled += _onFullscreenToggled;
+    // The shared instance rather than a dependency: this runs before AutoInject has resolved
+    // anything, which is the whole reason the subscription lives here.
+    _fullscreenBinding ??= SettingsRepo.Instance.Channel.Bind()
+      .On((in ISettingsRepo.FullscreenToggled message) => _onFullscreenToggled(message.IsFullscreen));
   }
 
   public void _onFullscreenToggled(bool isFullScreen) {
@@ -112,7 +117,8 @@ public partial class ResolutionSelectDriver : UISelectDriver {
   }
 
   public override void _ExitTree() {
-    EventHandler.Instance.Events.FullscreenToggled -= _onFullscreenToggled;
+    _fullscreenBinding?.Dispose();
+    _fullscreenBinding = null;
     base._ExitTree();
   }
 }

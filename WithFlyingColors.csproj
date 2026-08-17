@@ -68,6 +68,7 @@
     <PackageReference Include="Chickensoft.Introspection" Version="3.0.3" />
     <PackageReference Include="Chickensoft.Introspection.Generator" Version="3.0.3" PrivateAssets="all" OutputItemType="analyzer" />
     <PackageReference Include="Chickensoft.AutoInject" Version="2.13.30" PrivateAssets="all" />
+    <PackageReference Include="Chickensoft.Sync" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(RunTests)' != 'true'">
     <Compile Remove="test/**/*.cs" />
