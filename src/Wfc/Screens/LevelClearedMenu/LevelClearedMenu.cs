@@ -43,7 +43,7 @@ public partial class LevelClearedMenu : GameMenu {
     // auto-repeat echoes that used to fire this twice per press.
     if (InputManager.IsEventActionJustPressed(IInputManager.Action.UIConfirm, @event) ||
         InputManager.IsEventActionJustPressed(IInputManager.Action.UICancel, @event)) {
-      EventHandler.EmitMenuActionPressed(MenuAction.ExitClearedLevel);
+      GameEvents.Instance.OnMenuActionPressed(MenuAction.ExitClearedLevel);
     }
   }
 

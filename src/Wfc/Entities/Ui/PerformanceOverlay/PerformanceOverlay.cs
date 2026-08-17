@@ -7,7 +7,6 @@ using Wfc.Core.Event;
 using Wfc.Core.Settings;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // What the frame costs, over the game itself. It belongs to the game screen rather than the
 // root: the numbers are about what a level costs to run, and a menu has nothing to say.

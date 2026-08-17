@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Enemies;
 
+using Chickensoft.Sync.Primitives;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Entities.World.Player;
@@ -7,13 +8,14 @@ using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A projectile that steers toward its target instead of flying straight. The turn rate is
 // what keeps it fair: a missile committed to a heading has to swing wide to come back, so
 // running past one and holding the line still shakes it off.
 [ScenePath]
 public partial class Missile : Node2D, IBullet {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Constants
   private const float SPEED = 5.0f * Constants.WORLD_TO_SCREEN;
   private const float TURN_RATE = 1.8f;
@@ -58,7 +60,8 @@ public partial class Missile : Node2D, IBullet {
     if (_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded += _onRespawn;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointLoaded _) => _onRespawn());
     _isSubscribed = true;
   }
 
@@ -67,7 +70,8 @@ public partial class Missile : Node2D, IBullet {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded -= _onRespawn;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _isSubscribed = false;
   }
 

@@ -17,7 +17,6 @@ using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
@@ -547,14 +546,13 @@ public partial class TetrisPool : Node2D, IPersistent {
 
   private void ConnectSignals() {
     _dyingBinding ??= GameEvents.Instance.Channel.Bind()
-      .On((in IGameEvents.PlayerDying _) => _onPlayerDying());
-    EventHandler.Instance.Events.CheckpointLoaded += reset;
+      .On((in IGameEvents.PlayerDying _) => _onPlayerDying())
+      .On((in IGameEvents.CheckpointLoaded _) => reset());
   }
 
   private void DisconnectSignals() {
     _dyingBinding?.Dispose();
     _dyingBinding = null;
-    EventHandler.Instance.Events.CheckpointLoaded -= reset;
   }
 
   public string GetSaveId() => this.GetPath();

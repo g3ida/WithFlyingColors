@@ -10,7 +10,6 @@ using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   private AutoChannel.Binding? _brickBinding;
@@ -58,14 +57,13 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
 
   private void ConnectSignals() {
     _brickBinding ??= GameEvents.Instance.Channel.Bind()
-      .On((in IGameEvents.BrickBroken message) => OnBrickBroken(message.ColorGroup, message.Position));
-    EventHandler.Instance.Events.CheckpointLoaded += Reset;
+      .On((in IGameEvents.BrickBroken message) => OnBrickBroken(message.ColorGroup, message.Position))
+      .On((in IGameEvents.CheckpointLoaded _) => Reset());
   }
 
   private void DisconnectSignals() {
     _brickBinding?.Dispose();
     _brickBinding = null;
-    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
   }
 
   public void Reset() {

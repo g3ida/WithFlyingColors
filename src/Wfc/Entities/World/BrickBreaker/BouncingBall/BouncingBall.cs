@@ -10,7 +10,6 @@ using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class BouncingBall : CharacterBody2D {

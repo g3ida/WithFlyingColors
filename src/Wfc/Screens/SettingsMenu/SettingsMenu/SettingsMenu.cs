@@ -84,7 +84,7 @@ public partial class SettingsMenu : GameMenu {
           return false; // We don't return true here because we want the default behavior to be called
         }
         else {
-          EventHandler.EmitMenuActionPressed(MenuAction.ShowDialog);
+          GameEvents.Instance.OnMenuActionPressed(MenuAction.ShowDialog);
           return true;
         }
       default:
@@ -96,11 +96,11 @@ public partial class SettingsMenu : GameMenu {
     if (panelIndex != SettingsTabManager.CONTROLLER_PANEL_INDEX || SettingsBindingsValidator.IsValidState()) {
       return true;
     }
-    EventHandler.EmitMenuActionPressed(MenuAction.ShowDialog);
+    GameEvents.Instance.OnMenuActionPressed(MenuAction.ShowDialog);
     return false;
   }
 
   // Only reports the intent. Whether the bindings are valid is decided in one place,
   // the GoBack case above, so the button and UICancel can't disagree.
-  private void OnBackButtonPressed() => EventHandler.EmitMenuActionPressed(MenuAction.GoBack);
+  private static void OnBackButtonPressed() => GameEvents.Instance.OnMenuActionPressed(MenuAction.GoBack);
 }

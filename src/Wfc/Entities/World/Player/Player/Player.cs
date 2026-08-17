@@ -20,7 +20,6 @@ using Wfc.Utils.Animation;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
 using Wfc.Utils.Interpolation;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Meta(typeof(IAutoNode))]
 public partial class Player : CharacterBody2D, IPersistent {
@@ -353,15 +352,13 @@ public partial class Player : CharacterBody2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Events.CheckpointReached += OnCheckpointHit;
-    EventHandler.Instance.Events.CheckpointLoaded += Reset;
     _dyingBinding ??= GameEvents.Instance.Channel.Bind()
-      .On((in IGameEvents.PlayerDying m) => _onPlayerDying(m.Area, m.Position, m.Type));
+      .On((in IGameEvents.PlayerDying m) => _onPlayerDying(m.Area, m.Position, m.Type))
+      .On((in IGameEvents.CheckpointReached m) => OnCheckpointHit(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => Reset());
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Events.CheckpointReached -= OnCheckpointHit;
-    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
     _dyingBinding?.Dispose();
     _dyingBinding = null;
   }

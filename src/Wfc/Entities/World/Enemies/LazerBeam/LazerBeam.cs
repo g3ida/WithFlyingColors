@@ -9,7 +9,6 @@ using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Layers;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Tool]
 [ScenePath]

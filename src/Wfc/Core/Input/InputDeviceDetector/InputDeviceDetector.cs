@@ -1,10 +1,10 @@
 namespace Wfc.Core.Input;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input.Controllers;
 using Wfc.Core.Settings;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Watches every input event the game window receives and records which kind of
 // device produced it, so the UI can follow the player from the keyboard to a
@@ -89,7 +89,7 @@ public partial class InputDeviceDetector : Node {
     // the kind of device alone, so nothing above would have said a word, yet
     // every glyph on screen is now drawn in the wrong house style.
     if (artChanged && !deviceKindChanged) {
-      EventHandler.Instance?.EmitLastUsedControllerChanged(detected.Value);
+      GameEvents.Instance.OnLastUsedControllerChanged(detected.Value);
     }
   }
 

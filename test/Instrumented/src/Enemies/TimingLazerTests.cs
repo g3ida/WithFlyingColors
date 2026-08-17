@@ -11,7 +11,6 @@ using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The rhythm is the hazard: the same beam on the same face must burn while it
 // fires and must not while it rests or telegraphs.

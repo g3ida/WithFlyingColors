@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Core.Serialization;
 using Wfc.Entities.World.Paint;
 using Wfc.Entities.World.Platforms;
@@ -15,7 +16,6 @@ using Wfc.Utils.Colors;
 using Wfc.Utils.Layers;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The paint is simulated rather than drawn, so nothing here pins what it looks like. What these
 // pin is the shape of the chase: that the paint stays on the floor it was poured onto, that it
@@ -138,7 +138,7 @@ public class PaintFluidTests(Node testScene) : TestClass(testScene) {
     await PhysicsFrames.Advance(TestScene, 120);
     _fluid.ParticleCount.ShouldBeGreaterThan(0);
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Frame(TestScene);
 
     _fluid.ParticleCount.ShouldBe(0, "the paint the player died to is still lying there");
@@ -156,14 +156,14 @@ public class PaintFluidTests(Node testScene) : TestClass(testScene) {
     _fluid.Pour();
     await PhysicsFrames.Advance(TestScene, 200);
 
-    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+    GameEvents.Instance.OnCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
     var front = _fluid.FrontX;
     var coats = _coatsOf(_fluid).Count;
     front.ShouldBeGreaterThan(0f, "the flood had not started, so there was nothing to remember");
     coats.ShouldBeGreaterThan(0, "nothing had dried yet, so there was nothing to remember");
 
     await PhysicsFrames.Advance(TestScene, 120);
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
 
     // Read before letting it run on, so this is what the reload put back rather than what the
     // flood had already done with it by the next tick.
@@ -187,7 +187,7 @@ public class PaintFluidTests(Node testScene) : TestClass(testScene) {
   public async Task WhatItDriedOntoSurvivesTheGameBeingClosed() {
     _fluid.Pour();
     await PhysicsFrames.Advance(TestScene, 240);
-    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+    GameEvents.Instance.OnCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
     var coats = _coatsOf(_fluid).Count;
     coats.ShouldBeGreaterThan(0);
 

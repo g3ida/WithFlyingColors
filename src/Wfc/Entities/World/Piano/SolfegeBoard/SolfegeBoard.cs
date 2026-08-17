@@ -9,7 +9,6 @@ using Wfc.Core.Serialization;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class SolfegeBoard : Node2D, IPersistent {
@@ -66,16 +65,14 @@ public partial class SolfegeBoard : Node2D, IPersistent {
   public override void _EnterTree() {
     this.WireNodes();
     _pianoBinding ??= GameEvents.Instance.Channel.Bind()
-      .On((in IGameEvents.PianoNotePressed message) => _OnNotePressed(message.NoteIndex));
-    EventHandler.Instance.Events.CheckpointLoaded += Reset;
-    EventHandler.Instance.Events.CheckpointReached += _OnCheckpointHit;
+      .On((in IGameEvents.PianoNotePressed message) => _OnNotePressed(message.NoteIndex))
+      .On((in IGameEvents.CheckpointReached m) => _OnCheckpointHit(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => Reset());
   }
 
   public override void _ExitTree() {
     _pianoBinding?.Dispose();
     _pianoBinding = null;
-    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
-    EventHandler.Instance.Events.CheckpointReached -= _OnCheckpointHit;
   }
 
   public override void _Ready() {
@@ -174,7 +171,7 @@ public partial class SolfegeBoard : Node2D, IPersistent {
     }
   }
 
-  private Vector2 _GetNotePositionFromIndex(int noteIndex) {
+  private static Vector2 _GetNotePositionFromIndex(int noteIndex) {
     var x = SolfegeNotesTextureGenerator.SOLFEGE_KEY_OFFSET + noteIndex * SolfegeNotesTextureGenerator.NOTE_SPRITE_WIDTH;
     var y = 0;
     return new Vector2(x, y);

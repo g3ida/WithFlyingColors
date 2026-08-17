@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.ButtonGame;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
@@ -9,7 +10,6 @@ using Wfc.Core.Serialization;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Four buttons the cube steps on, and a melody it has to give back. Every round starts from the
 // stand: it blinks until the player is on it, plays the round's melody from there - one button
@@ -17,6 +17,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // they cannot watch it from.
 [ScenePath]
 public partial class ButtonGame : Node2D, IPersistent {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Constants
   // Each round is a run of button indices, and they lengthen as the room goes on.
   private static readonly int[][] ROUNDS = [
@@ -95,8 +97,9 @@ public partial class ButtonGame : Node2D, IPersistent {
     _stepTimerNode.OneShot = true;
     _stepTimerNode.Timeout += _onStepTimerTimeout;
     _standNode.SteppedOn += StartRound;
-    EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
-    EventHandler.Instance.Events.CheckpointLoaded += Reset;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointReached m) => _onCheckpointReached(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => Reset());
   }
 
   public override void _Ready() {
@@ -110,8 +113,8 @@ public partial class ButtonGame : Node2D, IPersistent {
     }
     _stepTimerNode.Timeout -= _onStepTimerTimeout;
     _standNode.SteppedOn -= StartRound;
-    EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
-    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     base._ExitTree();
   }
 

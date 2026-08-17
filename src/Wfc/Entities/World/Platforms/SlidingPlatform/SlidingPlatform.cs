@@ -1,13 +1,14 @@
 namespace Wfc.Entities.World.Platforms;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A flat platform that runs back and forth on its own: everything a level author has to set is on
 // this one node, and the dashed track between its two ends says where it goes without playing the
@@ -20,6 +21,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class SlidingPlatform : FlatPlatform, IPersistent {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Constants
   // How much of the platform's own depth the cog takes up, so it sits inside the surface rather than
   // hanging off a thin ledge.
@@ -226,8 +229,9 @@ public partial class SlidingPlatform : FlatPlatform, IPersistent {
     if (Engine.IsEditorHint() || _isSlideSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
-    EventHandler.Instance.Events.CheckpointLoaded += _onRespawn;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointReached m) => _onCheckpointReached(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => _onRespawn());
     _isSlideSubscribed = true;
   }
 
@@ -236,8 +240,8 @@ public partial class SlidingPlatform : FlatPlatform, IPersistent {
     if (!_isSlideSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
-    EventHandler.Instance.Events.CheckpointLoaded -= _onRespawn;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _isSlideSubscribed = false;
   }
 

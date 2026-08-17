@@ -1,6 +1,6 @@
 namespace Wfc.Screens.MenuManager;
 
-using EventHandler = Wfc.Core.Event.EventHandler;
+using Wfc.Core.Event;
 
 public enum MenuAction {
   Play = 0,
@@ -27,5 +27,5 @@ public enum MenuAction {
 }
 
 public static partial class MenuActionExtensions {
-  public static void Emit(this MenuAction action) => EventHandler.Instance.EmitMenuActionPressed(action);
+  public static void Emit(this MenuAction action) => GameEvents.Instance.OnMenuActionPressed(action);
 }

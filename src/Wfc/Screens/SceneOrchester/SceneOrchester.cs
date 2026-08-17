@@ -21,11 +21,12 @@ using Wfc.Screens.MenuManager;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class SceneOrchester : Node2D {
+  private AutoChannel.Binding? _levelBinding;
+
   private AutoChannel.Binding? _playerBinding;
 
   public override void _Notification(int what) {
@@ -196,7 +197,7 @@ public partial class SceneOrchester : Node2D {
     _arrivalTimeLeft = HUB_ARRIVAL_TIMEOUT;
     _arrivalActive = true;
     SetProcess(true);
-    EventHandler.Instance.EmitCutsceneRequestStart(HUB_ARRIVAL_CUTSCENE_ID);
+    GameEvents.Instance.OnCutsceneRequestStart(HUB_ARRIVAL_CUTSCENE_ID);
     // Banked as the walk starts rather than when it ends: the introduction is owed to the
     // run, and a quit halfway across the room has still been shown the place.
     SaveManager.RecordHubArrivalSeen();
@@ -204,20 +205,19 @@ public partial class SceneOrchester : Node2D {
 
   private void ConnectSignals() {
     _playerBinding ??= GameEvents.Instance.Channel.Bind()
-      .On((in IGameEvents.PlayerDied _) => OnGameOver());
-    EventHandler.Instance.Events.LevelCleared += OnLevelCleared;
-    EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
-    EventHandler.Instance.Events.DoorEntered += _onDoorEntered;
-    EventHandler.Instance.Events.LevelRestartRequested += _onLevelRestartRequested;
+      .On((in IGameEvents.PlayerDied _) => OnGameOver())
+      .On((in IGameEvents.CheckpointReached m) => _onCheckpointReached(m.Position, m.ColorGroup));
+    _levelBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.LevelCleared _) => OnLevelCleared())
+      .On((in IGameEvents.DoorEntered m) => _onDoorEntered(m.Level))
+      .On((in IGameEvents.LevelRestartRequested _) => _onLevelRestartRequested());
   }
 
   private void DisconnectSignals() {
     _playerBinding?.Dispose();
     _playerBinding = null;
-    EventHandler.Instance.Events.LevelCleared -= OnLevelCleared;
-    EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
-    EventHandler.Instance.Events.DoorEntered -= _onDoorEntered;
-    EventHandler.Instance.Events.LevelRestartRequested -= _onLevelRestartRequested;
+    _levelBinding?.Dispose();
+    _levelBinding = null;
   }
 
   // A checkpoint is the game's own statement that the run so far is worth keeping, so it is where
@@ -262,7 +262,7 @@ public partial class SceneOrchester : Node2D {
   }
 
   private static void OnGameOver() {
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
   }
 
   private GameLevel? _loadLevel(LevelId levelId) {
@@ -307,7 +307,7 @@ public partial class SceneOrchester : Node2D {
 
   // A door is a request to swap levels inside the game screen, exactly like the
   // clear path minus the completion: same cover, same save-after-swap.
-  private void _onDoorEntered(int levelId) {
+  private void _onDoorEntered(LevelId levelId) {
     if (_pendingLevelId != null) {
       return;
     }
@@ -393,7 +393,7 @@ public partial class SceneOrchester : Node2D {
     }
     _introActive = true;
     _introWalkTimeLeft = _currentLevel.IntroWalkTime;
-    EventHandler.Instance.EmitCutsceneRequestStart(INTRO_CUTSCENE_ID);
+    GameEvents.Instance.OnCutsceneRequestStart(INTRO_CUTSCENE_ID);
     SetProcess(true);
     _titleCardNode.PresentTitle(titleKey.Value);
   }
@@ -430,7 +430,7 @@ public partial class SceneOrchester : Node2D {
       return;
     }
     _arrivalActive = false;
-    EventHandler.Instance.EmitCutsceneRequestEnd(HUB_ARRIVAL_CUTSCENE_ID);
+    GameEvents.Instance.OnCutsceneRequestEnd(HUB_ARRIVAL_CUTSCENE_ID);
     // The walk is the last thing the player was waiting on, so anything held back for them to
     // watch is due now rather than whenever the next event happens to come round.
     _celebrateClearedDoor();
@@ -453,7 +453,7 @@ public partial class SceneOrchester : Node2D {
     // A title fading over the arrival walk is not what ends it: the walk raised the bars
     // under its own id and is the only thing that can take them down.
     if (!_arrivalActive) {
-      EventHandler.Instance.EmitCutsceneRequestEnd(INTRO_CUTSCENE_ID);
+      GameEvents.Instance.OnCutsceneRequestEnd(INTRO_CUTSCENE_ID);
     }
     _celebrateClearedDoor();
   }

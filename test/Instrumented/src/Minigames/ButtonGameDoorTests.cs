@@ -1,21 +1,25 @@
 namespace Wfc.test.instrumented.Minigames;
 
+using Chickensoft.Sync.Primitives;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
+using Wfc.Core.Localization;
 using Wfc.Entities.World.ButtonGame;
 using Wfc.Entities.World.Platforms;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The door is the room's reward and the only thing in it that makes a continuous noise. Both ends
 // of that matter: it has to open when the puzzle is won, and it has to fall silent when it gets
 // there rather than humming for the rest of the level.
 public class ButtonGameDoorTests(Node testScene) : TestClass(testScene) {
+  private AutoChannel.Binding? _notifiedBinding;
+
   private FakeDependenciesProvider _services = default!;
   private FakeGameLevelProvider _level = default!;
   private ButtonGameScene _room = default!;
@@ -58,7 +62,7 @@ public class ButtonGameDoorTests(Node testScene) : TestClass(testScene) {
     _win();
     (await PhysicsFrames.WaitFor(TestScene, () => !_slider().IsPhysicsProcessing(), 6.0)).ShouldBeTrue();
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 30);
 
     _door().Position.Y.ShouldBe(360f, 1f, "the respawn shut the door on a room that was already won");
@@ -77,15 +81,16 @@ public class ButtonGameDoorTests(Node testScene) : TestClass(testScene) {
       checkpoints += 1;
       takenAt = position;
     }
-    void OnNotified(int key) => notifications += 1;
-    EventHandler.Instance.Events.CheckpointReached += OnReached;
-    EventHandler.Instance.Events.NotificationRaised += OnNotified;
+    void OnNotified(TranslationKey key) => notifications += 1;
+    _notifiedBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.NotificationRaised m) => OnNotified(m.Key))
+      .On((in IGameEvents.CheckpointReached m) => OnReached(m.Position, m.ColorGroup));
 
     _win();
     await PhysicsFrames.Advance(TestScene, 4);
 
-    EventHandler.Instance.Events.CheckpointReached -= OnReached;
-    EventHandler.Instance.Events.NotificationRaised -= OnNotified;
+    _notifiedBinding?.Dispose();
+    _notifiedBinding = null;
 
     checkpoints.ShouldBe(1, "winning should take exactly one checkpoint, and the rounds none");
     notifications.ShouldBe(1, "the checkpoint the win takes was never reported to the player");

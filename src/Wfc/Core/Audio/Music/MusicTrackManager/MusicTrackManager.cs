@@ -1,5 +1,6 @@
 namespace Wfc.Core.Audio;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using Godot;
@@ -9,10 +10,11 @@ using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent {
+  private AutoChannel.Binding? _checkpointBinding;
+
   public partial class Track {
     public string Name { get; }
     public AudioStreamPlayer Stream { get; }
@@ -248,13 +250,14 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
 
   public override void _EnterTree() {
     // AddToGroup("persist");
-    EventHandler.Instance.Events.CheckpointReached += OnCheckpointHit;
-    EventHandler.Instance.Events.CheckpointLoaded += Reset;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointReached m) => OnCheckpointHit(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => Reset());
   }
 
   public override void _ExitTree() {
-    EventHandler.Instance.Events.CheckpointReached -= OnCheckpointHit;
-    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
   }
 
   public string GetSaveId() => this.GetPath();

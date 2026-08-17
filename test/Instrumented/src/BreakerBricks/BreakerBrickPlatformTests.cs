@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Entities.World.BreakerBricks;
 using Wfc.Entities.World.Enemies;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A wall painted as a tilemap and built into a body, a set of colour areas and a row of bricks. What
 // has to hold is that the shape the author painted is the shape that gets built, that each colour
@@ -146,11 +146,11 @@ public class BreakerBrickPlatformTests(Node testScene) : TestClass(testScene) {
   public async Task EveryBrickIsLaidAgainOnRespawn() {
     var platform = await _add("WWWW");
     platform.OnShot(_middleOf(platform, 0));
-    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.BLUE);
+    GameEvents.Instance.OnCheckpointReached(Vector2.Zero, ColorUtils.BLUE);
     platform.OnShot(_middleOf(platform, 2));
     await PhysicsFrames.Frame(TestScene);
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Frame(TestScene);
 
     platform.IsBroken(0).ShouldBeFalse("a brick broken before the last checkpoint stayed broken");
@@ -243,7 +243,7 @@ public class BreakerBrickPlatformTests(Node testScene) : TestClass(testScene) {
     bullet.Shoot(Vector2.Right);
 
     // Before it has had time to reach the wall, which is the whole of the case.
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 60);
 
     _standingBoxesOf(platform).Count.ShouldBe(3, "a shot fired before the player died went on breaking the level");

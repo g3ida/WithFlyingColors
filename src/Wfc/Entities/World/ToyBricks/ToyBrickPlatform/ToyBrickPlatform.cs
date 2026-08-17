@@ -12,7 +12,6 @@ using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A platform built out of interlocking toy bricks, whatever shape the author paints it. The shape
 // is a tilemap and nothing else: paint a cell to lay a brick, and the colour you paint it with is

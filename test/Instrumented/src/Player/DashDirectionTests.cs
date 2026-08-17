@@ -9,7 +9,6 @@ using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Which way a dash goes is read off what is held when it commits: left and right as
 // pressed, the run's momentum standing in when nothing is, and holding only down

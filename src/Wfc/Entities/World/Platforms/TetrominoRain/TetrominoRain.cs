@@ -7,7 +7,6 @@ using Godot;
 using Wfc.Core.Event;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The staircase of falling tetrominos a stretch of level is crossed on. Pieces come down fixed
 // lanes on a fixed clock - what is random is which of the seven shapes it is and which way round -
@@ -293,8 +292,8 @@ public partial class TetrominoRain : Node2D {
       return;
     }
     _dyingBinding ??= GameEvents.Instance.Channel.Bind()
-      .On((in IGameEvents.PlayerDying _) => _onPlayerDying());
-    EventHandler.Instance.Events.CheckpointLoaded += _restart;
+      .On((in IGameEvents.PlayerDying _) => _onPlayerDying())
+      .On((in IGameEvents.CheckpointLoaded _) => _restart());
     _isSubscribed = true;
   }
 
@@ -305,7 +304,6 @@ public partial class TetrominoRain : Node2D {
     }
     _dyingBinding?.Dispose();
     _dyingBinding = null;
-    EventHandler.Instance.Events.CheckpointLoaded -= _restart;
     _isSubscribed = false;
   }
 

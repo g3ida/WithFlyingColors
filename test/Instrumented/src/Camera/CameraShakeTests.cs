@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Entities.World.Camera;
 using Wfc.test.instrumented.Helpers;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The shake writes the camera's offset through timers and tweens of its own, and a respawn
 // can land in the middle of one - the burst that kills the cube is barely done shaking when
@@ -29,7 +29,7 @@ public class CameraShakeTests(Node testScene) : TestClass(testScene) {
     var shaken = await _waitFor(() => camera.Offset != Vector2.Zero);
     shaken.ShouldBeTrue("the shake never moved the camera, so there was nothing to interrupt");
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     camera.Offset.ShouldBe(Vector2.Zero, "the reload left the shake's offset on the camera");
 
     // And it stays still: the timers and the tween in flight are called off with the offset.

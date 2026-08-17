@@ -6,7 +6,6 @@ using Wfc.Core.Event;
 using Wfc.Entities.World.Explosion;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Everything a crushing looks and feels like, kept together so it can be tuned in one place: the
 // beat the world holds still for as the cube is caught, the cube coming down against whatever

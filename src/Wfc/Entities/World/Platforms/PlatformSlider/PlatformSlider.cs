@@ -1,13 +1,14 @@
 namespace Wfc.Entities.World.Platforms;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Puts a body the level already has on a run: the brick breaker's door, the tetris pool's floor,
 // anything whose own sprites and shape are its own business. Parent one to the body and it drives
@@ -15,6 +16,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [Tool]
 [ScenePath]
 public partial class PlatformSlider : Node2D, IPersistent {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Exports
   // Each of these is the run itself, and PlatformSlide is where they are described.
   [Export]
@@ -255,8 +258,9 @@ public partial class PlatformSlider : Node2D, IPersistent {
     if (Engine.IsEditorHint() || _isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
-    EventHandler.Instance.Events.CheckpointLoaded += _onRespawn;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointReached m) => _onCheckpointReached(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => _onRespawn());
     _isSubscribed = true;
   }
 
@@ -265,8 +269,8 @@ public partial class PlatformSlider : Node2D, IPersistent {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
-    EventHandler.Instance.Events.CheckpointLoaded -= _onRespawn;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _isSubscribed = false;
   }
 

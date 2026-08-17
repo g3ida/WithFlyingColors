@@ -4,7 +4,6 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Chickensoft.Sync.Primitives;
 using Godot;
-using EventHandler = Wfc.Core.Event.EventHandler;
 using Wfc.Core.Event;
 
 // Turns what the player does into the run counters the hub's stats board reads.

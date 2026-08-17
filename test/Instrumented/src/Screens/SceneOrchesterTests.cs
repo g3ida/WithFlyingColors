@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Entities.World.Door;
 using Wfc.Entities.World.Hub;
 using Wfc.Screens;
@@ -16,7 +17,6 @@ using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The in-game level flow, end to end: a real level cleared under a real orchestrator
 // must walk back out to the hub behind the title card and hand play back, a door
@@ -65,7 +65,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Tutorial))
       .ShouldBeTrue("the game screen never loaded the first level");
 
-    EventHandler.Instance.EmitLevelCleared();
+    GameEvents.Instance.OnLevelCleared();
 
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Hub))
       .ShouldBeTrue("the cleared level never walked back out to the hub");
@@ -90,7 +90,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Hub))
       .ShouldBeTrue("the game screen never loaded the hub");
 
-    EventHandler.Instance.EmitDoorEntered((int)LevelId.FourColors);
+    GameEvents.Instance.OnDoorEntered(LevelId.FourColors);
 
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.FourColors))
       .ShouldBeTrue("the door never swapped to the level behind it");
@@ -116,7 +116,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
     var before = _currentLevelInstanceOf(orchestrator!);
     var writesBefore = _provider.Save.RecordProgressCallCount;
 
-    EventHandler.Instance.EmitLevelRestartRequested();
+    GameEvents.Instance.OnLevelRestartRequested();
 
     (await _waitUntil(() => _currentLevelInstanceOf(orchestrator!) is { } now && now != before))
       .ShouldBeTrue("the level was never rebuilt");
@@ -150,7 +150,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == lastLevel))
       .ShouldBeTrue("the game screen never loaded the last level");
 
-    EventHandler.Instance.EmitLevelCleared();
+    GameEvents.Instance.OnLevelCleared();
 
     (await _waitUntil(() => _provider.MenuManager.GetCurrentMenu() == GameMenus.LEVEL_CLEAR_MENU))
       .ShouldBeTrue("the end of the chain never reached the cleared screen");
@@ -172,7 +172,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Tutorial))
       .ShouldBeTrue("the game screen never loaded the first level");
 
-    EventHandler.Instance.EmitLevelCleared();
+    GameEvents.Instance.OnLevelCleared();
 
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Hub))
       .ShouldBeTrue("the cleared level never walked back out to the hub");
@@ -221,7 +221,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.FourColors))
       .ShouldBeTrue("the game screen never loaded the level under test");
 
-    EventHandler.Instance.EmitLevelCleared();
+    GameEvents.Instance.OnLevelCleared();
 
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Hub))
       .ShouldBeTrue("the cleared level never walked back out to the hub");
@@ -245,7 +245,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Tutorial))
       .ShouldBeTrue("the game screen never loaded the first level");
 
-    EventHandler.Instance.EmitLevelCleared();
+    GameEvents.Instance.OnLevelCleared();
 
     (await _waitUntil(() => _currentLevelIdOf(orchestrator!) == LevelId.Hub))
       .ShouldBeTrue("the cleared level never walked back out to the hub");
@@ -329,7 +329,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
     orchestrator!.GetChildren().OfType<GameLevel>().First()
       .GemsHUDContainerNode.MarkAlreadyCollected(ColorUtils.COLOR_GROUPS);
 
-    EventHandler.Instance.EmitLevelCleared();
+    GameEvents.Instance.OnLevelCleared();
 
     (await _waitUntil(() => _currentLevelIdOf(orchestrator) == LevelId.Hub))
       .ShouldBeTrue("the cleared level never walked back out to the hub");
@@ -364,7 +364,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
     orchestrator!.GetChildren().OfType<GameLevel>().First()
       .GemsHUDContainerNode.MarkAlreadyCollected(ColorUtils.COLOR_GROUPS);
 
-    EventHandler.Instance.EmitLevelCleared();
+    GameEvents.Instance.OnLevelCleared();
 
     (await _waitUntil(() => _currentLevelIdOf(orchestrator) == LevelId.Hub))
       .ShouldBeTrue("the cleared level never walked back out to the hub");

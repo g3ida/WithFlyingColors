@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Entities.World.Platforms;
 using Wfc.Utils;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A sliding platform is a floor that is somewhere else a second later, and everything about it that
 // can go wrong goes wrong quietly: it runs the wrong way, or it comes back from a death at the
@@ -123,7 +123,7 @@ public class SlidingPlatformTests(Node testScene) : TestClass(testScene) {
     var start = platform.GlobalPosition;
     await _waitFor(() => platform.GlobalPosition.X > start.X + (DISTANCE / 2.0f));
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, (int)((WAIT + (DELAY / 2.0f)) * Engine.PhysicsTicksPerSecond));
 
     platform.GlobalPosition.X.ShouldBe(start.X, CLOSE, "the respawn dropped the delay and set the platform off early");
@@ -153,7 +153,7 @@ public class SlidingPlatformTests(Node testScene) : TestClass(testScene) {
     await _waitFor(() => platform.GlobalPosition.X > start.X + (DISTANCE / 2.0f));
 
     var atCheckpoint = platform.GlobalPosition;
-    EventHandler.Instance.EmitCheckpointReached(atCheckpoint, "blue");
+    GameEvents.Instance.OnCheckpointReached(atCheckpoint, "blue");
     await _waitFor(() => platform.GlobalPosition.X >= start.X + DISTANCE - CLOSE);
 
     await _respawn(platform);
@@ -172,10 +172,10 @@ public class SlidingPlatformTests(Node testScene) : TestClass(testScene) {
     await _waitFor(() => platform.GlobalPosition.X > start.X + (DISTANCE / 2.0f));
 
     platform.StopSlider(false);
-    EventHandler.Instance.EmitCheckpointReached(platform.GlobalPosition, "blue");
+    GameEvents.Instance.OnCheckpointReached(platform.GlobalPosition, "blue");
     await _waitFor(() => platform.GlobalPosition.X >= start.X + DISTANCE - CLOSE);
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 30);
 
     platform.GlobalPosition.X.ShouldBe(
@@ -424,7 +424,7 @@ public class SlidingPlatformTests(Node testScene) : TestClass(testScene) {
   // where it belongs is only read there a tick later - by which time it has resumed its run and
   // moved on. Parking it on the way out is what leaves the respawn itself to be read.
   private async Task _respawn(SlidingPlatform platform) {
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     platform.StopSlider(true);
     await PhysicsFrames.Advance(TestScene, 2);
   }

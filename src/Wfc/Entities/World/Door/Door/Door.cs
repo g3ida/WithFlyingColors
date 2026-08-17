@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Door;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,6 @@ using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A level entrance standing in the hub: the level select card made walkable. The
 // keystone pentagon and the gems set into the arch show what the level behind it has
@@ -25,6 +25,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class Door : Node2D {
+  private AutoChannel.Binding? _saveBinding;
+
   #region Dependencies
   public override void _Notification(int what) => this.Notify(what);
 
@@ -99,7 +101,8 @@ public partial class Door : Node2D {
     if (_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.SaveSlotUpdated += _onSaveSlotUpdated;
+    _saveBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.SaveSlotUpdated _) => _onSaveSlotUpdated());
     _isSubscribed = true;
   }
 
@@ -108,7 +111,8 @@ public partial class Door : Node2D {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.SaveSlotUpdated -= _onSaveSlotUpdated;
+    _saveBinding?.Dispose();
+    _saveBinding = null;
     _isSubscribed = false;
   }
 
@@ -232,7 +236,7 @@ public partial class Door : Node2D {
       var archGem = _archGemFor(colorGroup);
       archGem?.SetCollected(true);
       archGem?.PlayLanding();
-      EventHandler.Instance.EmitDoorGemFilled();
+      GameEvents.Instance.OnDoorGemFilled();
       if (!await _wait(GEM_LANDING_STAGGER)) {
         return;
       }
@@ -255,7 +259,7 @@ public partial class Door : Node2D {
       return;
     }
 
-    EventHandler.Instance.EmitDoorCometFormed();
+    GameEvents.Instance.OnDoorCometFormed();
     _doorGemNode.SetCollectedGems(_shownGems);
     _doorGemNode.FormAt(meetingPoint, COMET_FORM, COMET_TRAVEL);
     await _ceremonyNode.Flash(meetingPoint, Colors.White, MERGE_FLASH);
@@ -290,8 +294,8 @@ public partial class Door : Node2D {
     _entering = true;
     _refreshPrompt();
     GetViewport().SetInputAsHandled();
-    EventHandler.Instance.EmitCutsceneRequestStart(DOOR_CUTSCENE_ID);
-    EventHandler.Instance.EmitDoorEntered((int)TargetLevel);
+    GameEvents.Instance.OnCutsceneRequestStart(DOOR_CUTSCENE_ID);
+    GameEvents.Instance.OnDoorEntered(TargetLevel);
   }
 
   // The press stays a dash, and the chain answers it: the cube lurches, the padlock

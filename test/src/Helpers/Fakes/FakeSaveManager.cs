@@ -2,11 +2,11 @@ namespace Wfc.test.Helpers.Fakes;
 
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // An ISaveManager backed by memory rather than user:// files, so a test can put the
 // game in a given save state without touching the player's own saves.
@@ -138,7 +138,7 @@ public sealed class FakeSaveManager : ISaveManager {
     }
     slot.LevelId = levelId;
     slot.Progress = progressPercent;
-    EventHandler.Instance.EmitSaveSlotUpdated();
+    GameEvents.Instance.OnSaveSlotUpdated();
   }
 
   public void RecordLevelCleared(SceneTree tree, LevelId clearedLevelId, LevelId? nextLevelId, IEnumerable<string>? collectedGems = null, int slotIndex = ISaveManager.NO_SLOT) {
@@ -152,7 +152,7 @@ public sealed class FakeSaveManager : ISaveManager {
     slot.LevelId = nextLevelId ?? clearedLevelId;
     slot.Progress = nextLevelId == null ? 100 : 0;
     _bankGems(slot, clearedLevelId, collectedGems);
-    EventHandler.Instance.EmitSaveSlotUpdated();
+    GameEvents.Instance.OnSaveSlotUpdated();
   }
 
   private static void _bankGems(SlotMetaData slot, LevelId levelId, IEnumerable<string>? collectedGems) {
@@ -174,7 +174,7 @@ public sealed class FakeSaveManager : ISaveManager {
       return;
     }
     slot.HasSeenHubArrival = true;
-    EventHandler.Instance.EmitSaveSlotUpdated();
+    GameEvents.Instance.OnSaveSlotUpdated();
   }
 
   public void LoadGame(SceneTree tree, Player player, GameCamera camera, int slotIndex = ISaveManager.NO_SLOT) {

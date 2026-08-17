@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Paint;
 
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
@@ -12,7 +13,6 @@ using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A bucket of paint standing on a surface, which the cube can walk into and shove along. Push it
 // past the edge of what it is standing on and it slips, turns on that edge, comes down somewhere
@@ -31,6 +31,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class PaintBucket : CharacterBody2D, IPersistent {
+  private AutoChannel.Binding? _checkpointBinding;
+
   public override void _Notification(int what) => this.Notify(what);
 
   #region Dependencies
@@ -212,8 +214,9 @@ public partial class PaintBucket : CharacterBody2D, IPersistent {
     if (Engine.IsEditorHint() || _isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded += _onCheckpointLoaded;
-    EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointReached m) => _onCheckpointReached(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => _onCheckpointLoaded());
     _isSubscribed = true;
   }
 
@@ -222,8 +225,8 @@ public partial class PaintBucket : CharacterBody2D, IPersistent {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.CheckpointLoaded -= _onCheckpointLoaded;
-    EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
     _isSubscribed = false;
   }
 

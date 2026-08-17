@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Cutscenes;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Threading.Tasks;
 using Chickensoft.AutoInject;
@@ -9,11 +10,12 @@ using Wfc.Core.Event;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class Cutscene : Node2D {
+  private AutoChannel.Binding? _cutsceneBinding;
+
   public override void _Notification(int what) => this.Notify(what);
   [Dependency]
   public IGameLevel GameLevel => this.DependOn<IGameLevel>();
@@ -69,16 +71,16 @@ public partial class Cutscene : Node2D {
 
   public override void _EnterTree() {
     base._EnterTree();
-    EventHandler.Instance.Events.CutSceneRequestStart += _onCutsceneRequestStart;
-    EventHandler.Instance.Events.CutSceneRequestEnd += _onCutsceneRequestEnd;
-    EventHandler.Instance.Events.CheckpointLoaded += _onCheckpointLoaded;
+    _cutsceneBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CutsceneRequestStart m) => _onCutsceneRequestStart(m.Id))
+      .On((in IGameEvents.CutsceneRequestEnd m) => _onCutsceneRequestEnd(m.Id))
+      .On((in IGameEvents.CheckpointLoaded _) => _onCheckpointLoaded());
   }
 
   public override void _ExitTree() {
     base._ExitTree();
-    EventHandler.Instance.Events.CutSceneRequestStart -= _onCutsceneRequestStart;
-    EventHandler.Instance.Events.CutSceneRequestEnd -= _onCutsceneRequestEnd;
-    EventHandler.Instance.Events.CheckpointLoaded -= _onCheckpointLoaded;
+    _cutsceneBinding?.Dispose();
+    _cutsceneBinding = null;
     // Leaving the tree mid-cutscene would otherwise strand the input lock: this
     // node owns it and is the only thing that can release it. The run goes with
     // it, so its ending cannot arrive in the next level.
@@ -210,7 +212,7 @@ public partial class Cutscene : Node2D {
     var run = ++_runGeneration;
     var cameraNode = GameLevel.CameraNode;
     var focus = cameraNode.BeginFocusOverride(node, moveSpeed);
-    EventHandler.Instance.EmitCutsceneRequestStart(CUTSCENE_ID);
+    GameEvents.Instance.OnCutsceneRequestStart(CUTSCENE_ID);
 
     try {
       if (!await _waitFor(duration * TRAVEL_SHARE) || run != _runGeneration) {
@@ -226,7 +228,7 @@ public partial class Cutscene : Node2D {
         if (IsInstanceValid(cameraNode)) {
           cameraNode.EndFocusOverride(focus);
         }
-        EventHandler.Instance.EmitCutsceneRequestEnd(CUTSCENE_ID);
+        GameEvents.Instance.OnCutsceneRequestEnd(CUTSCENE_ID);
       }
     }
   }

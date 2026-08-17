@@ -4,7 +4,6 @@ using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Crushed: caught by something under power with somewhere it was being pushed and nothing to push
 // back with. The cube is pressed flat against whatever it was pinned to and then goes the way

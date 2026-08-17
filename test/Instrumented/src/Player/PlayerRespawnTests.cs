@@ -11,7 +11,6 @@ using Wfc.Entities.World;
 using Wfc.test;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A respawn has to hand the cube back exactly as the level starts it: standing still, on the
 // checkpoint, answering to the keys that are actually held.
@@ -45,7 +44,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
   public async Task ACubeThatDiedWalkingRespawnsStandingStill() {
     var player = await _addPlayerOnGround();
     var checkpoint = player.GlobalPosition;
-    EventHandler.Instance.EmitCheckpointReached(checkpoint, "purple");
+    GameEvents.Instance.OnCheckpointReached(checkpoint, "purple");
 
     _provider.Input.Press(IInputManager.Action.MoveRight);
     await _frames(FRAMES_TO_WALK);
@@ -67,7 +66,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
   public async Task ACubeThatFellOutOfTheWorldWalkingRespawnsStandingStill() {
     var player = await _addPlayerOnGround();
     var checkpoint = player.GlobalPosition;
-    EventHandler.Instance.EmitCheckpointReached(checkpoint, "purple");
+    GameEvents.Instance.OnCheckpointReached(checkpoint, "purple");
 
     _provider.Input.Press(IInputManager.Action.MoveLeft);
     await _frames(FRAMES_TO_WALK);
@@ -90,7 +89,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
   [Test]
   public async Task ACubeRespawnedUnderAHeldKeyWalksAgain() {
     var player = await _addPlayerOnGround();
-    EventHandler.Instance.EmitCheckpointReached(player.GlobalPosition, "purple");
+    GameEvents.Instance.OnCheckpointReached(player.GlobalPosition, "purple");
 
     _provider.Input.Press(IInputManager.Action.MoveRight);
     await _frames(FRAMES_TO_WALK);
@@ -114,11 +113,11 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
     await _frames(2);
     var player = scene.GetNode<Wfc.Entities.World.Player.Player>("Player");
     var checkpoint = new Vector2(200f, 96f);
-    EventHandler.Instance.EmitCheckpointReached(checkpoint, "purple");
+    GameEvents.Instance.OnCheckpointReached(checkpoint, "purple");
 
     var died = await TestScene.GetTree().ExpectEvent<IGameEvents.PlayerDied>(DEATH_TIMEOUT * 2);
     died.ShouldBeTrue("the cube never slipped off the edge and died");
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await _frames(20);
 
     var restingPlace = player.GlobalPosition.X;
@@ -134,7 +133,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
   [Test]
   public async Task ACubeThatDiedRotatingRespawnsStandingStill() {
     var player = await _addPlayerOnGround();
-    EventHandler.Instance.EmitCheckpointReached(player.GlobalPosition, "purple");
+    GameEvents.Instance.OnCheckpointReached(player.GlobalPosition, "purple");
 
     _provider.Input.Press(IInputManager.Action.RotateRight);
     await _frames(2);
@@ -158,12 +157,12 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
     TestScene.AddChild(scene);
     await _frames(2);
     var player = scene.GetNode<Wfc.Entities.World.Player.Player>("Player");
-    EventHandler.Instance.EmitCheckpointReached(new Vector2(200f, 96f), "purple");
+    GameEvents.Instance.OnCheckpointReached(new Vector2(200f, 96f), "purple");
 
     var slipped = await TestScene.GetTree().ExpectEvent<IGameEvents.PlayerSlippering>(DEATH_TIMEOUT);
     slipped.ShouldBeTrue("the cube never started slipping off the edge");
     await _frames(5);
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await _frames(20);
 
     var restingPlace = player.GlobalPosition.X;
@@ -180,7 +179,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
   [Test]
   public async Task AHazardStillTouchingTheCorpseDoesNotKillItTwice() {
     var player = await _addPlayerOnGround();
-    EventHandler.Instance.EmitCheckpointReached(player.GlobalPosition, "purple");
+    GameEvents.Instance.OnCheckpointReached(player.GlobalPosition, "purple");
     var deaths = 0;
     _diedBinding ??= GameEvents.Instance.Channel.Bind()
       .On((in IGameEvents.PlayerDied _) => _count());
@@ -194,7 +193,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
     }
 
     await TestScene.GetTree().ExpectEvent<IGameEvents.PlayerDied>(DEATH_TIMEOUT);
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await _frames(FRAMES_TO_SETTLE * 3);
     _diedBinding?.Dispose();
     _diedBinding = null;
@@ -207,7 +206,7 @@ public class PlayerRespawnTests(Node testScene) : TestClass(testScene) {
   private async Task _respawn() {
     var died = await TestScene.GetTree().ExpectEvent<IGameEvents.PlayerDied>(DEATH_TIMEOUT);
     died.ShouldBeTrue("the death never completed");
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await _frames(20);
   }
 

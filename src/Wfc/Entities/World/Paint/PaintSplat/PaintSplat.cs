@@ -1,10 +1,11 @@
 namespace Wfc.Entities.World.Paint;
 
+using Chickensoft.Sync.Primitives;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // What a dropped bucket leaves behind: a run of paint lying along the surface it broke over, in
 // the bucket's colour, which from then on is a surface of that colour - the cube crosses it on
@@ -18,6 +19,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // to nothing at all - so the last of it is left as decoration.
 [ScenePath]
 public partial class PaintSplat : Node2D {
+  private AutoChannel.Binding? _checkpointBinding;
+
   #region Constants
   private static readonly StringName SizeParam = "u_size";
   private static readonly StringName PoolParam = "u_pool";
@@ -163,7 +166,8 @@ public partial class PaintSplat : Node2D {
   public override void _EnterTree() {
     base._EnterTree();
     if (_life > 0f && !_isSubscribed) {
-      EventHandler.Instance.Events.CheckpointLoaded += QueueFree;
+    _checkpointBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.CheckpointLoaded _) => QueueFree());
       _isSubscribed = true;
     }
   }
@@ -171,7 +175,8 @@ public partial class PaintSplat : Node2D {
   public override void _ExitTree() {
     base._ExitTree();
     if (_isSubscribed) {
-      EventHandler.Instance.Events.CheckpointLoaded -= QueueFree;
+    _checkpointBinding?.Dispose();
+    _checkpointBinding = null;
       _isSubscribed = false;
     }
   }

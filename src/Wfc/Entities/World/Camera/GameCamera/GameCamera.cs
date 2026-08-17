@@ -8,7 +8,6 @@ using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Screens.Levels;
 using Wfc.Utils.Attributes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The camera has three layers of state and nothing outside it writes its properties directly.
 //
@@ -330,19 +329,17 @@ public partial class GameCamera : Camera2D, IPersistent {
   }
 
   private void _connectSignals() {
-    EventHandler.Instance.Events.CheckpointReached += _OnCheckpointHit;
-    EventHandler.Instance.Events.CheckpointLoaded += Reset;
     _cameraBinding ??= GameEvents.Instance.Channel.Bind()
       .On((in IGameEvents.CameraShakeRequested message) => OnCameraShakeRequest(message.Amplitude))
       .On((in IGameEvents.CameraZoomPunchRequested message) => OnCameraZoomPunchRequest(message.Strength))
       .On((in IGameEvents.PlayerJumped _) => _OnPlayerJump())
       .On((in IGameEvents.PlayerLanded _) => _OnPlayerLand())
-      .On((in IGameEvents.PlayerDying _) => _OnPlayerDying());
+      .On((in IGameEvents.PlayerDying _) => _OnPlayerDying())
+      .On((in IGameEvents.CheckpointReached m) => _OnCheckpointHit(m.Position, m.ColorGroup))
+      .On((in IGameEvents.CheckpointLoaded _) => Reset());
   }
 
   private void _disconnectSignals() {
-    EventHandler.Instance.Events.CheckpointReached -= _OnCheckpointHit;
-    EventHandler.Instance.Events.CheckpointLoaded -= Reset;
     _cameraBinding?.Dispose();
     _cameraBinding = null;
   }

@@ -27,8 +27,6 @@ public partial class SettingsFocusManager : Node {
     [Dependency]
     public IInputManager InputManager => this.DependOn<IInputManager>();
     [Dependency]
-    public IEventHandler EventHandler => this.DependOn<IEventHandler>();
-    [Dependency]
     public IModalStack ModalStack => this.DependOn<IModalStack>();
     #endregion Dependencies
 

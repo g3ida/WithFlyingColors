@@ -1,17 +1,18 @@
 namespace Wfc.test.instrumented.Levels;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Entities.World.Exit;
 using Wfc.Screens.Levels;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The end of a level is a walk out of frame. What has to hold is that crossing the exit takes
 // the player's input away and pins the camera where it stood, that the clear waits until they
@@ -22,6 +23,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // have taken them instead of waiting it out: what is under test is what the exit decides, not
 // how long the cube takes to cross a screen.
 public class LevelExitTests(Node testScene) : TestClass(testScene) {
+  private AutoChannel.Binding? _clearedBinding;
+
   // Clear of the edge by enough that no drag margin or rounding can leave the player inside
   // the view, and well short of the wall that closes the level off.
   private const float PAST_THE_EDGE = 300.0f;
@@ -36,7 +39,8 @@ public class LevelExitTests(Node testScene) : TestClass(testScene) {
   [Setup]
   public async Task Setup() {
     _isCleared = false;
-    EventHandler.Instance.Events.LevelCleared += _onLevelCleared;
+    _clearedBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.LevelCleared _) => _onLevelCleared());
     _provider = new FakeDependenciesProvider();
     TestScene.AddChild(_provider);
     await _frames(1);
@@ -44,7 +48,8 @@ public class LevelExitTests(Node testScene) : TestClass(testScene) {
 
   [Cleanup]
   public void Cleanup() {
-    EventHandler.Instance.Events.LevelCleared -= _onLevelCleared;
+    _clearedBinding?.Dispose();
+    _clearedBinding = null;
     _provider.QueueFree();
   }
 
@@ -84,7 +89,7 @@ public class LevelExitTests(Node testScene) : TestClass(testScene) {
     (await _waitUntil(() => player.HandleInputIsDisabled))
       .ShouldBeTrue("crossing the exit never took the player's input away");
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     (await _waitUntil(() => !player.HandleInputIsDisabled))
       .ShouldBeTrue("the respawn left the player without their input");
 

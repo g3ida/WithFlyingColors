@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Core.Serialization;
 using Wfc.Entities.World.Paint;
 using Wfc.Entities.World.Platforms;
@@ -13,7 +14,6 @@ using Wfc.Utils.Colors;
 using Wfc.Utils.Layers;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A bucket is a puzzle piece the player moves by walking into it, and everything that then
 // happens to it - where it turns over, where it lands, what colour that stretch of floor is
@@ -269,7 +269,7 @@ public class PaintBucketTests(Node testScene) : TestClass(testScene) {
     var splat = bucket.Splat!;
 
     _services.Input.ReleaseAll();
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 4);
 
     bucket.IsSpilled.ShouldBeFalse("the reloaded bucket is still the empty one that fell");
@@ -298,9 +298,9 @@ public class PaintBucketTests(Node testScene) : TestClass(testScene) {
     var splat = bucket.Splat!;
     var restedAt = bucket.GlobalPosition;
     var lay = bucket.Rotation;
-    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+    GameEvents.Instance.OnCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
 
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 4);
 
     bucket.IsSpilled.ShouldBeTrue("the bucket filled itself back up past a checkpoint that said it had not");
@@ -357,13 +357,13 @@ public class PaintBucketTests(Node testScene) : TestClass(testScene) {
 
     var startedAt = carriage.Position;
     var rode = bucket.GlobalPosition.X - carriage.Position.X;
-    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+    GameEvents.Instance.OnCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
 
     // The platform wanders off and the player dies out there. A reload puts the platform back to
     // where it starts, and the bucket has to come back to the same place on it.
     carriage.Position += new Vector2(400f, 0f);
     await PhysicsFrames.Advance(TestScene, 4);
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     carriage.Position = startedAt;
     await PhysicsFrames.Advance(TestScene, 4);
 
@@ -432,7 +432,7 @@ public class PaintBucketTests(Node testScene) : TestClass(testScene) {
     (await PhysicsFrames.WaitFor(TestScene, () => bucket.IsSpilled, TIMEOUT)).ShouldBeTrue();
     _services.Input.ReleaseAll();
     await PhysicsFrames.Advance(TestScene, 30);
-    EventHandler.Instance.EmitCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
+    GameEvents.Instance.OnCheckpointReached(Vector2.Zero, ColorUtils.PURPLE);
 
     var restedAt = bucket.GlobalPosition;
     var painted = lower.GetChildren().OfType<PaintSplat>().Select(s => s.GlobalPosition.X).ToList();

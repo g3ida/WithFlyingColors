@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Entities.World.Platforms;
 using Wfc.Utils;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // A rotating platform is a floor that is a wall a second later. What it has to get right is which
 // way round it is standing - on the first frame, on the frame the player respawns, and on the frame
@@ -117,7 +117,7 @@ public class RotatingPlatformTests(Node testScene) : TestClass(testScene) {
     await _waitFor(() => _degrees(platform) > SWEEP / 2.0f);
 
     var atCheckpoint = _degrees(platform);
-    EventHandler.Instance.EmitCheckpointReached(platform.GlobalPosition, "blue");
+    GameEvents.Instance.OnCheckpointReached(platform.GlobalPosition, "blue");
     await _waitFor(() => _degrees(platform) >= SWEEP - CLOSE);
 
     await _respawn(platform);
@@ -380,7 +380,7 @@ public class RotatingPlatformTests(Node testScene) : TestClass(testScene) {
   // the way it belongs is only read there a tick later - by which time it has resumed its cycle and
   // turned on. Parking it on the way out is what leaves the respawn itself to be read.
   private async Task _respawn(RotatingPlatform platform) {
-    EventHandler.Instance.EmitCheckpointLoaded();
+    GameEvents.Instance.OnCheckpointLoaded();
     platform.StopSpinner(true);
     await PhysicsFrames.Advance(TestScene, 2);
   }

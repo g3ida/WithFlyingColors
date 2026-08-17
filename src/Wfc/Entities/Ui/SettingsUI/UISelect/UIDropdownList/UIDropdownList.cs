@@ -2,11 +2,11 @@ namespace Wfc.Entities.Ui.SettingsUI.UISelect;
 
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Core.Ui;
 using Wfc.Entities.Ui.SettingsUI.Grid;
 using Wfc.Screens.MenuManager;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The list a UIDropdownButton opens: every option at once, one of them highlighted,
 // and nothing applied until the player picks one.
@@ -193,7 +193,7 @@ public partial class UIDropdownList : Control {
   // focus moves, or moving through the list is silent.
   private void _announceFocusMoves() {
     foreach (var item in _itemNodes) {
-      item.FocusEntered += EventHandler.Instance.EmitFocusChanged;
+      item.FocusEntered += GameEvents.Instance.OnFocusChanged;
     }
   }
 

@@ -17,7 +17,6 @@ using Wfc.Screens;
 using Wfc.Screens.MenuManager;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // The language is picked in the settings, so the settings screen is the one screen
 // that has to follow the change while the player is still looking at it. Everything

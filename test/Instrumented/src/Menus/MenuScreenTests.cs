@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Core.Persistence;
 using Wfc.Entities.Ui.Menubox;
@@ -17,7 +18,6 @@ using Wfc.Screens.MenuManager;
 using Wfc.test.Helpers.Fakes;
 using Wfc.test.instrumented.Helpers.Fakes;
 using Wfc.Utils;
-using EventHandler = Wfc.Core.Event.EventHandler;
 
 // Builds each menu screen for real, under a provider that stands in for RootNode, and
 // checks it gets all the way through its entrance.
@@ -169,7 +169,7 @@ public class MenuScreenTests(Node testScene) : TestClass(testScene) {
     _provider.Save = new FakeSaveManager(selectedSlot: ISaveManager.NO_SLOT);
 
     await _open(GameMenus.MAIN_MENU, from: GameMenus.CREDITS_MENU);
-    EventHandler.Instance.EmitMenuActionPressed(MenuAction.Play);
+    GameEvents.Instance.OnMenuActionPressed(MenuAction.Play);
 
     (await _waitUntil(() => _provider.MenuManager.GetCurrentMenu() == GameMenus.GAME))
       .ShouldBeTrue("play with no saves should enter the game directly");
