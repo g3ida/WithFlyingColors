@@ -36,11 +36,14 @@ public partial class DependenciesProvider :
   private readonly Lazy<IModalStack> _modalStack;
   private readonly Lazy<IPauseOwnership> _pauseOwnership;
   private readonly SaveManager _saveManager = new SaveManager();
+  private readonly ILocalizationService _localizationService = new LocalizationService();
   IMenuManager IProvide<IMenuManager>.Value() => _menuManager.Value;
   IModalStack IProvide<IModalStack>.Value() => _modalStack.Value;
   IPauseOwnership IProvide<IPauseOwnership>.Value() => _pauseOwnership.Value;
   ISaveManager IProvide<ISaveManager>.Value() => _saveManager;
-  ILocalizationService IProvide<ILocalizationService>.Value() => new LocalizationService();
+  // Held rather than built per resolve, like every other service here. It is stateless, so
+  // the copies were harmless - but seventeen types depend on it and each got its own.
+  ILocalizationService IProvide<ILocalizationService>.Value() => _localizationService;
   // The same instance the static Log facade writes through: a node that takes ILogger as a
   // dependency and a static class that cannot must not end up with two different floors.
   ILogger IProvide<ILogger>.Value() => Log.Logger;

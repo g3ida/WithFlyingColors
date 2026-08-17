@@ -55,8 +55,7 @@ public interface IEventHandler {
   public void EmitMusicVolumeChanged(float volume);
   public void EmitOnActionBound(string action, int key);
   public void EmitFocusChanged();
-  public void EmitKeyboardActionBiding();
-  public void EmitGamepadActionBinding();
+  public void EmitKeyboardActionBinding();
   public void EmitOnGamepadActionBound(string action, int buttonOrAxis, bool isAxis, float axisDirection);
   public void EmitLastUsedControllerChanged(ControllerType controllerType);
   public void EmitControllerSelectionChanged(ControllerType controllerType);

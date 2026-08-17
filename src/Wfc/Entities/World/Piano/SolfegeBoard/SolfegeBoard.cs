@@ -169,7 +169,6 @@ public partial class SolfegeBoard : Node2D, IPersistent {
   }
 
   private Vector2 _GetNotePositionFromIndex(int noteIndex) {
-    var gen = solfegeNotesTextureGenerator;
     var x = SolfegeNotesTextureGenerator.SOLFEGE_KEY_OFFSET + noteIndex * SolfegeNotesTextureGenerator.NOTE_SPRITE_WIDTH;
     var y = 0;
     return new Vector2(x, y);

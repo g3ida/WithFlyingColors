@@ -43,7 +43,7 @@ public partial class GameLevel :
   public LevelId LevelId { get; set; }
 
   public void OnResolved() {
-    if (Track != null) {
+    if (!string.IsNullOrEmpty(Track)) {
       MusicTrackManager.LoadTrack(Track);
       MusicTrackManager.PlayTrack(Track);
     }
