@@ -42,7 +42,7 @@ public partial class Brick : Node2D {
   // used to decrement the room's brick counter, which steps straight over its exact-zero
   // test and leaves the player sealed in an empty arena that can never report itself
   // cleared. Breaking is a one-way door, so latch it and stop listening immediately.
-  private void _on_Area2D_area_entered(Area2D area) {
+  private void _onAreaEntered(Area2D area) {
     if (_isBroken) {
       return;
     }

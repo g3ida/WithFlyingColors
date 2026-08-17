@@ -61,12 +61,6 @@ public partial class Gem : Area2D, IPersistent {
 
   public override void _Ready() {
     this.WireNodes();
-    CollisionShapeNode = GetNode<CollisionPolygon2D>("CollisionShape2D");
-    LightNode = GetNode<PointLight2D>("PointLight2D");
-    ShineSfxNode = GetNode<AudioStreamPlayer2D>("ShineSfx");
-    AnimatedSpriteNode = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
-    AnimationPlayerNode = GetNode<AnimationPlayer>("AnimatedSprite2D/AnimationPlayer");
-
     AddToGroup(GroupName);
     LightNode.Color = ShineColor;
     _applyAppearance();
