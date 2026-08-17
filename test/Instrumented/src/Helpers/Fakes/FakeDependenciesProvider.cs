@@ -47,13 +47,16 @@ public partial class FakeDependenciesProvider :
 
   private readonly Lazy<IMenuManager> _menuManager;
   private readonly Lazy<IModalStack> _modalStack;
+  private readonly ILocalizationService _localizationService = new LocalizationService();
   private readonly Lazy<IPauseOwnership> _pauseOwnership;
 
   IEventHandler IProvide<IEventHandler>.Value() => EventHandler.Instance;
   ILogger IProvide<ILogger>.Value() => Log.Logger;
   IMenuManager IProvide<IMenuManager>.Value() => _menuManager.Value;
   ISaveManager IProvide<ISaveManager>.Value() => Save;
-  ILocalizationService IProvide<ILocalizationService>.Value() => new LocalizationService();
+  // Held rather than built per resolve, like every other service here. It is stateless, so
+  // the copies were harmless - but seventeen types depend on it and each got its own.
+  ILocalizationService IProvide<ILocalizationService>.Value() => _localizationService;
   ISfxManager IProvide<ISfxManager>.Value() => Wfc.Autoload.AutoloadManager.Instance.SfxManager;
   IMusicTrackManager IProvide<IMusicTrackManager>.Value() => Wfc.Autoload.AutoloadManager.Instance.MusicTrackManager;
   IInputManager IProvide<IInputManager>.Value() => Input;

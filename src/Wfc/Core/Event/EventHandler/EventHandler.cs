@@ -134,8 +134,7 @@ public partial class EventHandler : Node, IEventHandler {
   public void EmitMusicVolumeChanged(float volume) => Events.EmitSignal(Events.SignalName.MusicVolumeChanged, volume);
   public void EmitOnActionBound(string action, int key) => Events.EmitSignal(Events.SignalName.OnActionBound, action, key);
   public void EmitFocusChanged() => Events.EmitSignal(Events.SignalName.FocusChanged);
-  public void EmitKeyboardActionBiding() => Events.EmitSignal(Events.SignalName.KeyboardActionBinding);
-  public void EmitGamepadActionBinding() => Events.EmitSignal(Events.SignalName.GamepadActionBinding);
+  public void EmitKeyboardActionBinding() => Events.EmitSignal(Events.SignalName.KeyboardActionBinding);
   public void EmitOnGamepadActionBound(string action, int buttonOrAxis, bool isAxis, float axisDirection) =>
     Events.EmitSignal(Events.SignalName.OnGamepadActionBound, action, buttonOrAxis, isAxis, axisDirection);
   public void EmitLastUsedControllerChanged(ControllerType controllerType) =>

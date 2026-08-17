@@ -351,7 +351,7 @@ public partial class KeyBindingButton : Button, IEditableControl, IDarkBackgroun
     if (isEditing) {
       ModalStack.Push(this);
       _animationPlayer.Play("Blink");
-      EventHandler.Instance.EmitKeyboardActionBiding();
+      EventHandler.Instance.EmitKeyboardActionBinding();
     }
     else {
       ModalStack.Pop(this);
