@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
-using Wfc.Autoload;
 using Wfc.Screens.Levels;
 using Wfc.Utils.Attributes;
 
@@ -19,6 +18,9 @@ public partial class CutsceneTrigger : Area2D {
   [Dependency]
   public IGameLevel GameLevel => this.DependOn<IGameLevel>();
 
+  [Dependency]
+  public IGameRepo GameRepo => this.DependOn<IGameRepo>();
+
   public override void _Ready() {
     var children = GetChildren();
     foreach (var ch in children) {
@@ -29,7 +31,7 @@ public partial class CutsceneTrigger : Area2D {
   }
 
   private void _onBodyEntered(Node body) {
-    if (!_triggered && body == Global.Instance().Player && _followChild != null) {
+    if (!_triggered && body == GameRepo.Player.Value && _followChild != null) {
       _triggered = true;
       GameLevel.CutsceneNode.ShowSomeNode(_followChild, 3.0f, 3.2f);
     }

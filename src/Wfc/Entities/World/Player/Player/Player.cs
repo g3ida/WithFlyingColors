@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
-using Wfc.Autoload;
 using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Core.Logger;
@@ -365,7 +364,8 @@ public partial class Player : CharacterBody2D, IPersistent {
   public override void _EnterTree() {
     base._EnterTree();
     this.WireNodes();
-    Global.Instance().Player = this;
+    // The shared instance, not the level's provision: this runs before anything is resolved.
+    GameRepo.Instance.SetPlayer(this);
     ConnectSignals();
     // Leaving the tree exits the active states, which is what drops their subscriptions;
     // coming back has to put them back or the player would be inert. On the first entry

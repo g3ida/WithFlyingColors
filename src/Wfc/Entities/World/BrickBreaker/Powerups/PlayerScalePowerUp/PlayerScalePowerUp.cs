@@ -1,7 +1,7 @@
 namespace Wfc.Entities.World.BrickBreaker.Powerups;
 
 using Godot;
-using Wfc.Autoload;
+using Wfc.Screens.Levels;
 
 // Both scale power-ups drive the same value on the player, so which of them is entitled to hand it
 // back cannot be read off that value: for as long as a tween runs it matches neither one's target.
@@ -36,7 +36,9 @@ public abstract partial class PlayerScalePowerUp : PowerUpScript {
   public override bool IsStillRelevant() => ReferenceEquals(_scaleOwner, this);
 
   private void _tweenScaleTo(float target) {
-    var player = Global.Instance().Player;
+    if (GameRepo.Instance.Player.Value is not { } player) {
+      return;
+    }
     _tweener?.Kill();
     _tweener = CreateTween();
     _tweener.TweenProperty(
@@ -51,7 +53,7 @@ public abstract partial class PlayerScalePowerUp : PowerUpScript {
 
   // Also reached with the level coming down around it, where the player is already gone.
   private static void _restorePlayerScale() {
-    var player = Global.Instance()?.Player;
+    var player = GameRepo.Instance.Player.Value;
     if (player is not null && GodotObject.IsInstanceValid(player)) {
       player.Scale = Vector2.One;
     }

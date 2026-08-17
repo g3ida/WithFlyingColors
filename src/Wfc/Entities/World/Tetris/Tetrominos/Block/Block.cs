@@ -3,9 +3,9 @@ namespace Wfc.Entities.Tetris.Tetrominos;
 using System;
 using System.Collections.Generic;
 using Godot;
-using Wfc.Autoload;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Platforms;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -89,7 +89,7 @@ public partial class Block : Node2D {
   // once it has not. Either way the overlap never grows past the cube's top edge band, so
   // the only color reading ever taken is the one face actually being touched.
   internal void ResolveDescentContact(Godot.Collections.Array<Rid> movingBodies) {
-    var player = Global.Instance()?.Player;
+    var player = GameRepo.Instance.Player.Value;
     if (player is null || !IsInstanceValid(player) || !player.IsInsideTree() || player.IsDying()) {
       return;
     }

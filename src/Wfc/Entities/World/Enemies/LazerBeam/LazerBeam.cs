@@ -1,9 +1,9 @@
 namespace Wfc.Entities.World.Enemies;
 
 using Godot;
-using Wfc.Autoload;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
+using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -214,7 +214,7 @@ public partial class LazerBeam : Node2D {
   // whatever point of the beam is nearest the player, so standing anywhere
   // along a long beam sounds like standing next to it.
   private void _placeAudioAlongBeam() {
-    var player = Global.Instance()?.Player;
+    var player = GameRepo.Instance.Player.Value;
     if (player is null || !IsInstanceValid(player) || !player.IsInsideTree()) {
       return;
     }

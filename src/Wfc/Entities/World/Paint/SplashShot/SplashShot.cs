@@ -1,7 +1,7 @@
 namespace Wfc.Entities.World.Paint;
 
 using Godot;
-using Wfc.Autoload;
+using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -116,7 +116,7 @@ public partial class SplashShot : Node2D {
   // whichever of its shapes the contact was reported on - a shape index says nothing about how
   // near a corner the paint struck.
   private void _onBodyEntered(Node2D body) {
-    if (body != Global.Instance().Player || body is not Player.Player player || player.IsDying()) {
+    if (body != GameRepo.Instance.Player.Value || body is not Player.Player player || player.IsDying()) {
       return;
     }
     if (!player.AcceptsColorOfAt(_colorAreaNode.GlobalPosition, _colorAreaNode)) {

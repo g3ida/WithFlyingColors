@@ -3,7 +3,7 @@ namespace Wfc.Entities.World.Piano;
 using System;
 using System.Collections.Generic;
 using Godot;
-using Wfc.Autoload;
+using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -225,7 +225,9 @@ public partial class PianoNote : AnimatableBody2D {
   }
 
   private static bool _isPlayerStandingOrFalling() {
-    var player = Global.Instance().Player;
+    if (GameRepo.Instance.Player.Value is not { } player) {
+      return false;
+    }
     bool isJumping = player.IsJumping();
     bool isFalling = player.IsFalling();
     return !isJumping && isFalling;

@@ -1,10 +1,11 @@
 namespace Wfc.Entities.World.BrickBreaker;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Godot;
-using Wfc.Autoload;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
@@ -239,9 +240,9 @@ public partial class BouncingBall : CharacterBody2D {
   // A dashing cube crosses most of its own width in that time, so the contact came in a frame late,
   // by which point a cube that has run into a wall stands still and has nothing left to say about
   // which of its faces did the reaching. The contact itself is worked out from the two transforms.
-  private static bool _hasPaddle(out Player player) {
-    player = Global.Instance().Player;
-    return GodotObject.IsInstanceValid(player);
+  private static bool _hasPaddle([NotNullWhen(true)] out Player? player) {
+    player = GameRepo.Instance.Player.Value;
+    return player is not null && GodotObject.IsInstanceValid(player);
   }
 
   // Against the cube's outer surface, in the cube's own frame so that a rotated cube needs no special

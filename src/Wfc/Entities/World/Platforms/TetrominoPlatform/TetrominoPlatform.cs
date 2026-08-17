@@ -3,7 +3,7 @@ namespace Wfc.Entities.World.Platforms;
 using System;
 using System.Collections.Generic;
 using Godot;
-using Wfc.Autoload;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -164,7 +164,7 @@ public partial class TetrominoPlatform : Node2D {
     if (Mathf.IsZeroApprox(_fall.Travelled)) {
       return;
     }
-    var player = Global.Instance()?.Player;
+    var player = GameRepo.Instance.Player.Value;
     if (player is null || !IsInstanceValid(player) || !player.IsInsideTree() || player.IsDying()) {
       return;
     }

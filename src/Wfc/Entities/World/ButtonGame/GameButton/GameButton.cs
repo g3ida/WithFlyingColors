@@ -2,7 +2,7 @@ namespace Wfc.Entities.World.ButtonGame;
 
 using System;
 using Godot;
-using Wfc.Autoload;
+using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -245,7 +245,7 @@ public partial class GameButton : Node2D {
     if (!_isPlayerAbove) {
       return false;
     }
-    var player = Global.Instance()?.Player;
+    var player = GameRepo.Instance.Player.Value;
     return player is not null && !player.IsJumping() && player.IsFalling();
   }
 

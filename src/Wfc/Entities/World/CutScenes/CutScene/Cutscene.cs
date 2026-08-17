@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
-using Wfc.Autoload;
 using Wfc.Core.Event;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
@@ -18,6 +17,9 @@ public partial class Cutscene : Node2D {
   public override void _Notification(int what) => this.Notify(what);
   [Dependency]
   public IGameLevel GameLevel => this.DependOn<IGameLevel>();
+
+  [Dependency]
+  public IGameRepo GameRepo => this.DependOn<IGameRepo>();
   private const float DURATION = 0.1f;
   private const float EXPAND_SIZE = 100;
   private const float REDUCE_SIZE = 0;
@@ -111,8 +113,8 @@ public partial class Cutscene : Node2D {
 
   // The cutscene bus is process-wide but the player belongs to a level, so a
   // request can arrive while there is no valid player to lock.
-  private static void _setPlayerInputDisabled(bool disabled) {
-    var player = Global.Instance()?.Player;
+  private void _setPlayerInputDisabled(bool disabled) {
+    var player = GameRepo.Player.Value;
     if (player != null && GodotObject.IsInstanceValid(player)) {
       player.HandleInputIsDisabled = disabled;
     }
