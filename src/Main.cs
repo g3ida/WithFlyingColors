@@ -1,7 +1,7 @@
 namespace WithFlyingColors;
 
 using Godot;
-#if DEBUG
+#if RUN_TESTS
 using System.Reflection;
 using Chickensoft.GoDotTest;
 using Wfc.Core.Persistence;
@@ -13,7 +13,7 @@ using Wfc.Core.Settings;
 // If you want to edit your game's main entry-point, please change RunScene() method.
 
 public partial class Main : Node2D {
-#if DEBUG
+#if RUN_TESTS
   // Where a test run's settings live instead of the real file beside the project.
   public const string TEST_CONFIG_PATH = "user://test-settings.ini";
 
@@ -26,7 +26,7 @@ public partial class Main : Node2D {
 #endif
 
   public override void _Ready() {
-#if DEBUG
+#if RUN_TESTS
     // If this is a debug build, use GoDotTest to examine the
     // command line arguments and determine if we should run tests.
     Environment = TestEnvironment.From(OS.GetCmdlineArgs());
@@ -40,7 +40,7 @@ public partial class Main : Node2D {
     CallDeferred(Main.MethodName.RunScene);
   }
 
-#if DEBUG
+#if RUN_TESTS
   private void RunTests() {
     // The whole suite shares one process and the settings path is a static, so this is
     // the only place that can promise no test ever writes the developer's real

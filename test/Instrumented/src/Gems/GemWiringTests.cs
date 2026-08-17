@@ -2,15 +2,14 @@ namespace Wfc.test.instrumented.Gems;
 
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
+using Chickensoft.GodotNodeInterfaces;
 using Godot;
 using Shouldly;
 using Wfc.Entities.World.Gems;
 using Wfc.Utils;
 
-// The gem used to wire its five nodes twice: once through [NodePath] and again by hand in
-// _Ready, with the second set of paths repeating the first. Nothing here proves the hand-written
-// half is gone - it proves what made removing it safe, which is that the attributes on their own
-// leave every field pointing at something.
+// The gem's five node references come from the [Node] attributes alone, against the real scene.
+// Nothing else wires them, so a path that stops naming something has only this to fail it.
 public class GemWiringTests(Node testScene) : TestClass(testScene) {
   private Gem _gem = default!;
 
@@ -37,11 +36,11 @@ public class GemWiringTests(Node testScene) : TestClass(testScene) {
   // sprite-side fields sit at different depths and are the pair most easily crossed.
   [Test]
   public void EveryNodeFieldIsTheOneItsPathNamesTest() {
-    _gem.CollisionShapeNode.ShouldBeSameAs(_gem.GetNode("CollisionShape2D"));
-    _gem.LightNode.ShouldBeSameAs(_gem.GetNode("PointLight2D"));
-    _gem.ShineSfxNode.ShouldBeSameAs(_gem.GetNode("ShineSfx"));
-    _gem.AnimatedSpriteNode.ShouldBeSameAs(_gem.GetNode("AnimatedSprite2D"));
-    _gem.AnimationPlayerNode.ShouldBeSameAs(_gem.GetNode("AnimatedSprite2D/AnimationPlayer"));
+    _wrapped(_gem.CollisionShapeNode).ShouldBeSameAs(_gem.GetNode("CollisionShape2D"));
+    _wrapped(_gem.LightNode).ShouldBeSameAs(_gem.GetNode("PointLight2D"));
+    _wrapped(_gem.ShineSfxNode).ShouldBeSameAs(_gem.GetNode("ShineSfx"));
+    _wrapped(_gem.AnimatedSpriteNode).ShouldBeSameAs(_gem.GetNode("AnimatedSprite2D"));
+    _wrapped(_gem.AnimationPlayerNode).ShouldBeSameAs(_gem.GetNode("AnimatedSprite2D/AnimationPlayer"));
   }
 
   // _Ready reads the light and the sprite as soon as it has them, so a field nothing had wired
@@ -51,6 +50,11 @@ public class GemWiringTests(Node testScene) : TestClass(testScene) {
     _gem.IsInGroup(_gem.GroupName).ShouldBeTrue();
     _gem.LightNode.Color.ShouldBe(_gem.ShineColor);
   }
+
+  // [Node] hands back an adapter rather than the node itself, so identity has to be asked of
+  // what the adapter wraps.
+  private static Node _wrapped(IGodotObject adapted) =>
+    (Node)((IGodotObjectAdapter)adapted).TargetObj;
 
   private async Task _idle() {
     var tree = TestScene.GetTree();

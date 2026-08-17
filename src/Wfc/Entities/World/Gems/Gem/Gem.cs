@@ -3,18 +3,23 @@ namespace Wfc.Entities.World.Gems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Chickensoft.AutoInject;
+using Chickensoft.GodotNodeInterfaces;
+using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Skin;
 using Wfc.State;
-using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
+[Meta(typeof(IAutoNode))]
 public partial class Gem : Area2D, IPersistent {
+  public override void _Notification(int what) => this.Notify(what);
+
   // How much of a ghost is left to see. Enough to read the shape and its color, not
   // enough to be mistaken for something still worth crossing the room for.
   private const float GHOST_ALPHA = 0.3f;
@@ -40,27 +45,26 @@ public partial class Gem : Area2D, IPersistent {
   public Color CoreColor => _skinColor(SkinColorIntensity.VeryLight);
   public Color ShineColor => _skinColor(SkinColorIntensity.Basic);
 
-  [NodePath("PointLight2D")]
-  public PointLight2D LightNode = null!;
-
-  [NodePath("ShineSfx")]
-  public AudioStreamPlayer2D ShineSfxNode = null!;
+  #region Nodes
+  [Node("PointLight2D")]
+  public IPointLight2D LightNode { get; set; } = default!;
+  [Node("ShineSfx")]
+  public IAudioStreamPlayer2D ShineSfxNode { get; set; } = default!;
+  [Node("CollisionShape2D")]
+  public ICollisionPolygon2D CollisionShapeNode { get; set; } = default!;
+  [Node("AnimatedSprite2D")]
+  public IAnimatedSprite2D AnimatedSpriteNode { get; set; } = default!;
+  [Node("AnimatedSprite2D/AnimationPlayer")]
+  public IAnimationPlayer AnimationPlayerNode { get; set; } = default!;
+  #endregion Nodes
 
   private GemStatesStore _statesStore = null!;
   private IState<Gem>? _currentState = null;
-
-  [NodePath("CollisionShape2D")]
-  public CollisionPolygon2D CollisionShapeNode = null!;
-  [NodePath("AnimatedSprite2D")]
-  public AnimatedSprite2D AnimatedSpriteNode = null!;
-  [NodePath("AnimatedSprite2D/AnimationPlayer")]
-  public AnimationPlayer AnimationPlayerNode = null!;
 
   public record SaveData(bool isGemCollected = false);
   private SaveData _saveData = new SaveData();
 
   public override void _Ready() {
-    this.WireNodes();
     AddToGroup(GroupName);
     LightNode.Color = ShineColor;
     _applyAppearance();
@@ -74,7 +78,7 @@ public partial class Gem : Area2D, IPersistent {
   // being flushed - so the flag stands in for it until the call lands.
   public void Take() {
     IsBeingCollected = true;
-    CollisionShapeNode.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+    CollisionShapeNode.SetDeferred(CollisionPolygon2D.PropertyName.Disabled, true);
   }
 
   // Called by the level once it knows what the slot has already banked. The gem is

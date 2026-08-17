@@ -2,8 +2,8 @@ namespace Wfc.test.instrumented;
 
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
+using Chickensoft.GodotTestDriver;
 using Godot;
-using GodotTestDriver;
 using Shouldly;
 using Wfc.Core.Event;
 using Wfc.Entities.World.Player;
