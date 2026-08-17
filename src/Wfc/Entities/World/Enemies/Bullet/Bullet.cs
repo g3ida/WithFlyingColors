@@ -2,9 +2,9 @@ namespace Wfc.Entities.World.Enemies;
 
 using System;
 using Godot;
-using Wfc.Autoload;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
+using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -88,7 +88,7 @@ public partial class Bullet : Node2D, IBullet {
   // how near a corner the bullet struck, so the corner seam every other collision partner is
   // judged against never reached bullets at all.
   private void _onColorAreaBodyEntered(Node body) {
-    if (body == Global.Instance().Player && body is Player player && !player.IsDying()
+    if (body == GameRepo.Instance.Player.Value && body is Player player && !player.IsDying()
         && !player.AcceptsColorOfAt(_colorAreaNode.GlobalPosition, _colorAreaNode)) {
       EventHandler.Instance.EmitPlayerDying(_colorAreaNode, player.GlobalPosition, EntityType.Bullet);
     }

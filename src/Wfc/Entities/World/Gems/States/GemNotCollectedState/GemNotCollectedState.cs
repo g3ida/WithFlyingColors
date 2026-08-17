@@ -3,7 +3,7 @@ namespace Wfc.Entities.World.Gems;
 using System;
 using System.Linq;
 using Godot;
-using Wfc.Autoload;
+using Wfc.Screens.Levels;
 using Wfc.State;
 using Wfc.Utils.Animation;
 using Wfc.Utils.Colors;
@@ -67,7 +67,8 @@ public partial class GemNotCollectedState : GemBaseState {
     }
     // FIXME: We should remove the player area or make it inactive instead of doing
     // the check here
-    if (Global.Instance().Player.IsDying())
+    var player = GameRepo.Instance.Player.Value;
+    if (player is null || player.IsDying())
       return null;
     // A gem the level has already given up asks nothing of the player: whichever face
     // reaches it takes it, and taking it is worth nothing.

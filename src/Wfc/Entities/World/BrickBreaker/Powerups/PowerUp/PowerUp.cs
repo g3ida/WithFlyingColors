@@ -2,7 +2,7 @@ namespace Wfc.Entities.World.BrickBreaker.Powerups;
 
 using System;
 using Godot;
-using Wfc.Autoload;
+using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -54,7 +54,7 @@ public partial class PowerUp : Node2D {
   }
 
   private void _onArea2DBodyEntered(Node body) {
-    var player = Global.Instance().Player;
+    var player = GameRepo.Instance.Player.Value;
     if (body != player || player.IsDying()) {
       return;
     }

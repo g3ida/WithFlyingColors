@@ -4,7 +4,6 @@ using System;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
-using Wfc.Autoload;
 using Wfc.Core.Audio;
 using Wfc.Core.Persistence;
 using Wfc.Entities.HUD;
@@ -20,7 +19,8 @@ using Wfc.Utils.Attributes;
 public partial class GameLevel :
   Node2D,
   IGameLevel,
-  IProvide<IGameLevel> {
+  IProvide<IGameLevel>,
+  IProvide<IGameRepo> {
   public override void _Notification(int what) => this.Notify(what);
   [Export]
   public string Track { get; set; } = default!;
@@ -98,11 +98,14 @@ public partial class GameLevel :
   public override void _Ready() {
     base._Ready();
     SetProcess(false);
-    Global.Instance().Player = _playerNode;
+    GameRepo.SetPlayer(_playerNode);
     // The level knows which level it is; the menu inside it does not, and the
     // entries it offers depend on that.
     _pauseMenuNode.ConfigureForLevel(LevelId);
   }
 
   public IGameLevel Value() => this;
+
+  public IGameRepo GameRepo => Levels.GameRepo.Instance;
+  IGameRepo IProvide<IGameRepo>.Value() => GameRepo;
 }

@@ -1,9 +1,9 @@
 namespace Wfc.Entities.World.Platforms;
 
 using Godot;
-using Wfc.Autoload;
 using Wfc.Core.Event;
 using Wfc.Core.Serialization;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -327,7 +327,7 @@ public sealed class PlatformSlide {
     if (IsStopped || !_isSliding(Phase) || _body is null || _bodyShape is null) {
       return;
     }
-    var player = Global.Instance()?.Player;
+    var player = GameRepo.Instance.Player.Value;
     if (player is null || !GodotObject.IsInstanceValid(player) || !player.IsInsideTree() || player.IsDying()) {
       return;
     }
