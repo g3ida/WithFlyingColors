@@ -1,7 +1,9 @@
 namespace Wfc.Entities.Ui;
 
 using System.Globalization;
+using Chickensoft.Sync.Primitives;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Settings;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -24,22 +26,18 @@ public partial class PerformanceOverlay : CanvasLayer {
   #endregion Nodes
 
   private double _sinceRefresh;
-  private bool _isSubscribed;
+  private AutoChannel.Binding? _overlayBinding;
 
   public override void _EnterTree() {
     base._EnterTree();
-    if (!_isSubscribed) {
-      EventHandler.Instance.Events.PerformanceOverlayToggled += _onPerformanceOverlayToggled;
-      _isSubscribed = true;
-    }
+    _overlayBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PerformanceOverlayToggled message) => _setEnabled(message.IsEnabled));
   }
 
   public override void _ExitTree() {
     base._ExitTree();
-    if (_isSubscribed) {
-      EventHandler.Instance.Events.PerformanceOverlayToggled -= _onPerformanceOverlayToggled;
-      _isSubscribed = false;
-    }
+    _overlayBinding?.Dispose();
+    _overlayBinding = null;
     _setMeasuringRenderTime(false);
   }
 
@@ -48,8 +46,6 @@ public partial class PerformanceOverlay : CanvasLayer {
     this.WireNodes();
     _setEnabled(GameSettings.PerformanceOverlay);
   }
-
-  private void _onPerformanceOverlayToggled(bool enabled) => _setEnabled(enabled);
 
   // Timing the render asks the driver for a pair of timestamps every frame, so it is only
   // measured while somebody is reading it.

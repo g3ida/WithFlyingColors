@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.ToyBricks;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
@@ -33,6 +34,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class ToyBrickPlatform : AnimatableBody2D {
+  private AutoChannel.Binding? _landedBinding;
+
   #region Constants
   // What the colour areas are on: the same layer and mask a flat platform's is, so a brick surface
   // is seen by exactly what a flat one is seen by.
@@ -98,7 +101,8 @@ public partial class ToyBrickPlatform : AnimatableBody2D {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.PlayerLanded -= OnPlayerLanded;
+    _landedBinding?.Dispose();
+    _landedBinding = null;
     _isSubscribed = false;
   }
 
@@ -115,7 +119,8 @@ public partial class ToyBrickPlatform : AnimatableBody2D {
     if (_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.PlayerLanded += OnPlayerLanded;
+    _landedBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerLandedOn m) => OnPlayerLanded(m.Area, m.Position));
     _isSubscribed = true;
   }
 

@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Player;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
 using Wfc.Utils;
@@ -27,7 +28,7 @@ public partial class PlayerJumpingState : PlayerBaseState {
   protected override void _Enter(Player player) {
     _entered = true;
     _jumpTimer.Reset();
-    EventHandler.Instance.EmitPlayerJumped();
+    GameEvents.Instance.OnPlayerJumped();
     player.JumpParticlesNode.Emitting = true;
     player.ScaleCornersBy(FACE_SEPARATOR_SCALE_FACTOR);
   }
@@ -51,7 +52,7 @@ public partial class PlayerJumpingState : PlayerBaseState {
         return statesStore.GetState<PlayerJumpingState>();
       }
       else {
-        EventHandler.Instance.EmitPlayerLand();
+        GameEvents.Instance.OnPlayerLanded();
         return statesStore.GetState<PlayerStandingState>();
       }
     }

@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Player;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
@@ -23,6 +24,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Meta(typeof(IAutoNode))]
 public partial class Player : CharacterBody2D, IPersistent {
+  private AutoChannel.Binding? _dyingBinding;
+
   public override void _Notification(int what) => this.Notify(what);
 
   private sealed record SaveData(
@@ -313,7 +316,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     return facing.IsInGroup(colorGroup);
   }
 
-  private void _onPlayerDying(Node? area, Vector2 position, int entityType) {
+  private void _onPlayerDying(Node? area, Vector2 position, EntityType entityType) {
     if (IsDying()) {
       return;
     }
@@ -321,7 +324,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     // this frame - and the same shove that pinned the cube drives the crusher's kill area into
     // whatever face is buried by the time the physics flush runs. That color reading lands here
     // after the crush does, and letting it win turns every squash into an ordinary explosion.
-    if (_pendingDeath.Type == EntityType.Crusher && (EntityType)entityType != EntityType.Crusher) {
+    if (_pendingDeath.Type == EntityType.Crusher && entityType != EntityType.Crusher) {
       return;
     }
     // A gem reports before it is known whether it is also being taken this frame, so its report is
@@ -330,7 +333,7 @@ public partial class Player : CharacterBody2D, IPersistent {
       return;
     }
     _pendingDeath = new PendingDeath(
-      (EntityType)entityType,
+      entityType,
       position,
       area,
       area is Node2D source ? source.ToLocal(position) : Vector2.Zero,
@@ -352,13 +355,15 @@ public partial class Player : CharacterBody2D, IPersistent {
   private void ConnectSignals() {
     EventHandler.Instance.Events.CheckpointReached += OnCheckpointHit;
     EventHandler.Instance.Events.CheckpointLoaded += Reset;
-    EventHandler.Instance.Events.PlayerDying += _onPlayerDying;
+    _dyingBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerDying m) => _onPlayerDying(m.Area, m.Position, m.Type));
   }
 
   private void DisconnectSignals() {
     EventHandler.Instance.Events.CheckpointReached -= OnCheckpointHit;
     EventHandler.Instance.Events.CheckpointLoaded -= Reset;
-    EventHandler.Instance.Events.PlayerDying -= _onPlayerDying;
+    _dyingBinding?.Dispose();
+    _dyingBinding = null;
   }
 
   public override void _EnterTree() {

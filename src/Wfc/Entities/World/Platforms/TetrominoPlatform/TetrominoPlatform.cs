@@ -3,6 +3,7 @@ namespace Wfc.Entities.World.Platforms;
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -180,7 +181,7 @@ public partial class TetrominoPlatform : Node2D {
       if (_hasSomewhereToGo(player, PlatformCrush.EscapeMotion(crusher, body, Vector2.Down))) {
         continue;
       }
-      EventHandler.Instance.EmitPlayerDying(
+      GameEvents.Instance.OnPlayerDying(
         this,
         PlatformCrush.ContactPoint(crusher, body, Vector2.Down),
         EntityType.Crusher

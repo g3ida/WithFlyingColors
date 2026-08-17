@@ -25,19 +25,6 @@ public interface IEventHandler {
 
   public bool Connect(string eventType, Node caller, Action action);
 
-  public void EmitPlayerLanded(Node area, Vector2 position);
-  public void EmitPlayerDying(Node area, Vector2 position, EntityType entityType);
-  public void EmitPlayerDying(Vector2 position, EntityType entityType);
-  public void EmitPlayerDied();
-  public void EmitPlayerSlippering();
-  public void EmitPlayerJumped();
-  public void EmitPlayerRotate(int dir);
-  public void EmitPlayerLand();
-  public void EmitPlayerExplode();
-  public void EmitPlayerFall();
-  public void EmitPlayerSquashed();
-  public void EmitPlayerDash(Vector2 dir);
-  public void EmitGemCollected(string color, Vector2 position, SpriteFrames frames);
   public void EmitCheckpointReached(Vector2 position, string colorGroup);
   public void EmitCheckpointLoaded();
 
@@ -45,9 +32,6 @@ public interface IEventHandler {
   public void EmitMenuBoxRotated();
   public void EmitPauseMenuEnter();
   public void EmitPauseMenuExit();
-  public void EmitPerformanceOverlayToggled(bool enabled);
-  public void EmitSfxVolumeChanged(float volume);
-  public void EmitMusicVolumeChanged(float volume);
   public void EmitOnActionBound(string action, int key);
   public void EmitFocusChanged();
   public void EmitKeyboardActionBinding();
@@ -56,21 +40,6 @@ public interface IEventHandler {
   public void EmitControllerSelectionChanged(ControllerType controllerType);
   public void EmitGamepadConnected(int deviceId, string deviceName);
   public void EmitGamepadDisconnected(int deviceId);
-  public void EmitTetrisLinesRemoved();
-  public void EmitTetrisPoolEscaped();
-  public void EmitBrickBroken(string color, Vector2 position);
-  public void EmitBouncingBallRemoved(Node ball);
-  public void EmitPickedPowerup();
-  public void EmitBreakBreakerWin();
-  public void EmitBrickBreakerStart();
-  public void EmitPianoNotePressed(int noteIndex);
-  public void EmitPianoNoteReleased(int noteIndex);
-  public void EmitPageFlipped();
-  public void EmitWrongPianoNotePlayed();
-  public void EmitPianoPuzzleWon();
-  public void EmitButtonGameNotePlayed(int noteIndex);
-  public void EmitButtonGameWrongNotePlayed();
-  public void EmitButtonGameWon();
   public void EmitCutsceneRequestStart(string id);
   public void EmitCutsceneRequestEnd(string id);
   public void EmitLevelCleared();
@@ -80,11 +49,5 @@ public interface IEventHandler {
   public void EmitLevelRestartRequested();
   public void EmitSaveSlotUpdated();
   public void EmitNotificationRaised(TranslationKey key);
-  public void EmitPaintSpilled(Vector2 position);
-  public void EmitBucketShoved(Vector2 position);
-  public void EmitPaintPouring(Vector2 position);
-  public void EmitPaintSplashed(Vector2 position);
-  public void EmitPaintGunCooling(Vector2 position);
-  public void EmitPaintGunFired(Vector2 position);
 
 }

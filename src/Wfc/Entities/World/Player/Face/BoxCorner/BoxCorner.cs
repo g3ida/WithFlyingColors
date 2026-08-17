@@ -44,18 +44,18 @@ public partial class BoxCorner : BaseFace {
       return;
     }
     if (area.IsInGroup("fallzone")) {
-      EventHandler.Instance.EmitPlayerDying(GlobalPosition, EntityType.FallZone);
+      GameEvents.Instance.OnPlayerDying(GlobalPosition, EntityType.FallZone);
       return;
     }
 
     if (!AcceptsColorOf(area)) {
-      EventHandler.Instance.EmitPlayerDying(area, GlobalPosition, EntityType.Platform);
+      GameEvents.Instance.OnPlayerDying(area, GlobalPosition, EntityType.Platform);
     }
     else if (area is Gem gem) {
       // do nothing
     }
     else if (!player.IsStanding()) {
-      EventHandler.Instance.EmitPlayerLanded(area, GlobalPosition);
+      GameEvents.Instance.OnPlayerLandedOn(area, GlobalPosition);
     }
   }
 }

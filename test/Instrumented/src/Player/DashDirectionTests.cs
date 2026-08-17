@@ -1,9 +1,11 @@
 namespace Wfc.test.instrumented.Player;
 
+using Chickensoft.Sync.Primitives;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.test.instrumented.Helpers;
 using Wfc.test.instrumented.Helpers.Fakes;
@@ -13,6 +15,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // pressed, the run's momentum standing in when nothing is, and holding only down
 // meaning straight down - momentum must not bend an aimed slam sideways.
 public class DashDirectionTests(Node testScene) : TestClass(testScene) {
+  private AutoChannel.Binding? _dashBinding;
+
   private const string PLAYER_SCENE = "res://src/Wfc/Entities/World/Player/Player/Player.tscn";
   private const float FLOOR_HALF_HEIGHT = 50f;
   private const float FLOOR_HALF_WIDTH = 1200f;
@@ -31,13 +35,15 @@ public class DashDirectionTests(Node testScene) : TestClass(testScene) {
     _provider = new FakeDependenciesProvider();
     TestScene.AddChild(_provider);
     _dashDirection = null;
-    EventHandler.Instance.Events.PlayerDash += _onPlayerDash;
+    _dashBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerDashed m) => _onPlayerDash(m.Direction));
     await _physicsFrame();
   }
 
   [Cleanup]
   public void Cleanup() {
-    EventHandler.Instance.Events.PlayerDash -= _onPlayerDash;
+    _dashBinding?.Dispose();
+    _dashBinding = null;
     _provider.Input.ReleaseAll();
     _provider.QueueFree();
   }

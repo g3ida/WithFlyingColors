@@ -9,31 +9,6 @@ using Wfc.Entities.World.Checkpoints;
 // which reports as a leaked instance at exit.
 public partial class Events : RefCounted {
   [Signal]
-  public delegate void PlayerLandedEventHandler(Node area, Vector2 position);
-  [Signal]
-  public delegate void PlayerDyingEventHandler(Node? area, Vector2 position, int entityType);
-  [Signal]
-  public delegate void PlayerDiedEventHandler();
-  [Signal]
-  public delegate void PlayerJumpedEventHandler();
-  [Signal]
-  public delegate void PlayerRotateEventHandler(int dir);
-  [Signal]
-  public delegate void PlayerLandEventHandler();
-  [Signal]
-  public delegate void PlayerExplodeEventHandler();
-  [Signal]
-  public delegate void PlayerFallEventHandler();
-  // Caught between a moving platform and something solid.
-  [Signal]
-  public delegate void PlayerSquashedEventHandler();
-  [Signal]
-  public delegate void PlayerDashEventHandler(Vector2 direction);
-  [Signal]
-  public delegate void PlayerSlipperingEventHandler();
-  [Signal]
-  public delegate void GemCollectedEventHandler(string color, Vector2 position, SpriteFrames frames);
-  [Signal]
   // Values, not the node that raised them. Only the player reads either of these, and passing
   // the node made two whole classes of bug possible: the deprecated Checkpoint typed itself as
   // an Area2D and failed conversion inside the native emit - taking every other subscriber down
@@ -51,8 +26,6 @@ public partial class Events : RefCounted {
   [Signal]
   public delegate void MenuButtonPressedEventHandler(int menuButton);
   // Settings signals
-  [Signal]
-  public delegate void PerformanceOverlayToggledEventHandler(bool value);
   [Signal]
   public delegate void OnActionBoundEventHandler(string action, int key);
   [Signal]
@@ -75,43 +48,6 @@ public partial class Events : RefCounted {
   public delegate void GamepadConnectedEventHandler(int deviceId, string deviceName);
   [Signal]
   public delegate void GamepadDisconnectedEventHandler(int deviceId);
-  [Signal]
-  public delegate void SfxVolumeChangedEventHandler(float volume);
-  [Signal]
-  public delegate void MusicVolumeChangedEventHandler(float volume);
-  [Signal]
-  public delegate void TetrisLinesRemovedEventHandler();
-  [Signal]
-  public delegate void TetrisPoolEscapedEventHandler();
-  [Signal]
-  public delegate void BrickBrokenEventHandler(string color, Vector2 position);
-  [Signal]
-  public delegate void BouncingBallRemovedEventHandler(Node2D ball);
-  [Signal]
-  public delegate void PickedPowerUpEventHandler();
-  [Signal]
-  public delegate void BreakBreakerWinEventHandler();
-  [Signal]
-  public delegate void BrickBreakerStartEventHandler();
-  [Signal]
-  public delegate void PianoNotePressedEventHandler(int noteIndex);
-  [Signal]
-  public delegate void PianoNoteReleasedEventHandler(int noteIndex);
-  [Signal]
-  public delegate void PageFlippedEventHandler();
-  [Signal]
-  public delegate void WrongPianoNotePlayedEventHandler();
-  [Signal]
-  public delegate void PianoPuzzleWonEventHandler();
-  // The button room sounds the same notes as the piano, but keeps its own events: the
-  // solfege board answers to PianoNotePressed, and a level holding both would have a
-  // player stepping on a button advance the piano's puzzle from across the room.
-  [Signal]
-  public delegate void ButtonGameNotePlayedEventHandler(int noteIndex);
-  [Signal]
-  public delegate void ButtonGameWrongNotePlayedEventHandler();
-  [Signal]
-  public delegate void ButtonGameWonEventHandler();
   [Signal]
   public delegate void CutSceneRequestStartEventHandler(string id);
   [Signal]
@@ -143,33 +79,9 @@ public partial class Events : RefCounted {
   // system's.
   [Signal]
   public delegate void NotificationRaisedEventHandler(int translationKey);
-  // A bucket of paint breaking over a surface, at the point it broke. What the paint then does
-  // to that surface is the splat's business; this is only the moment it landed.
-  [Signal]
-  public delegate void PaintSpilledEventHandler(Vector2 position);
-  // Paint running out of a bucket. Raised again for as long as the pour lasts, so what answers it
-  // can carry on rather than sounding once and stopping.
-  [Signal]
-  public delegate void PaintPouringEventHandler(Vector2 position);
 
-  [Signal]
-  // Paint landing on something, from a gun or anything else that throws it.
-  public delegate void PaintSplashedEventHandler(Vector2 position);
 
-  [Signal]
-  // A gun that has run its tank dry and started drawing ink back up its cable.
-  public delegate void PaintGunCoolingEventHandler(Vector2 position);
 
-  [Signal]
-  public delegate void PaintGunFiredEventHandler(Vector2 position);
-  // A bucket being shoved along the surface it stands on. Raised again for as long as the shove
-  // lasts, so what answers it can carry on rather than sounding once and stopping.
-  [Signal]
-  public delegate void BucketShovedEventHandler(Vector2 position);
   // Both carry how hard they want it, so one move can ask for a nudge where it starts and a
   // jolt where it lands without either reading as the other.
-  [Signal]
-  public delegate void CameraShakeRequestEventHandler(float amplitude);
-  [Signal]
-  public delegate void CameraZoomPunchRequestEventHandler(float strength);
 }

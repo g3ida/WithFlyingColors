@@ -2,8 +2,10 @@ namespace Wfc.Core.Persistence;
 
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
+using Chickensoft.Sync.Primitives;
 using Godot;
 using EventHandler = Wfc.Core.Event.EventHandler;
+using Wfc.Core.Event;
 
 // Turns what the player does into the run counters the hub's stats board reads.
 //
@@ -12,6 +14,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 // beside the provider for the whole session, so a count is never missed between screens.
 [Meta(typeof(IAutoNode))]
 public partial class RunStatsRecorder : Node {
+  private AutoChannel.Binding? _eventsBinding;
+
   #region Dependencies
   public override void _Notification(int what) => this.Notify(what);
 
@@ -29,10 +33,11 @@ public partial class RunStatsRecorder : Node {
     if (_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.PlayerJumped += _onPlayerJumped;
-    EventHandler.Instance.Events.PlayerDash += _onPlayerDash;
-    EventHandler.Instance.Events.PlayerRotate += _onPlayerRotate;
-    EventHandler.Instance.Events.PlayerDied += _onPlayerDied;
+    _eventsBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerJumped _) => _onPlayerJumped())
+      .On((in IGameEvents.PlayerDashed m) => _onPlayerDash(m.Direction))
+      .On((in IGameEvents.PlayerRotated m) => _onPlayerRotate(m.Direction))
+      .On((in IGameEvents.PlayerDied _) => _onPlayerDied());
     _isSubscribed = true;
   }
 
@@ -41,10 +46,8 @@ public partial class RunStatsRecorder : Node {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.PlayerJumped -= _onPlayerJumped;
-    EventHandler.Instance.Events.PlayerDash -= _onPlayerDash;
-    EventHandler.Instance.Events.PlayerRotate -= _onPlayerRotate;
-    EventHandler.Instance.Events.PlayerDied -= _onPlayerDied;
+    _eventsBinding?.Dispose();
+    _eventsBinding = null;
     _isSubscribed = false;
   }
 

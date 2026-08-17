@@ -29,7 +29,7 @@ public partial class DependenciesProvider :
   IProvide<IInputManager>,
   IProvide<IModalStack>,
   IProvide<IPauseOwnership>,
-  IProvide<ISettingsRepo> {
+  IProvide<IGameEvents> {
   public override void _Notification(int what) => this.Notify(what);
 
   private readonly Lazy<IMenuManager> _menuManager;
@@ -52,9 +52,9 @@ public partial class DependenciesProvider :
   ISfxManager IProvide<ISfxManager>.Value() => AutoloadManager.Instance.SfxManager;
   IMusicTrackManager IProvide<IMusicTrackManager>.Value() => AutoloadManager.Instance.MusicTrackManager;
   IInputManager IProvide<IInputManager>.Value() => _inputManager.Value;
-  // The same instance as SettingsRepo.Instance, for the same reason ILogger is: the nodes
+  // The same instance as GameEvents.Instance, for the same reason ILogger is: the nodes
   // that cannot take a dependency must not end up listening to a different channel.
-  ISettingsRepo IProvide<ISettingsRepo>.Value() => SettingsRepo.Instance;
+  IGameEvents IProvide<IGameEvents>.Value() => GameEvents.Instance;
 
   public DependenciesProvider() : base() {
     _menuManager = new Lazy<IMenuManager>(() => new MenuManager(this));

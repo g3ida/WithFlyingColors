@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Platforms;
 using Wfc.Utils;
@@ -179,7 +180,7 @@ public class TetrominoRainTests(Node testScene) : TestClass(testScene) {
   [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
   public async Task ItStopsDroppingOnceThePlayerIsDying() {
     var rain = await _add();
-    EventHandler.Instance.EmitPlayerDying(rain, Vector2.Zero, EntityType.FallZone);
+    GameEvents.Instance.OnPlayerDying(rain, Vector2.Zero, EntityType.FallZone);
     await PhysicsFrames.Frame(TestScene);
     var held = _piecesOf(rain).Count;
 

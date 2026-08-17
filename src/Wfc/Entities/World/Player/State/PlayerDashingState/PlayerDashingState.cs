@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Player;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
 using Wfc.Utils;
@@ -157,7 +158,7 @@ public partial class PlayerDashingState : PlayerBaseState {
     _committedAt = _elapsed;
     _lastPosition = player.GlobalPosition;
     _visualDirection = _visibleDirection(player, _direction);
-    EventHandler.Instance.EmitPlayerDash(_direction);
+    GameEvents.Instance.OnPlayerDashed(_direction);
     // Each axis of a dash runs at DASH_SPEED of its own, so a diagonal one covers more ground
     // than a flat one and the trail has to be laid out over the distance actually covered.
     DashVisuals.Begin(player, _visualDirection, DASH_SPEED * _travelWindow() * _visualDirection.Length());

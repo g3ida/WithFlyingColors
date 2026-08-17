@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Platforms;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
@@ -23,6 +24,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class FlatPlatform : StaticBody2D {
+  private AutoChannel.Binding? _landedBinding;
+
   // Which corners are sliced. The four are independent so a platform can square off exactly the
   // corners a neighbour hides.
   [Flags]
@@ -333,7 +336,8 @@ public partial class FlatPlatform : StaticBody2D {
     if (Engine.IsEditorHint() || _isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.PlayerLanded += OnPlayerLanded;
+    _landedBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerLandedOn m) => OnPlayerLanded(m.Area, m.Position));
     _isSubscribed = true;
   }
 
@@ -342,7 +346,8 @@ public partial class FlatPlatform : StaticBody2D {
     if (!_isSubscribed) {
       return;
     }
-    EventHandler.Instance.Events.PlayerLanded -= OnPlayerLanded;
+    _landedBinding?.Dispose();
+    _landedBinding = null;
     _isSubscribed = false;
   }
 

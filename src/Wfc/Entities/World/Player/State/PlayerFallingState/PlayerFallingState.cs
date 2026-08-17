@@ -33,7 +33,7 @@ public partial class PlayerFallingState : PlayerBaseState {
 
   protected override IState<Player>? _PhysicsUpdate(Player player, float delta) {
     if (player.IsOnFloor()) {
-      EventHandler.Instance.EmitPlayerLand();
+      GameEvents.Instance.OnPlayerLanded();
       return statesStore.GetState<PlayerStandingState>();
     }
     if (JumpPressed(player) && _permissivenessTimer.IsRunning()) {

@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Player;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.State;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -71,7 +72,7 @@ public partial class PlayerSquashedState : PlayerDyingBaseState {
     // it has nothing to say about a sprite mid-animation.
     player.AnimatedSpriteNode.Play("idle");
     player.AnimatedSpriteNode.Stop();
-    SquashVisuals.Begin(player, _crush, EventHandler.Instance.EmitPlayerDied);
+    SquashVisuals.Begin(player, _crush, GameEvents.Instance.OnPlayerDied);
   }
 
   // A pinned cube takes no input, no gravity, and none of the idle transform animation that would

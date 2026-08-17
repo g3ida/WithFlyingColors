@@ -1,5 +1,6 @@
 namespace Wfc.Screens;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using System.Linq;
 using Chickensoft.AutoInject;
@@ -25,6 +26,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class SceneOrchester : Node2D {
+  private AutoChannel.Binding? _playerBinding;
+
   public override void _Notification(int what) {
     this.Notify(what);
     // Closing the window does not pass through a menu, so this is the run's only chance to be
@@ -200,7 +203,8 @@ public partial class SceneOrchester : Node2D {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Events.PlayerDied += OnGameOver;
+    _playerBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerDied _) => OnGameOver());
     EventHandler.Instance.Events.LevelCleared += OnLevelCleared;
     EventHandler.Instance.Events.CheckpointReached += _onCheckpointReached;
     EventHandler.Instance.Events.DoorEntered += _onDoorEntered;
@@ -208,7 +212,8 @@ public partial class SceneOrchester : Node2D {
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Events.PlayerDied -= OnGameOver;
+    _playerBinding?.Dispose();
+    _playerBinding = null;
     EventHandler.Instance.Events.LevelCleared -= OnLevelCleared;
     EventHandler.Instance.Events.CheckpointReached -= _onCheckpointReached;
     EventHandler.Instance.Events.DoorEntered -= _onDoorEntered;

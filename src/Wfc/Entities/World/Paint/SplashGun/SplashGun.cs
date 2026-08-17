@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
@@ -475,7 +476,7 @@ public partial class SplashGun : Node2D {
       _ink = 0f;
       _refilling = true;
       _drawnUp = 0f;
-      EventHandler.Instance.EmitPaintGunCooling(GlobalPosition);
+      GameEvents.Instance.OnPaintGunCooling(GlobalPosition);
     }
     _showInk();
 
@@ -486,6 +487,6 @@ public partial class SplashGun : Node2D {
     shot.GlobalPosition = _muzzleNode.GlobalPosition;
     GetParent().AddChild(shot);
     shot.Fire(REST.Rotated(_armNode.GlobalRotation) * ShotSpeed);
-    EventHandler.Instance.EmitPaintGunFired(_muzzleNode.GlobalPosition);
+    GameEvents.Instance.OnPaintGunFired(_muzzleNode.GlobalPosition);
   }
 }

@@ -1,16 +1,20 @@
 namespace Wfc.Entities.World.BrickBreaker.Powerups;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Logger;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
+  private AutoChannel.Binding? _brickBinding;
+
   #region Constants
   private const float COLD_DOWN = 1.5f;
   private const int ITEM_INV_PROBABILITY = 4;
@@ -53,12 +57,14 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Events.BrickBroken += OnBrickBroken;
+    _brickBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.BrickBroken message) => OnBrickBroken(message.ColorGroup, message.Position));
     EventHandler.Instance.Events.CheckpointLoaded += Reset;
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Events.BrickBroken -= OnBrickBroken;
+    _brickBinding?.Dispose();
+    _brickBinding = null;
     EventHandler.Instance.Events.CheckpointLoaded -= Reset;
   }
 
@@ -166,7 +172,7 @@ public partial class BrickPowerUpHandler : Node2D, IPowerUpHandler {
       CallDeferred(Node.MethodName.AddChild, hit);
     }
 
-    EventHandler.Instance.EmitPickedPowerup();
+    GameEvents.Instance.OnPowerUpPicked();
   }
 
   public override void _EnterTree() {

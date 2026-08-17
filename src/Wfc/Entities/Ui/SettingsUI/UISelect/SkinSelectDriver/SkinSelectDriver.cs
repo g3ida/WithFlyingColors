@@ -3,6 +3,7 @@ namespace Wfc.Entities.Ui.SettingsUI.UISelect;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Settings;
 using Wfc.Skin;
 using Wfc.Utils.Attributes;
@@ -32,7 +33,7 @@ public partial class SkinSelectDriver : UISelectDriver {
       return;
     }
     GameSettings.Skin = skin;
-    SettingsRepo.Instance.OnSkinChanged(skin);
+    GameEvents.Instance.OnSkinChanged(skin);
   }
 
   public override int GetDefaultSelectedIndex() {

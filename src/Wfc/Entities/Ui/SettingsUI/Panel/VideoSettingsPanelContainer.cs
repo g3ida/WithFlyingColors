@@ -2,6 +2,7 @@ namespace Wfc.Entities.Ui.SettingsUI.Panel;
 
 using System.Threading.Tasks;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Settings;
 using Wfc.Entities.Ui.Dialogs;
 using Wfc.Entities.Ui.SettingsUI.UISelect;
@@ -77,7 +78,7 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
 
   private static void _onVsyncCheckboxToggled(bool buttonPressed) {
     GameSettings.Vsync = buttonPressed;
-    SettingsRepo.Instance.OnVsyncToggled(buttonPressed);
+    GameEvents.Instance.OnVsyncToggled(buttonPressed);
   }
 
   // A fullscreen window has no edges to take hold of, so the row is taken away
@@ -99,7 +100,7 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
   private async void _onFullscreenCheckboxToggled(bool buttonPressed) {
     GameSettings.Fullscreen = buttonPressed;
     _showResizableRow(!buttonPressed);
-    SettingsRepo.Instance.OnFullscreenToggled(buttonPressed);
+    GameEvents.Instance.OnFullscreenToggled(buttonPressed);
     _toggleAutoResolution();
     await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
     // The tree outlives this panel, so unlike an await on one of its own children this one
@@ -169,7 +170,7 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
     GameSettings.WindowSize = newSize;
 
     if (this.IsNodeReady()) {
-      SettingsRepo.Instance.OnScreenSizeChanged(newSize);
+      GameEvents.Instance.OnScreenSizeChanged(newSize);
     }
     await _refreshWindow(newSize);
   }

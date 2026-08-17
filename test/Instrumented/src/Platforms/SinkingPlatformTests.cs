@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Platforms;
 using Wfc.Utils;
@@ -132,7 +133,7 @@ public class SinkingPlatformTests(Node testScene) : TestClass(testScene) {
     var (platform, player) = await _addRidden();
     await _waitFor(() => platform.GlobalPosition.Y > START_Y + (DEPTH / 4.0f));
 
-    EventHandler.Instance.EmitPlayerDying(platform, player.GlobalPosition, EntityType.Lazer);
+    GameEvents.Instance.OnPlayerDying(platform, player.GlobalPosition, EntityType.Lazer);
     (await _waitFor(player.IsDying)).ShouldBeTrue("the cube never took the death it was dealt");
     var sunkTo = platform.GlobalPosition.Y;
     await PhysicsFrames.Advance(TestScene, 5);

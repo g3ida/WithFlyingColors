@@ -4,9 +4,11 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Input;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
@@ -339,8 +341,8 @@ public partial class PaintBucket : CharacterBody2D, IPersistent {
     // up it happens to be.
     _paintAreaNode.Monitorable = false;
 
-    EventHandler.Instance.EmitPaintSpilled(centre);
-    EventHandler.Instance.EmitCameraShakeRequest(IMPACT_SHAKE);
+    GameEvents.Instance.OnPaintSpilled(centre);
+    GameEvents.Instance.RequestCameraShake(IMPACT_SHAKE);
 
     _state = State.Spilled;
     // An empty bucket lying on a surface is scenery the cube can climb, and scenery does not
@@ -506,7 +508,7 @@ public partial class PaintBucket : CharacterBody2D, IPersistent {
     _shoveSoundIn -= delta;
     if (_shoveSoundIn <= 0f) {
       _shoveSoundIn = SHOVE_SOUND_INTERVAL;
-      EventHandler.Instance.EmitBucketShoved(GlobalPosition);
+      GameEvents.Instance.OnBucketShoved(GlobalPosition);
     }
 
     return towards * PUSH_SPEED;
@@ -531,7 +533,7 @@ public partial class PaintBucket : CharacterBody2D, IPersistent {
     }
 
     if (Mathf.IsZeroApprox(_kick)) {
-      EventHandler.Instance.EmitBucketShoved(GlobalPosition);
+      GameEvents.Instance.OnBucketShoved(GlobalPosition);
     }
     _kick = towards * DASH_KICK_SPEED;
   }

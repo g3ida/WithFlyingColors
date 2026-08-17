@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Platforms;
 
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
+using Chickensoft.Sync.Primitives;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Screens.Levels;
@@ -16,6 +17,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class SimplePlatform : StaticBody2D {
+  private AutoChannel.Binding? _landedBinding;
+
   public override void _Notification(int what) => this.Notify(what);
   [Dependency]
   public IGameLevel GameLevel => this.DependOn<IGameLevel>();
@@ -139,12 +142,14 @@ public partial class SimplePlatform : StaticBody2D {
   private void _connectSignals() {
     if (Engine.IsEditorHint())
       return;
-    EventHandler.Instance.Events.PlayerLanded += OnPlayerLanded;
+    _landedBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerLandedOn m) => OnPlayerLanded(m.Area, m.Position));
   }
 
   private void _disconnectSignals() {
     if (Engine.IsEditorHint())
       return;
-    EventHandler.Instance.Events.PlayerLanded -= OnPlayerLanded;
+    _landedBinding?.Dispose();
+    _landedBinding = null;
   }
 }

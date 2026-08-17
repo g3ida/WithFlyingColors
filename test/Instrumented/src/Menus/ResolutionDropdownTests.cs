@@ -196,6 +196,20 @@ public class ResolutionDropdownTests(Node testScene) : TestClass(testScene) {
   private static Control _arrowOf(UIDropdownButton dropdown) =>
     dropdown.GetNode<Control>("HBoxContainer/Arrow");
 
+  // A headless run reports no screen at all, so the driver falls back to offering the one
+  // smallest size - which is exactly the state in which the row is supposed to refuse to open.
+  // These tests are about what the row does with a choice, not about which sizes a screen
+  // qualifies for, so the choice is put there rather than waited for.
+  private async Task _ensureAChoice(UIDropdownButton dropdown) {
+    var driver = dropdown.SelectDriver;
+    while (driver.Items.Count < 3) {
+      driver.Items.Add($"Test option {driver.Items.Count}");
+      driver.ItemValues.Add(Variant.CreateFrom(new Vector2I(1280 - (driver.Items.Count * 16), 720)));
+    }
+    driver.EmitSignal(UISelectDriver.SignalName.ItemListChanged);
+    await _idle();
+  }
+
   private async Task _leaveOneOption(UIDropdownButton dropdown) {
     dropdown.SelectDriver.Items.Count.ShouldBeGreaterThan(1, "the screen offers no choice to begin with");
     while (dropdown.SelectDriver.Items.Count > 1) {
@@ -218,6 +232,7 @@ public class ResolutionDropdownTests(Node testScene) : TestClass(testScene) {
     await _idle();
     var dropdown = screen.FindDescendants<UIDropdownButton>().FirstOrDefault();
     dropdown.ShouldNotBeNull("the display tab has no resolution row");
+    await _ensureAChoice(dropdown);
     return (screen, dropdown);
   }
 

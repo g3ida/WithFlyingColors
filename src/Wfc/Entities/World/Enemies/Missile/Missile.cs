@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Enemies;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
 using Wfc.Skin;
@@ -141,7 +142,7 @@ public partial class Missile : Node2D, IBullet {
 
     if (body == GameRepo.Instance.Player.Value && body is Player player && !player.IsDying()
         && !player.AcceptsColorOfAt(_colorAreaNode.GlobalPosition, _colorAreaNode)) {
-      EventHandler.Instance.EmitPlayerDying(_colorAreaNode, player.GlobalPosition, EntityType.Bullet);
+      GameEvents.Instance.OnPlayerDying(_colorAreaNode, player.GlobalPosition, EntityType.Bullet);
     }
     if (body is IShootable shootable) {
       shootable.OnShot(_colorAreaNode.GlobalPosition);

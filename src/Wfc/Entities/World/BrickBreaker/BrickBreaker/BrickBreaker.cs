@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.BrickBreaker;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
@@ -21,6 +22,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 
 [Meta(typeof(IAutoNode))]
 public partial class BrickBreaker : Node2D, IPersistent {
+  private AutoChannel.Binding? _ballBinding;
+
   public override void _Notification(int what) => this.Notify(what);
   private const float FACE_SEPARATOR_SCALE_FACTOR = 3.5f;
   private const int NUM_LEVELS = 2;
@@ -117,15 +120,16 @@ public partial class BrickBreaker : Node2D, IPersistent {
   private void ConnectSignals() {
     EventHandler.Instance.Events.CheckpointReached += _OnCheckpointHit;
     EventHandler.Instance.Events.CheckpointLoaded += Reset;
-    EventHandler.Instance.Events.PlayerDying += _OnPlayerDying;
-    EventHandler.Instance.Events.BouncingBallRemoved += _OnBouncingBallRemoved;
+    _ballBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.BouncingBallRemoved message) => _OnBouncingBallRemoved(message.Ball))
+      .On((in IGameEvents.PlayerDying _) => _OnPlayerDying());
   }
 
   private void DisconnectSignals() {
     EventHandler.Instance.Events.CheckpointReached -= _OnCheckpointHit;
     EventHandler.Instance.Events.CheckpointLoaded -= Reset;
-    EventHandler.Instance.Events.PlayerDying -= _OnPlayerDying;
-    EventHandler.Instance.Events.BouncingBallRemoved -= _OnBouncingBallRemoved;
+    _ballBinding?.Dispose();
+    _ballBinding = null;
   }
 
   public override void _EnterTree() {
@@ -178,7 +182,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
     _saveData = new SaveData(GetSaveStateFromCurrentState());
   }
 
-  private void _OnPlayerDying(Node? _area, Vector2 _position, int _entityType) {
+  private void _OnPlayerDying() {
     if (_currentState == BrickBreakerState.PLAYING) {
       _currentState = BrickBreakerState.LOSE;
       Stop();
@@ -204,7 +208,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
       // back on: a second round in the same session dropped no power-ups at all.
       _bricksPowerUpHandler.SetActive(true);
       BricksTileMapNode = SpawnBricks();
-      EventHandler.Instance.EmitBrickBreakerStart();
+      GameEvents.Instance.OnBrickBreakerStarted();
       if (_bricksMoveTweener != null) {
         await ToSignal(_bricksMoveTweener, Tween.SignalName.Finished);
       }
@@ -219,7 +223,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
   private void _OnBouncingBallRemoved(Node2D _ball) {
     _numBalls -= 1;
     if (_numBalls <= 0) {
-      EventHandler.Instance.EmitPlayerDying(_deathZoneNode, _ball.GlobalPosition, EntityType.BrickBreaker);
+      GameEvents.Instance.OnPlayerDying(_deathZoneNode, _ball.GlobalPosition, EntityType.BrickBreaker);
     }
   }
 
@@ -287,7 +291,7 @@ public partial class BrickBreaker : Node2D, IPersistent {
     if (_currentState == BrickBreakerState.PLAYING) {
       _currentState = BrickBreakerState.WIN;
       _bricksTimerNode.Stop();
-      EventHandler.Instance.EmitBreakBreakerWin();
+      GameEvents.Instance.OnBrickBreakerWon();
       CleanUpGame();
       CreateBricksMoveTweener();
       MoveBricksDownBy(LEVELS_WIN_GAP, 3.0f);

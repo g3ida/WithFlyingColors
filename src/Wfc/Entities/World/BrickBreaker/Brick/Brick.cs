@@ -4,6 +4,7 @@ using System;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Entities.World.Player;
+using Wfc.Screens.Levels;
 using Wfc.Skin;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -63,7 +64,7 @@ public partial class Brick : Node2D {
 
     Vector2 extents = (_collisionShapeNode.Shape as RectangleShape2D)?.Size ?? Vector2.Zero;
     EmitSignal(Brick.SignalName.brickBroken);
-    EventHandler.Instance.EmitBrickBroken(ColorGroup, Position + GetParent<Node2D>().Position + extents);
+    GameEvents.Instance.OnBrickBroken(ColorGroup, Position + GetParent<Node2D>().Position + extents);
     QueueFree();
   }
 }

@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Enemies;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
@@ -250,7 +251,7 @@ public partial class LazerBeam : Node2D {
     // The beam crossing a face it burns is one event, not one per frame it goes on crossing it.
     var burns = hit is { } landing && !landing.Face.AcceptsColor(ColorGroup);
     if (burns && !_wasBurning) {
-      EventHandler.Instance.EmitPlayerDying(GlobalPosition, EntityType.Lazer);
+      GameEvents.Instance.OnPlayerDying(GlobalPosition, EntityType.Lazer);
     }
     _wasBurning = burns;
   }

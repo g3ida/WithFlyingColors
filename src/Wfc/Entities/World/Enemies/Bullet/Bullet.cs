@@ -2,6 +2,7 @@ namespace Wfc.Entities.World.Enemies;
 
 using System;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Entities.World;
 using Wfc.Entities.World.Player;
 using Wfc.Screens.Levels;
@@ -90,7 +91,7 @@ public partial class Bullet : Node2D, IBullet {
   private void _onColorAreaBodyEntered(Node body) {
     if (body == GameRepo.Instance.Player.Value && body is Player player && !player.IsDying()
         && !player.AcceptsColorOfAt(_colorAreaNode.GlobalPosition, _colorAreaNode)) {
-      EventHandler.Instance.EmitPlayerDying(_colorAreaNode, player.GlobalPosition, EntityType.Bullet);
+      GameEvents.Instance.OnPlayerDying(_colorAreaNode, player.GlobalPosition, EntityType.Bullet);
     }
     if (body is IShootable shootable) {
       shootable.OnShot(_colorAreaNode.GlobalPosition);

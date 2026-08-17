@@ -3,7 +3,7 @@ namespace Wfc.Entities.Ui;
 using System;
 using Chickensoft.Sync.Primitives;
 using Godot;
-using Wfc.Core.Settings;
+using Wfc.Core.Event;
 using Wfc.Skin;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -72,8 +72,8 @@ public partial class TitleLabel : Label {
     _fitUnderlines();
     // Nothing changes the palette in the editor, so there is nothing to listen for there.
     if (_skinBinding is null && !Engine.IsEditorHint()) {
-      _skinBinding = SettingsRepo.Instance.Channel.Bind()
-        .On((in ISettingsRepo.SkinChanged _) => _fitUnderlines());
+      _skinBinding = GameEvents.Instance.Channel.Bind()
+        .On((in IGameEvents.SkinChanged _) => _fitUnderlines());
     }
   }
 

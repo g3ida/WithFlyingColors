@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Entities.World;
 using Wfc.Entities.World.BrickBreaker;
 using Wfc.test.instrumented.Helpers;
@@ -37,7 +38,7 @@ public class BrickBreakerArenaTests(Node testScene) : TestClass(testScene) {
     (await PhysicsFrames.WaitFor(TestScene, () => _walls(arena) == 1, TIMEOUT))
       .ShouldBeTrue("the room never laid a wall to play against");
 
-    EventHandler.Instance.EmitPlayerDying(Vector2.Zero, EntityType.BrickBreaker);
+    GameEvents.Instance.OnPlayerDying(Vector2.Zero, EntityType.BrickBreaker);
     await PhysicsFrames.Advance(TestScene, 4);
     _walls(arena).ShouldBe(0, "losing left the wall standing in the room");
 
@@ -75,7 +76,7 @@ public class BrickBreakerArenaTests(Node testScene) : TestClass(testScene) {
     (await PhysicsFrames.WaitFor(TestScene, () => _walls(arena) == 1, TIMEOUT))
       .ShouldBeTrue("the room never laid a wall to play against");
 
-    EventHandler.Instance.EmitPlayerDying(Vector2.Zero, EntityType.BrickBreaker);
+    GameEvents.Instance.OnPlayerDying(Vector2.Zero, EntityType.BrickBreaker);
     await PhysicsFrames.Advance(TestScene, 4);
     EventHandler.Instance.EmitCheckpointLoaded();
     await PhysicsFrames.Advance(TestScene, 4);

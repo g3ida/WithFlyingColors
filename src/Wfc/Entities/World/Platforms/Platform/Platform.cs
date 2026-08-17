@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Platforms;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
@@ -15,6 +16,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [Tool]
 [Meta(typeof(IAutoNode))]
 public partial class Platform : AnimatableBody2D {
+  private AutoChannel.Binding? _landedBinding;
+
   public override void _Notification(int what) => this.Notify(what);
   [Dependency]
   public IGameLevel GameLevel => this.DependOn<IGameLevel>();
@@ -121,12 +124,14 @@ public partial class Platform : AnimatableBody2D {
   private void _connectSignals() {
     if (Engine.IsEditorHint())
       return;
-    EventHandler.Instance.Events.PlayerLanded += OnPlayerLanded;
+    _landedBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerLandedOn m) => OnPlayerLanded(m.Area, m.Position));
   }
 
   private void _disconnectSignals() {
     if (Engine.IsEditorHint())
       return;
-    EventHandler.Instance.Events.PlayerLanded -= OnPlayerLanded;
+    _landedBinding?.Dispose();
+    _landedBinding = null;
   }
 }

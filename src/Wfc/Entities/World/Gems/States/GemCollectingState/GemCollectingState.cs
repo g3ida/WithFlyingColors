@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Gems;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.State;
 using Wfc.Utils;
 using static Godot.AnimationMixer;
@@ -78,7 +79,7 @@ public partial class GemCollectingState : GemBaseState {
     // goes. Announcing it would fly a gem into a HUD slot that has been full since
     // the level opened.
     if (!gem.IsAlreadyCollected) {
-      EventHandler.Instance.EmitGemCollected(
+      GameEvents.Instance.OnGemCollected(
           gem.GroupName,
           gem.AnimatedSpriteNode.GetGlobalTransformWithCanvas().Origin,
           gem.AnimatedSpriteNode.SpriteFrames);

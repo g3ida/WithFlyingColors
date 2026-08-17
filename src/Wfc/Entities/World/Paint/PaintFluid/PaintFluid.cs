@@ -5,6 +5,7 @@ using Chickensoft.Introspection;
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
 using Wfc.Screens.Levels;
@@ -531,8 +532,8 @@ public partial class PaintFluid : Node2D, IPersistent {
     if (_state == State.Tipping && _elapsed >= POUR_DELAY) {
       _state = State.Pouring;
       _spoutNode.Empty();
-      EventHandler.Instance.EmitPaintSpilled(GlobalPosition);
-      EventHandler.Instance.EmitCameraShakeRequest(6f);
+      GameEvents.Instance.OnPaintSpilled(GlobalPosition);
+      GameEvents.Instance.RequestCameraShake(6f);
     }
 
     if (_state == State.Pouring) {
@@ -540,7 +541,7 @@ public partial class PaintFluid : Node2D, IPersistent {
       _sound -= step;
       if (_sound <= 0f) {
         _sound = POUR_SOUND_INTERVAL;
-        EventHandler.Instance.EmitPaintPouring(GlobalPosition);
+        GameEvents.Instance.OnPaintPouring(GlobalPosition);
       }
     }
 
@@ -1411,7 +1412,7 @@ public partial class PaintFluid : Node2D, IPersistent {
           continue;
         }
         _hasCaught = true;
-        EventHandler.Instance.EmitPlayerDying(this, player.GlobalPosition, EntityType.Platform);
+        GameEvents.Instance.OnPlayerDying(this, player.GlobalPosition, EntityType.Platform);
         return;
       }
     }

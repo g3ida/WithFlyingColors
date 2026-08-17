@@ -2,7 +2,9 @@ namespace Wfc.Entities.World.Player;
 
 using System;
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Entities.World.Explosion;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
@@ -63,8 +65,8 @@ public static class SquashVisuals {
 
   public static void Begin(Player player, Crush crush, Action onSpent) {
     player.HitstopNode.Start(PRESS_HITSTOP_DURATION, PRESS_HITSTOP_TIME_SCALE);
-    EventHandler.Instance.EmitCameraShakeRequest(PRESS_SHAKE_AMPLITUDE);
-    EventHandler.Instance.EmitPlayerSquashed();
+    GameEvents.Instance.RequestCameraShake(PRESS_SHAKE_AMPLITUDE);
+    GameEvents.Instance.OnPlayerSquashed();
 
     // The face the press measures the closing gap from. On the crusher, the anchor it reported
     // with is the only honest answer - converting the contact now would land it wherever the
@@ -163,8 +165,8 @@ public static class SquashVisuals {
   // why the explosion's own sound is not asked for.
   private static void _burst(Player player, Action onSpent) {
     player.HitstopNode.Start(BURST_HITSTOP_DURATION, BURST_HITSTOP_TIME_SCALE);
-    EventHandler.Instance.EmitCameraShakeRequest(BURST_SHAKE_AMPLITUDE);
-    EventHandler.Instance.EmitCameraZoomPunchRequest(BURST_ZOOM_PUNCH);
+    GameEvents.Instance.RequestCameraShake(BURST_SHAKE_AMPLITUDE);
+    GameEvents.Instance.RequestCameraZoomPunch(BURST_ZOOM_PUNCH);
 
     // Hiding the sprite takes its light occluder with it, which is the whole reason the cube's
     // shadow does not outlive the cube.

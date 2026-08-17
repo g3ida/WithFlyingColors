@@ -1,8 +1,10 @@
 namespace Wfc.test;
 
 using System.Threading.Tasks;
+using Chickensoft.Sync.Primitives;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Utils;
 
 public static class TestHelpers {
@@ -32,6 +34,24 @@ public static class TestHelpers {
     var timedOut = _completion(tree.ToSignal(tree.CreateTimer(timeoutSeconds), SceneTreeTimer.SignalName.Timeout));
 
     return await Task.WhenAny(fired, timedOut) == fired;
+  }
+
+  // The channel's answer to ExpectSignal, with the same deadline and the same reason for it.
+  // A message is announced and gone, so the binding has to be up before whatever raises it runs.
+  public static async Task<bool> ExpectEvent<TMessage>(
+    this SceneTree tree,
+    double timeoutSeconds = 5.0
+  ) where TMessage : struct {
+    var heard = false;
+    using var binding = GameEvents.Instance.Channel.Bind()
+      .On((in TMessage _) => heard = true);
+
+    var elapsed = 0.0;
+    while (!heard && elapsed < timeoutSeconds) {
+      await tree.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+      elapsed += 1.0 / Engine.PhysicsTicksPerSecond;
+    }
+    return heard;
   }
 
   // SignalAwaiter is awaitable but is not a Task, and WhenAny needs Tasks to race.

@@ -1,5 +1,6 @@
 namespace Wfc.Entities.Tetris;
 
+using Chickensoft.Sync.Primitives;
 using System;
 using System.Collections.Generic;
 using Chickensoft.AutoInject;
@@ -12,6 +13,7 @@ using Wfc.Core.Serialization;
 using Wfc.Entities.Tetris.Tetrominos;
 using Wfc.Entities.World.Platforms;
 using Wfc.Entities.World.Player;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using Wfc.Utils.Colors;
@@ -20,6 +22,8 @@ using EventHandler = Wfc.Core.Event.EventHandler;
 [ScenePath]
 [Meta(typeof(IAutoNode))]
 public partial class TetrisPool : Node2D, IPersistent {
+  private AutoChannel.Binding? _dyingBinding;
+
 
   #region Signals
   public override void _Notification(int what) => this.Notify(what);
@@ -365,7 +369,7 @@ public partial class TetrisPool : Node2D, IPersistent {
     var lines = DetectLines();
     if (lines.Count > 0) {
       EmitSignal(TetrisPool.SignalName.LinesRemoved, lines.Count);
-      EventHandler.Instance.EmitTetrisLinesRemoved();
+      GameEvents.Instance.OnTetrisLinesRemoved();
     }
     foreach (var line in lines) {
       RemoveLineCells(line);
@@ -487,7 +491,7 @@ public partial class TetrisPool : Node2D, IPersistent {
     }
   }
 
-  private void _onPlayerDying(Node? area, Vector2 position, int entityType) {
+  private void _onPlayerDying() {
     _isPaused = true;
   }
 
@@ -521,7 +525,7 @@ public partial class TetrisPool : Node2D, IPersistent {
     }
     _hasEscaped = true;
     _saveData = new SaveData(hasEscaped: true);
-    EventHandler.Instance.EmitTetrisPoolEscaped();
+    GameEvents.Instance.OnTetrisPoolEscaped();
     _stopForEscape();
   }
 
@@ -542,12 +546,14 @@ public partial class TetrisPool : Node2D, IPersistent {
   }
 
   private void ConnectSignals() {
-    EventHandler.Instance.Events.PlayerDying += _onPlayerDying;
+    _dyingBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PlayerDying _) => _onPlayerDying());
     EventHandler.Instance.Events.CheckpointLoaded += reset;
   }
 
   private void DisconnectSignals() {
-    EventHandler.Instance.Events.PlayerDying -= _onPlayerDying;
+    _dyingBinding?.Dispose();
+    _dyingBinding = null;
     EventHandler.Instance.Events.CheckpointLoaded -= reset;
   }
 

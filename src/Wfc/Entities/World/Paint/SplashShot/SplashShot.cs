@@ -1,6 +1,7 @@
 namespace Wfc.Entities.World.Paint;
 
 using Godot;
+using Wfc.Core.Event;
 using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
@@ -108,7 +109,7 @@ public partial class SplashShot : Node2D {
   // that moves is carried by it - the same way the paint a dropped bucket leaves is.
   private void _land(Vector2 where, Node? surface) {
     PaintSpread.Lay(this, where, surface, _group, _width, _life, _laid);
-    EventHandler.Instance.EmitPaintSplashed(where);
+    GameEvents.Instance.OnPaintSplashed(where);
     QueueFree();
   }
 
@@ -120,7 +121,7 @@ public partial class SplashShot : Node2D {
       return;
     }
     if (!player.AcceptsColorOfAt(_colorAreaNode.GlobalPosition, _colorAreaNode)) {
-      EventHandler.Instance.EmitPlayerDying(_colorAreaNode, player.GlobalPosition, EntityType.Platform);
+      GameEvents.Instance.OnPlayerDying(_colorAreaNode, player.GlobalPosition, EntityType.Platform);
     }
     // Gone either way. A gobbet of paint that meets the cube has met something: on a face that
     // takes it, it is a harmless splash, and it has still stopped. Left flying it sails on through

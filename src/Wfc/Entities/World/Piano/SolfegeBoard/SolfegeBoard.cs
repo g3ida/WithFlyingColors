@@ -1,16 +1,20 @@
 namespace Wfc.Entities.World.Piano;
 
+using Chickensoft.Sync.Primitives;
 using System.Collections.Generic;
 using Godot;
 using Wfc.Core.Event;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
+using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
 using EventHandler = Wfc.Core.Event.EventHandler;
 
 [ScenePath]
 public partial class SolfegeBoard : Node2D, IPersistent {
+  private AutoChannel.Binding? _pianoBinding;
+
   private const float DURATION = 0.8f;
   private static readonly Vector2 FLIP_CYLINDER_DIRECTION = new Vector2(5.0f, 1.0f);
   private Texture2D MusicPaperRectTexture = GD.Load<Texture2D>("res://Assets/Sprites/Piano/music-paper-rect.png");
@@ -61,13 +65,15 @@ public partial class SolfegeBoard : Node2D, IPersistent {
 
   public override void _EnterTree() {
     this.WireNodes();
-    EventHandler.Instance.Events.PianoNotePressed += _OnNotePressed;
+    _pianoBinding ??= GameEvents.Instance.Channel.Bind()
+      .On((in IGameEvents.PianoNotePressed message) => _OnNotePressed(message.NoteIndex));
     EventHandler.Instance.Events.CheckpointLoaded += Reset;
     EventHandler.Instance.Events.CheckpointReached += _OnCheckpointHit;
   }
 
   public override void _ExitTree() {
-    EventHandler.Instance.Events.PianoNotePressed -= _OnNotePressed;
+    _pianoBinding?.Dispose();
+    _pianoBinding = null;
     EventHandler.Instance.Events.CheckpointLoaded -= Reset;
     EventHandler.Instance.Events.CheckpointReached -= _OnCheckpointHit;
   }
@@ -112,7 +118,7 @@ public partial class SolfegeBoard : Node2D, IPersistent {
     }
     _time = 0.0f;
     _isFlipping = true;
-    EventHandler.Instance.EmitPageFlipped();
+    GameEvents.Instance.OnPageFlipped();
   }
 
   private void _InitShader() {
@@ -219,7 +225,7 @@ public partial class SolfegeBoard : Node2D, IPersistent {
   // missed was the cursor snapping back over ~40 ms, on a board mounted well above the keys,
   // while the note they played sounded exactly as if it had been right.
   private void EmitWrongNoteEvent() {
-    EventHandler.Instance.EmitWrongPianoNotePlayed();
+    GameEvents.Instance.OnWrongPianoNotePlayed();
     EmitSignal(nameof(WrongNotePlayed));
   }
 

@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Shouldly;
+using Wfc.Core.Event;
 using Wfc.Entities.World.Camera;
+using Wfc.Screens.Levels;
 using Wfc.test.instrumented.Helpers;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -27,7 +29,7 @@ public class GameCameraTests(Node testScene) : TestClass(testScene) {
     await _frames(1);
 
     // Deep, so a punch left mid-release is unmistakable against the restored zoom.
-    EventHandler.Instance.EmitCameraZoomPunchRequest(0.5f);
+    GameEvents.Instance.RequestCameraZoomPunch(0.5f);
     var punched = await _waitFor(() => camera.Zoom.X < 0.999f);
     punched.ShouldBeTrue("the punch never moved the zoom, so there was nothing to interrupt");
 
@@ -74,7 +76,7 @@ public class GameCameraTests(Node testScene) : TestClass(testScene) {
     camera.GetScreenCenterPosition().Y.ShouldBe(centre.Y, 3f,
       "the collapsed limits do not decide the framing on their own");
 
-    EventHandler.Instance.EmitCameraZoomPunchRequest(0.2f);
+    GameEvents.Instance.RequestCameraZoomPunch(0.2f);
     await _frames(180);
     camera.GetScreenCenterPosition().Y.ShouldBe(centre.Y, 3f,
       "the zoom pulse walked the camera to a different resting place");
@@ -232,12 +234,12 @@ public class GameCameraTests(Node testScene) : TestClass(testScene) {
     camera.SetDragMarginTop(0.05f);
     camera.SetDragMarginBottom(0.05f);
 
-    EventHandler.Instance.EmitPlayerJumped();
-    EventHandler.Instance.EmitPlayerJumped();
+    GameEvents.Instance.OnPlayerJumped();
+    GameEvents.Instance.OnPlayerJumped();
     camera.DragTopMargin.ShouldBe(GameCamera.CAMERA_DRAG_JUMP, 0.001f,
       "the jump never widened the margin");
 
-    EventHandler.Instance.EmitPlayerLand();
+    GameEvents.Instance.OnPlayerLanded();
     camera.DragTopMargin.ShouldBe(0.05f, 0.001f, "landing kept the jump's widened top margin");
     camera.DragBottomMargin.ShouldBe(0.05f, 0.001f, "landing kept the jump's widened bottom margin");
 

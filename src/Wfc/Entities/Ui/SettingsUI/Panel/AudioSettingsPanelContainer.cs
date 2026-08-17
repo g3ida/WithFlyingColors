@@ -37,18 +37,18 @@ public partial class AudioSettingsPanelContainer : PanelContainer {
   private void _onSfxSliderDragEnded(bool valueChanged) {
     var newValue = (float)_sfxSliderNode.Value;
     GameSettings.SfxVolume = newValue;
-    EventHandler.Instance.EmitSfxVolumeChanged(newValue);
+    GameEvents.Instance.OnSfxVolumeChanged(newValue);
   }
 
   private static void _on_SfxSliderButtonValueChanged(double value) {
     var newValue = (float)value;
     GameSettings.SfxVolume = newValue;
-    EventHandler.Instance.EmitSfxVolumeChanged(newValue);
+    GameEvents.Instance.OnSfxVolumeChanged(newValue);
   }
 
   private static void _onMusicSliderValueChanged(double value) {
     var newValue = (float)value;
     GameSettings.MusicVolume = newValue;
-    EventHandler.Instance.EmitMusicVolumeChanged(newValue);
+    GameEvents.Instance.OnMusicVolumeChanged(newValue);
   }
 }

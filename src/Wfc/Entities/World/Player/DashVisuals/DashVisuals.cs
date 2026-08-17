@@ -1,6 +1,8 @@
 namespace Wfc.Entities.World.Player;
 
 using Godot;
+using Wfc.Core.Event;
+using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
 using EventHandler = Wfc.Core.Event.EventHandler;
@@ -68,8 +70,8 @@ public static class DashVisuals {
   // entered: a dash still inside its permissiveness window has nothing to draw yet.
   public static void Begin(Player player, Vector2 direction, float travel) {
     player.HitstopNode.Start(HITSTOP_DURATION, HITSTOP_TIME_SCALE);
-    EventHandler.Instance.EmitCameraZoomPunchRequest(ZOOM_PUNCH_STRENGTH);
-    EventHandler.Instance.EmitCameraShakeRequest(LAUNCH_SHAKE_AMPLITUDE);
+    GameEvents.Instance.RequestCameraZoomPunch(ZOOM_PUNCH_STRENGTH);
+    GameEvents.Instance.RequestCameraShake(LAUNCH_SHAKE_AMPLITUDE);
     _burst(player.DashLaunchParticlesNode, player, Vector2.Zero, -direction);
     _spawnStreaks(player, direction, travel);
   }
@@ -83,7 +85,7 @@ public static class DashVisuals {
   // gone if it had anywhere left to go.
   public static void Impact(Player player, Vector2 direction) {
     var forward = direction.Normalized();
-    EventHandler.Instance.EmitCameraShakeRequest(IMPACT_SHAKE_AMPLITUDE);
+    GameEvents.Instance.RequestCameraShake(IMPACT_SHAKE_AMPLITUDE);
     _burst(player.DashImpactParticlesNode, player, forward * player.CollisionHalfExtentsLocal.X, -forward);
     _relaxDeform(player, IMPACT_RELAX);
   }
