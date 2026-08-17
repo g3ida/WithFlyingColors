@@ -2,8 +2,8 @@ namespace WithFlyingColors;
 
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
+using Chickensoft.GodotTestDriver;
 using Godot;
-using GodotTestDriver;
 using Shouldly;
 using Wfc.Entities.World.Player;
 using Wfc.test;

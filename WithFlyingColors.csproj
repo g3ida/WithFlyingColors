@@ -21,21 +21,32 @@
     <Copyright>© 2023 G3idaGames</Copyright>
     <Authors>G3ida</Authors>
     <Company>G3idaGames</Company>
-    <!-- Don't include unit tests in release builds. -->
-    <DefaultItemExcludes Condition="'$(Configuration)' == 'ExportRelease'">
-      $(DefaultItemExcludes);test/**/*
-    </DefaultItemExcludes>
     <!-- Catch compiler-mismatch issues with the Introspection generator -->
     <WarningsAsErrors>CS9057</WarningsAsErrors>
     <NoWarn>$(NoWarn);CA1805</NoWarn>
+    <SkipTests Condition="'$(SKIP_TESTS)' != ''">true</SkipTests>
+    <RunTests>false</RunTests>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(Configuration)' == 'Debug' or '$(Configuration)' == 'ExportDebug' ">
+  <!--
+    One switch owns the test tree: the packages, the sources and the entry point in Main
+    all read RunTests, so no configuration can reference a test package it does not compile
+    against. Set SKIP_TESTS to build Debug without any of it.
+  -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(SkipTests)' != 'true'">
+    <RunTests>true</RunTests>
+    <DefineConstants>$(DefineConstants);RUN_TESTS</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Lets the source generators resolve node paths against the scenes at compile time. -->
+    <AdditionalFiles Include="**/*.tscn" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RunTests)' == 'true'">
     <!-- Test dependencies go here! -->
     <!-- Dependencies added here will not be included in release builds. -->
     <PackageReference Include="Chickensoft.GoDotTest" Version="2.0.43" />
     <PackageReference Include="NUnit" Version="5.0.0-beta.1" />
     <!-- Used to drive test scenes when testing visual code -->
-    <PackageReference Include="GodotTestDriver" Version="2.1.0" />
+    <PackageReference Include="Chickensoft.GodotTestDriver" Version="3.1.79" />
     <!-- Bring your own assertion library for tests! -->
     <!-- We're using Shouldly for this example, but you can use anything. -->
     <PackageReference Include="Shouldly" Version="5.0.0-preview.2" />
@@ -43,6 +54,13 @@
     <PackageReference Include="LightMock.Generator" Version="1.2.3" />
     <!-- LightMoq is a Chickensoft package which makes it more like Moq. -->
     <PackageReference Include="LightMoq" Version="0.1.0" />
+    <!--
+      LightMock cannot generate a mock for any Chickensoft.GodotNodeInterfaces interface:
+      Godot's own Node.Atr takes a parameter named "context", which shadows the generator's
+      invocation context, so the generated file does not compile. Moq proxies at runtime
+      and does not care.
+    -->
+    <PackageReference Include="Moq" Version="4.20.72" />
   </ItemGroup>
   <ItemGroup>
     <!-- Production dependencies go here! -->
@@ -51,8 +69,10 @@
     <PackageReference Include="Chickensoft.Introspection.Generator" Version="3.0.3" PrivateAssets="all" OutputItemType="analyzer" />
     <PackageReference Include="Chickensoft.AutoInject" Version="2.13.30" PrivateAssets="all" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)'!='DEBUG'">
-    <Compile Remove="test\**" />
-    <EmbeddedResource Remove="test\**" />
+  <ItemGroup Condition="'$(RunTests)' != 'true'">
+    <Compile Remove="test/**/*.cs" />
+    <EmbeddedResource Remove="test/**/*" />
+    <None Remove="test/**/*" />
+    <AdditionalFiles Remove="test/**/*" />
   </ItemGroup>
 </Project>
