@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/tetris_line.ogg-575b7ef3774078ca88cebf554f3ef
 
 [params]
 
-loop=true
+loop=false
 loop_offset=0
 bpm=0
 beat_count=0

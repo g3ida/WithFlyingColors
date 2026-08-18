@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/brick.ogg-7068b2e11f47fee2f0ea2986dc97e895.og
 
 [params]
 
-loop=true
+loop=false
 loop_offset=0
 bpm=0
 beat_count=0

@@ -37,17 +37,13 @@ public partial class SfxManager : Node2D, ISfxManager {
 
   private void FillSfxPool() {
     foreach (var (key, data) in GameSfx.Data) {
-      var loadedStream = GD.Load<AudioStream>(data.Path);
+      var stream = GD.Load<AudioStream>(data.Path);
       // A sound the editor has not imported yet resolves to null, and taking the whole pool
       // down with it would leave the game silent rather than just that one effect.
-      if (loadedStream is null) {
+      if (stream is null) {
         Log.Error($"Could not load sfx stream: {data.Path}");
         continue;
       }
-      // Loading hands back the one cached instance the scenes share, so the pool clears the
-      // loop flag on a copy of its own - in place, it would stop an ambience mid-level.
-      var stream = (AudioStream)loadedStream.Duplicate();
-      stream.SetLooping(false);
       var audioPlayer = new AudioStreamPlayer {
         Stream = stream,
         VolumeDb = data.Volume,

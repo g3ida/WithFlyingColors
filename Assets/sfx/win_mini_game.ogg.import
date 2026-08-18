@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/win_mini_game.ogg-38ec2f3c73dd0460e5460d3e3de
 
 [params]
 
-loop=true
+loop=false
 loop_offset=0
 bpm=0
 beat_count=0

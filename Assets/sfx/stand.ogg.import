@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/stand.ogg-62c047a0512d4f118b7f5b3f7130c936.og
 
 [params]
 
-loop=true
+loop=false
 loop_offset=0
 bpm=0
 beat_count=0
