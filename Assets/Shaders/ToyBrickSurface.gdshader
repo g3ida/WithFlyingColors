@@ -33,7 +33,7 @@ uniform float u_aspect_ratio = 1.0;
 uniform float u_timer = -10.0;
 uniform vec2 u_contact_pos = vec2(0.5, 0.5);
 uniform float propagation_speed = 1.0;
-uniform float darkness = 0.78;
+uniform float darkness = 0.92;
 
 // Both are what the ground tileset bakes into its edge tiles, and PlatformSurface reproduces from
 // the same numbers: a brick platform only reads as part of the same world while it is cut and

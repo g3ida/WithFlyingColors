@@ -28,9 +28,6 @@ public partial class SimplePlatform : StaticBody2D {
   public string Group { get; set; } = "blue";
 
   [Export]
-  public float splash_darkness { get; set; } = 0.78f;
-
-  [Export]
   public bool geared { get; set; } = true;
 
   private float animationTimer = 10;
@@ -108,10 +105,10 @@ public partial class SimplePlatform : StaticBody2D {
 
     var camera = GameLevel.CameraNode;
     if (camera != null && _ninePatchRectNode.Material is ShaderMaterial material) {
-      PlatformSplash.Write(material, camera, contactPosition, animationTimer, splash_darkness);
+      PlatformSplash.Write(material, camera, contactPosition, animationTimer);
     }
 
-    if (animationTimer > PlatformSplash.Duration(splash_darkness)) {
+    if (animationTimer > PlatformSplash.Duration) {
       SetProcess(false);
     }
   }

@@ -15,9 +15,6 @@ public partial class PlatformTileMap : TileMapLayer {
   [Dependency]
   public IGameLevel GameLevel => this.DependOn<IGameLevel>();
 
-  [Export]
-  public float SplashDarkness { get; set; } = 0.78f;
-
   private float _animationTimer = 10;
   private Vector2 _contactPosition = new Vector2(0, 0);
 
@@ -51,10 +48,10 @@ public partial class PlatformTileMap : TileMapLayer {
 
     var camera = GameLevel.CameraNode;
     if (camera != null && Material is ShaderMaterial material) {
-      PlatformSplash.Write(material, camera, _contactPosition, _animationTimer, SplashDarkness);
+      PlatformSplash.Write(material, camera, _contactPosition, _animationTimer);
     }
 
-    if (_animationTimer > PlatformSplash.Duration(SplashDarkness)) {
+    if (_animationTimer > PlatformSplash.Duration) {
       SetProcess(false);
     }
   }

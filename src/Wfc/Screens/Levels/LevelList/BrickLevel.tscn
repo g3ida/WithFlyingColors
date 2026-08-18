@@ -38,7 +38,7 @@ shader_parameter/u_aspect_ratio = 1.0
 shader_parameter/u_timer = -10.0
 shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
 shader_parameter/propagation_speed = 1.0
-shader_parameter/darkness = 0.78
+shader_parameter/darkness = 0.92
 
 [sub_resource type="Image" id="Image_adwiw"]
 data = {
@@ -68,7 +68,7 @@ shader_parameter/u_aspect_ratio = 1.0
 shader_parameter/u_timer = -10.0
 shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
 shader_parameter/propagation_speed = 1.0
-shader_parameter/darkness = 0.78
+shader_parameter/darkness = 0.92
 
 [sub_resource type="Image" id="Image_f6ymo"]
 data = {
@@ -98,7 +98,7 @@ shader_parameter/u_aspect_ratio = 1.0
 shader_parameter/u_timer = -10.0
 shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
 shader_parameter/propagation_speed = 1.0
-shader_parameter/darkness = 0.78
+shader_parameter/darkness = 0.92
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8ew78"]
 resource_local_to_scene = true
@@ -132,7 +132,7 @@ shader_parameter/u_aspect_ratio = 1.0
 shader_parameter/u_timer = -10.0
 shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
 shader_parameter/propagation_speed = 1.0
-shader_parameter/darkness = 0.78
+shader_parameter/darkness = 0.92
 
 [sub_resource type="Image" id="Image_088tm"]
 data = {
@@ -162,7 +162,7 @@ shader_parameter/u_aspect_ratio = 1.0
 shader_parameter/u_timer = -10.0
 shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
 shader_parameter/propagation_speed = 1.0
-shader_parameter/darkness = 0.78
+shader_parameter/darkness = 0.92
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mhqaf"]
 resource_local_to_scene = true
@@ -196,7 +196,7 @@ shader_parameter/u_aspect_ratio = 1.0
 shader_parameter/u_timer = -10.0
 shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
 shader_parameter/propagation_speed = 1.0
-shader_parameter/darkness = 0.78
+shader_parameter/darkness = 0.92
 
 [sub_resource type="Image" id="Image_a3v2d"]
 data = {
@@ -226,7 +226,7 @@ shader_parameter/u_aspect_ratio = 1.0
 shader_parameter/u_timer = -10.0
 shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
 shader_parameter/propagation_speed = 1.0
-shader_parameter/darkness = 0.78
+shader_parameter/darkness = 0.92
 
 [sub_resource type="Image" id="Image_itwhl"]
 data = {
@@ -256,7 +256,7 @@ shader_parameter/u_aspect_ratio = 1.0
 shader_parameter/u_timer = -10.0
 shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
 shader_parameter/propagation_speed = 1.0
-shader_parameter/darkness = 0.78
+shader_parameter/darkness = 0.92
 
 [sub_resource type="Image" id="Image_mqqhn"]
 data = {
@@ -286,7 +286,7 @@ shader_parameter/u_aspect_ratio = 1.0
 shader_parameter/u_timer = -10.0
 shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
 shader_parameter/propagation_speed = 1.0
-shader_parameter/darkness = 0.78
+shader_parameter/darkness = 0.92
 
 [sub_resource type="Image" id="Image_d1kt4"]
 data = {
@@ -316,7 +316,7 @@ shader_parameter/u_aspect_ratio = 1.0
 shader_parameter/u_timer = -10.0
 shader_parameter/u_contact_pos = Vector2(0.5, 0.5)
 shader_parameter/propagation_speed = 1.0
-shader_parameter/darkness = 0.78
+shader_parameter/darkness = 0.92
 
 [node name="LevelHandler" unique_id=603410133 instance=ExtResource("1")]
 Track = "fight"

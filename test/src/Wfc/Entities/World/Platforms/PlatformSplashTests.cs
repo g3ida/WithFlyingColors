@@ -14,7 +14,6 @@ using Wfc.test;
 // it. The surface then plays a splash nobody can see, which is indistinguishable from the
 // landing never having been heard.
 public class PlatformSplashTests(Node testScene) : TestClass(testScene) {
-  private const float DARKNESS = 0.78f;
   private const float TOLERANCE = 0.001f;
 
   private Camera2D _cameraNode = default!;
@@ -90,7 +89,7 @@ public class PlatformSplashTests(Node testScene) : TestClass(testScene) {
   private Vector2 _centre() => _cameraNode.GetScreenCenterPosition();
 
   private void _write(Vector2 contact) =>
-    PlatformSplash.Write(_material, _cameraNode, contact, 0f, DARKNESS);
+    PlatformSplash.Write(_material, _cameraNode, contact, 0f);
 
   private Vector2 _contactPos() =>
     _material.GetShaderParameter(PlatformSplash.ContactPosParam).AsVector2();

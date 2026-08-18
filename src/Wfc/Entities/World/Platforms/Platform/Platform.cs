@@ -29,9 +29,6 @@ public partial class Platform : AnimatableBody2D {
 
   [Export]
   public bool Geared { get; set; } = true;
-
-  [Export]
-  public float SplashDarkness { get; set; } = 0.78f;
   #endregion Exports
 
   private float _animationTimer = 10;
@@ -87,10 +84,10 @@ public partial class Platform : AnimatableBody2D {
 
     var camera = GameLevel.CameraNode;
     if (camera != null && _ninePatchRectNode.Material is ShaderMaterial material) {
-      PlatformSplash.Write(material, camera, _contactPosition, _animationTimer, SplashDarkness);
+      PlatformSplash.Write(material, camera, _contactPosition, _animationTimer);
     }
 
-    if (_animationTimer > PlatformSplash.Duration(SplashDarkness)) {
+    if (_animationTimer > PlatformSplash.Duration) {
       SetProcess(false);
     }
   }
