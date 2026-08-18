@@ -13,6 +13,7 @@ shader_parameter/flip_duration = 0.0
 shader_parameter/cylinder_ratio = 0.0
 shader_parameter/cylinder_direction = Vector2(5, 1)
 shader_parameter/rect = Vector2(0, 0)
+shader_parameter/modulate_color = Color(1, 1, 1, 1)
 
 [node name="SolfegeBoard" type="Node2D"]
 z_index = -1

@@ -29,7 +29,9 @@ public partial class BoxFace : BaseFace {
       return;
     }
     else if (!AcceptsColorOf(area)) {
-      GameEvents.Instance.OnPlayerDying(area, GlobalPosition, EntityType.Platform);
+      if (IsColorContactLethal(player, area)) {
+        GameEvents.Instance.OnPlayerDying(area, GlobalPosition, EntityType.Platform);
+      }
     }
     else if (!player.IsStanding()) {
       GameEvents.Instance.OnPlayerLandedOn(area, GlobalPosition);

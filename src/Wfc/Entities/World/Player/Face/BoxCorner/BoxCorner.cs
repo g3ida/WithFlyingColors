@@ -48,7 +48,9 @@ public partial class BoxCorner : BaseFace {
     }
 
     if (!AcceptsColorOf(area)) {
-      GameEvents.Instance.OnPlayerDying(area, GlobalPosition, EntityType.Platform);
+      if (IsColorContactLethal(player, area)) {
+        GameEvents.Instance.OnPlayerDying(area, GlobalPosition, EntityType.Platform);
+      }
     }
     else if (area is Gem gem) {
       // do nothing

@@ -463,6 +463,66 @@ public partial class Player : CharacterBody2D, IPersistent {
   public bool AcceptsColorOfAt(Vector2 globalPoint, Area2D area) =>
     _acceptsAt(globalPoint, face => face.AcceptsColorOf(area));
 
+  // How much of the cube's own edge something has to cover before touching it counts as being on
+  // it, as a share of that edge.
+  private const float GRAZE_SHARE = 0.1f;
+
+  // The same line in world units, for a surface measuring how much of the cube it has under it.
+  // One number, so a key deciding whether the cube is on it and a colour deciding whether to
+  // kill it forgive exactly the same contact.
+  public float GrazeWidth => GetCollisionHalfExtents().X * 2.0f * GRAZE_SHARE;
+
+  // Whether `area` covers so little of the cube that this is the cube overhanging the edge of
+  // something it is allowed to be on, rather than standing on something it is not. Walking a
+  // coloured run to its end always reaches past it a little, and a surface the width of a key
+  // has a neighbour a few pixels away wearing a colour that kills.
+  //
+  // Measured against the cube, never against the sensor that reported the contact: the corner
+  // separators are a thirtieth of a face's length, so a rule read off the sensor would forgive
+  // either everything a corner can touch or nothing, depending which way it was tuned.
+  public bool IsGrazedBy(Area2D area) {
+    var half = CollisionHalfExtentsLocal;
+    var covered = _coveredExtentsOf(area);
+    return covered is { } extents
+      && extents.X < half.X * 2.0f * GRAZE_SHARE
+      && extents.Y < half.Y * 2.0f * GRAZE_SHARE;
+  }
+
+  // The size of the region `area` shares with the cube, along each of the cube's own axes. Null
+  // when the area is built from shapes this cannot measure, which reads as a contact rather than
+  // a graze - an unmeasured touch keeps killing exactly as it did before.
+  private Vector2? _coveredExtentsOf(Area2D area) {
+    var half = CollisionHalfExtentsLocal;
+    var toLocal = GlobalTransform.AffineInverse();
+    Vector2? widest = null;
+    foreach (var owner in area.GetShapeOwners()) {
+      var ownerId = (uint)owner;
+      var shapeTransform = toLocal * area.GlobalTransform * area.ShapeOwnerGetTransform(ownerId);
+      for (var i = 0; i < area.ShapeOwnerGetShapeCount(ownerId); i++) {
+        var shapeHalf = _halfExtentsOf(area.ShapeOwnerGetShape(ownerId, i));
+        if (shapeHalf is not { } shape) {
+          return null;
+        }
+        var reach = new Vector2(
+          (Mathf.Abs(shapeTransform.X.X) * shape.X) + (Mathf.Abs(shapeTransform.Y.X) * shape.Y),
+          (Mathf.Abs(shapeTransform.X.Y) * shape.X) + (Mathf.Abs(shapeTransform.Y.Y) * shape.Y)
+        );
+        var overlap = new Vector2(
+          Mathf.Max(0.0f, Mathf.Min(half.X, shapeTransform.Origin.X + reach.X) - Mathf.Max(-half.X, shapeTransform.Origin.X - reach.X)),
+          Mathf.Max(0.0f, Mathf.Min(half.Y, shapeTransform.Origin.Y + reach.Y) - Mathf.Max(-half.Y, shapeTransform.Origin.Y - reach.Y))
+        );
+        widest = widest is { } best ? best.Max(overlap) : overlap;
+      }
+    }
+    return widest;
+  }
+
+  private static Vector2? _halfExtentsOf(Shape2D shape) => shape switch {
+    RectangleShape2D rect => rect.Size * 0.5f,
+    CircleShape2D circle => new Vector2(circle.Radius, circle.Radius),
+    _ => null,
+  };
+
   // The point of the cube's surface nearest something out in the world - where anything drawn
   // between the two has to leave from, and the point whose color decides what it is drawn in.
   public Vector2 ClosestSurfacePoint(Vector2 globalPoint) {
