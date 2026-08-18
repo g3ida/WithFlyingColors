@@ -8,7 +8,6 @@ using Wfc.Core.Event;
 using Wfc.Core.Logger;
 using Wfc.Core.Persistence;
 using Wfc.Core.Serialization;
-using Wfc.Utils;
 using Wfc.Utils.Attributes;
 
 [ScenePath]
@@ -116,7 +115,6 @@ public partial class MusicTrackManager : Node2D, IMusicTrackManager, IPersistent
       Bus = BUS_NAME,
       VolumeDb = volume
     };
-    audio_player.Stream.SetLooping(true);
 
     _musicPool[name] = new Track(name, audio_player, volume);
     AddChild(audio_player);

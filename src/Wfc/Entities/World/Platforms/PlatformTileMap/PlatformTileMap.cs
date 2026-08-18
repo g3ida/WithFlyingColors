@@ -49,27 +49,11 @@ public partial class PlatformTileMap : TileMapLayer {
 
     _animationTimer += (float)delta;
 
-    if (Material is ShaderMaterial shaderMaterial) {
-      // FIXME: Migration 4.0 - Viewport - there is also SubViewport.Size2DOverride;
-      //Vector2 resolution = GetViewport().GetSize2dOverride();
-      Vector2 resolution = new Vector2(1, 1);
-
-      Camera2D cam = GameLevel.CameraNode;
-
-      if (cam != null) {
-        Vector2 camPos = cam.GetScreenCenterPosition();
-        Vector2 currentPos = new Vector2(
-            _contactPosition.X + (resolution.X / 2) - camPos.X,
-            _contactPosition.Y + (resolution.Y / 2) - camPos.Y);
-        Vector2 pos = new Vector2(currentPos.X / resolution.X, currentPos.Y / resolution.Y);
-        Vector2 positionInShaderCoords = new Vector2(pos.X, 1 - pos.Y);
-
-        shaderMaterial.SetShaderParameter(PlatformSplash.ContactPosParam, positionInShaderCoords);
-        shaderMaterial.SetShaderParameter(PlatformSplash.TimerParam, _animationTimer);
-        shaderMaterial.SetShaderParameter(PlatformSplash.AspectRatioParam, resolution.Y / resolution.X);
-        shaderMaterial.SetShaderParameter(PlatformSplash.DarknessParam, SplashDarkness);
-      }
+    var camera = GameLevel.CameraNode;
+    if (camera != null && Material is ShaderMaterial material) {
+      PlatformSplash.Write(material, camera, _contactPosition, _animationTimer, SplashDarkness);
     }
+
     if (_animationTimer > PlatformSplash.Duration(SplashDarkness)) {
       SetProcess(false);
     }

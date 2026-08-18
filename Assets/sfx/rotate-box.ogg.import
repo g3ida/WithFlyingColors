@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/rotate-box.ogg-2650f13fa821915a7f7a85a8ecf075
 
 [params]
 
-loop=true
+loop=false
 loop_offset=0
 bpm=0
 beat_count=0

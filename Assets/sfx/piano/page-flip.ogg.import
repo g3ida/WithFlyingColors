@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/page-flip.ogg-457bea4c0d67bebe3b835552eab7f9a
 
 [params]
 
-loop=true
+loop=false
 loop_offset=0
 bpm=0
 beat_count=0

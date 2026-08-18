@@ -49,7 +49,6 @@ public partial class SfxManager : Node2D, ISfxManager {
         VolumeDb = data.Volume,
         Bus = data.Bus
       };
-      stream.SetLooping(false);
       if (data.PitchScale is not null)
         audioPlayer.PitchScale = data.PitchScale.Value;
 

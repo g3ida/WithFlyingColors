@@ -1,17 +1,13 @@
-[gd_scene load_steps=19 format=3 uid="uid://nvn44bv2puaj"]
+[gd_scene format=3 uid="uid://nvn44bv2puaj"]
 
 [ext_resource type="SpriteFrames" path="res://Assets/Animations/player_frames.tres" id="1"]
 [ext_resource type="Script" uid="uid://btfa8iyy5gce2" path="res://src/Wfc/Entities/World/Player/Player/Player.cs" id="2"]
 [ext_resource type="PackedScene" uid="uid://bcrcp4q2theea" path="res://src/Wfc/Entities/World/Player/Face/BoxFace/BoxFace.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://byaynnxa1dwb6" path="res://src/Wfc/Entities/World/Player/Face/BoxCorner/FaceSeparator.tscn" id="4"]
-[ext_resource type="Shader" path="res://Assets/Shaders/DashBullet.gdshader" id="5"]
-[ext_resource type="Script" path="res://src/Wfc/Utils/Hitstop/Hitstop.cs" id="6"]
+[ext_resource type="Shader" uid="uid://hvi7vtrue4k8" path="res://Assets/Shaders/DashBullet.gdshader" id="5"]
+[ext_resource type="Script" uid="uid://iv2oexig3dcb" path="res://src/Wfc/Utils/Hitstop/Hitstop.cs" id="6"]
 [ext_resource type="Texture2D" uid="uid://bifub54irtuvc" path="res://Assets/Sprites/Particles/glow_circle.png" id="8"]
-[ext_resource type="PackedScene" path="res://src/Wfc/Entities/World/Player/ColorArc/ColorArc.tscn" id="9"]
-
-[sub_resource type="ShaderMaterial" id="7"]
-resource_local_to_scene = true
-shader = ExtResource("5")
+[ext_resource type="PackedScene" uid="uid://dxtklc0svp1ns" path="res://src/Wfc/Entities/World/Player/ColorArc/ColorArc.tscn" id="9"]
 
 [sub_resource type="Curve" id="6"]
 _limits = [0.0, 45.0, 0.0, 1.0]
@@ -42,21 +38,37 @@ point_count = 3
 offsets = PackedFloat32Array(0, 0.15, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.8, 1, 1, 1, 0)
 
+[sub_resource type="ShaderMaterial" id="7"]
+resource_local_to_scene = true
+shader = ExtResource("5")
+shader_parameter/dash_dir = Vector2(1, 0)
+shader_parameter/strength = 0.0
+shader_parameter/shape = 0.6
+shader_parameter/cap = 0.09
+shader_parameter/scoop = 0.14
+shader_parameter/taper = 0.36
+shader_parameter/belly = 0.16
+shader_parameter/glow = 0.5
+shader_parameter/tail_fade = 0.35
+shader_parameter/squash_axis = Vector2(0, 1)
+shader_parameter/squash = 0.0
+shader_parameter/side_round = 0.34
+
 [sub_resource type="OccluderPolygon2D" id="2"]
 polygon = PackedVector2Array(-47, -47, 47, -47, 47, 47, -47, 47)
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(95.4, 95.4)
 
-[node name="Player" type="CharacterBody2D" groups=["persist"]]
+[node name="Player" type="CharacterBody2D" unique_id=1352562589 groups=["persist"]]
 collision_layer = 2
 collision_mask = 1157
 floor_stop_on_slope = false
-platform_on_leave = 1
 floor_max_angle = 0.113446
+platform_on_leave = 1
 script = ExtResource("2")
 
-[node name="JumpParticles" type="CPUParticles2D" parent="."]
+[node name="JumpParticles" type="CPUParticles2D" parent="." unique_id=1898769423]
 emitting = false
 amount = 2
 lifetime = 0.5
@@ -67,15 +79,14 @@ angle_curve = SubResource("6")
 scale_amount_curve = SubResource("4")
 color_ramp = SubResource("5")
 
-[node name="DashLaunchParticles" type="CPUParticles2D" parent="."]
+[node name="DashLaunchParticles" type="CPUParticles2D" parent="." unique_id=490482917]
 emitting = false
 amount = 10
+texture = ExtResource("8")
 lifetime = 0.3
 one_shot = true
 explosiveness = 1.0
 lifetime_randomness = 0.35
-local_coords = false
-texture = ExtResource("8")
 emission_shape = 1
 emission_sphere_radius = 24.0
 direction = Vector2(-1, 0)
@@ -90,15 +101,14 @@ scale_amount_max = 0.7
 scale_amount_curve = SubResource("8")
 color_ramp = SubResource("9")
 
-[node name="DashImpactParticles" type="CPUParticles2D" parent="."]
+[node name="DashImpactParticles" type="CPUParticles2D" parent="." unique_id=1365158272]
 emitting = false
 amount = 16
+texture = ExtResource("8")
 lifetime = 0.38
 one_shot = true
 explosiveness = 1.0
 lifetime_randomness = 0.3
-local_coords = false
-texture = ExtResource("8")
 emission_shape = 1
 emission_sphere_radius = 14.0
 direction = Vector2(-1, 0)
@@ -113,54 +123,52 @@ scale_amount_max = 0.85
 scale_amount_curve = SubResource("10")
 color_ramp = SubResource("11")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=556235087]
 material = SubResource("7")
 sprite_frames = ExtResource("1")
 animation = &"idle"
 
-[node name="LightOccluder2D" type="LightOccluder2D" parent="AnimatedSprite2D"]
+[node name="LightOccluder2D" type="LightOccluder2D" parent="AnimatedSprite2D" unique_id=1519228474]
 occluder = SubResource("2")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=6883382]
 shape = SubResource("1")
 debug_color = Color(0, 0.6, 0.701961, 0.121569)
 
-[node name="FaceSeparatorBR" parent="." groups=["purple", "yellow"] instance=ExtResource("4")]
+[node name="FaceSeparatorBR" parent="." unique_id=1926844957 groups=["purple", "yellow"] instance=ExtResource("4")]
 position = Vector2(46.5, 46.5)
 priority = 1
 
-[node name="FaceSeparatorBL" parent="." groups=["pink", "purple"] instance=ExtResource("4")]
+[node name="FaceSeparatorBL" parent="." unique_id=2033951346 groups=["pink", "purple"] instance=ExtResource("4")]
 position = Vector2(-46.5, 46.5)
 priority = 1
 
-[node name="FaceSeparatorTL" parent="." groups=["blue", "pink"] instance=ExtResource("4")]
+[node name="FaceSeparatorTL" parent="." unique_id=718077842 groups=["blue", "pink"] instance=ExtResource("4")]
 position = Vector2(-46.5, -46.5)
 priority = 1
 
-[node name="FaceSeparatorTR" parent="." groups=["blue", "yellow"] instance=ExtResource("4")]
+[node name="FaceSeparatorTR" parent="." unique_id=366496033 groups=["blue", "yellow"] instance=ExtResource("4")]
 position = Vector2(46.5, -46.5)
 priority = 1
 
-[node name="BottomFace" parent="." groups=["purple"] instance=ExtResource("3")]
+[node name="BottomFace" parent="." unique_id=359743658 groups=["purple"] instance=ExtResource("3")]
 position = Vector2(0, 45.9)
 
-[node name="TopFace" parent="." groups=["blue"] instance=ExtResource("3")]
+[node name="TopFace" parent="." unique_id=457538784 groups=["blue"] instance=ExtResource("3")]
 position = Vector2(0, -45.9)
 
-[node name="LeftFace" parent="." groups=["pink"] instance=ExtResource("3")]
+[node name="LeftFace" parent="." unique_id=1058481277 groups=["pink"] instance=ExtResource("3")]
 position = Vector2(-45.9, 0)
 rotation = 1.5708
 
-[node name="RightFace" parent="." groups=["yellow"] instance=ExtResource("3")]
+[node name="RightFace" parent="." unique_id=1025350501 groups=["yellow"] instance=ExtResource("3")]
 position = Vector2(45.9, 0)
 rotation = -1.5708
 
-[node name="ColorArc" parent="." instance=ExtResource("9")]
-Enabled = true
-Opacity = 0.6
+[node name="ColorArc" parent="." unique_id=1752742896 instance=ExtResource("9")]
 
-[node name="FallTimer" type="Timer" parent="."]
+[node name="FallTimer" type="Timer" parent="." unique_id=1063642605]
 wait_time = 1.5
 
-[node name="Hitstop" type="Node" parent="."]
+[node name="Hitstop" type="Node" parent="." unique_id=1087714358]
 script = ExtResource("6")

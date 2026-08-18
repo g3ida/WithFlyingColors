@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/jumping.ogg-3f49127f28660b7c931d4c46a920d508.
 
 [params]
 
-loop=true
+loop=false
 loop_offset=0
 bpm=0
 beat_count=0

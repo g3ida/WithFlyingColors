@@ -77,10 +77,6 @@ public partial class SceneOrchester : Node2D {
   // that knows them is freed with the cleared level before the write happens.
   private LevelId? _pendingClearedLevelId = null;
   private string[] _pendingClearedGems = [];
-  // Set when the pending swap is a restart, which writes nothing: the slot already
-  // describes this level, and a doorstep save here would push the resume point back
-  // to the start of a level the player has got further into.
-  private bool _pendingRestart;
 
   // The intro walks the player forward while the title fades over the scene; the
   // walk budget comes from the level itself.
@@ -314,7 +310,6 @@ public partial class SceneOrchester : Node2D {
     _pendingLevelId = (LevelId)levelId;
     _pendingClearedLevelId = null;
     _pendingClearedGems = [];
-    _pendingRestart = false;
     PauseOwnership.Claim(this);
     _titleCardNode.CoverForSwap();
   }
@@ -329,7 +324,6 @@ public partial class SceneOrchester : Node2D {
     _pendingLevelId = _currentLevelId;
     _pendingClearedLevelId = null;
     _pendingClearedGems = [];
-    _pendingRestart = true;
     PauseOwnership.Claim(this);
     _titleCardNode.CoverForSwap();
   }
@@ -341,10 +335,8 @@ public partial class SceneOrchester : Node2D {
     _pendingLevelId = null;
     var clearedLevelId = _pendingClearedLevelId;
     var clearedGems = _pendingClearedGems;
-    var isRestart = _pendingRestart;
     _pendingClearedLevelId = null;
     _pendingClearedGems = [];
-    _pendingRestart = false;
 
     // Removal first: the old level's _ExitTree stops the music before the new one
     // starts its own track, and the persist group must hold only the new level's
@@ -367,11 +359,13 @@ public partial class SceneOrchester : Node2D {
     // Saved after the swap, so the slot is a coherent "standing at the start of the
     // next level" snapshot rather than a mix of two levels. A door entry is no
     // completion, but the doorstep is still where the run now stands: quitting here
-    // must resume here.
+    // must resume here - and so must a restart, which is the player giving up the
+    // checkpoint the slot would otherwise go on describing. The percentage the panel
+    // shows is the best the level has ever seen, so writing zero here cannot take it back.
     if (clearedLevelId is { } cleared) {
       SaveManager.RecordLevelCleared(GetTree(), cleared, nextLevelId, clearedGems);
     }
-    else if (!isRestart) {
+    else {
       SaveManager.RecordProgress(GetTree(), nextLevelId, 0);
     }
 

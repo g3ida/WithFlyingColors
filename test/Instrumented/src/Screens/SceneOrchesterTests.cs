@@ -100,11 +100,11 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
       .ShouldBeTrue("the intro cutscene never returned control to the player");
   }
 
-  // A restart rides the same cover-and-swap a door does, minus the write: the run so
-  // far is exactly what the player is giving up on, and banking it would push the
-  // resume point back to the start of a level they had got further into.
+  // A restart rides the same cover-and-swap a door does, write included: the run so far is
+  // exactly what the player is giving up on, so the slot has to stop describing the checkpoint
+  // they walked away from - while the percentage the panel shows keeps the best it has seen.
   [Test]
-  public async Task RestartingRebuildsTheLevelAndBanksNothing() {
+  public async Task RestartingRebuildsTheLevelAndRepublishesTheSlot() {
     _provider.Save = new FakeSaveManager(selectedSlot: 0).WithFilledSlot(0, progress: 0);
     _provider.MenuManager.GoToMenu(GameMenus.GAME);
     await _idle();
@@ -122,7 +122,7 @@ public class SceneOrchesterTests(Node testScene) : TestClass(testScene) {
       .ShouldBeTrue("the level was never rebuilt");
     _currentLevelIdOf(orchestrator!).ShouldBe(LevelId.Tutorial, "the restart landed on another level");
     _provider.Save.RecordProgressCallCount
-      .ShouldBe(writesBefore, "a restart wrote its own doorstep progress into the slot");
+      .ShouldBeGreaterThan(writesBefore, "a restart left the slot describing the run it gave up on");
     (await _waitUntil(() => !TestScene.GetTree().Paused))
       .ShouldBeTrue("play was never handed back after the cover");
   }

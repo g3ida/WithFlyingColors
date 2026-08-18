@@ -129,15 +129,17 @@ public sealed class FakeSaveManager : ISaveManager {
     }
   }
 
-  // Mirrors the real manager: gems are what a clear pays out, so a progress write never banks any.
+  // Mirrors the real manager: gems are what a clear pays out, so a progress write never banks any,
+  // and within one level the percentage only ever climbs.
   public void RecordProgress(SceneTree tree, LevelId levelId, int progressPercent, int slotIndex = ISaveManager.NO_SLOT) {
     RecordProgressCallCount++;
     var index = _resolve(slotIndex);
     if (!_isValid(index) || _slots[index] is not { } slot) {
       return;
     }
+    var isNewLevel = slot.LevelId != levelId;
     slot.LevelId = levelId;
-    slot.Progress = progressPercent;
+    slot.Progress = isNewLevel ? progressPercent : Mathf.Max(slot.Progress, progressPercent);
     GameEvents.Instance.OnSaveSlotUpdated();
   }
 
