@@ -45,6 +45,23 @@ public partial class ColorUtils : Node {
     return null;
   }
 
+  // The one colour a node actually wears, or null when it wears none in particular. A neutral
+  // surface is put in every colour group rather than in none, so that every face is safe on it,
+  // which makes the first group found on one an arbitrary colour it looks nothing like.
+  public static string? OwnColorGroupOf(Node node) {
+    string? own = null;
+    var matches = 0;
+    foreach (var group in node.GetGroups()) {
+      var name = group.ToString();
+      if (Array.IndexOf(COLOR_GROUPS, name) < 0) {
+        continue;
+      }
+      own ??= name;
+      matches++;
+    }
+    return matches < COLOR_GROUPS.Length ? own : null;
+  }
+
   public static HSLColor RgbToHsl(Color color) {
     float R = color.R * 255.0f;
     float G = color.G * 255.0f;

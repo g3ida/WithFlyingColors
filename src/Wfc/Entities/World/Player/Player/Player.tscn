@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://iv2oexig3dcb" path="res://src/Wfc/Utils/Hitstop/Hitstop.cs" id="6"]
 [ext_resource type="Texture2D" uid="uid://bifub54irtuvc" path="res://Assets/Sprites/Particles/glow_circle.png" id="8"]
 [ext_resource type="PackedScene" uid="uid://dxtklc0svp1ns" path="res://src/Wfc/Entities/World/Player/ColorArc/ColorArc.tscn" id="9"]
+[ext_resource type="PackedScene" uid="uid://cia4y7swhg0mt" path="res://src/Wfc/Entities/World/Player/GroundDust/GroundDust.tscn" id="10"]
 
 [sub_resource type="Curve" id="6"]
 _limits = [0.0, 45.0, 0.0, 1.0]
@@ -122,6 +123,8 @@ scale_amount_min = 0.4
 scale_amount_max = 0.85
 scale_amount_curve = SubResource("10")
 color_ramp = SubResource("11")
+
+[node name="GroundDust" parent="." instance=ExtResource("10")]
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=556235087]
 material = SubResource("7")
