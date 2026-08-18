@@ -467,9 +467,9 @@ public partial class Player : CharacterBody2D, IPersistent {
   // it, as a share of that edge.
   private const float GRAZE_SHARE = 0.1f;
 
-  // The same line in world units, for a surface measuring how much of the cube it has under it.
-  // One number, so a key deciding whether the cube is on it and a colour deciding whether to
-  // kill it forgive exactly the same contact.
+  // The same share, in world units, for a surface measuring how much of the cube it has under it.
+  // Only the threshold is shared, not the whole test: a key reads it across its own width alone,
+  // while a colour has to clear it in depth as well before the contact counts.
   public float GrazeWidth => GetCollisionHalfExtents().X * 2.0f * GRAZE_SHARE;
 
   // Whether `area` covers so little of the cube that this is the cube overhanging the edge of

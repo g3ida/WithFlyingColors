@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://c81yhhex2g2mu"]
+[gd_scene format=3 uid="uid://c81yhhex2g2mu"]
 
 [ext_resource type="PackedScene" uid="uid://2w3xtnwrrjwt" path="res://src/Wfc/Entities/World/Piano/PianoNote/PianoNote.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://bgwom8grpf0t6" path="res://src/Wfc/Entities/World/Piano/PianoNote/SharpNotes.tscn" id="2"]
@@ -13,99 +13,99 @@
 [ext_resource type="Texture2D" uid="uid://dwspsyu3c43lb" path="res://Assets/Sprites/Piano/letters/letter-a.png" id="11"]
 [ext_resource type="Texture2D" uid="uid://cqpe24ede8wne" path="res://Assets/Sprites/Piano/letters/letter-b.png" id="12"]
 
-[node name="Piano" type="Node2D"]
+[node name="Piano" type="Node2D" unique_id=676114879]
 script = ExtResource("4")
 
-[node name="NotesContainer" type="Node2D" parent="."]
+[node name="NotesContainer" type="Node2D" parent="." unique_id=1492952295]
 position = Vector2(0, 44)
 
-[node name="PianoNote" parent="NotesContainer" instance=ExtResource("1")]
+[node name="PianoNote" parent="NotesContainer" unique_id=1337616609 instance=ExtResource("1")]
 position = Vector2(-441, 0)
 NoteEdgeIndex = 1
 
-[node name="PianoNote2" parent="NotesContainer" instance=ExtResource("1")]
+[node name="PianoNote2" parent="NotesContainer" unique_id=1748947626 instance=ExtResource("1")]
 position = Vector2(-294, 0)
 Index = 1
 ColorGroup = "pink"
 NoteEdgeIndex = 2
 
-[node name="PianoNote3" parent="NotesContainer" instance=ExtResource("1")]
+[node name="PianoNote3" parent="NotesContainer" unique_id=1888530211 instance=ExtResource("1")]
 position = Vector2(-147, 0)
 Index = 2
 ColorGroup = "purple"
 
-[node name="PianoNote4" parent="NotesContainer" instance=ExtResource("1")]
+[node name="PianoNote4" parent="NotesContainer" unique_id=352007831 instance=ExtResource("1")]
 Index = 3
 ColorGroup = "yellow"
 NoteEdgeIndex = 2
 
-[node name="PianoNote5" parent="NotesContainer" instance=ExtResource("1")]
+[node name="PianoNote5" parent="NotesContainer" unique_id=1187954096 instance=ExtResource("1")]
 position = Vector2(147, 0)
 Index = 4
 ColorGroup = "purple"
 NoteEdgeIndex = 4
 
-[node name="PianoNote6" parent="NotesContainer" instance=ExtResource("1")]
+[node name="PianoNote6" parent="NotesContainer" unique_id=35385087 instance=ExtResource("1")]
 position = Vector2(294, 0)
 Index = 5
 ColorGroup = "pink"
 NoteEdgeIndex = 3
 
-[node name="PianoNote7" parent="NotesContainer" instance=ExtResource("1")]
+[node name="PianoNote7" parent="NotesContainer" unique_id=556869406 instance=ExtResource("1")]
 position = Vector2(441, 0)
 Index = 6
 NoteEdgeIndex = 5
 
-[node name="PianoBase" parent="." instance=ExtResource("3")]
+[node name="PianoBase" parent="." unique_id=286262861 instance=ExtResource("3")]
 position = Vector2(-4, 88.75)
 
-[node name="SharpNoteContainer" type="Node2D" parent="."]
+[node name="SharpNoteContainer" type="Node2D" parent="." unique_id=735677783]
 position = Vector2(0, 49)
 
-[node name="SharpNotes" parent="SharpNoteContainer" instance=ExtResource("2")]
+[node name="SharpNotes" parent="SharpNoteContainer" unique_id=1101209584 instance=ExtResource("2")]
 position = Vector2(367.5, -50)
 
-[node name="SharpNotes2" parent="SharpNoteContainer" instance=ExtResource("2")]
+[node name="SharpNotes2" parent="SharpNoteContainer" unique_id=836265997 instance=ExtResource("2")]
 position = Vector2(73.5, -50)
 
-[node name="SharpNotes3" parent="SharpNoteContainer" instance=ExtResource("2")]
+[node name="SharpNotes3" parent="SharpNoteContainer" unique_id=42864922 instance=ExtResource("2")]
 position = Vector2(-220.5, -50)
 
-[node name="SharpNotes4" parent="SharpNoteContainer" instance=ExtResource("2")]
+[node name="SharpNotes4" parent="SharpNoteContainer" unique_id=747942398 instance=ExtResource("2")]
 position = Vector2(-367.5, -50)
 
-[node name="SharpNotes5" parent="SharpNoteContainer" instance=ExtResource("2")]
+[node name="SharpNotes5" parent="SharpNoteContainer" unique_id=738558127 instance=ExtResource("2")]
 position = Vector2(220.5, -50)
 
-[node name="SolfegeBoard" parent="." instance=ExtResource("5")]
+[node name="SolfegeBoard" parent="." unique_id=1351211795 instance=ExtResource("5")]
 position = Vector2(0, -150)
 
-[node name="LettersContainer" type="Node2D" parent="."]
+[node name="LettersContainer" type="Node2D" parent="." unique_id=746959531]
 position = Vector2(0, 108)
 
-[node name="Letter-A" type="Sprite2D" parent="LettersContainer"]
+[node name="Letter-A" type="Sprite2D" parent="LettersContainer" unique_id=507201240]
 position = Vector2(294, 0)
 texture = ExtResource("11")
 
-[node name="Letter-B" type="Sprite2D" parent="LettersContainer"]
+[node name="Letter-B" type="Sprite2D" parent="LettersContainer" unique_id=1033124389]
 position = Vector2(441, 0)
 texture = ExtResource("12")
 
-[node name="Letter-C" type="Sprite2D" parent="LettersContainer"]
+[node name="Letter-C" type="Sprite2D" parent="LettersContainer" unique_id=343963134]
 position = Vector2(-441, 0)
 texture = ExtResource("10")
 
-[node name="Letter-D" type="Sprite2D" parent="LettersContainer"]
+[node name="Letter-D" type="Sprite2D" parent="LettersContainer" unique_id=154278918]
 position = Vector2(-294, 0)
 texture = ExtResource("7")
 
-[node name="Letter-E" type="Sprite2D" parent="LettersContainer"]
+[node name="Letter-E" type="Sprite2D" parent="LettersContainer" unique_id=793432049]
 position = Vector2(-147, 0)
 texture = ExtResource("8")
 
-[node name="Letter-F" type="Sprite2D" parent="LettersContainer"]
+[node name="Letter-F" type="Sprite2D" parent="LettersContainer" unique_id=1821004961]
 texture = ExtResource("6")
 
-[node name="Letter-G" type="Sprite2D" parent="LettersContainer"]
+[node name="Letter-G" type="Sprite2D" parent="LettersContainer" unique_id=1360994511]
 position = Vector2(147, 0)
 texture = ExtResource("9")

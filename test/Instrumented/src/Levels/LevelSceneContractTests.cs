@@ -9,6 +9,7 @@ using Shouldly;
 using Wfc.Entities.World.Camera;
 using Wfc.Entities.World.Exit;
 using Wfc.Entities.World.Platforms;
+using Wfc.Core.Persistence;
 using Wfc.Screens.Levels;
 using Wfc.Utils.Colors;
 using Wfc.Utils.Layers;
@@ -137,6 +138,28 @@ public class LevelSceneContractTests(Node testScene) : TestClass(testScene) {
           );
           localizer.FitHeightToView.ShouldBeTrue(
             $"{levelId} / {node.Name} freezes the camera but leaves the vertical framing to history"
+          );
+        }
+      }
+
+      level.QueueFree();
+    }
+  }
+
+  // Both halves of a save walk the persist group and nothing else, so a node that implements
+  // IPersistent without joining it is saved by nobody. It fails in the quietest way there is:
+  // the level plays correctly and the run is simply not there on the next load. The piano's
+  // solved sheet was missing this, and so was a brick platform's slide.
+  [Test]
+  public void EveryNodeThatSavesItselfIsInThePersistGroup() {
+    foreach (var levelId in _hostedLevelIds()) {
+      var level = LevelDispatcher.InstantiateLevel(levelId);
+      level.ShouldNotBeNull();
+
+      foreach (var node in _descendantsOf(level)) {
+        if (node is IPersistent) {
+          node.IsInGroup(IPersistent.PERSISTENT_GROUP_NAME).ShouldBeTrue(
+            $"{levelId} / {node.Name} saves itself, but no save will ever reach it"
           );
         }
       }

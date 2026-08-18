@@ -4,9 +4,16 @@
 [ext_resource type="Script" uid="uid://ertk10yu7hbi" path="res://src/Wfc/Entities/World/Piano/PianoScene/PianoScene.cs" id="2"]
 [ext_resource type="PackedScene" uid="uid://cnidiafvkgcur" path="res://src/Wfc/Entities/World/Checkpoints/CheckpointArea/CheckpointArea.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://cohdtrmk2ecl6" path="res://src/Wfc/Entities/World/Platforms/SimplePlatform/SimplePlatform.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://b6d1wr3ojiwox" path="res://src/Wfc/Entities/World/Camera/CameraLocalizer/CameraLocalizer.tscn" id="5_uq710"]
 
 [sub_resource type="RectangleShape2D" id="1"]
-size = Vector2(40, 29.4)
+size = Vector2(30, 45.050003)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_drbt2"]
+size = Vector2(26, 528)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fghih"]
+size = Vector2(20, 1229.5)
 
 [node name="PianoScene" type="Node2D" unique_id=579951373]
 script = ExtResource("2")
@@ -24,12 +31,45 @@ scale = Vector2(1, 10)
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TriggerArea" unique_id=1658127848]
-position = Vector2(0, -5.3)
+position = Vector2(4, -11.775)
+shape = SubResource("1")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="TriggerArea" unique_id=495465204]
+position = Vector2(1121, -11.999998)
 shape = SubResource("1")
 
 [node name="SimplePlatform" parent="." unique_id=495139612 instance=ExtResource("4")]
 position = Vector2(-911, -42)
 scale = Vector2(3.5, 1.11)
 Group = "purple"
+
+[node name="PianoLocalizer" parent="." unique_id=185719829 instance=ExtResource("5_uq710")]
+position = Vector2(-91, -155)
+LimitedEdges = 3
+
+[node name="Area2D" type="Area2D" parent="PianoLocalizer" unique_id=1924900657]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PianoLocalizer/Area2D" unique_id=472443900]
+position = Vector2(-459, -253)
+shape = SubResource("RectangleShape2D_drbt2")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="PianoLocalizer/Area2D" unique_id=2096738847]
+position = Vector2(627, -261)
+shape = SubResource("RectangleShape2D_drbt2")
+
+[node name="CameraLocalizer" parent="." unique_id=2112730146 instance=ExtResource("5_uq710")]
+position = Vector2(-90, -157)
+RestoreLevelFraming = true
+LimitedEdges = 0
+
+[node name="Area2D" type="Area2D" parent="CameraLocalizer" unique_id=695547407]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLocalizer/Area2D" unique_id=1850327640]
+position = Vector2(755, -68)
+shape = SubResource("RectangleShape2D_fghih")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="CameraLocalizer/Area2D" unique_id=822870214]
+position = Vector2(-592, -77.25)
+shape = SubResource("RectangleShape2D_fghih")
 
 [connection signal="body_entered" from="TriggerArea" to="." method="_onTriggerAreaBodyEntered"]
