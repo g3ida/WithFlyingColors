@@ -99,6 +99,9 @@ public class GameEvents : IGameEvents {
   public void OnPianoNoteReleased(int noteIndex) =>
     _channel.Send(new IGameEvents.PianoNoteReleased(noteIndex));
 
+  public void OnPianoNoteStruck(int noteIndex) =>
+    _channel.Send(new IGameEvents.PianoNoteStruck(noteIndex));
+
   public void OnPageFlipped() => _channel.Send(new IGameEvents.PageFlipped());
 
   public void OnWrongPianoNotePlayed() => _channel.Send(new IGameEvents.WrongPianoNotePlayed());

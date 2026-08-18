@@ -98,6 +98,7 @@ public partial class SfxManager : Node2D, ISfxManager {
     // A note is a one-shot sample, so releasing a key sounds nothing. PianoNoteReleased is
     // still announced by the piano for anything that wants it; the sound bank has no answer.
     .On((in IGameEvents.PianoNotePressed message) => OnPlaySfx("piano_" + message.NoteIndex.ToString()))
+    .On((in IGameEvents.PianoNoteStruck message) => OnPlaySfx("piano_" + message.NoteIndex.ToString()))
     .On((in IGameEvents.PageFlipped _) => OnPlaySfx("pageFlip"))
     .On((in IGameEvents.WrongPianoNotePlayed _) => OnPlaySfx("wrongAnswer"))
     .On((in IGameEvents.PianoPuzzleWon _) => OnPlaySfx("success"))
