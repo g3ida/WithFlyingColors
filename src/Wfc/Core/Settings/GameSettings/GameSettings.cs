@@ -206,7 +206,8 @@ public static class GameSettings {
   /// <summary>
   /// Whether the player may drag the window's edges. Says nothing in fullscreen,
   /// which has no edges to take hold of, but is remembered for the return to
-  /// windowed. What a drag is allowed to end at is WindowAspectGuard's to say.
+  /// windowed. Any shape is allowed: the view keeps its own and letterboxes into
+  /// whatever it is given, so nothing has to be dragged back into line afterwards.
   /// </summary>
   public static bool Resizable {
     get => !DisplayServer.WindowGetFlag(DisplayServer.WindowFlags.ResizeDisabled);

@@ -87,8 +87,8 @@ public partial class VideoSettingsPanelContainer : PanelContainer {
   // on and one that comes back is reachable again.
   private void _showResizableRow(bool visible) => _resizableRow.Visible = visible;
 
-  // Dragging an edge is answered by WindowAspectGuard, which keeps whatever the
-  // player pulls the window to at the shape the game is drawn in.
+  // Any shape the player drags to is allowed: the view keeps its own and letterboxes
+  // into whatever the window becomes.
   private static void _onResizableCheckboxToggled(bool buttonPressed) =>
     GameSettings.Resizable = buttonPressed;
 
