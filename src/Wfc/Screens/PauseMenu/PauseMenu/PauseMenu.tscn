@@ -67,7 +67,7 @@ text = "Back to main menu"
 OnDarkBackground = true
 
 [node name="BackCard" parent="InputHintBar/HBox" index="2"]
-Actions = PackedStringArray("pause")
+Actions = PackedStringArray("pause", "ui_cancel")
 
 [node name="UITransition" parent="InputHintBar" index="1"]
 Delay = 0.15

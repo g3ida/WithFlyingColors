@@ -84,6 +84,9 @@ public sealed class FakeSaveManager : ISaveManager {
 
   private static bool _isValid(int slotIndex) => slotIndex >= 0 && slotIndex < NUM_SLOTS;
 
+  // Nothing here reaches a disk, so there is never anything on its way to one.
+  public void Flush() { }
+
   public void Init() { }
 
   public int GetSelectedSlotIndex() => SelectedSlot;
