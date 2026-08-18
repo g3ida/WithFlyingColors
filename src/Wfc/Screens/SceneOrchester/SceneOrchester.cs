@@ -36,6 +36,9 @@ public partial class SceneOrchester : Node2D {
     // the HUD, the door the player is standing at - would otherwise go with the process.
     if (what is (int)NotificationWMCloseRequest or (int)NotificationWMGoBackRequest) {
       _writeProgressToSlot();
+      // Writes are handed to a background thread, and this is the last moment there is one to
+      // hand them to: the process is on its way out behind this notification.
+      SaveManager.Flush();
     }
   }
 

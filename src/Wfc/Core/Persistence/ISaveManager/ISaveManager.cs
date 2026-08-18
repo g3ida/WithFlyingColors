@@ -47,4 +47,8 @@ public interface ISaveManager {
   public SlotMetaData? GetSlotMetaData(int slotIndex = NO_SLOT);
   public void RemoveSaveSlot(int slotIndex);
   public void Init();
+  // Waits for anything still on its way to disk. Writes are handed to a background thread so a
+  // checkpoint cannot drop a frame, which leaves the moments that cannot afford to catch up
+  // later - the window closing above all - needing to say so.
+  public void Flush();
 }

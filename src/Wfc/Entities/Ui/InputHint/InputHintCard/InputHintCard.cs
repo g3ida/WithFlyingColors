@@ -114,8 +114,14 @@ public partial class InputHintCard : PanelContainer {
       _addGlyph(provider.GetNavigationGlyph());
     }
     else {
+      // Two actions on one card can resolve to the same binding on a device (the
+      // pause menu's card stands for both pause and back, and a keyboard has them
+      // on the same key): the card advertises it once.
+      var shown = new HashSet<InputGlyph>();
       foreach (var action in Actions) {
-        _addGlyph(provider.GetGlyph(_eventsOf(action)));
+        if (provider.GetGlyph(_eventsOf(action)) is { } glyph && shown.Add(glyph)) {
+          _addGlyph(glyph);
+        }
       }
     }
 

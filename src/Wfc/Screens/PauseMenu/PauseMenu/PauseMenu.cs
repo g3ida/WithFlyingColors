@@ -118,6 +118,16 @@ public partial class PauseMenu : CanvasLayer {
       return;
     }
 
+    // Back closes the menu as well as the pause key, so a player whose device has
+    // no pause binding still has a way out. It only ever closes: opening the menu
+    // stays the pause key's alone.
+    if (_isPaused
+        && InputManager.IsEventActionJustPressed(IInputManager.Action.UICancel, @event)) {
+      Resume();
+      GetViewport().SetInputAsHandled();
+      return;
+    }
+
     if (!InputManager.IsEventActionJustPressed(IInputManager.Action.Pause, @event)) {
       return;
     }

@@ -178,9 +178,12 @@ public partial class SaveManager : ISaveManager {
   public bool HasSelectedSlot() => LatestLoadedSlot != ISaveManager.NO_SLOT;
 
   public void Init() {
+    SaveWriter.Prepare();
     _loadSlotsInfo();
     _loadSlotsMetaData();
   }
+
+  public void Flush() => SaveWriter.Flush();
 
   public void SelectSlot(int slotIndex = ISaveManager.NO_SLOT) {
     slotIndex = slotIndex == ISaveManager.NO_SLOT ? Math.Max(0, LatestLoadedSlot) : slotIndex;

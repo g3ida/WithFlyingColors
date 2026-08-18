@@ -14,8 +14,10 @@ public partial class SaveSlot {
   private readonly int _slotIndex;
   public string Path => $"{SavePaths.SlotDirectory(_slotIndex)}/save_slot.save";
   public string MetaPath => $"{SavePaths.SlotDirectory(_slotIndex)}/save_slot_meta.save";
-  public bool IsFilled => FileAccess.FileExists(MetaPath);
-  public bool HasProgress => FileAccess.FileExists(Path);
+  // Asked of the writer rather than the disk: a slot saved for the first time is filled from
+  // that moment, not from whenever the filesystem gets round to it.
+  public bool IsFilled => SaveWriter.Exists(MetaPath);
+  public bool HasProgress => SaveWriter.Exists(Path);
 
   public SlotMetaData? MetaData { get; private set; }
 
@@ -176,6 +178,10 @@ public partial class SaveSlot {
   }
 
   public void Delete() {
+    // Before the files go, or a line still queued for them lands afterwards and puts the slot
+    // back - with the record below already cleared, so nothing would be watching it.
+    SaveWriter.Discard(Path);
+    SaveWriter.Discard(MetaPath);
     if (FileAccess.FileExists(Path)) {
       DirAccess.RemoveAbsolute(Path);
     }
@@ -235,7 +241,7 @@ public partial class SaveSlot {
       Log.Error($"Slot {_slotIndex} has no metadata to write.");
       return;
     }
-    _writeLineAtomic(MetaPath, serializer.Serialize(MetaData));
+    SaveWriter.Write(MetaPath, serializer.Serialize(MetaData));
   }
 
   private void _saveLevelState(ISerializer serializer, SceneTree sceneTree) {
@@ -253,10 +259,13 @@ public partial class SaveSlot {
       var nodeData = persistent.Save(serializer);
       saveData[persistent.GetSaveId()] = nodeData;
     }
-    _writeLineAtomic(Path, JsonSerializer.Serialize(saveData));
+    SaveWriter.Write(Path, JsonSerializer.Serialize(saveData));
   }
 
   private static string? _readLine(string path) {
+    if (SaveWriter.PendingLine(path) is { } pending) {
+      return pending;
+    }
     using var file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
     if (file == null) {
       // Open returns null rather than throwing, so an unchecked handle is a
@@ -265,40 +274,6 @@ public partial class SaveSlot {
       return null;
     }
     return file.GetLine();
-  }
-
-  // Gather the data first, then write it, and never open the destination directly.
-  //
-  // ModeFlags.Write truncates the instant it succeeds, and the loop that gathers a level's state
-  // calls every IPersistent implementation in the scene - so any one of them throwing used to
-  // destroy the previous save on its way out, with the handle left open on top. Writing beside
-  // the file and renaming over it means an interrupted save leaves the old one untouched.
-  //
-  // The per-slot directory is created here too: nothing else ever created it, so the first save
-  // into a fresh slot handed back a null handle - the "first save on a new install crashes" bug.
-  private static bool _writeLineAtomic(string path, string line) {
-    var directory = path.GetBaseDir();
-    var directoryError = DirAccess.MakeDirRecursiveAbsolute(directory);
-    if (directoryError is not Error.Ok and not Error.AlreadyExists) {
-      Log.Error($"Could not create {directory}: {directoryError}");
-      return false;
-    }
-
-    var tempPath = $"{path}.tmp";
-    using (var file = FileAccess.Open(tempPath, FileAccess.ModeFlags.Write)) {
-      if (file == null) {
-        Log.Error($"Could not open {tempPath} for writing: {FileAccess.GetOpenError()}");
-        return false;
-      }
-      file.StoreLine(line);
-    }
-
-    var renameError = DirAccess.RenameAbsolute(tempPath, path);
-    if (renameError != Error.Ok) {
-      Log.Error($"Could not move {tempPath} onto {path}: {renameError}");
-      return false;
-    }
-    return true;
   }
 
   private static ulong _getUnixTimestamp() {

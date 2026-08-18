@@ -27,6 +27,17 @@ public static class GameSettings {
   private const float MaxVolume = 0f;
   private const float MinVolume = -50f;
 
+  // Long enough for a swap chain rebuilt on a substituted V-Sync mode to have reported it.
+  private const double VSYNC_FALLBACK_GRACE_SECONDS = 0.25;
+
+  // Headroom over the display's own rate, for the frame limit that stands in for vsync. Enough
+  // that turning vsync off still buys the latency it was turned off for, little enough that the
+  // renderer cannot run away from the display engine.
+  private const int UNCAPPED_REFRESH_MULTIPLE = 3;
+
+  // What to pace against where the platform will not say what the display runs at.
+  private const int ASSUMED_REFRESH_RATE = 60;
+
   /// <summary>
   /// Tracks the last used controller type (keyboard or gamepad).
   /// This is updated automatically when input is detected (see InputDeviceDetector)
@@ -139,20 +150,52 @@ public static class GameSettings {
     }
   }
 
-  public static bool Vsync {
-    get {
-      switch (DisplayServer.WindowGetVsyncMode()) {
-        case DisplayServer.VSyncMode.Disabled:
-          return false;
-        case DisplayServer.VSyncMode.Enabled:
-        case DisplayServer.VSyncMode.Mailbox:
-        case DisplayServer.VSyncMode.Adaptive:
-          return true;
-      }
-      return false;
+  // The display server reports the mode the driver settled on, not the one it was handed, so
+  // asking it what the player chose gives the wrong answer wherever a request was substituted.
+  private static bool _vsync = true;
 
+  // Turning vsync off asks for latency, not for tearing. Mailbox renders uncapped the way
+  // Disabled does but hands the display the newest finished frame at each refresh, which is
+  // the only way to have both; where the driver has no Mailbox to give it is Disabled, and
+  // the tearing comes back.
+  //
+  // Either way the frame rate is capped. Presenting with no limit at all does not merely waste
+  // the frames the display never shows - it stalls on the display engine for whole frames at a
+  // time, which is the one thing the player turned vsync off to avoid.
+  public static bool Vsync {
+    get => _vsync;
+    set {
+      _vsync = value;
+      Engine.MaxFps = value ? 0 : _uncappedFrameLimit();
+      DisplayServer.WindowSetVsyncMode(
+        value ? DisplayServer.VSyncMode.Enabled : DisplayServer.VSyncMode.Mailbox);
+      if (!value) {
+        _reconcileVsyncFallback();
+      }
     }
-    set => DisplayServer.WindowSetVsyncMode(value ? DisplayServer.VSyncMode.Enabled : DisplayServer.VSyncMode.Disabled);
+  }
+
+  // Not every platform knows what its display runs at; those report nothing positive.
+  private static int _uncappedFrameLimit() {
+    var refreshRate = DisplayServer.ScreenGetRefreshRate(DisplayServer.WindowGetCurrentScreen());
+    var refresh = refreshRate > 0.0f ? Mathf.RoundToInt(refreshRate) : ASSUMED_REFRESH_RATE;
+    return refresh * UNCAPPED_REFRESH_MULTIPLE;
+  }
+
+  // A driver that cannot honour Mailbox falls back to Enabled, and only says so once it has
+  // rebuilt its swap chain a couple of frames later. Left alone that reads as the player
+  // having asked for vsync, so the request is checked back once the fallback would be visible
+  // and Disabled applied instead - which is what turning vsync off asked for.
+  private static void _reconcileVsyncFallback() {
+    if (Engine.GetMainLoop() is not SceneTree tree) {
+      return;
+    }
+    var timer = tree.CreateTimer(VSYNC_FALLBACK_GRACE_SECONDS, processAlways: true, processInPhysics: false, ignoreTimeScale: true);
+    timer.Timeout += () => {
+      if (!_vsync && DisplayServer.WindowGetVsyncMode() != DisplayServer.VSyncMode.Mailbox) {
+        DisplayServer.WindowSetVsyncMode(DisplayServer.VSyncMode.Disabled);
+      }
+    };
   }
 
   public static bool Fullscreen {

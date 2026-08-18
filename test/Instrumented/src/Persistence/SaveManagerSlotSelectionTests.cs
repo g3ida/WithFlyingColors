@@ -104,12 +104,16 @@ public class SaveManagerSlotSelectionTests(Node testScene) : TestClass(testScene
   }
 
   private static void _removeEverySlotsMetaData() {
+    // Taking the files out from under the writer, so anything still on its way to them has to
+    // land first - otherwise it arrives afterwards and puts back the slot this removed.
+    SaveWriter.Flush();
     for (var directory = 0; directory <= 3; directory++) {
       DirAccess.RemoveAbsolute($"{SavePaths.SlotDirectory(directory)}/save_slot_meta.save");
     }
   }
 
   private static void _wipe() {
+    SaveWriter.Flush();
     for (var slot = 0; slot <= 3; slot++) {
       var directory = SavePaths.SlotDirectory(slot);
       DirAccess.RemoveAbsolute($"{directory}/save_slot.save");
