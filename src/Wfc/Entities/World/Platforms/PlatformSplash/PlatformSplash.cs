@@ -19,4 +19,24 @@ public static class PlatformSplash {
   // How long a splash of this darkness stays visible: past this the darkened area has
   // brightened back to the plain texture and the shader draws nothing.
   public static float Duration(float darkness) => Mathf.Max(0f, (1f - darkness) / FADE_RATE);
+
+  // The shader places the splash against SCREEN_UV, so the contact point has to arrive as a
+  // fraction of the viewport rather than as the world position it was landed on at. Zoom is
+  // part of that conversion: a room framed closer puts the same world point somewhere else
+  // on screen.
+  public static void Write(
+    ShaderMaterial material,
+    Camera2D camera,
+    Vector2 contact,
+    float timer,
+    float darkness
+  ) {
+    var resolution = camera.GetViewportRect().Size;
+    var onScreen = ((contact - camera.GetScreenCenterPosition()) * camera.Zoom) + (resolution / 2f);
+
+    material.SetShaderParameter(ContactPosParam, onScreen / resolution);
+    material.SetShaderParameter(TimerParam, timer);
+    material.SetShaderParameter(AspectRatioParam, resolution.Y / resolution.X);
+    material.SetShaderParameter(DarknessParam, darkness);
+  }
 }

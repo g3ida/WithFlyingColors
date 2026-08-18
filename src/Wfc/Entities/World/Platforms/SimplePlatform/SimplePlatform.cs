@@ -106,24 +106,11 @@ public partial class SimplePlatform : StaticBody2D {
 
     animationTimer += (float)delta;
 
-    if (_ninePatchRectNode.Material is ShaderMaterial shaderMaterial) {
-      Vector2 resolution = GetViewport().GetVisibleRect().Size; // must be 1920x1080
-      Camera2D cam = GameLevel.CameraNode;
-      if (cam != null) {
-        Vector2 camPos = cam.GetScreenCenterPosition();
-        Vector2 currentPos = new Vector2(
-            contactPosition.X + (resolution.X / 2) - camPos.X,
-            contactPosition.Y + (resolution.Y / 2) - camPos.Y);
-        Vector2 pos = new Vector2(currentPos.X / resolution.X, currentPos.Y / resolution.Y);
-        // Position in shader coords is now Y instead of 1-Y as it was in Godot 3.x
-        Vector2 positionInShaderCoords = new Vector2(pos.X, pos.Y);
-
-        shaderMaterial.SetShaderParameter(PlatformSplash.ContactPosParam, positionInShaderCoords);
-        shaderMaterial.SetShaderParameter(PlatformSplash.TimerParam, animationTimer);
-        shaderMaterial.SetShaderParameter(PlatformSplash.AspectRatioParam, resolution.Y / resolution.X);
-        shaderMaterial.SetShaderParameter(PlatformSplash.DarknessParam, splash_darkness);
-      }
+    var camera = GameLevel.CameraNode;
+    if (camera != null && _ninePatchRectNode.Material is ShaderMaterial material) {
+      PlatformSplash.Write(material, camera, contactPosition, animationTimer, splash_darkness);
     }
+
     if (animationTimer > PlatformSplash.Duration(splash_darkness)) {
       SetProcess(false);
     }

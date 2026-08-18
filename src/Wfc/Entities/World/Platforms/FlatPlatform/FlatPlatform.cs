@@ -371,14 +371,7 @@ public partial class FlatPlatform : StaticBody2D {
 
     var camera = GameLevel.CameraNode;
     if (camera != null && _surfaceNode.Material is ShaderMaterial material) {
-      var resolution = GetViewport().GetVisibleRect().Size;
-      var cameraPosition = camera.GetScreenCenterPosition();
-      var onScreen = ToGlobal(_contactPosition) + (resolution / 2f) - cameraPosition;
-
-      material.SetShaderParameter(PlatformSplash.ContactPosParam, onScreen / resolution);
-      material.SetShaderParameter(PlatformSplash.TimerParam, _animationTimer);
-      material.SetShaderParameter(PlatformSplash.AspectRatioParam, resolution.Y / resolution.X);
-      material.SetShaderParameter(PlatformSplash.DarknessParam, SplashDarkness);
+      PlatformSplash.Write(material, camera, ToGlobal(_contactPosition), _animationTimer, SplashDarkness);
     }
 
     if (_animationTimer > PlatformSplash.Duration(SplashDarkness)) {
