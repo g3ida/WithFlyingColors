@@ -16,6 +16,11 @@ public partial class SolfegeBoard : Node2D, IPersistent {
 
   private const float DURATION = 0.8f;
   private static readonly Vector2 FLIP_CYLINDER_DIRECTION = new Vector2(5.0f, 1.0f);
+
+  private static readonly Color WRONG_NOTE_COLOR = new Color(1.0f, 0.25f, 0.25f);
+  private const float WRONG_NOTE_FLASH_IN = 0.04f;
+  private const float WRONG_NOTE_FLASH_OUT = 0.16f;
+  private const int WRONG_NOTE_FLASHES = 3;
   private Texture2D MusicPaperRectTexture = GD.Load<Texture2D>("res://Assets/Sprites/Piano/music-paper-rect.png");
   private Texture2D BookCoverTexture = GD.Load<Texture2D>("res://Assets/Sprites/Piano/book-cover.png");
 
@@ -55,6 +60,7 @@ public partial class SolfegeBoard : Node2D, IPersistent {
   private int _currentPage = 0;
   private int _currentNoteIndex = 0;
   private NotesCursor? _notesCursor = null;
+  private Tween? _wrongNoteTween = null;
   private float _time = 0;
 
   private sealed record SaveData(BoardState savedState = BoardState.Stopped);
@@ -141,6 +147,7 @@ public partial class SolfegeBoard : Node2D, IPersistent {
   }
 
   private void _InitState() {
+    _stopWrongNoteFlash();
     if (_currentState == BoardState.Playing) {
       _currentNoteIndex = 0;
       _currentPage = 0;
@@ -224,7 +231,31 @@ public partial class SolfegeBoard : Node2D, IPersistent {
   private void EmitWrongNoteEvent() {
     GameEvents.Instance.OnWrongPianoNotePlayed();
     EmitSignal(nameof(WrongNotePlayed));
+    _flashWrongNote();
   }
+
+  // The buzzer says a note was wrong; this says which thing was keeping score. The cursor
+  // snapping back to the start of the line is the only other cue, and it is a few pixels of
+  // movement on a board mounted well above the keys the player is watching.
+  private void _flashWrongNote() {
+    _wrongNoteTween?.Kill();
+    _wrongNoteTween = CreateTween().SetLoops(WRONG_NOTE_FLASHES);
+    _wrongNoteTween.TweenMethod(Callable.From<Color>(_setPaperTint), Colors.White, WRONG_NOTE_COLOR, WRONG_NOTE_FLASH_IN);
+    _wrongNoteTween.TweenMethod(Callable.From<Color>(_setPaperTint), WRONG_NOTE_COLOR, Colors.White, WRONG_NOTE_FLASH_OUT);
+  }
+
+  // A run that ends mid-flash - a death, a checkpoint load - must not leave the sheet sitting red.
+  private void _stopWrongNoteFlash() {
+    _wrongNoteTween?.Kill();
+    _wrongNoteTween = null;
+    _setPaperTint(Colors.White);
+  }
+
+  // The sheet alone, never this node's modulate: the stand it is mounted on is a sibling and
+  // would colour with it. A shader draws the page and assigns COLOR outright, so the tint has
+  // to go through the material rather than the node.
+  private void _setPaperTint(Color tint) =>
+    (MusicPaperRectNode.Material as ShaderMaterial)?.SetShaderParameter("modulate_color", tint);
 
   public MusicNote? GetExpectedNote() {
     if (_currentState == BoardState.Playing) {

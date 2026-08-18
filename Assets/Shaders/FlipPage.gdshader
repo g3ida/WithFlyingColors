@@ -10,6 +10,9 @@ uniform vec2 cylinder_direction;
 uniform vec2 rect;
 uniform sampler2D current_page;
 uniform sampler2D next_page;
+// Every branch below assigns COLOR outright rather than tinting what it was handed, so the
+// node's own modulate never reaches the page and the sheet has to be tinted through here.
+uniform vec4 modulate_color : source_color = vec4(1.0);
 
 // The page coming up is in the shadow of the one being turned, so it darkens towards
 // the start of the flip. Only the colour darkens - scaling the alpha along with it would
@@ -70,4 +73,5 @@ void fragment() {
 		}
 		COLOR = color;
 	}
+	COLOR *= modulate_color;
 }

@@ -57,6 +57,13 @@ public partial class PianoNote : AnimatableBody2D {
   private const float STRIKE_COOLDOWN = 0.15f;
   private const float MIN_STRIKE_SPEED = 1.0f * Constants.WORLD_TO_SCREEN;
 
+  // How long the cube has to be out of a key's reach before it counts as having left it. A key
+  // sinking under a cube standing still out-runs it, dropping the cube clear of the key's own
+  // detection area and catching it again a frame or two later; answering that as a fresh arrival
+  // sounds the note again, and again, under a cube that never moved. Longer than the key's own
+  // travel, shorter than the smallest hop off it and back.
+  private const float DEPARTURE = 0.2f;
+
   private string _colorGroup = ColorUtils.BLUE;
 
   private NoteStates _currentState = NoteStates.Released;
@@ -78,6 +85,9 @@ public partial class PianoNote : AnimatableBody2D {
   private Vector2 _strikeOffset = Vector2.Zero;
   private Tween? _strikeTween = null;
   private float _strikeCooldown = 0.0f;
+  private Player.Player? _playerOnTheNote = null;
+  private float? _timeOffTheNote = null;
+  private bool _wasOnlyReachingOver = false;
   private bool _isPlayerAboveTheNote = false;
   private PhysicsRayQueryParameters2D? _playerProbe;
   private static readonly StringName _colliderKey = "collider";
@@ -115,6 +125,7 @@ public partial class PianoNote : AnimatableBody2D {
       _isPlayerAboveTheNote = RaycastPlayer();
     }
     StartReleasingNoteTimerIfRelevant();
+    _pressIfTheCubeHasJustArrived(delta);
   }
 
   private void SetTexture() {
@@ -150,12 +161,33 @@ public partial class PianoNote : AnimatableBody2D {
   }
 
   public void _onArea2DBodyEntered(Node body) {
-    if (body is Player.Player) {
-      PressNoteIfRelevant();
+    if (body is Player.Player player) {
+      bool hasJustArrived = _playerOnTheNote is null;
+      _playerOnTheNote = player;
+      _timeOffTheNote = null;
+      if (hasJustArrived) {
+        _wasOnlyReachingOver = _isPlayerOnlyReachingOver();
+        PressNoteIfRelevant();
+      }
     }
     else if (body is ExplosionElement debris) {
       _strikeNote(debris);
     }
+  }
+
+  // Whether the cube has so little of itself over this key that it is reaching across it from the
+  // one beside it. Walking a key to its end reaches over its neighbour, and a key that answered
+  // that would sound a note the player never played and spell it onto the sheet as their answer.
+  private bool _isPlayerOnlyReachingOver() {
+    if (_playerOnTheNote is not { } player || !IsInstanceValid(player)) {
+      return true;
+    }
+    var half = GetDetectionAreaShapeSize().X * 0.5f * Mathf.Abs(GlobalScale.X);
+    var center = _areaCollisionShapeNode.GlobalPosition.X;
+    var reach = player.GetCollisionHalfExtents().X;
+    var overlap = Mathf.Min(player.GlobalPosition.X + reach, center + half)
+      - Mathf.Max(player.GlobalPosition.X - reach, center - half);
+    return overlap < player.GrazeWidth;
   }
 
   // Debris raining onto the keyboard sounds the key it lands on, but deliberately stays out of
@@ -175,12 +207,46 @@ public partial class PianoNote : AnimatableBody2D {
 
   public void _onArea2DBodyExited(Node body) {
     if (body is Player.Player) {
+      _timeOffTheNote = 0.0f;
       StartReleasingNoteTimerIfRelevant();
     }
   }
 
+  // The cube can be over a key without being on it yet, and walks the rest of the way from there.
+  // Arriving is the only moment the area reports, so the crossing is watched for here.
+  //
+  // The crossing, not the standing: a key that answered for as long as the cube was on it would
+  // re-press itself the moment its own release let go, and sound the same note over and over
+  // under a cube that never moved.
+  private void _pressIfTheCubeHasJustArrived(double delta) {
+    if (_playerOnTheNote is null) {
+      return;
+    }
+    if (!IsInstanceValid(_playerOnTheNote)) {
+      _forgetTheCube();
+      return;
+    }
+    if (_timeOffTheNote is { } away) {
+      _timeOffTheNote = away + (float)delta;
+      if (_timeOffTheNote > DEPARTURE) {
+        _forgetTheCube();
+        return;
+      }
+    }
+    bool isOnlyReachingOver = _isPlayerOnlyReachingOver();
+    if (_wasOnlyReachingOver && !isOnlyReachingOver) {
+      PressNoteIfRelevant();
+    }
+    _wasOnlyReachingOver = isOnlyReachingOver;
+  }
+
+  private void _forgetTheCube() {
+    _playerOnTheNote = null;
+    _timeOffTheNote = null;
+  }
+
   private void PressNoteIfRelevant() {
-    if (IsReleasingOrReleasedState()) {
+    if (IsReleasingOrReleasedState() && !_isPlayerOnlyReachingOver()) {
       StopTimerIfRelevant();
       PressNote();
     }
@@ -235,8 +301,13 @@ public partial class PianoNote : AnimatableBody2D {
     var noteHalfWidth = GetDetectionAreaShapeSize().X * 0.5f * Scale.X;
     var spriteHeight = _spriteNode.Texture.GetHeight();
 
+    // Cast from the key's own surface, so a cube resting on it has the ray start inside itself.
+    // Without this the probe finds nothing under the very cube it is looking for, the key takes
+    // that for an empty key and rises out from under it - and the cube landing back on it plays
+    // the note again, over and over, while the player stands perfectly still.
     _playerProbe ??= new PhysicsRayQueryParameters2D {
       Exclude = new Godot.Collections.Array<Rid> { GetRid() },
+      HitFromInside = true,
     };
 
     Span<float> offsets = stackalloc float[] {
