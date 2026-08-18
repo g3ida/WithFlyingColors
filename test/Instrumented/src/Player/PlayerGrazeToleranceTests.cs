@@ -40,6 +40,10 @@ public class PlayerGrazeToleranceTests(Node testScene) : TestClass(testScene) {
     // The room reads a camera off the level it expects to sit in, and there is none here.
     _piano.PropagateCall(Node.MethodName.SetProcess, new Godot.Collections.Array { false });
     await PhysicsFrames.Frame(TestScene);
+    // Everything here rests on these two keys wearing different colours. Repaint one and the
+    // reach becomes harmless, which would leave the tolerance tests passing on nothing at all.
+    _note(A_KEY_THE_CUBE_MAY_STAND_ON).ColorGroup
+      .ShouldNotBe(_note(THE_KEY_BESIDE_IT).ColorGroup, "the two keys stopped being a hazard to each other");
   }
 
   [Cleanup]
@@ -107,6 +111,26 @@ public class PlayerGrazeToleranceTests(Node testScene) : TestClass(testScene) {
 
     sounded.FindAll(note => note == key).Count
       .ShouldBe(1, "the key kept sounding under a cube that never moved");
+    player.IsDying().ShouldBeFalse();
+  }
+
+  // A forgiven contact is kept and re-measured every frame it lasts, which is work the cube pays
+  // for on every face. Nothing else would notice if that watch were never called off - it costs
+  // frames rather than correctness, so it fails quietly.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task TheWatchOnAShallowContactStopsWhenTheContactDoes() {
+    var player = _cubeOnItsKeyReachingOver(A_SLIVER);
+    await PhysicsFrames.Advance(TestScene, A_CONTACT_AND_THE_STATE_THAT_TAKES_IT);
+    var underside = player.GetNode<Wfc.Entities.World.Player.BoxFace>("BottomFace");
+    underside.IsPhysicsProcessing().ShouldBeTrue("the shallow contact was never taken up");
+
+    // Back to the middle of its own key, well clear of the next one.
+    player.GlobalPosition =
+      new Vector2(_note(A_KEY_THE_CUBE_MAY_STAND_ON).GlobalPosition.X, _restingSurfaceY);
+
+    (await PhysicsFrames.WaitFor(TestScene, () => !underside.IsPhysicsProcessing(), 2.0))
+      .ShouldBeTrue("the face went on measuring a contact that had ended");
     player.IsDying().ShouldBeFalse();
   }
 

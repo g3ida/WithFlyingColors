@@ -60,8 +60,8 @@ public partial class PianoNote : AnimatableBody2D {
   // How long the cube has to be out of a key's reach before it counts as having left it. A key
   // sinking under a cube standing still out-runs it, dropping the cube clear of the key's own
   // detection area and catching it again a frame or two later; answering that as a fresh arrival
-  // sounds the note again, and again, under a cube that never moved. Longer than the key's own
-  // travel, shorter than the smallest hop off it and back.
+  // sounds the note again, and again, under a cube that never moved. Well over the frame or two
+  // that costs, and well under the only way off a key the cube has, which is a full jump.
   private const float DEPARTURE = 0.2f;
 
   private string _colorGroup = ColorUtils.BLUE;
@@ -298,7 +298,9 @@ public partial class PianoNote : AnimatableBody2D {
   // objects a tick.
   private bool RaycastPlayer() {
     var spaceState = GetWorld2D().DirectSpaceState;
-    var noteHalfWidth = GetDetectionAreaShapeSize().X * 0.5f * Scale.X;
+    // Global, not local: the offsets it sizes are added to a global position, so a scale anywhere
+    // above the key has to count.
+    var noteHalfWidth = GetDetectionAreaShapeSize().X * 0.5f * Mathf.Abs(GlobalScale.X);
     var spriteHeight = _spriteNode.Texture.GetHeight();
 
     // Cast from the key's own surface, so a cube resting on it has the ray start inside itself.

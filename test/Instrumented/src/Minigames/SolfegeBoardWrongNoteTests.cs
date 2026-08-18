@@ -86,9 +86,13 @@ public class SolfegeBoardWrongNoteTests(Node testScene) : TestClass(testScene) {
     (Color)((ShaderMaterial)_board().GetNode<Sprite2D>("MusicPaperRect").Material)
       .GetShaderParameter("modulate_color");
 
+  // A bare cube rather than the scene: the trigger's guard is a type test, and instancing the
+  // whole player would drag in a level for it to depend on. Freed straight after, or it outlives
+  // the run as an orphan.
   private void _startPuzzle() {
-    _scene.GetNode<Area2D>("TriggerArea")
-      .EmitSignal(Area2D.SignalName.BodyEntered, new Wfc.Entities.World.Player.Player());
+    var cube = new Wfc.Entities.World.Player.Player();
+    _scene.GetNode<Area2D>("TriggerArea").EmitSignal(Area2D.SignalName.BodyEntered, cube);
+    cube.QueueFree();
     _board().IsStopped().ShouldBeFalse("the puzzle should be running");
   }
 
