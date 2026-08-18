@@ -36,15 +36,16 @@ public partial class HubStatsMenu : CanvasLayer {
   private const int ROW_HEIGHT = 52;
   private const int ROW_PADDING = 24;
 
-  // The panel the facts are read off, and the colour the tab standing over it takes so the
-  // two read as one surface.
-  private static readonly Color PANEL_COLOR = new(0.223529f, 0.223529f, 0.243137f, 0.964706f);
-  private static readonly Color UNSELECTED_TAB_COLOR = new(0.113725f, 0.113725f, 0.129412f, 0.941176f);
+  // The washes the settings tabs use on a dark surface, kept here as the same numbers rather
+  // than a darker set of their own: the panel behind the facts is the theme's, and the tab
+  // standing open takes the panel's wash so the two read as one surface.
+  private static readonly Color SELECTED_TAB_COLOR = new(1f, 1f, 1f, 0.14902f);
+  private static readonly Color HOVERED_TAB_COLOR = new(1f, 1f, 1f, 0.250980f);
 
   // Each tab wears a band of one of the cube's own faces, in face order, so the row belongs
   // to whichever palette the player picked rather than to a colour chosen here.
   private static readonly SkinColor[] TAB_COLOR_BAG = [SkinColor.TopFace, SkinColor.RightFace];
-  private const int TAB_BAND_HEIGHT = 6;
+  private const int TAB_BAND_HEIGHT = 7;
   private const int TAB_MARGIN_SIDE = 10;
   private const int TAB_MARGIN_TOP = 20;
   private const int TAB_MARGIN_BOTTOM = 15;
@@ -112,8 +113,6 @@ public partial class HubStatsMenu : CanvasLayer {
     // between and nothing to select.
     _inputHintBarNode.RemoveCard("NavigateCard");
     _inputHintBarNode.RemoveCard("SelectCard");
-    _gameFactsPanelNode.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = PANEL_COLOR });
-    _achievementsPanelNode.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = PANEL_COLOR });
   }
 
   public void OnResolved() {
@@ -177,11 +176,12 @@ public partial class HubStatsMenu : CanvasLayer {
     var skin = SkinManager.Instance.CurrentSkin;
     var buttons = new[] { _gameFactsButtonNode, _achievementsButtonNode };
     for (var i = 0; i < buttons.Length; i++) {
-      var band = skin.GetColor(TAB_COLOR_BAG[i % TAB_COLOR_BAG.Length], SkinColorIntensity.Light);
-      buttons[i].AddThemeStyleboxOverride("normal", _tabStyle(band, UNSELECTED_TAB_COLOR, selected: false));
-      buttons[i].AddThemeStyleboxOverride("hover", _tabStyle(band, UNSELECTED_TAB_COLOR, selected: false));
+      var band = skin.GetColor(TAB_COLOR_BAG[i % TAB_COLOR_BAG.Length], SkinColorIntensity.Basic);
+      // The tab left shut keeps the theme's own plain wash, as in the settings tabs: the
+      // band is what marks the one standing open, so wearing it is not a resting state.
+      buttons[i].AddThemeStyleboxOverride("hover", _tabStyle(band, HOVERED_TAB_COLOR, selected: false));
       foreach (var selectedState in new[] { "pressed", "hover_pressed", "focus" }) {
-        buttons[i].AddThemeStyleboxOverride(selectedState, _tabStyle(band, PANEL_COLOR, selected: true));
+        buttons[i].AddThemeStyleboxOverride(selectedState, _tabStyle(band, SELECTED_TAB_COLOR, selected: true));
       }
     }
   }

@@ -34,6 +34,7 @@ public static class Constants {
   public const int DEFAULT_CAMERA_LIMIT_RIGHT = 100000;
   public const int DEFAULT_CAMERA_LIMIT_TOP = -100000;
   public const int DEFAULT_CAMERA_LIMIT_BOTTOM = 100000;
+  public const float DEFAULT_CAMERA_FOLLOW_SPEED = 5.0f;
 
   public const int WORLD_TO_SCREEN = 100;
 }

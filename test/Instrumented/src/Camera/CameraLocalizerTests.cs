@@ -57,6 +57,102 @@ public class CameraLocalizerTests(Node testScene) : TestClass(testScene) {
     localizer._GetConfigurationWarnings().ShouldBeEmpty("a localizer that needs nothing else still asks for something");
   }
 
+  // A room's limits change the instant it is entered while its zoom eases in over its own beat, so
+  // by default the camera pans and zooms at once. Held back, the zoom must not have started while
+  // the pan is still being absorbed - and must still arrive once it has.
+  [Test]
+  public async Task AZoomHeldBackWaitsForTheMoveInsteadOfRunningWithIt() {
+    _localizer.LimitRect = new Rect2(-960.0f, -540.0f, 1920.0f, 1080.0f);
+    _localizer.Zoom = 0.5f;
+    _localizer.ZoomAfterMoving = true;
+    await PhysicsFrames.Frame(TestScene);
+    var before = _camera.Zoom.X;
+
+    _localizer.ApplyToCamera();
+    _camera.TargetZoom.ShouldBe(0.5f, 0.001f, "the room's zoom is not the one the camera is headed for");
+
+    await PhysicsFrames.Advance(TestScene, 10);
+    _camera.Zoom.X.ShouldBe(before, 0.001f, "the held-back zoom set off alongside the move");
+
+    var arrived = await PhysicsFrames.WaitFor(TestScene, () => Mathf.Abs(_camera.Zoom.X - 0.5f) < 0.001f, 20.0);
+    arrived.ShouldBeTrue("the held-back zoom never arrived at all");
+  }
+
+  // The hold is not a fixed beat: it is however long this room's own pan takes, so a room that
+  // follows slowly must wait longer before its zoom starts than one that follows quickly.
+  [Test]
+  public async Task ASlowerRoomHoldsItsZoomBackForLonger() {
+    _localizer.LimitRect = new Rect2(-960.0f, -540.0f, 1920.0f, 1080.0f);
+    _localizer.Zoom = 0.5f;
+    _localizer.ZoomAfterMoving = true;
+    _localizer.FollowSpeed = 1.0f;
+    await PhysicsFrames.Frame(TestScene);
+    var before = _camera.Zoom.X;
+
+    _localizer.ApplyToCamera();
+    _camera.PositionSmoothingSpeed.ShouldBe(1.0f, 0.001f, "the room's own follow speed never reached the camera");
+
+    // Long enough that the same room at the level's speed would have started zooming by now.
+    await PhysicsFrames.Advance(TestScene, 45);
+    _camera.Zoom.X.ShouldBe(before, 0.001f, "the slow room's zoom did not wait for its own slower pan");
+  }
+
+  // The zoom runs on the same chase as the pan, so a room that follows slowly zooms slowly with it
+  // rather than keeping a beat of its own that the slower pan is left behind by.
+  [Test]
+  [Timeout(SlowTest.TIMEOUT_MILLISECONDS)]
+  public async Task ASlowerRoomZoomsMoreSlowly() {
+    _localizer.LimitRect = new Rect2(-960.0f, -540.0f, 1920.0f, 1080.0f);
+    _localizer.Zoom = 0.5f;
+    _localizer.FollowSpeed = 1.0f;
+    await PhysicsFrames.Frame(TestScene);
+
+    _localizer.ApplyToCamera();
+
+    // Comfortably past the beat the same room zooms on at the level's speed, which this one is a
+    // fraction of: arriving by here means the zoom kept that beat instead of taking the room's.
+    await PhysicsFrames.Advance(TestScene, 90);
+    Mathf.Abs(_camera.Zoom.X - 0.5f).ShouldBeGreaterThan(0.001f,
+      "the slow room's zoom ran at the level's beat rather than its own");
+
+    var arrived = await PhysicsFrames.WaitFor(TestScene, () => Mathf.Abs(_camera.Zoom.X - 0.5f) < 0.001f, 60.0);
+    arrived.ShouldBeTrue("the slow room's zoom never arrived at all");
+  }
+
+  // A room's follow speed belongs to that room. A later room that has no opinion about it must get
+  // the level's back rather than inheriting whatever the last room that did have one left behind,
+  // or one room's pace quietly becomes the rest of the level's - and a checkpoint bakes it in.
+  [Test]
+  public async Task ARoomWithNoSpeedOfItsOwnPutsTheLevelsBack() {
+    var authored = _camera.AuthoredFollowSpeed;
+    authored.ShouldBeGreaterThan(0.0f, "the level opened with no follow speed to put back");
+
+    _localizer.FollowSpeed = authored * 4.0f;
+    _localizer.ApplyToCamera();
+    _camera.PositionSmoothingSpeed.ShouldBe(authored * 4.0f, 0.001f, "the room never took its own pace");
+
+    var plainRoom = SceneHelpers.InstantiateNode<CameraLocalizer>();
+    _level.AddChild(plainRoom);
+    await PhysicsFrames.Frame(TestScene);
+    plainRoom.ApplyToCamera();
+    _camera.PositionSmoothingSpeed.ShouldBe(authored, 0.001f,
+      "a room with no speed of its own kept the previous room's");
+  }
+
+  // The same room without the hold: the zoom is under way while the move still is.
+  [Test]
+  public async Task AZoomThatIsNotHeldBackRunsWithTheMove() {
+    _localizer.LimitRect = new Rect2(-960.0f, -540.0f, 1920.0f, 1080.0f);
+    _localizer.Zoom = 0.5f;
+    await PhysicsFrames.Frame(TestScene);
+    var before = _camera.Zoom.X;
+
+    _localizer.ApplyToCamera();
+
+    var moved = await PhysicsFrames.WaitFor(TestScene, () => Mathf.Abs(_camera.Zoom.X - before) > 0.001f, 2.0);
+    moved.ShouldBeTrue("the zoom never started, so holding it back would mean nothing");
+  }
+
   [Test]
   public async Task TheRoomIsFramedWhereTheLocalizerStandsAndAnOpenEdgeIsLetGo() {
     _localizer.Position = new Vector2(1000.0f, 500.0f);
