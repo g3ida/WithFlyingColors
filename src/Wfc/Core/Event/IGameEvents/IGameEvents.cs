@@ -61,6 +61,9 @@ public interface IGameEvents : IDisposable {
   readonly record struct PowerUpPicked;
   readonly record struct PianoNotePressed(int NoteIndex);
   readonly record struct PianoNoteReleased(int NoteIndex);
+  // Something other than the player landed on a key - the debris a death scatters over the
+  // keyboard. It sounds like a note and is not one: the board must not read it as an answer.
+  readonly record struct PianoNoteStruck(int NoteIndex);
   readonly record struct PageFlipped;
   readonly record struct WrongPianoNotePlayed;
   readonly record struct PianoPuzzleWon;
@@ -147,6 +150,7 @@ public interface IGameEvents : IDisposable {
   void OnPowerUpPicked();
   void OnPianoNotePressed(int noteIndex);
   void OnPianoNoteReleased(int noteIndex);
+  void OnPianoNoteStruck(int noteIndex);
   void OnPageFlipped();
   void OnWrongPianoNotePlayed();
   void OnPianoPuzzleWon();

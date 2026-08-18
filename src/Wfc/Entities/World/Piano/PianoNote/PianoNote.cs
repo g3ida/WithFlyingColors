@@ -3,6 +3,8 @@ namespace Wfc.Entities.World.Piano;
 using System;
 using System.Collections.Generic;
 using Godot;
+using Wfc.Core.Event;
+using Wfc.Entities.World.Explosion;
 using Wfc.Screens.Levels;
 using Wfc.Skin;
 using Wfc.Utils;
@@ -49,6 +51,12 @@ public partial class PianoNote : AnimatableBody2D {
   private const float RAYCAST_LENGTH = 20.0f;
   private const float RESPONSIVENESS = 0.06f;
 
+  private static readonly Vector2 STRIKE_OFFSET = new Vector2(0, 10);
+  private const float STRIKE_DOWN_DURATION = 0.035f;
+  private const float STRIKE_UP_DURATION = 0.11f;
+  private const float STRIKE_COOLDOWN = 0.15f;
+  private const float MIN_STRIKE_SPEED = 1.0f * Constants.WORLD_TO_SCREEN;
+
   private string _colorGroup = ColorUtils.BLUE;
 
   private NoteStates _currentState = NoteStates.Released;
@@ -67,6 +75,9 @@ public partial class PianoNote : AnimatableBody2D {
   private Vector2 _releasedPosition;
   private Vector2 _calculatedPosition;
   private Tween? _tweener = null;
+  private Vector2 _strikeOffset = Vector2.Zero;
+  private Tween? _strikeTween = null;
+  private float _strikeCooldown = 0.0f;
   private bool _isPlayerAboveTheNote = false;
   private PhysicsRayQueryParameters2D? _playerProbe;
   private static readonly StringName _colliderKey = "collider";
@@ -95,7 +106,10 @@ public partial class PianoNote : AnimatableBody2D {
 
   public override void _PhysicsProcess(double delta) {
     base._PhysicsProcess(delta);
-    Position = _calculatedPosition;
+    Position = _calculatedPosition + _strikeOffset;
+    if (_strikeCooldown > 0.0f) {
+      _strikeCooldown -= (float)delta;
+    }
     _isPlayerAboveTheNote = false;
     if (IsPressingOrPressedState()) {
       _isPlayerAboveTheNote = RaycastPlayer();
@@ -139,6 +153,24 @@ public partial class PianoNote : AnimatableBody2D {
     if (body is Player.Player) {
       PressNoteIfRelevant();
     }
+    else if (body is ExplosionElement debris) {
+      _strikeNote(debris);
+    }
+  }
+
+  // Debris raining onto the keyboard sounds the key it lands on, but deliberately stays out of
+  // the press state machine: the board would otherwise read a death as a run of wrong answers.
+  private void _strikeNote(ExplosionElement debris) {
+    if (_strikeCooldown > 0.0f || !debris.TryStrike(MIN_STRIKE_SPEED)) {
+      return;
+    }
+    _strikeCooldown = STRIKE_COOLDOWN;
+    GameEvents.Instance.OnPianoNoteStruck(Index);
+    _strikeTween?.Kill();
+    _strikeTween = CreateTween();
+    _strikeTween.TweenProperty(this, nameof(_strikeOffset), STRIKE_OFFSET, STRIKE_DOWN_DURATION)
+        .From(_strikeOffset);
+    _strikeTween.TweenProperty(this, nameof(_strikeOffset), Vector2.Zero, STRIKE_UP_DURATION);
   }
 
   public void _onArea2DBodyExited(Node body) {
