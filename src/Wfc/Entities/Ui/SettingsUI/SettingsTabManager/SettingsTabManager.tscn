@@ -1,7 +1,7 @@
-[gd_scene load_steps=24 format=3 uid="uid://bo2x0ri6jenb3"]
+[gd_scene format=3 uid="uid://bo2x0ri6jenb3"]
 
 [ext_resource type="Theme" uid="uid://duyihjolb12bh" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabsTheme.tres" id="1_6eew3"]
-[ext_resource type="Theme" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabsDarkTheme.tres" id="1_dark"]
+[ext_resource type="Theme" uid="uid://c03y8pyq6b31p" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabsDarkTheme.tres" id="1_dark"]
 [ext_resource type="Script" uid="uid://dv44qgy4plsou" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsTabManager.cs" id="2_4e54m"]
 [ext_resource type="ButtonGroup" uid="uid://dqiq3r6imuqff" path="res://src/Wfc/Entities/Ui/SettingsUI/SettingsTabManager/SettingsButtonGroup.tres" id="2_kglrd"]
 [ext_resource type="Script" uid="uid://cvvkqqndmn8or" path="res://src/Wfc/Entities/Ui/SettingsUI/Grid/UIGridContainer/UIGridContainer.cs" id="3_q2836"]
@@ -22,9 +22,9 @@
 [ext_resource type="PackedScene" uid="uid://djhvxh4fx0m0u" path="res://src/Wfc/Entities/Ui/SettingsUI/UiSlider/UiSlider/UiSlider.tscn" id="16_sl8rm"]
 [ext_resource type="PackedScene" uid="uid://cl3myeon12t01" path="res://src/Wfc/Entities/Ui/SettingsUI/UISelect/UIDropdownButton/UIDropdownButton.tscn" id="17_drpdn"]
 [ext_resource type="PackedScene" uid="uid://mrqua3ynx7b5" path="res://src/Wfc/Entities/Ui/Dialogs/DialogContainer/DialogContainer.tscn" id="18_dlgctr"]
-[ext_resource type="PackedScene" uid="uid://wfccnfdlgscn1" path="res://src/Wfc/Entities/Ui/Dialogs/ConfirmDialog/ConfirmDialog.tscn" id="19_cnfdlg"]
+[ext_resource type="PackedScene" uid="uid://c3ayo4rcmrxu7" path="res://src/Wfc/Entities/Ui/Dialogs/ConfirmDialog/ConfirmDialog.tscn" id="19_cnfdlg"]
 
-[node name="GameSettingsTabManager" type="Control"]
+[node name="GameSettingsTabManager" type="Control" unique_id=1408543869]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,7 +35,7 @@ theme = ExtResource("1_6eew3")
 script = ExtResource("2_4e54m")
 DarkTheme = ExtResource("1_dark")
 
-[node name="PanelManager" type="MarginContainer" parent="."]
+[node name="PanelManager" type="MarginContainer" parent="." unique_id=1109225526]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -47,13 +47,13 @@ theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 50
 theme_override_constants/margin_bottom = 50
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelManager"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelManager" unique_id=1758595984]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelManager/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelManager/VBoxContainer" unique_id=14783472]
 layout_mode = 2
 
-[node name="GeneralSettingsButton" type="Button" parent="PanelManager/VBoxContainer/HBoxContainer"]
+[node name="GeneralSettingsButton" type="Button" parent="PanelManager/VBoxContainer/HBoxContainer" unique_id=2006706138]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -61,10 +61,10 @@ toggle_mode = true
 button_group = ExtResource("2_kglrd")
 text = "General"
 
-[node name="Space" type="PanelContainer" parent="PanelManager/VBoxContainer/HBoxContainer"]
+[node name="Space" type="PanelContainer" parent="PanelManager/VBoxContainer/HBoxContainer" unique_id=1450066572]
 layout_mode = 2
 
-[node name="VideoSettingsButton" type="Button" parent="PanelManager/VBoxContainer/HBoxContainer"]
+[node name="VideoSettingsButton" type="Button" parent="PanelManager/VBoxContainer/HBoxContainer" unique_id=611486803]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -72,10 +72,10 @@ toggle_mode = true
 button_group = ExtResource("2_kglrd")
 text = "Video"
 
-[node name="Space2" type="PanelContainer" parent="PanelManager/VBoxContainer/HBoxContainer"]
+[node name="Space2" type="PanelContainer" parent="PanelManager/VBoxContainer/HBoxContainer" unique_id=1350230632]
 layout_mode = 2
 
-[node name="ControllerSettingsButton" type="Button" parent="PanelManager/VBoxContainer/HBoxContainer"]
+[node name="ControllerSettingsButton" type="Button" parent="PanelManager/VBoxContainer/HBoxContainer" unique_id=1542073339]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -83,10 +83,10 @@ toggle_mode = true
 button_group = ExtResource("2_kglrd")
 text = "Controller"
 
-[node name="Space3" type="PanelContainer" parent="PanelManager/VBoxContainer/HBoxContainer"]
+[node name="Space3" type="PanelContainer" parent="PanelManager/VBoxContainer/HBoxContainer" unique_id=926799825]
 layout_mode = 2
 
-[node name="AudioSettingsButton" type="Button" parent="PanelManager/VBoxContainer/HBoxContainer"]
+[node name="AudioSettingsButton" type="Button" parent="PanelManager/VBoxContainer/HBoxContainer" unique_id=1597446512]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -94,107 +94,108 @@ toggle_mode = true
 button_group = ExtResource("2_kglrd")
 text = "Audio"
 
-[node name="GeneralSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer"]
+[node name="GeneralSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer" unique_id=1075711765]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/GeneralSettingsPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/GeneralSettingsPanel" unique_id=1946492574]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 20
 
-[node name="GridContainer" type="GridContainer" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer"]
+[node name="GridContainer" type="GridContainer" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer" unique_id=950529490]
 layout_mode = 2
 script = ExtResource("3_q2836")
 
-[node name="UIGridRow" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+[node name="UIGridRow" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer" unique_id=1120673289 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 theme = null
 TranslationKey = 38
 IsDark = true
 
-[node name="UISelectButton" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/UIGridRow" instance=ExtResource("7_4gkar")]
+[node name="UISelectButton" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/UIGridRow" unique_id=1226341943 instance=ExtResource("7_4gkar")]
 layout_mode = 2
 
-[node name="LanguageSelectDriver" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/UIGridRow/UISelectButton" instance=ExtResource("8_2vkcc")]
+[node name="LanguageSelectDriver" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/UIGridRow/UISelectButton" unique_id=22770571 instance=ExtResource("8_2vkcc")]
 
-[node name="SkinGridRow" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+[node name="SkinGridRow" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer" unique_id=780304048 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 theme = null
 TranslationKey = 88
 
-[node name="UISelectButton" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/SkinGridRow" instance=ExtResource("7_4gkar")]
+[node name="UISelectButton" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/SkinGridRow" unique_id=1858665720 instance=ExtResource("7_4gkar")]
 layout_mode = 2
 
-[node name="SkinSelectDriver" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/SkinGridRow/UISelectButton" instance=ExtResource("9_sknsd")]
+[node name="SkinSelectDriver" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/SkinGridRow/UISelectButton" unique_id=990742367 instance=ExtResource("9_sknsd")]
 
-[node name="SkinSwatches" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/SkinGridRow" instance=ExtResource("9_swtch")]
+[node name="SkinSwatches" parent="PanelManager/VBoxContainer/GeneralSettingsPanel/MarginContainer/GridContainer/SkinGridRow" unique_id=1046640994 instance=ExtResource("9_swtch")]
 layout_mode = 2
 theme_override_constants/separation = 8
 SwatchSize = Vector2(38, 38)
 
-[node name="VideoSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer"]
+[node name="VideoSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer" unique_id=1109844498]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("10_pax5l")
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/VideoSettingsPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/VideoSettingsPanel" unique_id=410207166]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 20
 
-[node name="UiGridContainer" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer" instance=ExtResource("10_1dfed")]
+[node name="UiGridContainer" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer" unique_id=1243705098 instance=ExtResource("10_1dfed")]
 layout_mode = 2
 
-[node name="Fullscreen" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+[node name="Fullscreen" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" unique_id=504175286 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 40
-
-[node name="FullscreenCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Fullscreen" instance=ExtResource("5_0l3vq")]
-layout_mode = 2
-
-[node name="VSync" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
-layout_mode = 2
-TranslationKey = 41
 IsDark = true
 
-[node name="VSyncCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/VSync" instance=ExtResource("5_0l3vq")]
+[node name="FullscreenCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Fullscreen" unique_id=502724838 instance=ExtResource("5_0l3vq")]
 layout_mode = 2
 
-[node name="Resolution" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+[node name="VSync" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" unique_id=1478992508 instance=ExtResource("4_pni3s")]
+layout_mode = 2
+TranslationKey = 41
+
+[node name="VSyncCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/VSync" unique_id=846143148 instance=ExtResource("5_0l3vq")]
+layout_mode = 2
+
+[node name="Resolution" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" unique_id=1671586382 instance=ExtResource("4_pni3s")]
 clip_contents = true
 layout_mode = 2
 TranslationKey = 39
+IsDark = true
 
-[node name="ResolutionSelectButton" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resolution" instance=ExtResource("17_drpdn")]
+[node name="ResolutionSelectButton" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resolution" unique_id=1762839111 instance=ExtResource("17_drpdn")]
 layout_mode = 2
 
-[node name="ResolutionSelectDriver" type="Node2D" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resolution/ResolutionSelectButton"]
+[node name="ResolutionSelectDriver" type="Node2D" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resolution/ResolutionSelectButton" unique_id=403819762]
 script = ExtResource("11_hajtt")
 
-[node name="Resizable" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+[node name="PerformanceOverlay" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" unique_id=1995737818 instance=ExtResource("4_pni3s")]
+layout_mode = 2
+TranslationKey = 113
+
+[node name="PerformanceOverlayCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/PerformanceOverlay" unique_id=1010503705 instance=ExtResource("5_0l3vq")]
+layout_mode = 2
+
+[node name="Resizable" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" unique_id=145402511 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 117
 IsDark = true
 
-[node name="ResizableCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resizable" instance=ExtResource("5_0l3vq")]
+[node name="ResizableCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/Resizable" unique_id=1851196621 instance=ExtResource("5_0l3vq")]
 layout_mode = 2
 
-[node name="PerformanceOverlay" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
-layout_mode = 2
-TranslationKey = 113
-
-[node name="PerformanceOverlayCheckbox" parent="PanelManager/VBoxContainer/VideoSettingsPanel/MarginContainer/UiGridContainer/PerformanceOverlay" instance=ExtResource("5_0l3vq")]
-layout_mode = 2
-
-[node name="ResolutionDialogContainer" parent="PanelManager/VBoxContainer/VideoSettingsPanel" instance=ExtResource("18_dlgctr")]
+[node name="ResolutionDialogContainer" parent="PanelManager/VBoxContainer/VideoSettingsPanel" unique_id=38022407 instance=ExtResource("18_dlgctr")]
 layout_mode = 2
 DialogNodePath = NodePath("ResolutionDialog")
 DialogTextKey = 114
@@ -203,138 +204,138 @@ CancelTextKey = 116
 CountdownSeconds = 10
 CoverViewport = true
 
-[node name="ResolutionDialog" parent="PanelManager/VBoxContainer/VideoSettingsPanel/ResolutionDialogContainer" instance=ExtResource("19_cnfdlg")]
+[node name="ResolutionDialog" parent="PanelManager/VBoxContainer/VideoSettingsPanel/ResolutionDialogContainer" unique_id=150210879 instance=ExtResource("19_cnfdlg")]
 layout_mode = 1
 
-[node name="ControllerSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer"]
+[node name="ControllerSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer" unique_id=490793407]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("4_x1tms")
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/ControllerSettingsPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/ControllerSettingsPanel" unique_id=1896130810]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 20
 
-[node name="GridContainer" type="GridContainer" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer"]
+[node name="GridContainer" type="GridContainer" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer" unique_id=1679285923]
 layout_mode = 2
 script = ExtResource("3_q2836")
 
-[node name="ControllerType" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+[node name="ControllerType" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" unique_id=594423052 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 21
 IsDark = true
 
-[node name="UISelectButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/ControllerType" instance=ExtResource("7_4gkar")]
+[node name="UISelectButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/ControllerType" unique_id=1953755764 instance=ExtResource("7_4gkar")]
 layout_mode = 2
 
-[node name="ControllerSelectDriver" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/ControllerType/UISelectButton" instance=ExtResource("12_a7iyf")]
+[node name="ControllerSelectDriver" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/ControllerType/UISelectButton" unique_id=630150346 instance=ExtResource("12_a7iyf")]
 
-[node name="UIGridTitleRow" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("6_pupl0")]
+[node name="UIGridTitleRow" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" unique_id=1202651614 instance=ExtResource("6_pupl0")]
 layout_mode = 2
 TranslationKey = 44
 
-[node name="Jump" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+[node name="Jump" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" unique_id=450855869 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 24
 IsDark = true
 
-[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Jump" instance=ExtResource("13_mrjc8")]
+[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Jump" unique_id=967190076 instance=ExtResource("13_mrjc8")]
 layout_mode = 2
 key = "jump"
 
-[node name="MoveLeft" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+[node name="MoveLeft" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" unique_id=142786865 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 25
 
-[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/MoveLeft" instance=ExtResource("13_mrjc8")]
+[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/MoveLeft" unique_id=602084295 instance=ExtResource("13_mrjc8")]
 layout_mode = 2
 key = "move_left"
 
-[node name="MoveRight" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+[node name="MoveRight" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" unique_id=1847567520 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 26
 IsDark = true
 
-[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/MoveRight" instance=ExtResource("13_mrjc8")]
+[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/MoveRight" unique_id=832306041 instance=ExtResource("13_mrjc8")]
 layout_mode = 2
 key = "move_right"
 
-[node name="RotateLeft" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+[node name="RotateLeft" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" unique_id=559110378 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 27
 
-[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/RotateLeft" instance=ExtResource("13_mrjc8")]
+[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/RotateLeft" unique_id=659347912 instance=ExtResource("13_mrjc8")]
 layout_mode = 2
 key = "rotate_left"
 
-[node name="RotateRight" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+[node name="RotateRight" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" unique_id=664297245 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 28
 IsDark = true
 
-[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/RotateRight" instance=ExtResource("13_mrjc8")]
+[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/RotateRight" unique_id=1821210610 instance=ExtResource("13_mrjc8")]
 layout_mode = 2
 
-[node name="Dash" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+[node name="Dash" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" unique_id=274920919 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 29
 
-[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Dash" instance=ExtResource("13_mrjc8")]
+[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Dash" unique_id=742059954 instance=ExtResource("13_mrjc8")]
 layout_mode = 2
 key = "dash"
 
-[node name="Down" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+[node name="Down" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" unique_id=1702248613 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 30
 IsDark = true
 
-[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Down" instance=ExtResource("13_mrjc8")]
+[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Down" unique_id=66171392 instance=ExtResource("13_mrjc8")]
 layout_mode = 2
 key = "down"
 
-[node name="Pause" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" instance=ExtResource("4_pni3s")]
+[node name="Pause" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer" unique_id=2064627926 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 31
 
-[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Pause" instance=ExtResource("13_mrjc8")]
+[node name="KeyBindingButton" parent="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Pause" unique_id=1859832613 instance=ExtResource("13_mrjc8")]
 layout_mode = 2
 key = "pause"
 
-[node name="AudioSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer"]
+[node name="AudioSettingsPanel" type="PanelContainer" parent="PanelManager/VBoxContainer" unique_id=1050254340]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("13_gigt0")
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/AudioSettingsPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelManager/VBoxContainer/AudioSettingsPanel" unique_id=103250404]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 20
 
-[node name="UiGridContainer" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer" instance=ExtResource("10_1dfed")]
+[node name="UiGridContainer" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer" unique_id=271777366 instance=ExtResource("10_1dfed")]
 layout_mode = 2
 
-[node name="SfxVolume" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+[node name="SfxVolume" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer" unique_id=1315050075 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 33
 IsDark = true
 
-[node name="SfxSlider" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer/SfxVolume" instance=ExtResource("16_sl8rm")]
+[node name="SfxSlider" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer/SfxVolume" unique_id=539807911 instance=ExtResource("16_sl8rm")]
 layout_mode = 2
 
-[node name="MusicVolume" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer" instance=ExtResource("4_pni3s")]
+[node name="MusicVolume" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer" unique_id=1202982104 instance=ExtResource("4_pni3s")]
 layout_mode = 2
 TranslationKey = 34
 
-[node name="MusicSlider" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer/MusicVolume" instance=ExtResource("16_sl8rm")]
+[node name="MusicSlider" parent="PanelManager/VBoxContainer/AudioSettingsPanel/MarginContainer/UiGridContainer/MusicVolume" unique_id=1222580897 instance=ExtResource("16_sl8rm")]
 layout_mode = 2
 
 [connection signal="onActionBoundSignal" from="PanelManager/VBoxContainer/ControllerSettingsPanel" to="PanelManager/VBoxContainer/ControllerSettingsPanel/MarginContainer/GridContainer/Jump/KeyBindingButton" method="_onKeyboardActionBoundSignal"]
