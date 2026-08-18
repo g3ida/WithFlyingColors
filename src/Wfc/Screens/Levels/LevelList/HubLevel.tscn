@@ -54,7 +54,6 @@ position = Vector2(2375, 1000)
 scale = Vector2(89.375, 3)
 Group = ""
 geared = false
-splash_darkness = 0.93
 
 [node name="Walls" type="StaticBody2D" parent="." index="6"]
 

@@ -259,9 +259,6 @@ public partial class FlatPlatform : StaticBody2D {
     }
   }
   private int _inkSeed;
-
-  [Export]
-  public float SplashDarkness { get; set; } = 0.78f;
   #endregion Exports
 
   #region Fields
@@ -371,10 +368,10 @@ public partial class FlatPlatform : StaticBody2D {
 
     var camera = GameLevel.CameraNode;
     if (camera != null && _surfaceNode.Material is ShaderMaterial material) {
-      PlatformSplash.Write(material, camera, ToGlobal(_contactPosition), _animationTimer, SplashDarkness);
+      PlatformSplash.Write(material, camera, ToGlobal(_contactPosition), _animationTimer);
     }
 
-    if (_animationTimer > PlatformSplash.Duration(SplashDarkness)) {
+    if (_animationTimer > PlatformSplash.Duration) {
       SetProcess(false);
     }
   }

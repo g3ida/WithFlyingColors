@@ -25,7 +25,7 @@ uniform float u_aspect_ratio = 1.0;
 uniform float u_timer = -10.0;
 uniform vec2 u_contact_pos = vec2(0.5, 0.5);
 uniform float propagation_speed = 1.0;
-uniform float darkness = 0.78;
+uniform float darkness = 0.92;
 
 // How much of the colour survives at the inner end of a band, before it ramps away to black. The
 // light does not come in level: a side falls further into shadow than the underside does.
