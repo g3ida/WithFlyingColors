@@ -24,6 +24,9 @@ public partial class UIGridRow : PanelContainer {
     if (what == NotificationTranslationChanged) {
       _refreshLabel();
     }
+    else if (what == NotificationVisibilityChanged && !Visible) {
+      _stopBeingPointedAt();
+    }
   }
 
   [Dependency]
@@ -83,6 +86,7 @@ public partial class UIGridRow : PanelContainer {
   private Control? _decorationBalanceNode = null;
   private readonly List<Control> _decorationNodes = [];
   private int _focusState = 0;
+  private bool _isPointedAt;
   private void _setStyle(bool hasFocus) {
     var style = new StyleBoxFlat {
       BgColor = _surfaceColor(hasFocus),
@@ -211,13 +215,27 @@ public partial class UIGridRow : PanelContainer {
     }
   }
 
+  // Only a row that took the pointer gives it back, so the tally the surface is
+  // drawn from stays balanced whichever of the two the row turned down.
   private void _onMouseEntered() {
+    if (_isPointedAt || !PointerFocus.IsPlayerPointing) {
+      return;
+    }
+    _isPointedAt = true;
     _focusState++;
     _setStyle(hasFocus: true);
     _attachedNode?.GrabFocus();
   }
 
-  private void _onMouseExited() {
+  private void _onMouseExited() => _stopBeingPointedAt();
+
+  // A row taken away mid-hover may never be reported as left, and one still holding
+  // the pointer would turn down the next one it is offered.
+  private void _stopBeingPointedAt() {
+    if (!_isPointedAt) {
+      return;
+    }
+    _isPointedAt = false;
     _focusState = Mathf.Max(0, _focusState - 1);
     if (_focusState == 0) {
       _setStyle(hasFocus: false);

@@ -41,6 +41,9 @@ public static class FocusHelpers {
       if (target.FocusMode == Control.FocusModeEnum.None || canFocus?.Invoke() == false) {
         return;
       }
+      if (!PointerFocus.IsPlayerPointing) {
+        return;
+      }
       target.GrabFocus();
     };
   }

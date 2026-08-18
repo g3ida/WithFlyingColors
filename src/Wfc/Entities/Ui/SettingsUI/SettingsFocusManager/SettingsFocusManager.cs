@@ -10,6 +10,7 @@ using Wfc.Core.Input;
 using Wfc.Core.Ui;
 using Wfc.Entities.Ui.SettingsUI.Grid;
 using Wfc.Screens.MenuManager;
+using Wfc.Utils;
 
 using KeyBindingButton = Wfc.Entities.Ui.KeyBindingButton;
 
@@ -323,6 +324,9 @@ public partial class SettingsFocusManager : Node {
     }
 
     private void OnControlMouseEntered(Control control) {
+        if (!PointerFocus.IsPlayerPointing) {
+            return;
+        }
         // Find the index of the row containing this control and update focus
         for (int i = 1; i < _currentRows.Count; i++) {
             if (_currentRows[i] is UIGridRow gridRow && gridRow.GetFocusableControl() == control) {
@@ -333,6 +337,9 @@ public partial class SettingsFocusManager : Node {
     }
 
     private void OnPanelTabMouseEntered() {
+        if (!PointerFocus.IsPlayerPointing) {
+            return;
+        }
         _focusRow(0);
     }
 
