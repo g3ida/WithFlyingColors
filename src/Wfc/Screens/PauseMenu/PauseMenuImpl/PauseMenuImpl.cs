@@ -73,6 +73,8 @@ public partial class PauseMenuImpl : GameMenu {
           || button == _restartLevelButton
           || button == _returnToHubButton);
 
+  public void HideReturnToHub() => buttons.Remove(_returnToHubButton);
+
   public void _Hide() {
     foreach (var button in buttons) {
       button.HideBtn();

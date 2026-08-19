@@ -16,5 +16,6 @@ public sealed record CameraFraming(
   float DragTopMargin = Constants.DEFAULT_DRAG_MARGIN_TB,
   float DragBottomMargin = Constants.DEFAULT_DRAG_MARGIN_TB,
   float DragLeftMargin = Constants.DEFAULT_DRAG_MARGIN_LR,
-  float DragRightMargin = Constants.DEFAULT_DRAG_MARGIN_LR
+  float DragRightMargin = Constants.DEFAULT_DRAG_MARGIN_LR,
+  float FollowSpeed = Constants.DEFAULT_CAMERA_FOLLOW_SPEED
 );

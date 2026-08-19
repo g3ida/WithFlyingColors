@@ -7,6 +7,7 @@ using Chickensoft.AutoInject;
 using Chickensoft.Introspection;
 using Godot;
 using Wfc.Core.Event;
+using Wfc.Entities.World.Camera;
 using Wfc.Screens.Levels;
 using Wfc.Utils;
 using Wfc.Utils.Attributes;
@@ -28,9 +29,6 @@ public partial class Cutscene : Node2D {
   // Start and end have to agree on this id or _onCutsceneRequestEnd drops the
   // request and the input lock is never released.
   private const string CUTSCENE_ID = "CutScene";
-  // The share of a shot spent travelling out to what it is showing; the rest is
-  // the way back, which still belongs to the shot.
-  private const float TRAVEL_SHARE = 0.6f;
 
   public enum CutsceneState {
     Disabled,
@@ -202,7 +200,7 @@ public partial class Cutscene : Node2D {
   // Borrows the camera to look at a node and hands it back. The camera owns the borrow
   // and can revoke it - a respawn does - so this never assigns to the camera directly:
   // the token is all this run has, and a revoked one writes nothing.
-  public async void ShowSomeNode(Node2D node, float duration = 7.0f, float moveSpeed = 3.2f) {
+  public async void ShowSomeNode(Node2D node, CutsceneShot shot) {
     // Re-entering would leave two shots sharing one camera and one timer, and whichever
     // finished first would hand back a camera the other is still using.
     if (IsBusy() || !IsInstanceValid(node)) {
@@ -211,31 +209,84 @@ public partial class Cutscene : Node2D {
 
     var run = ++_runGeneration;
     var cameraNode = GameLevel.CameraNode;
-    var focus = cameraNode.BeginFocusOverride(node, moveSpeed);
+    var focus = 0;
+    var hasBorrowed = false;
+    var hasSettledView = false;
+    // What the camera was on before the shot widened it, for a shot with no room to hand over to.
+    var openingZoom = cameraNode.TargetZoom;
     GameEvents.Instance.OnCutsceneRequestStart(CUTSCENE_ID);
+    // Claimed before the delay rather than at the borrow, so a room the player walks into on the
+    // step that started the shot waits for it instead of clamping the travel to come.
+    cameraNode.BeginShot();
 
     try {
-      if (!await _waitFor(duration * TRAVEL_SHARE) || run != _runGeneration) {
+      // The stripes and the input lock are already in by now: the delay holds the camera
+      // on the player rather than holding the cutscene up.
+      if (!await _stillRunningAfter(shot.StartDelay, run, node, cameraNode)) {
         return;
       }
-      cameraNode.ReturnFocus(focus);
-      await _waitFor(duration * (1f - TRAVEL_SHARE));
+
+      // The view first and the move after it, so the pan happens at a framing that is already
+      // right. A room walked into on the step that started the shot has landed by now, so this is
+      // also where its view is picked up when the shot has none of its own.
+      if (!await _stillRunningAfter(cameraNode.SettleViewForShot(shot.Zoom), run, node, cameraNode)) {
+        return;
+      }
+
+      focus = cameraNode.BeginFocusOverride(node, shot.TravelTime, shot.Easing, shot.Ease);
+      hasBorrowed = true;
+
+      if (!await _stillRunningAfter(shot.TravelTime + shot.HoldTime, run, node, cameraNode)) {
+        return;
+      }
+
+      cameraNode.ReturnFocus(focus, shot.TravelTime, shot.Easing, shot.Ease);
+      if (!await _stillRunningAfter(shot.TravelTime, run, node, cameraNode)) {
+        return;
+      }
+
+      // The camera is home and still, so the view it is left on changes here - held for, with the
+      // stripes still in, so the whole framing change happens inside the shot rather than in the
+      // player's hands after it.
+      var settled = cameraNode.SettleViewAfterShot(openingZoom);
+      hasSettledView = true;
+      await _waitFor(settled);
     }
     finally {
       // A retired run has already had the camera taken off it and the input lock
       // released; ending here would close whatever cutscene is running now instead.
       if (run == _runGeneration) {
         if (IsInstanceValid(cameraNode)) {
-          cameraNode.EndFocusOverride(focus);
+          if (hasBorrowed) {
+            cameraNode.EndFocusOverride(focus);
+          }
+          // A shot that stopped before it got home still owes the camera a view it can be left on.
+          if (!hasSettledView) {
+            cameraNode.SettleViewAfterShot(openingZoom);
+          }
+          cameraNode.EndShot();
         }
         GameEvents.Instance.OnCutsceneRequestEnd(CUTSCENE_ID);
       }
     }
   }
 
+  // A beat the shot may not come out the other side of: a respawn retires the run, and the level
+  // can be torn down under it, and either way what it was going to write to is gone.
+  private async Task<bool> _stillRunningAfter(float seconds, int run, Node2D node, GameCamera camera) =>
+    await _waitFor(seconds)
+    && run == _runGeneration
+    && IsInstanceValid(node)
+    && IsInstanceValid(camera);
+
   // False once the level has been torn down under the shot: the caller stops there, and
   // the input lock is released by whoever is still alive to do it.
   private async Task<bool> _waitFor(float seconds) {
+    // A zero wait is a phase the shot was not given, not a timer: the node rejects a wait time
+    // of zero, and a shot with no delay or no hold has to run straight through it.
+    if (seconds <= 0f) {
+      return true;
+    }
     try {
       timerNode.WaitTime = seconds;
       timerNode.Start();

@@ -24,7 +24,7 @@ using Wfc.Utils.Layers;
 [Tool]
 [ScenePath]
 [Meta(typeof(IAutoNode))]
-public partial class CameraLocalizer : Node2D {
+public partial class CameraLocalizer : Node2D, ICameraRoom {
   #region Constants
   public const CameraEdges ALL_EDGES = CameraEdges.Left | CameraEdges.Right | CameraEdges.Top | CameraEdges.Bottom;
 
@@ -127,6 +127,12 @@ public partial class CameraLocalizer : Node2D {
     }
   }
 
+  // The room's limits change the instant it is entered and its zoom eases in over its own beat, so
+  // by default the camera pans and zooms at once and the two read as one muddled motion. Ticked, the
+  // pan is left to finish before the zoom starts.
+  [Export]
+  public bool ZoomAfterMoving { get; set; }
+
   // The camera holds the framing its limits give it instead of following the player around the
   // room, so the limits had better decide that framing whole.
   [Export]
@@ -141,6 +147,14 @@ public partial class CameraLocalizer : Node2D {
   // What the camera follows while the player is in this room. Left empty it keeps what it had.
   [Export]
   public NodePath? FollowPath { get; set; }
+
+  // How fast the camera closes on what it follows in this room: lower trails further behind and
+  // takes longer to settle. Left at zero the room keeps whatever speed the level opened with.
+  //
+  // The pan a room causes is paced by this, so the zoom held back by ZoomAfterMoving is waiting on
+  // it too: a slower room is given longer before its zoom starts.
+  [Export(PropertyHint.Range, "0,20,0.1,or_greater")]
+  public float FollowSpeed { get; set; }
   #endregion Exports
 
   #region Fields
@@ -171,6 +185,12 @@ public partial class CameraLocalizer : Node2D {
       // player is on their own and never report a body. The node that depends on the contract is the
       // one that gets to enforce it, rather than every scene remembering.
       area.CollisionMask = PhysicsLayers.Player.Mask;
+      // Subscribed last on purpose, and this is load-bearing. A way in may be a node that also acts
+      // on the crossing itself - a cutscene trigger authored as the room's doorway is the whole
+      // point of the arrangement - and the room has to see the camera already claimed, or it frames
+      // a shot that has not started yet and then clamps its travel. A parent's _Ready runs after
+      // every descendant's _EnterTree and _Ready, so a child that subscribes in either is ahead of
+      // this. A way in reparented after the level has loaded would land behind it instead.
       area.BodyEntered += _onBodyEntered;
     }
   }
@@ -178,20 +198,36 @@ public partial class CameraLocalizer : Node2D {
   // The whole framing: what the camera follows, how far it may travel, how closely it follows and
   // how much it shows.
   public void ApplyToCamera() {
+    ApplyTravelToCamera();
+    ApplyCompositionToCamera();
+  }
+
+  // Everything that moves the camera: what it follows and how far it may go.
+  public void ApplyTravelToCamera() {
     if (RestoreLevelFraming) {
-      GameLevel.CameraNode.RestoreAuthoredFraming();
+      GameLevel.CameraNode.RestoreAuthoredLimits();
       return;
     }
     _applyFollowNode();
     ApplyLimitsToCamera();
     _applyDragMargins();
-    GameLevel.CameraNode.ZoomTo(Zoom);
+    // Before the zoom, which reads the camera's speed to know how long the pan it is waiting on takes.
+    _applyFollowSpeed();
+  }
+
+  // How much of the world the room shows, on its own so a shot can take it after its last leg
+  // rather than during one.
+  public float ApplyCompositionToCamera(bool aPanIsStillToCome = true) {
+    var holdBack = ZoomAfterMoving && aPanIsStillToCome;
+    return RestoreLevelFraming
+      ? GameLevel.CameraNode.RestoreAuthoredZoom(holdBack)
+      : GameLevel.CameraNode.ZoomTo(Zoom, holdBack);
   }
 
   // The travel on its own, for a room that re-frames itself with the player already inside it.
   public void ApplyLimitsToCamera() {
     if (RestoreLevelFraming) {
-      GameLevel.CameraNode.RestoreAuthoredFraming();
+      GameLevel.CameraNode.RestoreAuthoredLimits();
       return;
     }
     var room = FramedRoom();
@@ -274,9 +310,21 @@ public partial class CameraLocalizer : Node2D {
     if (body != GameLevel.PlayerNode) {
       return;
     }
-    ApplyToCamera();
+    // Handed to the camera rather than written: a room walked into while a cutscene holds the
+    // camera is the camera's to take once the shot turns for home.
+    GameLevel.CameraNode.ApplyRoomFraming(this);
+  }
+
+  // A room that hands the camera back has no view of its own to offer a shot: what the level shows
+  // when no room has an opinion is decided when the framing is restored, not before.
+  float? ICameraRoom.Zoom => RestoreLevelFraming ? null : Zoom;
+
+  public void TakeTheCamera() {
+    ApplyTravelToCamera();
     _widenLimitsToIncludeThePlayer();
   }
+
+  public float ShowTheRoom(bool aPanIsStillToCome) => ApplyCompositionToCamera(aPanIsStillToCome);
 
   private void _applyFollowNode() {
     if (FollowPath is null or { IsEmpty: true }) {
@@ -288,6 +336,13 @@ public partial class CameraLocalizer : Node2D {
     else {
       Log.Error($"{Name} points at '{FollowPath}', which is no Node2D; the camera keeps following what it had.");
     }
+  }
+
+  private void _applyFollowSpeed() {
+    var camera = GameLevel.CameraNode;
+    // Absolute, like every other property a room sets: a room with no speed of its own puts the
+    // level's back rather than leaving whatever the last room that had one wrote there.
+    camera.SetFollowSpeed(FollowSpeed > 0.0f ? FollowSpeed : camera.AuthoredFollowSpeed);
   }
 
   private void _applyDragMargins() {
@@ -361,7 +416,8 @@ public partial class CameraLocalizer : Node2D {
       || name == PropertyName.FitHeightToView
       || name == PropertyName.Zoom
       || name == PropertyName.FreezeCamera
-      || name == PropertyName.FollowPath) {
+      || name == PropertyName.FollowPath
+      || name == PropertyName.FollowSpeed) {
       var usage = (PropertyUsageFlags)property["usage"].AsInt64();
       property["usage"] = (int)(usage | PropertyUsageFlags.ReadOnly);
     }

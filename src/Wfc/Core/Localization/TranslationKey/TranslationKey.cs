@@ -19,7 +19,7 @@ public enum TranslationKey {
   menu_button_stats = 6,
   menu_header_mainMenu = 7,
   menu_header_gameSettings = 8,
-  menu_header_gameStats = 9,
+  menu_header_hallOfFame = 9,
   menu_button_options = 10,
   menu_button_selectSlot = 11,
   menu_button_saveSlot = 12,

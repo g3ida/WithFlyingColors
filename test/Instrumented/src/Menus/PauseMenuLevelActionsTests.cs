@@ -17,7 +17,8 @@ using Wfc.Utils;
 
 // The pause menu offers only what the level it sits in can carry out. The hub is
 // where levels are picked: there is nothing to restart there and nowhere to walk
-// back out to, so those entries are left off it entirely.
+// back out to, so those entries are left off it entirely. The tutorial is played
+// before the hub has been reached, so it leaves out the way back to it.
 public class PauseMenuLevelActionsTests(Node testScene) : TestClass(testScene) {
   private const double TIMEOUT_SECONDS = 10.0;
 
@@ -38,13 +39,27 @@ public class PauseMenuLevelActionsTests(Node testScene) : TestClass(testScene) {
 
   [Test]
   public async Task ALevelOffersEveryEntry() {
-    var pauseMenu = await _pauseMenuIn(LevelDispatcher.LEVELS.First().Id);
+    var pauseMenu = await _pauseMenuIn(
+      LevelDispatcher.LEVELS.First(level => level.Id != LevelId.Tutorial).Id);
 
     _shownButtons(pauseMenu).ShouldBe([
       "ResumeButton",
       "RestartCheckpointButton",
       "RestartLevelButton",
       "ReturnToHubButton",
+      "SettingsButton",
+      "BackButton",
+    ]);
+  }
+
+  [Test]
+  public async Task TheTutorialLeavesOutTheReturnToHubEntry() {
+    var pauseMenu = await _pauseMenuIn(LevelId.Tutorial);
+
+    _shownButtons(pauseMenu).ShouldBe([
+      "ResumeButton",
+      "RestartCheckpointButton",
+      "RestartLevelButton",
       "SettingsButton",
       "BackButton",
     ]);
