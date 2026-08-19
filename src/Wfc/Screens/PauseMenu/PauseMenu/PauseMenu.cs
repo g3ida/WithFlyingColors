@@ -226,10 +226,18 @@ public partial class PauseMenu : CanvasLayer {
 
   // Told by the level it belongs to which level that is, so the menu can leave out
   // what that level has no use for. The hub is where levels are picked: there is
-  // nothing to restart there and nowhere to go back to.
+  // nothing to restart there and nowhere to go back to. The tutorial is played
+  // before the hub is ever reached, so there is no hub to return to yet.
   public void ConfigureForLevel(LevelId levelId) {
-    if (levelId == LevelId.Hub) {
-      _pauseMenu.HideLevelOnlyActions();
+    switch (levelId) {
+      case LevelId.Hub:
+        _pauseMenu.HideLevelOnlyActions();
+        break;
+      case LevelId.Tutorial:
+        _pauseMenu.HideReturnToHub();
+        break;
+      default:
+        break;
     }
   }
 

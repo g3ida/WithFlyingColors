@@ -28,8 +28,11 @@ public class GroundDustTests(Node testScene) : TestClass(testScene) {
   // Comfortably over, and comfortably under, the fall a burst needs.
   private const float A_FALL_WORTH_RAISING_DUST = 200f;
   private const float A_STEP_DOWN = 8f;
+  // Slow enough that the cube's own fall keeps it pressed to the floor every tick.
+  private const float A_SINK = 60f;
 
   private FakeDependenciesProvider _provider = default!;
+  private StaticBody2D _floor = default!;
 
   [Setup]
   public async Task Setup() {
@@ -96,11 +99,15 @@ public class GroundDustTests(Node testScene) : TestClass(testScene) {
     airborne.ShouldBeTrue("never left the ground");
     var landed = await PhysicsFrames.WaitFor(TestScene, () => player.IsOnFloor(), 3.0);
     landed.ShouldBeTrue("never came down");
+    // The burst belongs where the cube came down, which a cube still running is no longer at by
+    // the time the burst is raised.
+    var cameDownAt = player.GlobalPosition;
+    await PhysicsFrames.Frame(TestScene);
 
     landing.Emitting.ShouldBeTrue("a cube that jumped and came down raised no dust");
-    landing.GlobalPosition.X.ShouldBe(player.GlobalPosition.X, 1f,
-      "the burst went off somewhere other than under the cube");
-    landing.GlobalPosition.Y.ShouldBeGreaterThan(player.GlobalPosition.Y,
+    landing.GlobalPosition.X.ShouldBe(cameDownAt.X, 1f,
+      "the burst went off somewhere other than where the cube came down");
+    landing.GlobalPosition.Y.ShouldBeGreaterThan(cameDownAt.Y,
       "the burst went off above the cube rather than at its underside");
   }
 
@@ -115,6 +122,28 @@ public class GroundDustTests(Node testScene) : TestClass(testScene) {
     _landingOf(player).Emitting.ShouldBeFalse("a step down was drawn as a landing");
   }
 
+  // Dust is kicked off the ground, so ground that is itself going somewhere throws its dust along
+  // with it: otherwise a platform walks out from under its own dust and leaves it in the air.
+  [Test]
+  public async Task DustOffSinkingGroundIsThrownWithIt() {
+    var player = await _addPlayerOnGroundWearing(ColorUtils.PURPLE);
+    _provider.Input.Press(IInputManager.Action.MoveRight);
+    await PhysicsFrames.Advance(TestScene, A_WALK_UP_TO_SPEED);
+    var trail = _trailOf(player);
+    var overStillGround = _throwOf(trail);
+
+    var step = new Vector2(0f, A_SINK / Engine.PhysicsTicksPerSecond);
+    for (var frame = 0; frame < A_WALK_UP_TO_SPEED; frame++) {
+      _floor.GlobalPosition += step;
+      await PhysicsFrames.Frame(TestScene);
+    }
+
+    player.IsOnFloor().ShouldBeTrue("the cube came off the floor it was meant to be riding down");
+    var carried = _throwOf(trail) - overStillGround;
+    carried.Y.ShouldBe(A_SINK, 1f, "the dust was not thrown down with the ground it came off");
+    carried.X.ShouldBe(0f, 1f, "ground that only sank threw its dust sideways");
+  }
+
   // Lifted straight up and let go, so what lands is a fall of a known height rather than whatever
   // a jump happens to be worth.
   private async Task _dropFrom(Wfc.Entities.World.Player.Player player, float height) {
@@ -127,6 +156,9 @@ public class GroundDustTests(Node testScene) : TestClass(testScene) {
     var landed = await PhysicsFrames.WaitFor(
       TestScene, () => player.IsOnFloor(), A_LANDING_AT_MOST_SECONDS);
     landed.ShouldBeTrue("the cube never came back down");
+    // The burst is owed a tick: it is thrown with the ground's own motion, and ground the cube has
+    // only just met has not been seen move yet.
+    await PhysicsFrames.Frame(TestScene);
   }
 
   private async Task<CpuParticles2D> _walkOnGroundWearing(params string[] colorGroups) {
@@ -153,6 +185,7 @@ public class GroundDustTests(Node testScene) : TestClass(testScene) {
     floor.AddChild(colorArea);
     _provider.AddChild(floor);
     floor.GlobalPosition = new Vector2(0f, FLOOR_CENTER_Y);
+    _floor = floor;
 
     var player = GD.Load<PackedScene>(PLAYER_SCENE).Instantiate<Wfc.Entities.World.Player.Player>();
     player.CollisionMask = 13;
@@ -169,6 +202,11 @@ public class GroundDustTests(Node testScene) : TestClass(testScene) {
 
   private static CpuParticles2D _landingOf(Wfc.Entities.World.Player.Player player) =>
     player.GetNode<CpuParticles2D>("GroundDust/Landing");
+
+  // What one particle is given to leave with, as the emitter states it: one direction and the
+  // middle of the spread of speeds it picks from.
+  private static Vector2 _throwOf(CpuParticles2D dust) =>
+    dust.Direction * (dust.InitialVelocityMin + dust.InitialVelocityMax) * 0.5f;
 
   private static Color _rgbOf(CpuParticles2D dust) => new(dust.Color, 1f);
 

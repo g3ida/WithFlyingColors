@@ -50,6 +50,11 @@ public partial class Player : CharacterBody2D, IPersistent {
   #endregion Constants
   public float SpeedLimit { get; set; } = SPEED;
   public float SpeedUnit { get; set; } = SPEED_UNIT;
+
+  // Speed the floor handed the cube as it left it, held apart from the speed the cube makes
+  // itself: the run is clamped to SpeedLimit and bled off every tick, and a push from a moving
+  // floor is neither the cube's own running nor something it can brake against in mid air.
+  public float CarriedSpeed { get; set; }
   public PlayerRotationAction PlayerRotationAction { get; private set; } = new();
   public TransformAnimation ScaleAnimation { get; private set; } = null!;
   public TransformAnimation IdleAnimation { get; set; } = null!;
@@ -244,6 +249,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     AnimatedSpriteNode.Stop();
     GlobalPosition = new Vector2(_saveData.PositionX, _saveData.PositionY);
     Velocity = Vector2.Zero;
+    CarriedSpeed = 0.0f;
     // The brick breaker's power-ups are the only thing that resizes the cube, and none of them
     // outlives a respawn.
     Scale = Vector2.One;
@@ -649,6 +655,7 @@ public partial class Player : CharacterBody2D, IPersistent {
 
   public void SetMaxSpeed() {
     Velocity = new Vector2(SPEED, Velocity.Y);
+    CarriedSpeed = 0.0f;
   }
 
   public string GetSaveId() => GetPath();

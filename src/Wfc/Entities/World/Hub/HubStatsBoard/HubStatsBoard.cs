@@ -62,7 +62,7 @@ public partial class HubStatsBoard : Node2D {
 
   public void OnResolved() =>
     _titleLabelNode.Text = LocalizationService
-      .GetLocalizedString(TranslationKey.menu_header_gameStats)
+      .GetLocalizedString(TranslationKey.menu_header_hallOfFame)
       .ToUpperInvariant();
 
   public override void _Input(InputEvent @event) {
