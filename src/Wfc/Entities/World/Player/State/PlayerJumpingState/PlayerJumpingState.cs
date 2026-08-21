@@ -63,7 +63,7 @@ public partial class PlayerJumpingState : PlayerBaseState {
     if (_jumpTimer.IsRunning() && inputManager.IsJustReleased(IInputManager.Action.Jump)) {
       _jumpTimer.Stop();
       if (player.Velocity.Y < 0) {
-        player.Velocity = ApplyJumpCut(player.Velocity, JUMP_CUT_FACTOR);
+        player.Velocity = ApplyJumpCut(player.Velocity, JUMP_CUT_FACTOR, player.CarriedVelocity.Y);
       }
     }
 
@@ -75,8 +75,17 @@ public partial class PlayerJumpingState : PlayerBaseState {
   // Releasing Jump early cuts the jump short, so it is the rising component that gets
   // damped. Damping X instead gave every tap-jump full height and half run speed, which
   // shortened the arc without ever letting the player duck under a low ceiling.
-  internal static Vector2 ApplyJumpCut(Vector2 velocity, float factor) =>
-    new(velocity.X, velocity.Y * factor);
+  //
+  // The cut is over how high the cube jumps, so a lift handed to it by the floor it jumped off is
+  // left whole - and it can never leave the cube rising faster than the jump it is cutting.
+  //
+  // Only a lift that lifts. A floor that was sinking is left out of the carry by the cube's
+  // platform_on_leave, which is a scene property and no business of the cut's: a downward one
+  // reaching here would be cut for more than the jump is worth rather than less.
+  internal static Vector2 ApplyJumpCut(Vector2 velocity, float factor, float carriedLift) {
+    var lift = Mathf.Min(carriedLift, 0.0f);
+    return new(velocity.X, Mathf.Max(((velocity.Y - lift) * factor) + lift, velocity.Y));
+  }
 
   public PlayerJumpingState WithJumpPower(float jumpPower) {
     _touchJumpPower = jumpPower;

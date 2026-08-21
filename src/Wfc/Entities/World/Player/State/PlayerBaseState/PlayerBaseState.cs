@@ -39,7 +39,7 @@ public abstract class PlayerBaseState : IState<Player> {
   public virtual IState<Player>? PhysicsUpdate(Player player, float delta) {
     var death = player.TakePendingDeath();
     if (death.Type != EntityType.None) {
-      player.CarriedSpeed = 0.0f;
+      player.CarriedVelocity = Vector2.Zero;
       return _dyingStateFor(player, death);
     }
     if (!player.IsDying()) {
@@ -83,7 +83,7 @@ public abstract class PlayerBaseState : IState<Player> {
     // The limit is what the cube can run at, not what it can travel at, so it is held against the
     // run with the carry taken out - a cube thrown by the floor it jumped off still works its own
     // run up to the limit on top of the throw.
-    var run = player.Velocity.X - player.CarriedSpeed;
+    var run = player.Velocity.X - player.CarriedVelocity.X;
     if (inputManager.IsPressed(IInputManager.Action.MoveRight)) {
       playerMoved = true;
       run = Mathf.Clamp(run + player.SpeedUnit, 0, player.SpeedLimit);
@@ -95,20 +95,20 @@ public abstract class PlayerBaseState : IState<Player> {
     else {
       return;
     }
-    player.Velocity = new Vector2(run + player.CarriedSpeed, player.Velocity.Y);
+    player.Velocity = new Vector2(run + player.CarriedVelocity.X, player.Velocity.Y);
   }
 
   // A push the player is steering out of stops being a push: released, it is ordinary run speed
   // again, which the clamp and the damping take off within a tick.
   private void _releaseFoughtCarry(Player player) {
-    if (Mathf.IsZeroApprox(player.CarriedSpeed) || player.HandleInputIsDisabled) {
+    if (Mathf.IsZeroApprox(player.CarriedVelocity.X) || player.HandleInputIsDisabled) {
       return;
     }
-    var against = player.CarriedSpeed > 0.0f
+    var against = player.CarriedVelocity.X > 0.0f
       ? IInputManager.Action.MoveLeft
       : IInputManager.Action.MoveRight;
     if (inputManager.IsPressed(against)) {
-      player.CarriedSpeed = 0.0f;
+      player.CarriedVelocity = new Vector2(0.0f, player.CarriedVelocity.Y);
     }
   }
 
@@ -119,36 +119,51 @@ public abstract class PlayerBaseState : IState<Player> {
   // squash and stretch follow the cube there.
   private void _move(Player player, float delta) {
     var wasOnFloor = player.IsOnFloor();
-    var floorSpeed = player.GetPlatformVelocity().X;
-    var before = player.Velocity.X;
+    var floorVelocity = player.GetPlatformVelocity();
+    var before = player.Velocity;
 
     player.MoveAndSlide();
-    _readCarry(player, wasOnFloor, floorSpeed, before);
+    _readCarry(player, wasOnFloor, floorVelocity, before);
+    // Never more of a push than the cube still has. Something that stops the cube dead - a wall it
+    // was carried into, a ceiling - takes the push with it, and a carry outliving it would have
+    // the damping pushing the cube back towards a speed nothing is giving it any more.
+    player.CarriedVelocity = new Vector2(
+      _taken(player.Velocity.X, player.CarriedVelocity.X),
+      _taken(player.Velocity.Y, player.CarriedVelocity.Y)
+    );
 
-    var carry = player.CarriedSpeed;
+    var carry = player.CarriedVelocity.X;
     player.Velocity = new Vector2(Mathf.Lerp(player.Velocity.X - carry, 0, RUN_DAMPING) + carry, player.Velocity.Y);
     player.CurrentAnimation.Step(player, player.AnimatedSpriteNode, delta);
   }
 
   // What the floor gave the cube on the tick it left it. The engine adds a moving floor's own
-  // velocity there, and only what it actually added is exempted from the run rules: the same call
-  // moves a cube that left along a wall, and the wall owes it nothing. A push the player is
-  // already steering against is not taken at all, so a jump made against a moving floor is the
+  // velocity there, and a floor that was sinking is already left out of that by the cube's
+  // platform_on_leave: what is read here is only ever a push that helps. A push the player is
+  // already steering against is not taken either, so a jump made against a moving floor is the
   // jump it always was.
-  private void _readCarry(Player player, bool wasOnFloor, float floorSpeed, float before) {
+  private void _readCarry(Player player, bool wasOnFloor, Vector2 floorVelocity, Vector2 before) {
     if (player.IsOnFloor()) {
-      player.CarriedSpeed = 0.0f;
+      player.CarriedVelocity = Vector2.Zero;
       return;
     }
     if (!wasOnFloor) {
       return;
     }
-    var gained = player.Velocity.X - before;
-    player.CarriedSpeed = Mathf.Sign(gained) == Mathf.Sign(floorSpeed)
-      ? Mathf.Sign(floorSpeed) * Mathf.Min(Mathf.Abs(gained), Mathf.Abs(floorSpeed))
-      : 0.0f;
+    var gained = player.Velocity - before;
+    player.CarriedVelocity = new Vector2(
+      _taken(gained.X, floorVelocity.X),
+      _taken(gained.Y, floorVelocity.Y)
+    );
     _releaseFoughtCarry(player);
   }
+
+  // Only what the move actually added, and no more of it than the floor can account for: the same
+  // call moves a cube that left along a wall, and the wall owes it nothing.
+  private static float _taken(float gained, float floorSpeed) =>
+    Mathf.Sign(gained) == Mathf.Sign(floorSpeed)
+      ? Mathf.Sign(floorSpeed) * Mathf.Min(Mathf.Abs(gained), Mathf.Abs(floorSpeed))
+      : 0.0f;
 
   public PlayerBaseState? OnLand(Player player) {
     player.CurrentAnimation = player.ScaleAnimation;
