@@ -250,6 +250,7 @@ public partial class Player : CharacterBody2D, IPersistent {
     GlobalPosition = new Vector2(_saveData.PositionX, _saveData.PositionY);
     Velocity = Vector2.Zero;
     CarriedVelocity = Vector2.Zero;
+    
     // The brick breaker's power-ups are the only thing that resizes the cube, and none of them
     // outlives a respawn.
     Scale = Vector2.One;
