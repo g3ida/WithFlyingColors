@@ -43,9 +43,9 @@ public partial class PlayerDashingState : PlayerBaseState {
     _lastDelta = 0.0f;
     _impacted = false;
     player.CanDash = false;
-    // A dash writes the whole of the cube's speed every tick it runs, so there is nothing left of
-    // a push from the floor to keep apart from it.
-    player.CarriedSpeed = 0.0f;
+    // A dash writes the cube's own velocity every tick it runs, so a push it was carrying into the
+    // dash is spent. One picked up during it - dashing off the edge of a moving floor - is not.
+    player.CarriedVelocity = Vector2.Zero;
 
     if (_direction == Vector2.Zero) {
       _permissivenessTimer.Reset();
