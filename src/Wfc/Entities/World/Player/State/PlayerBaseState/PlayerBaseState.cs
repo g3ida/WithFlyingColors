@@ -39,12 +39,14 @@ public abstract class PlayerBaseState : IState<Player> {
   public virtual IState<Player>? PhysicsUpdate(Player player, float delta) {
     var death = player.TakePendingDeath();
     if (death.Type != EntityType.None) {
+      player.CarriedSpeed = 0.0f;
       return _dyingStateFor(player, death);
     }
     if (!player.IsDying()) {
       if (DashActionPressed(player)) {
         return OnDash(player);
       }
+      _releaseFoughtCarry(player);
       _applyWalkInput(player);
       _applyGravity(player, delta);
     }
@@ -78,13 +80,35 @@ public abstract class PlayerBaseState : IState<Player> {
     if (player.HandleInputIsDisabled || player.IsDashing()) {
       return;
     }
+    // The limit is what the cube can run at, not what it can travel at, so it is held against the
+    // run with the carry taken out - a cube thrown by the floor it jumped off still works its own
+    // run up to the limit on top of the throw.
+    var run = player.Velocity.X - player.CarriedSpeed;
     if (inputManager.IsPressed(IInputManager.Action.MoveRight)) {
       playerMoved = true;
-      player.Velocity = new Vector2(Mathf.Clamp(player.Velocity.X + player.SpeedUnit, 0, player.SpeedLimit), player.Velocity.Y);
+      run = Mathf.Clamp(run + player.SpeedUnit, 0, player.SpeedLimit);
     }
     else if (inputManager.IsPressed(IInputManager.Action.MoveLeft)) {
       playerMoved = true;
-      player.Velocity = new Vector2(Mathf.Clamp(player.Velocity.X - player.SpeedUnit, -player.SpeedLimit, 0), player.Velocity.Y);
+      run = Mathf.Clamp(run - player.SpeedUnit, -player.SpeedLimit, 0);
+    }
+    else {
+      return;
+    }
+    player.Velocity = new Vector2(run + player.CarriedSpeed, player.Velocity.Y);
+  }
+
+  // A push the player is steering out of stops being a push: released, it is ordinary run speed
+  // again, which the clamp and the damping take off within a tick.
+  private void _releaseFoughtCarry(Player player) {
+    if (Mathf.IsZeroApprox(player.CarriedSpeed) || player.HandleInputIsDisabled) {
+      return;
+    }
+    var against = player.CarriedSpeed > 0.0f
+      ? IInputManager.Action.MoveLeft
+      : IInputManager.Action.MoveRight;
+    if (inputManager.IsPressed(against)) {
+      player.CarriedSpeed = 0.0f;
     }
   }
 
@@ -93,10 +117,37 @@ public abstract class PlayerBaseState : IState<Player> {
 
   // The same three steps close out every state: travel, bleed off the run speed, and let the
   // squash and stretch follow the cube there.
-  private static void _move(Player player, float delta) {
+  private void _move(Player player, float delta) {
+    var wasOnFloor = player.IsOnFloor();
+    var floorSpeed = player.GetPlatformVelocity().X;
+    var before = player.Velocity.X;
+
     player.MoveAndSlide();
-    player.Velocity = new Vector2(Mathf.Lerp(player.Velocity.X, 0, RUN_DAMPING), player.Velocity.Y);
+    _readCarry(player, wasOnFloor, floorSpeed, before);
+
+    var carry = player.CarriedSpeed;
+    player.Velocity = new Vector2(Mathf.Lerp(player.Velocity.X - carry, 0, RUN_DAMPING) + carry, player.Velocity.Y);
     player.CurrentAnimation.Step(player, player.AnimatedSpriteNode, delta);
+  }
+
+  // What the floor gave the cube on the tick it left it. The engine adds a moving floor's own
+  // velocity there, and only what it actually added is exempted from the run rules: the same call
+  // moves a cube that left along a wall, and the wall owes it nothing. A push the player is
+  // already steering against is not taken at all, so a jump made against a moving floor is the
+  // jump it always was.
+  private void _readCarry(Player player, bool wasOnFloor, float floorSpeed, float before) {
+    if (player.IsOnFloor()) {
+      player.CarriedSpeed = 0.0f;
+      return;
+    }
+    if (!wasOnFloor) {
+      return;
+    }
+    var gained = player.Velocity.X - before;
+    player.CarriedSpeed = Mathf.Sign(gained) == Mathf.Sign(floorSpeed)
+      ? Mathf.Sign(floorSpeed) * Mathf.Min(Mathf.Abs(gained), Mathf.Abs(floorSpeed))
+      : 0.0f;
+    _releaseFoughtCarry(player);
   }
 
   public PlayerBaseState? OnLand(Player player) {
