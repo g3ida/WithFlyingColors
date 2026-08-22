@@ -192,6 +192,7 @@ public partial class CameraLocalizer : Node2D, ICameraRoom {
       // every descendant's _EnterTree and _Ready, so a child that subscribes in either is ahead of
       // this. A way in reparented after the level has loaded would land behind it instead.
       area.BodyEntered += _onBodyEntered;
+      area.BodyExited += _onBodyExited;
     }
   }
 
@@ -313,6 +314,13 @@ public partial class CameraLocalizer : Node2D, ICameraRoom {
     // Handed to the camera rather than written: a room walked into while a cutscene holds the
     // camera is the camera's to take once the shot turns for home.
     GameLevel.CameraNode.ApplyRoomFraming(this);
+  }
+
+  private void _onBodyExited(Node2D body) {
+    if (body != GameLevel.PlayerNode) {
+      return;
+    }
+    GameLevel.CameraNode.ReleaseRoomFraming(this);
   }
 
   // A room that hands the camera back has no view of its own to offer a shot: what the level shows
