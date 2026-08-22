@@ -441,6 +441,58 @@ public class GameCameraTests(Node testScene) : TestClass(testScene) {
     await _frames(1);
   }
 
+  // Two rooms that share a border both hold the cube while it stands on the line, so stepping back
+  // over that border enters nothing and only the leaving says the camera has changed hands.
+  [Test]
+  public async Task LeavingARoomHandsTheCameraToTheOneStillUnderneath() {
+    var player = new Node2D { Position = new Vector2(1000f, 0f) };
+    var camera = _cameraFollowing(player);
+    TestScene.AddChild(player);
+    await _frames(1);
+
+    var platform = new FakeRoom(camera, 1.0f, () => { });
+    var neighbour = new FakeRoom(camera, 0.8f, () => { });
+
+    camera.ApplyRoomFraming(platform);
+    camera.ApplyRoomFraming(neighbour);
+    neighbour.Taken.ShouldBe(1, "the room walked into last did not take the camera");
+
+    // Turned around on the border, without ever having left the room behind.
+    camera.ReleaseRoomFraming(neighbour);
+    platform.Taken.ShouldBe(2, "the room the cube was still standing in never got the camera back");
+    platform.Shown.ShouldBe(2, "the room the cube was still standing in never showed its view again");
+
+    // A doorway is left one step after it is crossed and has nothing underneath it to hand to.
+    camera.ReleaseRoomFraming(platform);
+    platform.Taken.ShouldBe(2, "leaving the last room re-framed the camera for a room that is gone");
+
+    player.QueueFree();
+    await _frames(1);
+  }
+
+  // Leaving a room that was not the one framing the camera changes nothing: the cube walked out of
+  // the outer of two nested rooms and is still standing in the inner one.
+  [Test]
+  public async Task LeavingARoomThatIsNotInChargeLeavesTheFramingAlone() {
+    var player = new Node2D { Position = new Vector2(1000f, 0f) };
+    var camera = _cameraFollowing(player);
+    TestScene.AddChild(player);
+    await _frames(1);
+
+    var outer = new FakeRoom(camera, 0.8f, () => { });
+    var inner = new FakeRoom(camera, 1.0f, () => { });
+
+    camera.ApplyRoomFraming(outer);
+    camera.ApplyRoomFraming(inner);
+    camera.ReleaseRoomFraming(outer);
+
+    inner.Taken.ShouldBe(1, "leaving a room the camera was not framed by re-framed it anyway");
+    outer.Taken.ShouldBe(1, "the room that was left took the camera on its way out");
+
+    player.QueueFree();
+    await _frames(1);
+  }
+
   // A room takes the camera and shows its view at two separate moments, and the zoom rides on the
   // second, which is what these count separately.
   private sealed class FakeRoom(GameCamera camera, float? zoom, Action onTaken) : ICameraRoom {
