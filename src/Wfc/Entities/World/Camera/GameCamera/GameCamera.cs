@@ -1,5 +1,6 @@
 namespace Wfc.Entities.World.Camera;
 
+using System.Collections.Generic;
 using Chickensoft.Sync.Primitives;
 using Godot;
 using Wfc.Core.Event;
@@ -75,6 +76,11 @@ public partial class GameCamera : Camera2D, IPersistent {
   private bool _isShotRunning;
   private ICameraRoom? _pendingRoom;
   private bool _hasTakenPendingRoom;
+
+  // The rooms the player stands in, the last one walked into last. Entering cannot on its own say
+  // which room the camera is in: rooms that share a border overlap under a cube wide enough to
+  // stand in both, so a step back over that border enters nothing.
+  private readonly List<ICameraRoom> _rooms = [];
 
   // An eased shot walks the camera along a curve itself. The engine's smoothing is suspended
   // for as long as it does, so the two cannot both be moving the camera at once.
@@ -365,15 +371,36 @@ public partial class GameCamera : Camera2D, IPersistent {
   // A room's framing, taken now or held for the shot on the camera. Only one room can be waiting,
   // so the last one walked into is the one the camera settles into.
   public void ApplyRoomFraming(ICameraRoom room) {
+    _rooms.Remove(room);
+    _rooms.Add(room);
+    _frameTheRoomInCharge();
+  }
+
+  // Walked out of rather than into. The room underneath takes over, which is the whole of stepping
+  // back over a border the cube was standing on both sides of. A doorway has nothing underneath it
+  // and hands nothing back: what it framed is meant to outlast the step that crossed it.
+  public void ReleaseRoomFraming(ICameraRoom room) {
+    var wasInCharge = _rooms.Count > 0 && ReferenceEquals(_rooms[^1], room);
+    if (_rooms.Remove(room) && wasInCharge) {
+      _frameTheRoomInCharge();
+    }
+  }
+
+  private void _frameTheRoomInCharge() {
+    _rooms.RemoveAll(room => room is GodotObject node && !IsInstanceValid(node));
+    if (_rooms.Count == 0) {
+      return;
+    }
+    var inCharge = _rooms[^1];
     if (_isShotRunning) {
-      _pendingRoom = room;
+      _pendingRoom = inCharge;
       _hasTakenPendingRoom = false;
       return;
     }
     _clearPendingRoom();
-    room.TakeTheCamera();
+    inCharge.TakeTheCamera();
     // Walked into rather than settled into: the pan the room's limits just caused is still to come.
-    room.ShowTheRoom(aPanIsStillToCome: true);
+    inCharge.ShowTheRoom(aPanIsStillToCome: true);
   }
 
   // As the shot starts its way home: the leg travels into the room's limits and absorbs the clamp,
